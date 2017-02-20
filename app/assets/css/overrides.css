@@ -1,0 +1,51 @@
+@media all and (max-width: 768px) {
+    .calendar-view-header .view-toggler-container {
+        text-align: center;
+    }
+    .calendar-view-header .view-toggler-container .view-toggler {
+        float: none;
+    }
+    .section-toolbar {
+        margin-bottom: 10px;
+    }
+    .calendar-nav-btn {
+        padding: 2px 3px !important;
+        font-size: .9em !important;
+    }
+    .calendar-day-header [data-date],
+    .calendar-day-header [data-day] {
+        font-size: 1em !important;
+    }
+    .calendar-day-header [data-date] {
+        font-weight: bold;
+    }
+    .section-row {}
+    .section-row .row-toolbar {
+        margin-bottom: 5px
+    }
+    .section-row .row-day-cell {
+        padding: 0 !important;
+        text-align: center;
+    }
+    .section-row .row-day-cell input {
+        border-radius: 0 !important;
+        border-right-width: 0;
+    }
+    .section-row .row-day-cell button {
+        float: none !important;
+        position: static !important;
+        left: auto !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+}
+
+.table-bordered, 
+.table-bordered>tbody>tr>td, 
+.table-bordered>tbody>tr>th, 
+.table-bordered>tfoot>tr>td, 
+.table-bordered>tfoot>tr>th, 
+.table-bordered>thead>tr>td, 
+.table-bordered>thead>tr>th {
+    border-color: rgba(0,0,0,0.3);
+}

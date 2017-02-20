@@ -1,11 +1,11 @@
 'use strict';
 
-var gulp = require('gulp');
-var connect = require('gulp-connect');
-var compass = require('gulp-compass');
-var concat = require('gulp-concat');
-var uglify = require('gulp-uglify');
-var minifyCss = require('gulp-minify-css');
+var gulp      = require( 'gulp' );
+var connect   = require( 'gulp-connect' );
+var compass   = require( 'gulp-compass' );
+var concat    = require( 'gulp-concat' );
+var uglify    = require( 'gulp-uglify' );
+var minifyCss = require( 'gulp-minify-css' );
 
 gulp.task('connect', function () {
     connect.server({
@@ -85,7 +85,8 @@ gulp.task('vendors:css', function () {
 
 gulp.task('vendors:js', function () {
     return gulp.src([
-            './bower_components/angular/angular.min.js',
+            // './bower_components/angular/angular.min.js',
+            './bower_components/angular/angular.js',
             './bower_components/jquery/dist/jquery.min.js',
             './bower_components/angular-ui-router/release/angular-ui-router.min.js',
             './bower_components/angular-permission/dist/angular-permission.js',
@@ -110,10 +111,11 @@ gulp.task('vendors:js', function () {
             './lib/ui-bootstrap/ui-bootstrap-custom-tpls-0.14.3.min.js'
         ])
         .pipe(concat('vendors.js'))
-        .pipe(uglify())
+        // .pipe(uglify())
         .pipe(gulp.dest('./app/assets/js/'));
 });
 
 gulp.task('vendors', ['vendors:js', 'vendors:css']);
 gulp.task('start', ['connect', 'watch']);
 gulp.task('compile', ['vendors', 'js', 'js:compress']);
+

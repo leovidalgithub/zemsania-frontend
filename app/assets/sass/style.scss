@@ -1,0 +1,398 @@
+@import "../../../bower_components/bourbon/app/assets/stylesheets/bourbon";
+
+@mixin vertical-align($position: relative) {
+  position: $position;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+
+$mobile: "(max-width: 767px)";
+$tablet: "(max-width: 1023px)";
+
+$zemsania: #F15A29;
+$black: #252525;
+$grey: #9E9E9E;
+$smookeWhite: whitesmoke;
+$red: #EF5350;
+$green: #9CCC65;
+$yellow: #FFEE58;
+$orange: #FFA726;
+
+@import "../../layouts/complex";
+@import "../../layouts/login";
+@import "../../features/calendar/imputHours/imputHours";
+@import "../../features/calendar/holidayCalendar/holidayCalendar";
+@import "../../features/calendar/calendarCreator/calendarCreator";
+@import "../../features/calendar/moderateHolidayCalendar/moderateHolidayCalendar";
+@import "../../features/projects/projectAssign/projectAssign";
+@import "../../features/dashboard/home/home";
+@import "../../features/reports/reports";
+@import "../../features/projectWorkflow/projectWorkflow";
+@import "../../features/excelExport/comboSelector/comboSelector";
+
+html, body, body > div, div[ui-view] {
+  height: 100%;
+  overflow: visible;
+}
+
+* {
+  outline: none !important;
+}
+
+.form-control:focus {
+  box-shadow: none !important;
+}
+
+body,
+html {
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  font-family: open-sans, sans-serif;
+  background: $smookeWhite;
+  @media #{$mobile} {
+    display: table;
+  }
+  &.blockView {
+    overflow: hidden;
+  }
+}
+
+.object-shadow {
+  box-shadow: 0 5px 15px -5px rgba(black, 0.1);
+}
+
+.alert {
+  border: none;
+  border-radius: 0;
+  &.alert-material {
+    color: white;
+    &.alert-warning {
+      background: $orange;
+    }
+    &.alert-success {
+      background: $green;
+    }
+    &.alert-danger {
+      background: $red;
+    }
+  }
+}
+
+.btn {
+  border: none;
+  border-radius: 0;
+  @include transition(all .3s);
+  &.btn-primary {
+    outline: none;
+    margin-top: 20px;
+    border: none;
+    padding: 7px 20px;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 1px;
+    border-radius: 0;
+    background-color: $zemsania;
+    @include transition(all .3s);
+    &:hover {
+      background-color: darken($zemsania, 10);
+    }
+  }
+  &.btn-gray {
+    outline: none;
+    margin-top: 20px;
+    color: white;
+    border: none;
+    padding: 7px 20px;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 1px;
+    border-radius: 0;
+    background-color: rgba(black, 0.4);
+    @include transition(all .3s);
+    &:hover {
+      background-color: rgba(black, 0.5);
+    }
+  }
+}
+
+a {
+  color: $zemsania;
+}
+
+hr {
+  &.mini {
+    margin: 10px 0;
+  }
+}
+
+#loading-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999999;
+  pointer-events: all;
+  background: rgba(white, 0.6);
+  .bar {
+    background: $zemsania;
+  }
+  .peg {
+    display: none;
+  }
+}
+
+.no-margin {
+  margin: 0 !important;
+}
+
+.no-padding {
+  padding: 0 !important;
+}
+
+.simple-input {
+  .has-error .form-control {
+    box-shadow: none;
+  }
+  &.no-margin {
+    button {
+      margin-top: 0;
+    }
+  }
+  input {
+    border: none;
+    border-bottom: 1px solid rgba(black, 0.2);
+    box-shadow: none;
+    border-radius: 0;
+    padding: 5px 0;
+    @include transition(all .3s);
+    &:focus {
+      border-color: $zemsania;
+    }
+    @media #{$mobile} {
+      margin-bottom: 20px;
+    }
+  }
+  textarea {
+    border: none;
+    border-bottom: 1px solid rgba(black, 0.2);
+    box-shadow: none;
+    border-radius: 0;
+    padding: 5px 0;
+    &.no-border {
+      border: none;
+    }
+    &.full-box {
+      width: 100%;
+      resize: none;
+    }
+    &:focus {
+      border-color: $zemsania;
+    }
+  }
+  .input-group-btn {
+    button.btn {
+      border-bottom: 1px solid;
+      padding-bottom: 7px;
+      border-color: rgba(black, 0.2);
+    }
+  }
+  .input-group {
+    .datepicker {
+      i {
+        color: rgba(black, 0.4);
+      }
+    }
+  }
+  select {
+    border: none;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(black, 0.2);
+    box-shadow: none;
+    border-radius: 0;
+    padding: 5px 0;
+    background: transparent;
+    &:focus {
+      border-color: $zemsania;
+    }
+    @media #{$mobile} {
+      margin-bottom: 20px;
+    }
+  }
+  button.button-text {
+    text-align: left;
+    border: none;
+    border-bottom: 1px solid rgba(black, 0.2);
+    box-shadow: none;
+    border-radius: 0;
+    padding: 5px 0;
+    @extend .object-shadow;
+    @include transition(all .3s);
+    &:focus {
+      border-color: $zemsania;
+    }
+  }
+}
+
+.modal-backdrop {
+  z-index: 999998 !important;
+  background: rgba(black, 0.2);
+  &.in {
+    opacity: 1;
+  }
+}
+
+.modal-open .modal {
+  z-index: 999999 !important;
+  .modal-header {
+    border: none;
+    padding: 10px 15px;
+    .modal-title {
+      font-weight: 100;
+    }
+  }
+  .modal-footer {
+    border: none;
+    box-shadow: 0 -7px 15px -10px rgba(black, .15);
+    padding: 10px;
+    .char-count {
+      float: left;
+      padding: 7px;
+      font-size: 12px;
+      letter-spacing: 1px;
+      color: rgba(black, 0.4);
+      font-weight: 800;
+    }
+  }
+  .modal-body {
+    padding: 0 15px 20px;
+  }
+  .modal-content {
+    @extend .object-shadow;
+    border: none;
+    border-radius: 0;
+    .loading-modal{
+      padding: 20px;
+      text-align: center;
+      font-size: 25px;
+      font-weight: 300;
+    }
+
+    .btn-primary {
+      margin: 0;
+    }
+    .btn-danger {
+      margin-left: 1px;
+      padding: 7px 20px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .btn-warning {
+      text-transform: uppercase;
+      padding: 7px 20px;
+      font-size: 12px;
+      letter-spacing: 1px;
+      background: rgba(black, 0.3);
+      &:hover {
+        background: rgba(black, 0.4);
+      }
+    }
+  }
+}
+
+.only-mobile {
+  display: none;
+  @media #{$mobile} {
+    display: block;
+  }
+}
+
+.only-desktop {
+  display: block;
+  @media #{$mobile} {
+    display: none;
+  }
+}
+
+.dropdown-menu[uib-datepicker-popup-wrap] {
+  padding: 10px;
+  border-radius: 0;
+  border: 1px solid rgba(black, .1);
+  @extend .box-shadow;
+  .btn-group.pull-left {
+    visibility: hidden;
+  }
+  button {
+    box-shadow: none;
+    &.active {
+      background-color: $zemsania;
+      color: white;
+    }
+    &.btn-info {
+      background-color: $zemsania;
+      span {
+        color: white;
+        background-color: transparent;
+      }
+    }
+    &.btn-success {
+      background-color: rgba(black, 0.4);
+      &:hover {
+        background-color: rgba(black, 0.5);
+      }
+    }
+  }
+}
+
+.no-animate, .no-animate * {
+  -webkit-transition: none !important;
+  transition: none !important;
+}
+
+.modal.fade .modal-dialog {
+  @include transition(all .2s ease-out);
+  @include transform(scale(0.95));
+}
+
+.modal.in .modal-dialog {
+  @include transform(scale(1));
+}
+
+.col-md-1, .col-md-2, .col-md-3, .col-md-4, .col-md-6 {
+  &.inline {
+    display: inline-block;
+    float: none;
+    vertical-align: top;
+    @media #{$tablet} {
+      display: block;
+    }
+  }
+}
+
+.embed-responsive, .modal, .modal-open, .progress {
+  overflow: auto;
+}
+
+ng-form {
+  width: 100%;
+  div[formly-field] {
+    padding: 10px;
+    display: inline-block;
+  }
+  div.form-buttons {
+    clear: both;
+    margin: 10px;
+  }
+}
+
+.cursor-pointer{
+  cursor: pointer;
+  * {
+    cursor: pointer !important;
+  }
+}
