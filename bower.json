@@ -1,0 +1,35 @@
+{
+  "name": "zemtime",
+  "description": "zemtime frontend",
+  "main": "index.js",
+  "authors": [
+    "Leonardo Rdgz Vidal"
+  ],
+  "license": "ISC",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "^1.6.2",
+    "angular-animate": "^1.6.2",
+    "angular-loading-bar": "^0.9.0",
+    "angular-permission": "^5.2.1",
+    "animate.css": "^3.5.2",
+    "bootstrap": "^3.3.7",
+    "bourbon": "^4.3.2",
+    "font-awesome": "^4.7.0",
+    "i18next": "^7.0.0",
+    "ngstorage": "^0.3.11",
+    "angular-dynamic-locale": "^0.1.32",
+    "angular-formly": "^8.4.1",
+    "angular-formly-templates-bootstrap": "^6.3.2",
+    "angular-resource": "^1.6.2",
+    "angular-elastic": "^2.5.1",
+    "angular-file-saver": "^1.1.3"
+  }
+}

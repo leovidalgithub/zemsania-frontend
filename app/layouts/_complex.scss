@@ -1,0 +1,596 @@
+#complex_layout {
+  height: 100%;
+  #wrapper {
+    height: 100%;
+    padding-left: 0;
+    @include transition(all .4s ease);
+    &.toggled {
+      padding-left: 250px;
+      #sidebar-wrapper {
+        width: 250px;
+      }
+      #page-content-wrapper {
+        position: absolute;
+        margin-right: -250px;
+      }
+    }
+    #page-content-wrapper {
+      height: 100%;
+      overflow-y: scroll;
+      > .container-fluid {
+        min-height: 100%;
+        @media #{$mobile} {
+          padding: 0;
+        }
+      }
+    }
+  }
+
+  #sidebar-wrapper {
+    z-index: 1000;
+    position: fixed;
+    left: 250px;
+    width: 0;
+    height: 100%;
+    margin-left: -250px;
+    overflow-y: auto;
+    background: #FFF;
+    @include transition(all .4s ease);
+    box-shadow: 0 0 25px rgba(black, 0.07);
+  }
+
+  #page-content-wrapper {
+    width: 100%;
+    position: absolute;
+    padding: 15px;
+    z-index: 99999;
+    @media #{$mobile} {
+      padding-top: 50px;
+    }
+  }
+
+  /* Sidebar Styles */
+
+  .sidebar-nav {
+    position: absolute;
+    top: 0;
+    width: 250px;
+    margin: 0;
+    padding: 95px 0 55px;
+    list-style: none;
+
+    li {
+      text-indent: 2px;
+      line-height: 40px;
+      &:nth-child(2) {
+        &.top-separator {
+          margin: 0;
+          padding: 0;
+          box-shadow: none;
+        }
+      }
+      &.top-separator {
+        margin-top: 5px;
+        padding-top: 5px;
+        box-shadow: 140px -1px white, 110px -1px rgba(black, 0.2);
+      }
+      &.bottom {
+        background-color: white;
+        position: fixed;
+        bottom: 0;
+        width: 250px;
+        box-shadow: 0 -5px 25px -15px rgba(black, 0.4);
+      }
+      a {
+        height: 42px;
+        i {
+          text-indent: 0;
+          padding: 10px;
+          text-align: center;
+          margin-right: 10px;
+          font-size: 18px;
+          line-height: 22px;
+          box-shadow: inset 0 0 $zemsania;
+          width: 38px;
+          color: rgba(black, 0.5);
+          @include transition(all 0s ease);
+        }
+        display: block;
+        text-decoration: none;
+        color: $black;
+        box-shadow: inset 2px 0 white;
+        @include transition(all .2s ease);
+        &.active {
+          box-shadow: inset 4px 0 $zemsania !important;
+          i {
+            color: white;
+            background: $zemsania;
+          }
+        }
+        &:hover {
+          //box-shadow: inset 2px 0 $zemsania;
+          text-decoration: none;
+          color: $zemsania;
+          box-shadow: inset 40px 0 $zemsania;
+          i {
+            color: white;
+            @include transition(all .2s ease);
+          }
+          //background: rgba($black, 0.05);
+        }
+        &:focus, &:active {
+          text-decoration: none;
+        }
+      }
+    }
+    > .sidebar-brand {
+      //height: 65px;
+      font-size: 18px;
+      line-height: 60px;
+      position: fixed;
+      background: white;
+      width: 250px;
+      top: 0;
+      box-shadow: 0 20px 25px -25px rgba(black, .1);
+
+      a {
+        height: auto;
+        margin-bottom: 15px;
+        padding: 10px 10px 0;
+        &:hover {
+          box-shadow: inset 0 0 $zemsania;
+        }
+        img {
+          height: 60px;
+          display: block;
+        }
+      }
+    }
+  }
+
+  @media(min-width: 768px) {
+    #wrapper {
+      padding-left: 250px;
+      &.toggled {
+        padding-left: 0;
+        #sidebar-wrapper {
+          width: 0;
+        }
+        #page-content-wrapper {
+          position: relative;
+          margin-right: 0;
+        }
+      }
+    }
+
+    #sidebar-wrapper {
+      width: 250px;
+    }
+
+    #page-content-wrapper {
+      padding: 20px;
+      position: relative;
+    }
+
+  }
+
+  .box-shadow {
+    @extend .object-shadow;
+    background: white;
+    overflow: auto;
+    margin-bottom: 20px;
+    &.p10 {
+      padding: 10px;
+    }
+    &.p20 {
+      padding: 20px;
+    }
+    &.floating-box {
+      position: fixed;
+      bottom: 0;
+      z-index: 99;
+      margin-right: 35px;
+      @media #{$mobile} {
+        margin-right: 15px;
+      }
+      .alert {
+        margin: -20px;
+      }
+    }
+    &.over-visible {
+      overflow: visible;
+    }
+    h1 {
+      margin: 0 0 20px;
+      font-weight: 100;
+      font-size: 30px;
+    }
+  }
+
+  .header-mobile {
+    top: 0;
+    left: 0;
+    right: 0;
+    position: fixed;
+    padding: 10px;
+    background: white;
+    z-index: 99999;
+    @include transition(all .4s ease);
+    @extend .box-shadow;
+    button {
+      color: $zemsania;
+      border: none;
+      background: transparent;
+
+    }
+  }
+
+  .toggled .header-mobile {
+    left: 250px;
+  }
+
+  table.table-striped.table {
+    .table-thead {
+      box-shadow: 0 10px 10px -10px rgba(black, .3);
+    }
+    tr > th {
+      cursor: pointer;
+    }
+    > tbody > tr > td {
+      border: none;
+      vertical-align: middle;
+      &.options-section {
+        width: 100px;
+        text-align: right;
+      }
+    }
+  }
+
+  .table-pagination {
+    text-align: right;
+    .pagination {
+      @extend .object-shadow;
+      li {
+        &.active {
+          a {
+            color: white;
+            background: $zemsania;
+          }
+        }
+        a {
+          @include transition(all .2s);
+          color: $zemsania;
+          border: none;
+          border-radius: 0;
+        }
+      }
+    }
+  }
+
+  .header {
+    > div {
+      &:first-child {
+        h3.p3 {
+          padding: 3px 0;
+          &.subtitle {
+            margin-bottom: 15px !important;
+            font-weight: 100;
+          }
+        }
+      }
+      &:last-child {
+        p {
+          margin: 0;
+        }
+        ul[uib-datepicker-popup-wrap] {
+          left: auto !important;
+          right: 0 !important;
+        }
+      }
+    }
+  }
+
+  .top-bar {
+    &.widget {
+      overflow: visible;
+      min-height: 66px;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin: 0;
+      font-weight: 100;
+    }
+    .pull-left {
+      @media #{$mobile} {
+        float: none !important;
+        h3 {
+          text-align: center;
+          margin-bottom: 20px;
+        }
+      }
+    }
+    .pull-right {
+      margin: -5px 0;
+      @media #{$mobile} {
+        margin-top: 10px;
+        float: none !important;
+        text-align: center;;
+      }
+      &.buttons {
+        margin-top: -3px;
+      }
+      a {
+        font-size: 25px;
+        color: $black;
+        margin-left: 10px;
+        @include transition(all .3s);
+        &:hover, &.active {
+          color: $zemsania;
+        }
+      }
+    }
+  }
+
+  .tooltip {
+    .tooltip-arrow {
+      border-left-color: $zemsania;
+    }
+    .tooltip-inner {
+      border-radius: 0;
+      padding: 5px 7px;
+      color: white;
+      background-color: $zemsania;
+    }
+  }
+
+  .glyphicon-minus {
+    font: normal normal normal 14px/1 FontAwesome;
+    &:before {
+      content: "";
+    }
+  }
+
+  .glyphicon-chevron-down {
+    font: normal normal normal 14px/1 FontAwesome;
+    &:before {
+      content: "\f107";
+    }
+  }
+
+  .glyphicon-chevron-up {
+    font: normal normal normal 14px/1 FontAwesome;
+    &:before {
+      content: "\f106";
+    }
+  }
+
+  .advanced-search {
+    .col-md-12.form-elements {
+      padding: 0;
+      margin-bottom: 20px;
+      > div {
+        padding: 0 20px 0 0;
+        &:last-child {
+          padding: 0;
+        }
+      }
+    }
+    .form-group {
+      input {
+        width: 100%;
+      }
+    }
+    .form-actions {
+      text-align: right;
+      //margin-top: 20px;
+      float: right;
+      .btn {
+        margin-top: 0;
+        &.btn-warning {
+          @extend .btn-primary;
+          background-color: $grey !important;
+          margin-top: 0 !important;
+          &:hover {
+            background-color: darken($grey, 10) !important;
+          }
+        }
+      }
+    }
+  }
+
+  .form-group {
+    margin-bottom: 25px;
+  }
+
+  div > label {
+    font-size: 14px;
+    line-height: 1.42857143;
+    margin: 0 0 10px;
+    color: rgba(black, 0.8);
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    &.no-bold {
+      color: rgba(black, 0.7);
+      letter-spacing: 0;
+      text-transform: inherit;
+      font-weight: normal;
+    }
+  }
+
+  input[disabled] {
+    cursor: not-allowed;
+    color: rgba(black, 0.5);
+    &.no-bg {
+      background: transparent;
+      cursor: pointer;
+    }
+  }
+  .auto-form {
+    label {
+      margin-bottom: 5px;
+      color: rgba(black, 0.7);
+
+      &.aux {
+        color: rgba(black, 0.8);
+        font-weight: normal;
+        vertical-align: top;
+        margin-bottom: 0;
+      }
+    }
+    input:not([type=checkbox]), select {
+      width: 100%;
+    }
+    div[ng-switch-when] {
+      text-align: left;
+    }
+    div[class^='col-md-'] {
+      margin-bottom: 20px;
+    }
+  }
+  .form-partial {
+    width: 100%;
+    display: table;
+    &.form-simple {
+      .input-group {
+        width: 100%;
+      }
+      .buttons {
+        min-width: 100% !important;
+      }
+    }
+    .input-group {
+      display: table-cell;
+      width: 100%;
+      > div {
+        display: table;
+        width: 100%;
+        padding-right: 20px;
+        .input-group-addon {
+          display: table-cell;
+          width: 40px;
+          border: none;
+          border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+          border-radius: 0;
+          background: none;
+          padding-left: 0;
+          font-size: 18px;
+        }
+        input[type=email].form-control,
+        input[type=text].form-control {
+          display: table-cell;
+          width: 100%;
+        }
+      }
+    }
+    .buttons {
+      display: table-cell;
+      text-align: right;
+      button.mini {
+        padding: 7px 10px;
+      }
+    }
+  }
+
+  .list-group {
+    margin-top: 20px;
+    margin-bottom: 0;
+    li.list-group-input {
+      border-bottom: none !important;
+      margin-bottom: 10px;
+      .input-group {
+        width: 100%;
+        > div {
+          display: table;
+          width: 100%;
+          .input-group-addon {
+            display: table-cell;
+            width: 40px;
+            border: none;
+            border-bottom: 1px solid rgba(black, 0.2);
+            border-radius: 0;
+            background: none;
+            padding-left: 0;
+            font-size: 18px;
+            line-height: 21px;
+          }
+        }
+      }
+    }
+    li.list-group-item {
+      overflow: auto;
+      border-radius: 0;
+      border: none;
+      border-bottom: 2px solid rgba(black, 0.1);
+      padding: 10px 0 10px 5px;
+      &:last-child {
+        border: none;
+      }
+      &.hover {
+        margin: 0 -20px;
+        padding: 7px 25px;
+        &:hover {
+          background: rgba(black, 0.04);
+        }
+      }
+      .pull-left {
+        padding: 5px 0;
+        cursor: default;
+        i {
+          font-size: 18px;
+          vertical-align: top;
+          width: 25px;
+          margin-right: 5px;
+        }
+      }
+      .pull-right {
+        text-align: right;
+        button {
+          width: 30px;
+          height: 30px;
+          padding: 5px;
+        }
+      }
+    }
+  }
+  [ng-click] {
+    cursor: pointer;
+  }
+  .image-link {
+    margin-top: -20px;
+    margin-bottom: 20px;
+    cursor: pointer;
+    display: block;
+    color: $black;
+    @include transition(all 0.2s);
+    &:hover, &:active, &:focus{
+      text-decoration: none;
+      color: $zemsania;
+    }
+    .fa-paperclip{
+      font-size: 22px;
+    }
+    span{
+      padding-left: 10px;
+      small{
+        margin-left: 10px;
+        opacity: 0.5;
+      }
+    }
+  }
+  .box-shadow.list-rows {
+    padding: 0 20px !important;
+    li {
+      border-bottom: 1px solid rgba($black, .1);
+      @include transition(all .1s);
+      padding: 10px 15px !important;
+      &:last-child{
+        border-bottom: none;
+      }
+      &:hover{
+        border-bottom: 1px solid transparent;
+        background: $zemsania !important;
+        color: white;
+      }
+    }
+  }
+}

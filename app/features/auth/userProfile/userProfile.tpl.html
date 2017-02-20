@@ -1,0 +1,76 @@
+<div class="box-shadow p20 top-bar">
+    <div class="pull-left">
+        <h3>{{'auth.profile.title' | i18next}}</h3>
+    </div>
+    <div class="pull-right">
+        <button class="btn btn-primary no-margin" ng-click="save()">{{'actions.save' | i18next}}</button>
+    </div>
+</div>
+<div class="box-shadow p20 over-visible">
+    <div ng-show="profileStatus === 1" class="alert alert-success">{{'auth.profile.saveSuccess' | i18next}}</div>
+    <div ng-show="profileStatus === 2" class="alert alert-danger">{{'auth.profile.saveError' | i18next}}</div>
+    <div class="auto-form simple-input">
+        <div ng-repeat="(key, field) in formFields" ng-switch="field.element" class="col-md-4 inline">
+            <label>{{'user.'+key | i18next}}</label>
+            <div ng-switch-when="input">
+                <input id="el_{{$index}}" ng-model="user[key]" type="{{field.type}}">
+                <label for="el_{{$index}}" ng-show="field.label" class="aux">{{field.label | i18next}}</label>
+            </div>
+            <div ng-switch-when="date">
+                <p class="input-group">
+                    <button type="button" class="form-control button-text" ng-click="open()">{{user[key] | date: 'dd/MM/yyyy'}}
+                    </button>
+                    <input type="hidden" class="form-control" uib-datepicker-popup="dd/MM/yyyy" ng-model="user[key]" is-open="status.opened" datepicker-options="dateOptions" close-text="{{'actions.close' | i18next}}" />
+                    <span class="input-group-btn">
+                    <button type="button" class="btn btn-default" ng-click="open()"><i class="fa fa-calendar"></i>
+                    </button>
+                </span>
+                </p>
+            </div>
+            <div ng-switch-when="select">
+                <select ng-model="user[key]" ng-options="option.slug as option.label for option in field.options"></select>
+            </div>
+        </div>
+    </div>
+    <section>
+        <h5 class="modal-header no-padding-l text-upper text-primary" ng-click="showPwdContent=!showPwdContent">
+            <span class="fa" ng-class="{'fa-minus': showPwdContent, 'fa-plus': !showPwdContent}"></span>&nbsp; CAMBIAR CONTRASEÑA
+        </h5>
+        <form name="pwdForm" ng-submit="processPWDChange()" class="modal-body" ng-show="showPwdContent">
+            <div data-fields>
+                <div class="row simple-input">
+                    <div class="col-lg-5 col-md-6">
+                        <div>Contraseña Actual</div>
+                        <input type="password" name="" ng-model="newPassword.current" class="form-control" placeholder="●●●●●●●" required />
+                    </div>
+                    <div class="col-lg-5 col-md-6">
+                        <p class="alert alert-danger" ng-show="newPassword.currentInvalid">
+                            Las Contraseñas No Coinciden
+                        </p>
+                    </div>
+                </div>
+                <br>
+                <div class="row simple-input">
+                    <div class="col-lg-5 col-md-6">
+                        <div>Contraseña Nueva</div>
+                        <input type="password" name="" ng-model="newPassword.new" class="form-control" placeholder="Enter new" required/>
+                    </div>
+                </div>
+                <br>
+                <div class="row simple-input">
+                    <div class="col-lg-5 col-md-6">
+                        <div>Confirma Contraseña</div>
+                        <input type="password" name="" ng-model="newPassword.confirm" class="form-control" placeholder="Confirm new" required/>
+                    </div>
+                    <div class="col-lg-5 col-md-6">
+                        <p class="alert alert-danger" ng-if="newPassword.confirmInvalid">
+                            
+                        </p>
+                    </div>
+                </div>                
+            </div>
+            <br>
+            <button type="sbumit" class="btn btn-primary no-margin-t no-margin-l" ng-disabled="pwdForm.$invalid">Cambiar</button>
+        </form>
+    </section>
+</div>

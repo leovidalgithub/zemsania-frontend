@@ -1,0 +1,108 @@
+#login_view {
+  background: white;
+  height: 100%;
+  width: 100%;
+  display: table;
+  canvas {
+    position: fixed;
+    z-index: 0;
+    top: 0;
+    left: 0;
+  }
+
+  .vertical {
+    display: table-cell;
+    vertical-align: middle;
+    height: 100%;
+    text-align: center;
+  }
+
+  .login-view {
+    height: 100%;
+    position: relative;
+    z-index: 1;
+    @media #{$mobile} {
+      padding: 20px 0;
+      height: auto;
+      display: table-cell;
+      vertical-align: middle;
+    }
+    .col-md-8 {
+      height: 100%;
+      display: table;
+      @media #{$mobile} {
+        height: auto;
+      }
+
+      img.logo {
+        width: 70%;
+        @media #{$mobile} {
+          margin-bottom: 20px;
+        }
+      }
+    }
+    .col-md-4 {
+      display: table;
+      height: 100%;
+      box-shadow: 0 0 50px rgba(0, 0, 0, .15);
+      background: white;
+      @media #{$mobile} {
+        height: auto;
+        margin-left: 8.33333333%;
+      }
+      .login-box {
+        opacity: 0;
+        &.visible {
+          opacity: 1;
+        }
+        h3 {
+          font-weight: 300;
+          margin-bottom: 50px;
+          @media #{$mobile} {
+            margin-bottom: 20px;
+          }
+        }
+        form {
+          margin: 0 17%;
+          .help-block {
+            text-align: left;
+            font-size: 10px;
+            font-weight: 600;
+            @include transition(all .3s);
+            height: 14px;
+            opacity: 1;
+            &.ng-hide {
+              opacity: 0;
+              display: block !important;
+              height: 0;
+              overflow: hidden;
+            }
+          }
+          input {
+            border: none;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+            box-shadow: none;
+            border-radius: 0;
+            padding: 5px 0;
+            @include transition(all .3s);
+            &:focus {
+              border-bottom: 1px solid $zemsania;
+            }
+          }
+          p.restore-password {
+            padding: 10px 0 0;
+            font-size: 12px;
+            font-weight: 600;
+            a {
+              color: rgba(0, 0, 0, 0.4);
+              &:hover, &:active, &:focus {
+                color: $zemsania;
+                text-decoration: none;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
