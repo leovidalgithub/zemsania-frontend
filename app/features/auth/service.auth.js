@@ -21,7 +21,6 @@
             },
             doLogin: function (credentials) {
                 var dfd = $q.defer();
-
                 $http
                     .post(buildURL('login'), credentials)
                     .then(function (response) {

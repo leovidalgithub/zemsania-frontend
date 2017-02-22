@@ -12,6 +12,12 @@
             password: null
         };
 
+        // $scope.loginCategory = $localStorage.loginCategory || 'standard';
+        // $scope.switchLoginCategory = function(cat) { $localStorage.loginCategory = $scope.loginCategory = cat; }
+        // $scope.isCategoryActive = function(cat) {
+        //     return $scope.loginCategory == cat;
+        // }
+
         $scope.login = function () {
             $scope.loginForm.error = false;
             $scope.loginForm.disabled = true;

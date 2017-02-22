@@ -1,4 +1,4 @@
-var API_base = 'http://' + location.hostname + ':4000/'
+var API_base = 'http://' + location.hostname + ':3000/';
 var API_paths = {
     login: 'authn/login',
     passwordRecovery: 'authn/password/remember',
@@ -64,6 +64,8 @@ function buildURL(path) {
 }
 
 function loadPermissions(Permission, UserFactory) {
+    console.log('loadPermissions - utils.js');
+
     'use strict';
     Permission.defineRole('anonymous', function () {
         return !UserFactory.getUser();

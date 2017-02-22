@@ -1,0 +1,53 @@
+<button class="btn btn-lg btn-danger" ng-click="myFn()">DALE!</button>
+
+<div id="home-view">
+    <div class="box-shadow p20">
+        <div class="row">
+            <div class="col-md-12 notification-center">
+                <h1>{{'notifications.title' | i18next}}</h1>
+
+                <div ng-repeat="key in notifications.keys" class="notification" ng-class="isActive(key)">
+                    <div ng-switch="key" class="notification-icon" ng-click="openType(key)">
+                        <i ng-switch-when="hours_sent" class="fa fa-calendar-o">
+                            <i class="inside-calendar fa fa-paper-plane"></i>
+                        </i>
+                        <i ng-switch-when="holiday_request" class="fa fa-calendar-plus-o"></i>
+                        <i ng-switch-when="hours_validated" class="fa fa-calendar-check-o"></i>
+                        <i ng-switch-when="hours_rejected" class="fa fa-calendar-times-o"></i>
+
+                        <div class="notification-total">
+                            {{notifications.notifications[key].length}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12 notification-canvas row" ng-show="notifications">
+                <div class="col-md-12 notification-alert"
+                     ng-repeat="notification in notifications.notifications[activeNotifications]">
+                    <hr>
+                    <div class="col-md-9" ng-click="openNotification(notification)">
+                        <p><small class="show time-zone">{{notification.initDate | date : 'dd/MM/yyyy'}} - {{notification.endDate | date :
+                            'dd/MM/yyyy'}}</small>
+                            {{notification.text}} {{'notifications.type.' + notification.type | i18next}}
+                            </p>
+                    </div>
+                    <div class="col-md-3 text-right">
+                        <button ng-click="openNotification(notification)"
+                                class="btn btn-primary no-margin">{{'actions.attend' | i18next}}
+                        </button>
+                        <button ng-click="markRead(notification, activeNotifications, $index)"
+                                class="btn btn-gray no-margin"><i class="fa fa-times"></i> </button>
+                    </div>
+                </div>
+                <div class="col-md-12 notification-alert"
+                     ng-hide="notifications.notifications[activeNotifications].length">
+                    <div class="col-md-12">
+                        <p>{{'notifications.noNotifications' | i18next}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

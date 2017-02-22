@@ -40,15 +40,16 @@ gulp.task('json', function () {
 gulp.task('watch', function () {
     gulp.watch(['./app/**/*.html'], ['html']);
     gulp.watch(['./app/**/*.json'], ['json']);
-    gulp.watch(['./app/**/*.js', '!./app/assets/**/*.js'], ['js']);
+    // gulp.watch(['./app/**/*.js', '!./app/assets/**/*.js'], ['js']);
+    gulp.watch(['./app/**/*.js'], ['js']);
     gulp.watch(['./app/**/*.scss'], ['sass']);
 });
 
 gulp.task('js', function () {
     return gulp.src([
+            './app/app.js',
             './app/features/components/formly/formlyConfig.js',
             './app/utils.js',
-            './app/app.js',
             './app/features/**/module.*.js',
             './app/features/**/service.*.js',
             './app/features/**/controller.*.js',
@@ -90,9 +91,11 @@ gulp.task('vendors:js', function () {
             './bower_components/jquery/dist/jquery.min.js',
             './bower_components/angular-ui-router/release/angular-ui-router.min.js',
             './bower_components/angular-permission/dist/angular-permission.js',
+            './bower_components/angular-permission/dist/angular-permission-ui.js',
             './bower_components/angular-sanitize/angular-sanitize.min.js',
             './bower_components/i18next/i18next.min.js',
-            './bower_components/ng-i18next/dist/ng-i18next.min.js',
+            './bower_components/i18next-xhr-backend/i18nextXHRBackend.min.js',
+            './node_modules/ng-i18next/dist/ng-i18next.min.js',
             './bower_components/angular-loading-bar/build/loading-bar.min.js',
             './bower_components/ngstorage/ngStorage.min.js',
             './bower_components/angular-animate/angular-animate.min.js',

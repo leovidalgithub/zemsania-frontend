@@ -3,8 +3,9 @@
   #wrapper {
     height: 100%;
     padding-left: 0;
-    @include transition(all .4s ease);
+    // @include transition(all .4s ease);
     &.toggled {
+      background-color: orange;
       padding-left: 250px;
       #sidebar-wrapper {
         width: 250px;
@@ -35,7 +36,7 @@
     margin-left: -250px;
     overflow-y: auto;
     background: #FFF;
-    @include transition(all .4s ease);
+    // @include transition(all .4s ease);
     box-shadow: 0 0 25px rgba(black, 0.07);
   }
 
@@ -93,13 +94,13 @@
           box-shadow: inset 0 0 $zemsania;
           width: 38px;
           color: rgba(black, 0.5);
-          @include transition(all 0s ease);
+          // @include transition(all 0s ease);
         }
         display: block;
         text-decoration: none;
         color: $black;
         box-shadow: inset 2px 0 white;
-        @include transition(all .2s ease);
+        // @include transition(all .2s ease);
         &.active {
           box-shadow: inset 4px 0 $zemsania !important;
           i {
@@ -114,7 +115,7 @@
           box-shadow: inset 40px 0 $zemsania;
           i {
             color: white;
-            @include transition(all .2s ease);
+            // @include transition(all .2s ease);
           }
           //background: rgba($black, 0.05);
         }
@@ -215,7 +216,7 @@
     padding: 10px;
     background: white;
     z-index: 99999;
-    @include transition(all .4s ease);
+    // @include transition(all .4s ease);
     @extend .box-shadow;
     button {
       color: $zemsania;
@@ -258,7 +259,7 @@
           }
         }
         a {
-          @include transition(all .2s);
+          // @include transition(all .2s);
           color: $zemsania;
           border: none;
           border-radius: 0;
@@ -322,7 +323,7 @@
         font-size: 25px;
         color: $black;
         margin-left: 10px;
-        @include transition(all .3s);
+        // @include transition(all .3s);
         &:hover, &.active {
           color: $zemsania;
         }
@@ -561,7 +562,7 @@
     cursor: pointer;
     display: block;
     color: $black;
-    @include transition(all 0.2s);
+    // @include transition(all 0.2s);
     &:hover, &:active, &:focus{
       text-decoration: none;
       color: $zemsania;
@@ -581,7 +582,7 @@
     padding: 0 20px !important;
     li {
       border-bottom: 1px solid rgba($black, .1);
-      @include transition(all .1s);
+      // @include transition(all .1s);
       padding: 10px 15px !important;
       &:last-child{
         border-bottom: none;

@@ -7,9 +7,10 @@
     angular
         .module('hours', [
             'ui.router',
+            'permission',
+            'permission.ui',
             'ngAnimate',
             'ngStorage',
-            'permission',
             'angular-loading-bar',
             'ngSanitize',
             'jm.i18next',
@@ -23,15 +24,15 @@
             'ngFileSaver',
 
             'hours.auth',
-            'hours.projectWorkflow',
-            'hours.errors',
+            // 'hours.projectWorkflow',
+            // 'hours.errors',
             'hours.dashboard',
             'hours.components',
-            'hours.employeeManager',
-            'hours.calendar',
-            'hours.reports',
-            'hours.projects',
-            'hours.excelExport'
+            // 'hours.employeeManager',
+            // 'hours.calendar',
+            // 'hours.reports',
+            // 'hours.projects',
+            // 'hours.excelExport'
         ])
         .config(appConfig)
         .run(appRun);
@@ -63,16 +64,22 @@
         tmhDynamicLocaleProvider.localeLocationPattern('/angular/i18n/angular-locale_{{locale}}.js');
     }
 
-    appRun.$invoke = ['permission', 'UserFactory', '$rootScope', '$http', 'tmhDynamicLocale', 'formlyConfig', '$uibModal'];
+    appRun.$invoke = [ 'PermRoleStore', 'UserFactory', '$rootScope', '$http', 'tmhDynamicLocale', 'formlyConfig', '$uibModal', '$localStorage' ];
 
-    function appRun(Permission, UserFactory, $rootScope, $http, tmhDynamicLocale, formlyConfig, $uibModal) {
+    function appRun(PermRoleStore, UserFactory, $rootScope, $http, tmhDynamicLocale, formlyConfig, $uibModal, $localStorage) {
         $rootScope.$on('$stateChangePermissionStart', function(event, args) {
+            
+
             var reqPerms = args.data.permissions;
+
+
             var anonymousUser = angular.isDefined(reqPerms.only) && reqPerms.only[0] === 'anonymous';
             var locale = (navigator.language || navigator.userLanguage).split('-')[0];
 
             $rootScope.activeState = args.data.state;
             $rootScope.layoutTemplate = '/layouts/' + args.data.template + '.html';
+
+console.log(args);
 
             // If not anonymous user put Auth header
             if (!anonymousUser) {
@@ -90,7 +97,7 @@
             $rootScope.toggleSidebarStatus = !$rootScope.toggleSidebarStatus;
         };
 
-        loadPermissions(Permission, UserFactory);
+        loadPermissions(PermRoleStore, UserFactory);
         tmpData($rootScope);
         setFormlyConfig(formlyConfig);        
 
