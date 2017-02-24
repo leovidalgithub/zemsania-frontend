@@ -17,7 +17,6 @@
             'ui.bootstrap',
             'ui.calendar',
             'angular-table',
-            'tmh.dynamicLocale',
             'monospaced.elastic',
             'formly',
             'formlyBootstrap',
@@ -37,49 +36,41 @@
         .config(appConfig)
         .run(appRun);
 
-    appConfig.$invoke = ['$locationProvider', '$i18nextProvider', 'cfpLoadingBarProvider', '$urlRouterProvider', 'tmhDynamicLocaleProvider'];
+    appConfig.$invoke = ['$locationProvider', '$i18nextProvider', 'cfpLoadingBarProvider', '$urlRouterProvider'];
 
-    function appConfig($locationProvider, $i18nextProvider, cfpLoadingBarProvider, $urlRouterProvider, tmhDynamicLocaleProvider) {
+    function appConfig($locationProvider, $i18nextProvider, cfpLoadingBarProvider, $urlRouterProvider) {
         $urlRouterProvider.otherwise(function($injector) {
             var $state = $injector.get("$state");
             $state.transitionTo('login');
         });
 
-        $locationProvider.html5Mode({
-            enabled: false,
-            requireBase: false
-        });
-
-        $i18nextProvider.options = {
-            lng: 'es',
-            useCookie: false,
-            useLocalStorage: false,
-            fallbackLng: 'es',
-            resGetPath: '/assets/locale/__lng__.json',
-            defaultLoadingValue: 'loading'
-        };
-
         cfpLoadingBarProvider.includeSpinner = false;
-
-        tmhDynamicLocaleProvider.localeLocationPattern('/angular/i18n/angular-locale_{{locale}}.js');
     }
 
-    appRun.$invoke = [ 'PermRoleStore', 'UserFactory', '$rootScope', '$http', 'tmhDynamicLocale', 'formlyConfig', '$uibModal', '$localStorage' ];
+    appRun.$invoke = [ 'PermRoleStore', 'UserFactory', '$rootScope', '$http', 'formlyConfig', '$uibModal', '$localStorage','$i18next' ];
 
-    function appRun(PermRoleStore, UserFactory, $rootScope, $http, tmhDynamicLocale, formlyConfig, $uibModal, $localStorage) {
+    function appRun(PermRoleStore, UserFactory, $rootScope, $http, formlyConfig, $uibModal, $localStorage, $i18next) {
+
+        window.i18next
+            .use(window.i18nextXHRBackend);
+        window.i18next.init({
+            lng: 'es', // If not given, i18n will detect the browser language.
+            fallbackLng: 'dev', // Default is dev
+            backend: {
+                loadPath: 'assets/locales/{{lng}}/{{ns}}.json'
+            }
+        }, function (err, t) {
+            console.log('resources loaded');
+            $rootScope.$apply();
+        });
+
         $rootScope.$on('$stateChangePermissionStart', function(event, args) {
-            
-
             var reqPerms = args.data.permissions;
-
-
             var anonymousUser = angular.isDefined(reqPerms.only) && reqPerms.only[0] === 'anonymous';
             var locale = (navigator.language || navigator.userLanguage).split('-')[0];
 
             $rootScope.activeState = args.data.state;
             $rootScope.layoutTemplate = '/layouts/' + args.data.template + '.html';
-
-console.log(args);
 
             // If not anonymous user put Auth header
             if (!anonymousUser) {
@@ -87,7 +78,7 @@ console.log(args);
                 locale = UserFactory.getUser().locale;
             }
 
-            tmhDynamicLocale.set(locale);
+            $i18next.changeLanguage(locale);
 
             $rootScope.toggleSidebarStatus = false;
         });
@@ -399,36 +390,6 @@ function toGMT0(date) {
 (function () {
     'use strict';
     angular
-        .module('hours.components', [])
-        .directive('roleAuth', roleAuth);
-
-    function roleAuth(UserFactory) {
-        return {
-            restrict: 'A',
-            scope: {
-                'roleAuth': '@'
-            },
-            link: function compile(scope, element, attrs) {
-                
-                var authRoles = JSON.parse(attrs.roleAuth.replace(/'/g, '"')); // convert to JSON object
-                var userRole = UserFactory.getUser().role;
-
-                if (angular.isDefined(authRoles.only) && authRoles.only.indexOf(userRole) < 0) {
-                    element.remove();
-                }
-                if (angular.isDefined(authRoles.except) && authRoles.except.indexOf(userRole) >= 0) {
-                    element.remove();
-                }
-            }
-        };
-    }
-}());
-
-
-{'only' : ['administrator', 'manager', 'backoffice']}
-(function () {
-    'use strict';
-    angular
         .module('hours.dashboard', [])
         .config(dashboardConfig);
 
@@ -455,6 +416,34 @@ function toGMT0(date) {
     }
 }());
 
+
+(function () {
+    'use strict';
+    angular
+        .module('hours.components', [])
+        .directive('roleAuth', roleAuth);
+
+    function roleAuth(UserFactory) {
+        return {
+            restrict: 'A',
+            scope: {
+                'roleAuth': '@'
+            },
+            link: function compile(scope, element, attrs) {
+                
+                var authRoles = JSON.parse(attrs.roleAuth.replace(/'/g, '"')); // convert to JSON object
+                var userRole = UserFactory.getUser().role;
+
+                if (angular.isDefined(authRoles.only) && authRoles.only.indexOf(userRole) < 0) {
+                    element.remove();
+                }
+                if (angular.isDefined(authRoles.except) && authRoles.except.indexOf(userRole) >= 0) {
+                    element.remove();
+                }
+            }
+        };
+    }
+}());
 
 (function () {
     'use strict';
@@ -853,39 +842,19 @@ function toGMT0(date) {
 (function () {
     'use strict';
     angular
-        .module('hours.components')
-        .directive('zemSidebar', zemSidebar)
-        .controller('SidebarComponentController', SidebarComponentController);
-
-    SidebarComponentController.$invoke = ['$scope', 'UserFactory'];
-    function SidebarComponentController($scope, UserFactory) {
-        $scope.username = UserFactory.getUser();
-    }
-
-    function zemSidebar() {
-        return {
-            restrict: 'E',
-            replace: true,
-            templateUrl: '/features/components/sidebar/sidebar.tpl.html',
-            controller: 'SidebarComponentController'
-        };
-    }
-}());
-
-(function () {
-    'use strict';
-    angular
         .module('hours.dashboard')
         .controller('HomeController', HomeController);
 
-    HomeController.$invoke = ['$scope', 'UserFactory', '$state', 'notifications', 'DashboardFactory'];
-    function HomeController($scope, UserFactory, $state, notifications, DashboardFactory) {
+    HomeController.$invoke = ['$scope', 'UserFactory', '$state', 'notifications', 'DashboardFactory', '$i18next'];
+    function HomeController($scope, UserFactory, $state, notifications, DashboardFactory, $i18next) {
 
 
-$scope.myFn = function() {
-    UserFactory.doLogout();
-
-}
+$scope.fn1 = function() {
+    $i18next.changeLanguage('es');
+};
+$scope.fn2 = function() {
+    $i18next.changeLanguage('en');
+};
 
 
         $scope.notifications = notifications;
@@ -928,6 +897,28 @@ $scope.myFn = function() {
         };
     }
 }());
+(function () {
+    'use strict';
+    angular
+        .module('hours.components')
+        .directive('zemSidebar', zemSidebar)
+        .controller('SidebarComponentController', SidebarComponentController);
+
+    SidebarComponentController.$invoke = ['$scope', 'UserFactory'];
+    function SidebarComponentController($scope, UserFactory) {
+        $scope.username = UserFactory.getUser();
+    }
+
+    function zemSidebar() {
+        return {
+            restrict: 'E',
+            replace: true,
+            templateUrl: '/features/components/sidebar/sidebar.tpl.html',
+            controller: 'SidebarComponentController'
+        };
+    }
+}());
+
 var TAU = 2 * Math.PI;
 var canvas;
 var ctx;

@@ -1,6 +1,4 @@
 <h3>{{'auth.login.login' | i18next}}</h3>
-<h3>Inicio de sesión</h3>
-
 <!-- <ul class="nav nav-tabs"> ESTÁNDAR / ACTIVE DIRECTORY
   <li ng-click="switchLoginCategory('standard')" ng-class="{'active': isCategoryActive('standard')}"><a class="pointer">Estándar</a></li>
   <li ng-click="switchLoginCategory('ldap')" ng-class="{'active': isCategoryActive('ldap')}"><a class="pointer">Active Directory</a></li>
@@ -21,7 +19,6 @@
         <div class="alert alert-danger" ng-show="loginForm.error">{{'auth.login.errorAtLogin' | i18next}}</div>
         <button ng-disabled="form.$invalid || loginForm.disabled" type="submit" class="btn btn-primary">
             {{'auth.login.login' | i18next}}
-            Inicio de sesión
             <span ng-show="loginCategory=='ldap'">LDAP</span>
         </button>
         <p class="restore-password" ng-show="loginCategory == 'standard'">

@@ -25,6 +25,3 @@
         };
     }
 }());
-
-
-{'only' : ['administrator', 'manager', 'backoffice']}

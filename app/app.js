@@ -17,7 +17,6 @@
             'ui.bootstrap',
             'ui.calendar',
             'angular-table',
-            'tmh.dynamicLocale',
             'monospaced.elastic',
             'formly',
             'formlyBootstrap',
@@ -37,49 +36,41 @@
         .config(appConfig)
         .run(appRun);
 
-    appConfig.$invoke = ['$locationProvider', '$i18nextProvider', 'cfpLoadingBarProvider', '$urlRouterProvider', 'tmhDynamicLocaleProvider'];
+    appConfig.$invoke = ['$locationProvider', '$i18nextProvider', 'cfpLoadingBarProvider', '$urlRouterProvider'];
 
-    function appConfig($locationProvider, $i18nextProvider, cfpLoadingBarProvider, $urlRouterProvider, tmhDynamicLocaleProvider) {
+    function appConfig($locationProvider, $i18nextProvider, cfpLoadingBarProvider, $urlRouterProvider) {
         $urlRouterProvider.otherwise(function($injector) {
             var $state = $injector.get("$state");
             $state.transitionTo('login');
         });
 
-        $locationProvider.html5Mode({
-            enabled: false,
-            requireBase: false
-        });
-
-        $i18nextProvider.options = {
-            lng: 'es',
-            useCookie: false,
-            useLocalStorage: false,
-            fallbackLng: 'es',
-            resGetPath: '/assets/locale/__lng__.json',
-            defaultLoadingValue: 'loading'
-        };
-
         cfpLoadingBarProvider.includeSpinner = false;
-
-        tmhDynamicLocaleProvider.localeLocationPattern('/angular/i18n/angular-locale_{{locale}}.js');
     }
 
-    appRun.$invoke = [ 'PermRoleStore', 'UserFactory', '$rootScope', '$http', 'tmhDynamicLocale', 'formlyConfig', '$uibModal', '$localStorage' ];
+    appRun.$invoke = [ 'PermRoleStore', 'UserFactory', '$rootScope', '$http', 'formlyConfig', '$uibModal', '$localStorage','$i18next' ];
 
-    function appRun(PermRoleStore, UserFactory, $rootScope, $http, tmhDynamicLocale, formlyConfig, $uibModal, $localStorage) {
+    function appRun(PermRoleStore, UserFactory, $rootScope, $http, formlyConfig, $uibModal, $localStorage, $i18next) {
+
+        window.i18next
+            .use(window.i18nextXHRBackend);
+        window.i18next.init({
+            lng: 'es', // If not given, i18n will detect the browser language.
+            fallbackLng: 'dev', // Default is dev
+            backend: {
+                loadPath: 'assets/locales/{{lng}}/{{ns}}.json'
+            }
+        }, function (err, t) {
+            console.log('resources loaded');
+            $rootScope.$apply();
+        });
+
         $rootScope.$on('$stateChangePermissionStart', function(event, args) {
-            
-
             var reqPerms = args.data.permissions;
-
-
             var anonymousUser = angular.isDefined(reqPerms.only) && reqPerms.only[0] === 'anonymous';
             var locale = (navigator.language || navigator.userLanguage).split('-')[0];
 
             $rootScope.activeState = args.data.state;
             $rootScope.layoutTemplate = '/layouts/' + args.data.template + '.html';
-
-console.log(args);
 
             // If not anonymous user put Auth header
             if (!anonymousUser) {
@@ -87,7 +78,7 @@ console.log(args);
                 locale = UserFactory.getUser().locale;
             }
 
-            tmhDynamicLocale.set(locale);
+            $i18next.changeLanguage(locale);
 
             $rootScope.toggleSidebarStatus = false;
         });
