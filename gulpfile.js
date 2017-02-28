@@ -23,7 +23,7 @@ gulp.task('sass', function () {
             css: './app/assets/css',
             sass: './app/assets/sass'
         }))
-        .pipe(gulp.dest('temp'))
+        // .pipe(gulp.dest('temp'))
         .pipe(connect.reload());
 });
 

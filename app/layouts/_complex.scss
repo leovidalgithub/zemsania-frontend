@@ -38,6 +38,7 @@
     background: #FFF;
     // @include transition(all .4s ease);
     box-shadow: 0 0 25px rgba(black, 0.07);
+    transition: all .7s ease;
   }
 
   #page-content-wrapper {
@@ -57,23 +58,14 @@
     top: 0;
     width: 250px;
     margin: 0;
-    padding: 95px 0 55px;
+    padding: 5px 0 55px;
     list-style: none;
-
     li {
-      text-indent: 2px;
-      line-height: 40px;
-      &:nth-child(2) {
-        &.top-separator {
-          margin: 0;
-          padding: 0;
-          box-shadow: none;
-        }
-      }
+      white-space : nowrap;
+      text-indent: 3px;
       &.top-separator {
-        margin-top: 5px;
-        padding-top: 5px;
-        box-shadow: 140px -1px white, 110px -1px rgba(black, 0.2);
+        // box-shadow: 140px -1px red, 110px -1px rgba(black, 0.2);
+        border-bottom: dotted 1px #C3C3C3;
       }
       &.bottom {
         background-color: white;
@@ -83,15 +75,14 @@
         box-shadow: 0 -5px 25px -15px rgba(black, 0.4);
       }
       a {
-        height: 42px;
+        height: 38px;
         i {
           text-indent: 0;
           padding: 10px;
           text-align: center;
           margin-right: 10px;
-          font-size: 18px;
+          font-size: 22px;
           line-height: 22px;
-          box-shadow: inset 0 0 $zemsania;
           width: 38px;
           color: rgba(black, 0.5);
           // @include transition(all 0s ease);
@@ -100,24 +91,22 @@
         text-decoration: none;
         color: $black;
         box-shadow: inset 2px 0 white;
+        transition: all .2s;
         // @include transition(all .2s ease);
         &.active {
-          box-shadow: inset 4px 0 $zemsania !important;
           i {
             color: white;
             background: $zemsania;
           }
         }
-        &:hover {
-          //box-shadow: inset 2px 0 $zemsania;
+        &:hover:not(.noShadowPlease) {
           text-decoration: none;
           color: $zemsania;
-          box-shadow: inset 40px 0 $zemsania;
+          box-shadow: inset 45px 0 $zemsania;
           i {
             color: white;
             // @include transition(all .2s ease);
           }
-          //background: rgba($black, 0.05);
         }
         &:focus, &:active {
           text-decoration: none;
@@ -125,28 +114,31 @@
       }
     }
     > .sidebar-brand {
-      //height: 65px;
-      font-size: 18px;
-      line-height: 60px;
-      position: fixed;
+      z-index: 10;
       background: white;
-      width: 250px;
+      position: fixed;
       top: 0;
+      width: 250px;
       box-shadow: 0 20px 25px -25px rgba(black, .1);
 
       a {
         height: auto;
-        margin-bottom: 15px;
-        padding: 10px 10px 0;
         &:hover {
-          box-shadow: inset 0 0 $zemsania;
         }
         img {
+          padding: 0 15px;
           height: 60px;
           display: block;
         }
       }
     }
+    > .sidebar-mobile {
+      z-index: 5;
+      position: relative;
+      top: 95px;
+      left: 0;
+    }
+
   }
 
   @media(min-width: 768px) {

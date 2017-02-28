@@ -4,8 +4,8 @@
         .module('hours.auth')
         .controller('UserProfileController', UserProfileController);
 
-    UserProfileController.$invoke = ['$scope', 'UserFactory', '$filter', '$timeout'];
-    function UserProfileController($scope, UserFactory, $filter, $timeout) {
+    UserProfileController.$invoke = ['$scope', 'UserFactory', '$filter', '$timeout', '$rootScope'];
+    function UserProfileController($scope, UserFactory, $filter, $timeout, $rootScope) {
         $scope.user = angular.copy(UserFactory.getUser());
 
         function loadFields() {
@@ -34,7 +34,8 @@
                     element: 'select',
                     options: [
                         {
-                            label: $filter('i18next')('user.genre_male'),
+                            // label: $filter('i18next')('user.genre_male'),
+                            label: i18next.t('user.genre_male'),
                             slug: 'male'
                         },
                         {
@@ -53,15 +54,17 @@
                         {
                             label: $filter('i18next')('locale.en'),
                             slug: 'en'
+                        },
+                        {
+                            label: $filter('i18next')('locale.ca'),
+                            slug: 'ca'
                         }
                     ]
                 }
             };
         }
 
-        loadFields();
-
-        $timeout(function () {
+       $timeout(function () {
             loadFields();
         }, 500);
 

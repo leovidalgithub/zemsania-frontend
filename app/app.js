@@ -60,11 +60,13 @@
                 loadPath: 'assets/locales/{{lng}}/{{ns}}.json'
             }
         }, function (err, t) {
-            console.log('resources loaded');
+            // console.log('resources loaded');
             $rootScope.$apply();
         });
 
-        $rootScope.$on('$stateChangePermissionStart', function(event, args) {
+        $rootScope.$on('$stateChangePermissionStart', function(event, args) {            
+
+            
             var reqPerms = args.data.permissions;
             var anonymousUser = angular.isDefined(reqPerms.only) && reqPerms.only[0] === 'anonymous';
             var locale = (navigator.language || navigator.userLanguage).split('-')[0];

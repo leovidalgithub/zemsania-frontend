@@ -63,9 +63,7 @@ function buildURL(path) {
     return API_base + API_paths[path];
 }
 
-function loadPermissions(Permission, UserFactory) {
-    console.log('loadPermissions - utils.js');
-
+function loadPermissions(Permission, UserFactory) { // Permission -> PermRoleStore
     'use strict';
     Permission.defineRole('anonymous', function () {
         return !UserFactory.getUser();

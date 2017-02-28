@@ -97,20 +97,18 @@
             },
             saveProfile: function (credentials) {
                 var dfd = $q.defer();
-
                 $http
                     .put(buildURL('saveUser'), credentials)
-                    .then(function (response) {
-                        if (response.data.success) {
-                            $localStorage.User = credentials;
-                            dfd.resolve(true);
-                        } else {
-                            dfd.reject(response);
-                        }
-                    }, function (err) {
-                        dfd.reject(err);
-                    });
-
+                        .then(function (response) {
+                            if (response.data.success) {
+                                $localStorage.User = credentials;
+                                dfd.resolve(true);
+                            } else {
+                                dfd.reject(response);
+                            }
+                        }, function (err) {
+                            dfd.reject(err);
+                        });
                 return dfd.promise;
             },
             getUsersBySupervisor: function () {

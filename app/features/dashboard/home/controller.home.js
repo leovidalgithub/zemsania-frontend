@@ -7,14 +7,12 @@
     HomeController.$invoke = ['$scope', 'UserFactory', '$state', 'notifications', 'DashboardFactory', '$i18next'];
     function HomeController($scope, UserFactory, $state, notifications, DashboardFactory, $i18next) {
 
-
-$scope.fn1 = function() {
-    $i18next.changeLanguage('es');
-};
-$scope.fn2 = function() {
-    $i18next.changeLanguage('en');
-};
-
+// $scope.fn1 = function() {
+//     $i18next.changeLanguage('es');
+// };
+// $scope.fn2 = function() {
+//     $i18next.changeLanguage('en');
+// };
 
         $scope.notifications = notifications;
         $scope.user = UserFactory.getUser();

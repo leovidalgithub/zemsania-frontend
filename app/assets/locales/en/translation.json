@@ -24,6 +24,9 @@
             "password2": "Repetir contraseña nueva",
             "oldPassword": "Contraseña actual",
             "passwordNotMatching": "Las contraseñas no coinciden",
+            "enterNew": "Enter new",
+            "confirmNew": "Confirm new",
+            "changeBtn": "Change",
             "error": "Error cambiar la contraseña",
             "success": "Contraseña cambiada con éxito. Redirigiendo a Login."
         },
@@ -268,7 +271,8 @@
     },
     "locale": {
         "es": "Español",
-        "en": "Inglés"
+        "en": "Inglés",
+        "ca": "Catalán"
     },
     "role": {
         "ROLE_BACKOFFICE": "Administrador",

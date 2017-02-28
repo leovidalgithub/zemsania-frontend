@@ -39,6 +39,7 @@
   overflow-y: auto;
   background: #FFF;
   box-shadow: 0 0 25px rgba(0, 0, 0, 0.07);
+  transition: all .7s ease;
 }
 #complex_layout #page-content-wrapper {
   width: 100%;
@@ -56,22 +57,15 @@
   top: 0;
   width: 250px;
   margin: 0;
-  padding: 95px 0 55px;
+  padding: 5px 0 55px;
   list-style: none;
 }
 #complex_layout .sidebar-nav li {
-  text-indent: 2px;
-  line-height: 40px;
-}
-#complex_layout .sidebar-nav li:nth-child(2).top-separator {
-  margin: 0;
-  padding: 0;
-  box-shadow: none;
+  white-space: nowrap;
+  text-indent: 3px;
 }
 #complex_layout .sidebar-nav li.top-separator {
-  margin-top: 5px;
-  padding-top: 5px;
-  box-shadow: 140px -1px white, 110px -1px rgba(0, 0, 0, 0.2);
+  border-bottom: dotted 1px #C3C3C3;
 }
 #complex_layout .sidebar-nav li.bottom {
   background-color: white;
@@ -81,61 +75,59 @@
   box-shadow: 0 -5px 25px -15px rgba(0, 0, 0, 0.4);
 }
 #complex_layout .sidebar-nav li a {
-  height: 42px;
+  height: 38px;
   display: block;
   text-decoration: none;
   color: #252525;
   box-shadow: inset 2px 0 white;
+  transition: all .2s;
 }
 #complex_layout .sidebar-nav li a i {
   text-indent: 0;
   padding: 10px;
   text-align: center;
   margin-right: 10px;
-  font-size: 18px;
+  font-size: 22px;
   line-height: 22px;
-  box-shadow: inset 0 0 #F15A29;
   width: 38px;
   color: rgba(0, 0, 0, 0.5);
-}
-#complex_layout .sidebar-nav li a.active {
-  box-shadow: inset 4px 0 #F15A29 !important;
 }
 #complex_layout .sidebar-nav li a.active i {
   color: white;
   background: #F15A29;
 }
-#complex_layout .sidebar-nav li a:hover {
+#complex_layout .sidebar-nav li a:hover:not(.noShadowPlease) {
   text-decoration: none;
   color: #F15A29;
-  box-shadow: inset 40px 0 #F15A29;
+  box-shadow: inset 45px 0 #F15A29;
 }
-#complex_layout .sidebar-nav li a:hover i {
+#complex_layout .sidebar-nav li a:hover:not(.noShadowPlease) i {
   color: white;
 }
 #complex_layout .sidebar-nav li a:focus, #complex_layout .sidebar-nav li a:active {
   text-decoration: none;
 }
 #complex_layout .sidebar-nav > .sidebar-brand {
-  font-size: 18px;
-  line-height: 60px;
-  position: fixed;
+  z-index: 10;
   background: white;
-  width: 250px;
+  position: fixed;
   top: 0;
+  width: 250px;
   box-shadow: 0 20px 25px -25px rgba(0, 0, 0, 0.1);
 }
 #complex_layout .sidebar-nav > .sidebar-brand a {
   height: auto;
-  margin-bottom: 15px;
-  padding: 10px 10px 0;
-}
-#complex_layout .sidebar-nav > .sidebar-brand a:hover {
-  box-shadow: inset 0 0 #F15A29;
 }
 #complex_layout .sidebar-nav > .sidebar-brand a img {
+  padding: 0 15px;
   height: 60px;
   display: block;
+}
+#complex_layout .sidebar-nav > .sidebar-mobile {
+  z-index: 5;
+  position: relative;
+  top: 95px;
+  left: 0;
 }
 @media (min-width: 768px) {
   #complex_layout #wrapper {

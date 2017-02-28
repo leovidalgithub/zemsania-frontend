@@ -10,8 +10,7 @@
             scope: {
                 'roleAuth': '@'
             },
-            link: function compile(scope, element, attrs) {
-                
+            link: function compile(scope, element, attrs) {                
                 var authRoles = JSON.parse(attrs.roleAuth.replace(/'/g, '"')); // convert to JSON object
                 var userRole = UserFactory.getUser().role;
 

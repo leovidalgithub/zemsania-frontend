@@ -60,11 +60,13 @@
                 loadPath: 'assets/locales/{{lng}}/{{ns}}.json'
             }
         }, function (err, t) {
-            console.log('resources loaded');
+            // console.log('resources loaded');
             $rootScope.$apply();
         });
 
-        $rootScope.$on('$stateChangePermissionStart', function(event, args) {
+        $rootScope.$on('$stateChangePermissionStart', function(event, args) {            
+
+            
             var reqPerms = args.data.permissions;
             var anonymousUser = angular.isDefined(reqPerms.only) && reqPerms.only[0] === 'anonymous';
             var locale = (navigator.language || navigator.userLanguage).split('-')[0];
@@ -245,9 +247,7 @@ function buildURL(path) {
     return API_base + API_paths[path];
 }
 
-function loadPermissions(Permission, UserFactory) {
-    console.log('loadPermissions - utils.js');
-
+function loadPermissions(Permission, UserFactory) { // Permission -> PermRoleStore
     'use strict';
     Permission.defineRole('anonymous', function () {
         return !UserFactory.getUser();
@@ -390,6 +390,33 @@ function toGMT0(date) {
 (function () {
     'use strict';
     angular
+        .module('hours.components', [])
+        .directive('roleAuth', roleAuth);
+
+    function roleAuth(UserFactory) {
+        return {
+            restrict: 'A',
+            scope: {
+                'roleAuth': '@'
+            },
+            link: function compile(scope, element, attrs) {                
+                var authRoles = JSON.parse(attrs.roleAuth.replace(/'/g, '"')); // convert to JSON object
+                var userRole = UserFactory.getUser().role;
+
+                if (angular.isDefined(authRoles.only) && authRoles.only.indexOf(userRole) < 0) {
+                    element.remove();
+                }
+                if (angular.isDefined(authRoles.except) && authRoles.except.indexOf(userRole) >= 0) {
+                    element.remove();
+                }
+            }
+        };
+    }
+}());
+
+(function () {
+    'use strict';
+    angular
         .module('hours.dashboard', [])
         .config(dashboardConfig);
 
@@ -416,34 +443,6 @@ function toGMT0(date) {
     }
 }());
 
-
-(function () {
-    'use strict';
-    angular
-        .module('hours.components', [])
-        .directive('roleAuth', roleAuth);
-
-    function roleAuth(UserFactory) {
-        return {
-            restrict: 'A',
-            scope: {
-                'roleAuth': '@'
-            },
-            link: function compile(scope, element, attrs) {
-                
-                var authRoles = JSON.parse(attrs.roleAuth.replace(/'/g, '"')); // convert to JSON object
-                var userRole = UserFactory.getUser().role;
-
-                if (angular.isDefined(authRoles.only) && authRoles.only.indexOf(userRole) < 0) {
-                    element.remove();
-                }
-                if (angular.isDefined(authRoles.except) && authRoles.except.indexOf(userRole) >= 0) {
-                    element.remove();
-                }
-            }
-        };
-    }
-}());
 
 (function () {
     'use strict';
@@ -544,20 +543,18 @@ function toGMT0(date) {
             },
             saveProfile: function (credentials) {
                 var dfd = $q.defer();
-
                 $http
                     .put(buildURL('saveUser'), credentials)
-                    .then(function (response) {
-                        if (response.data.success) {
-                            $localStorage.User = credentials;
-                            dfd.resolve(true);
-                        } else {
-                            dfd.reject(response);
-                        }
-                    }, function (err) {
-                        dfd.reject(err);
-                    });
-
+                        .then(function (response) {
+                            if (response.data.success) {
+                                $localStorage.User = credentials;
+                                dfd.resolve(true);
+                            } else {
+                                dfd.reject(response);
+                            }
+                        }, function (err) {
+                            dfd.reject(err);
+                        });
                 return dfd.promise;
             },
             getUsersBySupervisor: function () {
@@ -744,8 +741,8 @@ function toGMT0(date) {
         .module('hours.auth')
         .controller('UserProfileController', UserProfileController);
 
-    UserProfileController.$invoke = ['$scope', 'UserFactory', '$filter', '$timeout'];
-    function UserProfileController($scope, UserFactory, $filter, $timeout) {
+    UserProfileController.$invoke = ['$scope', 'UserFactory', '$filter', '$timeout', '$rootScope'];
+    function UserProfileController($scope, UserFactory, $filter, $timeout, $rootScope) {
         $scope.user = angular.copy(UserFactory.getUser());
 
         function loadFields() {
@@ -774,7 +771,8 @@ function toGMT0(date) {
                     element: 'select',
                     options: [
                         {
-                            label: $filter('i18next')('user.genre_male'),
+                            // label: $filter('i18next')('user.genre_male'),
+                            label: i18next.t('user.genre_male'),
                             slug: 'male'
                         },
                         {
@@ -793,15 +791,17 @@ function toGMT0(date) {
                         {
                             label: $filter('i18next')('locale.en'),
                             slug: 'en'
+                        },
+                        {
+                            label: $filter('i18next')('locale.ca'),
+                            slug: 'ca'
                         }
                     ]
                 }
             };
         }
 
-        loadFields();
-
-        $timeout(function () {
+       $timeout(function () {
             loadFields();
         }, 500);
 
@@ -842,20 +842,40 @@ function toGMT0(date) {
 (function () {
     'use strict';
     angular
+        .module('hours.components')
+        .directive('zemSidebar', zemSidebar)
+        .controller('SidebarComponentController', SidebarComponentController);
+
+    SidebarComponentController.$invoke = ['$scope', 'UserFactory'];
+    function SidebarComponentController($scope, UserFactory) {
+        $scope.username = UserFactory.getUser();
+    }
+
+    function zemSidebar() {
+        return {
+            restrict: 'E',
+            replace: true,
+            templateUrl: '/features/components/sidebar/sidebar.tpl.html',
+            controller: 'SidebarComponentController'
+        };
+    }
+}());
+
+(function () {
+    'use strict';
+    angular
         .module('hours.dashboard')
         .controller('HomeController', HomeController);
 
     HomeController.$invoke = ['$scope', 'UserFactory', '$state', 'notifications', 'DashboardFactory', '$i18next'];
     function HomeController($scope, UserFactory, $state, notifications, DashboardFactory, $i18next) {
 
-
-$scope.fn1 = function() {
-    $i18next.changeLanguage('es');
-};
-$scope.fn2 = function() {
-    $i18next.changeLanguage('en');
-};
-
+// $scope.fn1 = function() {
+//     $i18next.changeLanguage('es');
+// };
+// $scope.fn2 = function() {
+//     $i18next.changeLanguage('en');
+// };
 
         $scope.notifications = notifications;
         $scope.user = UserFactory.getUser();
@@ -897,28 +917,6 @@ $scope.fn2 = function() {
         };
     }
 }());
-(function () {
-    'use strict';
-    angular
-        .module('hours.components')
-        .directive('zemSidebar', zemSidebar)
-        .controller('SidebarComponentController', SidebarComponentController);
-
-    SidebarComponentController.$invoke = ['$scope', 'UserFactory'];
-    function SidebarComponentController($scope, UserFactory) {
-        $scope.username = UserFactory.getUser();
-    }
-
-    function zemSidebar() {
-        return {
-            restrict: 'E',
-            replace: true,
-            templateUrl: '/features/components/sidebar/sidebar.tpl.html',
-            controller: 'SidebarComponentController'
-        };
-    }
-}());
-
 var TAU = 2 * Math.PI;
 var canvas;
 var ctx;
