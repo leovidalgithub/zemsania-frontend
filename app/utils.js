@@ -4,6 +4,8 @@ var API_paths = {
     passwordRecovery: 'authn/password/remember',
     createUser: 'authn/signup',
 
+    verifyUniqueUserEmail : 'user/profile/',
+
     passwordReset: 'user/password',
     getAllUsers: 'user/all',
     saveUser: 'user/profile',
@@ -56,11 +58,9 @@ var API_paths = {
 
 };
 
-//var redName = 'red beard';
-
-function buildURL(path) {
+function buildURL( path ) { // ***************** LEO WAS HERE *****************
     'use strict';
-    return API_base + API_paths[path];
+    return API_base + API_paths[ path ];
 }
 
 function loadPermissions(Permission, UserFactory) { // Permission -> PermRoleStore

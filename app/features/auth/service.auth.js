@@ -1,11 +1,11 @@
 (function () {
     'use strict';
     angular
-        .module('hours.auth')
-        .factory('UserFactory', UserFactory);
+        .module( 'hours.auth' )
+        .factory( 'UserFactory', UserFactory );
 
-    UserFactory.$invoke = ['$http', '$q', '$localStorage'];
-    function UserFactory($http, $q, $localStorage) {
+    UserFactory.$invoke = [ '$http', '$q', '$localStorage' ];
+    function UserFactory( $http, $q, $localStorage ) {
         return {
             getUser: function () {
                 return $localStorage.User;
@@ -19,11 +19,11 @@
             doLogout: function () {
                 delete $localStorage.User;
             },
-            doLogin: function (credentials) {
+            doLogin: function ( credentials ) {
                 var dfd = $q.defer();
                 $http
-                    .post(buildURL('login'), credentials)
-                    .then(function (response) {
+                    .post(buildURL( 'login' ), credentials)
+                    .then(function ( response ) {
                         if (response.data.success) {
                             var userModel = response.data.user;
 
@@ -56,7 +56,7 @@
 
                 return dfd.promise;
             },
-            doPasswordRecovery: function (credentials) {
+            doPasswordRecovery: function (credentials) { // ***************** NOT SEEN *****************
                 var dfd = $q.defer();
 
                 $http
@@ -73,7 +73,7 @@
 
                 return dfd.promise;
             },
-            doChangePassword: function (credentials) {
+            doChangePassword: function (credentials) { // ***************** NOT SEEN *****************
                 var dfd = $q.defer();
                 var passwordReset = {
                     oldPassword: credentials.oldPassword,
@@ -94,24 +94,50 @@
                     });
 
                 return dfd.promise;
-            },
-            saveProfile: function (credentials) {
+            },            
+            saveProfile: function ( credentials ) { // ***************** LEO WAS HERE *****************
                 var dfd = $q.defer();
                 $http
-                    .put(buildURL('saveUser'), credentials)
-                        .then(function (response) {
-                            if (response.data.success) {
+                    .put( buildURL( 'saveUser' ), credentials)
+                        .then( function ( response ) {                            
+                            // if ( response.data.success ) {
                                 $localStorage.User = credentials;
-                                dfd.resolve(true);
-                            } else {
-                                dfd.reject(response);
-                            }
-                        }, function (err) {
-                            dfd.reject(err);
+                                dfd.resolve( response );
+                            // } else {
+                                // dfd.reject( response );
+                            // }
+                        })
+                        .catch( function( err ) {
+                            dfd.reject( err );
                         });
                 return dfd.promise;
             },
-            getUsersBySupervisor: function () {
+
+            verifyUniqueUserEmail: function ( emailToVerify ) { // ***************** LEO WAS HERE *****************
+                var dfd = $q.defer();
+                $http
+                    .get( buildURL( 'verifyUniqueUserEmail' ) + emailToVerify )
+                        .then( function ( response ) {                            
+                            // if ( response.data.success ) {
+                                // $localStorage.User = credentials;
+                                dfd.resolve( response );
+                            // } else {
+                                // dfd.reject( response );
+                            // }
+                        })
+                        .catch( function( err ) {
+                            dfd.reject( err );
+                        });
+                return dfd.promise;
+            },
+
+
+
+
+
+
+
+            getUsersBySupervisor: function () { // ***************** NOT SEEN *****************
                 var dfd = $q.defer();
                 var email = UserFactory.getUser().username;
 

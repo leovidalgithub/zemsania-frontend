@@ -188,6 +188,8 @@ var API_paths = {
     passwordRecovery: 'authn/password/remember',
     createUser: 'authn/signup',
 
+    verifyUniqueUserEmail : 'user/profile/',
+
     passwordReset: 'user/password',
     getAllUsers: 'user/all',
     saveUser: 'user/profile',
@@ -240,11 +242,9 @@ var API_paths = {
 
 };
 
-//var redName = 'red beard';
-
-function buildURL(path) {
+function buildURL( path ) { // ***************** LEO WAS HERE *****************
     'use strict';
-    return API_base + API_paths[path];
+    return API_base + API_paths[ path ];
 }
 
 function loadPermissions(Permission, UserFactory) { // Permission -> PermRoleStore
@@ -447,11 +447,11 @@ function toGMT0(date) {
 (function () {
     'use strict';
     angular
-        .module('hours.auth')
-        .factory('UserFactory', UserFactory);
+        .module( 'hours.auth' )
+        .factory( 'UserFactory', UserFactory );
 
-    UserFactory.$invoke = ['$http', '$q', '$localStorage'];
-    function UserFactory($http, $q, $localStorage) {
+    UserFactory.$invoke = [ '$http', '$q', '$localStorage' ];
+    function UserFactory( $http, $q, $localStorage ) {
         return {
             getUser: function () {
                 return $localStorage.User;
@@ -465,11 +465,11 @@ function toGMT0(date) {
             doLogout: function () {
                 delete $localStorage.User;
             },
-            doLogin: function (credentials) {
+            doLogin: function ( credentials ) {
                 var dfd = $q.defer();
                 $http
-                    .post(buildURL('login'), credentials)
-                    .then(function (response) {
+                    .post(buildURL( 'login' ), credentials)
+                    .then(function ( response ) {
                         if (response.data.success) {
                             var userModel = response.data.user;
 
@@ -502,7 +502,7 @@ function toGMT0(date) {
 
                 return dfd.promise;
             },
-            doPasswordRecovery: function (credentials) {
+            doPasswordRecovery: function (credentials) { // ***************** NOT SEEN *****************
                 var dfd = $q.defer();
 
                 $http
@@ -519,7 +519,7 @@ function toGMT0(date) {
 
                 return dfd.promise;
             },
-            doChangePassword: function (credentials) {
+            doChangePassword: function (credentials) { // ***************** NOT SEEN *****************
                 var dfd = $q.defer();
                 var passwordReset = {
                     oldPassword: credentials.oldPassword,
@@ -540,24 +540,50 @@ function toGMT0(date) {
                     });
 
                 return dfd.promise;
-            },
-            saveProfile: function (credentials) {
+            },            
+            saveProfile: function ( credentials ) { // ***************** LEO WAS HERE *****************
                 var dfd = $q.defer();
                 $http
-                    .put(buildURL('saveUser'), credentials)
-                        .then(function (response) {
-                            if (response.data.success) {
+                    .put( buildURL( 'saveUser' ), credentials)
+                        .then( function ( response ) {                            
+                            // if ( response.data.success ) {
                                 $localStorage.User = credentials;
-                                dfd.resolve(true);
-                            } else {
-                                dfd.reject(response);
-                            }
-                        }, function (err) {
-                            dfd.reject(err);
+                                dfd.resolve( response );
+                            // } else {
+                                // dfd.reject( response );
+                            // }
+                        })
+                        .catch( function( err ) {
+                            dfd.reject( err );
                         });
                 return dfd.promise;
             },
-            getUsersBySupervisor: function () {
+
+            verifyUniqueUserEmail: function ( emailToVerify ) { // ***************** LEO WAS HERE *****************
+                var dfd = $q.defer();
+                $http
+                    .get( buildURL( 'verifyUniqueUserEmail' ) + emailToVerify )
+                        .then( function ( response ) {                            
+                            // if ( response.data.success ) {
+                                // $localStorage.User = credentials;
+                                dfd.resolve( response );
+                            // } else {
+                                // dfd.reject( response );
+                            // }
+                        })
+                        .catch( function( err ) {
+                            dfd.reject( err );
+                        });
+                return dfd.promise;
+            },
+
+
+
+
+
+
+
+            getUsersBySupervisor: function () { // ***************** NOT SEEN *****************
                 var dfd = $q.defer();
                 var email = UserFactory.getUser().username;
 
@@ -738,72 +764,102 @@ function toGMT0(date) {
 (function () {
     'use strict';
     angular
-        .module('hours.auth')
-        .controller('UserProfileController', UserProfileController);
+        .module( 'hours.auth' )
+        .controller( 'UserProfileController', UserProfileController );
 
-    UserProfileController.$invoke = ['$scope', 'UserFactory', '$filter', '$timeout', '$rootScope'];
-    function UserProfileController($scope, UserFactory, $filter, $timeout, $rootScope) {
-        $scope.user = angular.copy(UserFactory.getUser());
+    UserProfileController.$invoke = [ '$scope', 'UserFactory', '$filter', '$timeout', '$rootScope' ];
+    function UserProfileController( $scope, UserFactory, $filter, $timeout, $rootScope ) {
 
-        function loadFields() {
-            $scope.formFields = {
-                username: {
-                    element: 'input',
-                    type: 'text'
-                },
-                name: {
-                    element: 'input',
-                    type: 'text'
-                },
-                surname: {
-                    element: 'input',
-                    type: 'text'
-                },
-                birthdate: {
-                    element: 'date',
-                    type: 'date'
-                },
-                nif: {
-                    element: 'input',
-                    type: 'text'
-                },
-                sex: {
-                    element: 'select',
-                    options: [
-                        {
-                            // label: $filter('i18next')('user.genre_male'),
-                            label: i18next.t('user.genre_male'),
-                            slug: 'male'
-                        },
-                        {
-                            label: $filter('i18next')('user.genre_female'),
-                            slug: 'female'
-                        }
-                    ]
-                },
-                locale: {
-                    element: 'select',
-                    options: [
-                        {
-                            label: $filter('i18next')('locale.es'),
-                            slug: 'es'
-                        },
-                        {
-                            label: $filter('i18next')('locale.en'),
-                            slug: 'en'
-                        },
-                        {
-                            label: $filter('i18next')('locale.ca'),
-                            slug: 'ca'
-                        }
-                    ]
-                }
+        var originalUsername;
+        $scope.flag = false;     
+
+        $timeout( function () {
+            $scope.user = angular.copy( UserFactory.getUser() );
+            originalUsername = angular.copy( $scope.user.username );             
+            $( '#surnameInput' ).bind( 'focus blur', usernameValidation ); // bind blur&focus username input field to verify email
+            $scope.options = {
+                genre :  [{
+                                label: i18next.t('userProfile.user.genre_male'),
+                                slug: 'male'
+                            },
+                            {
+                                label: $filter('i18next')('userProfile.user.genre_female'),
+                                slug: 'female'
+                         }],
+                locale : [{
+                                label: $filter('i18next')('locale.es'),
+                                slug: 'es'
+                            },
+                            {
+                                label: $filter('i18next')('locale.en'),
+                                slug: 'en'
+                            },
+                            {
+                                label: $filter('i18next')('locale.ca'),
+                                slug: 'ca'
+                         }]
             };
-        }
+        }, 800 );
 
-       $timeout(function () {
-            loadFields();
-        }, 500);
+        // function loadFields() {
+        //     $scope.formFields = {
+        //         username: {
+        //             element: 'input',
+        //             type: 'text'
+        //         },
+        //         name: {
+        //             element: 'input',
+        //             type: 'text'
+        //         },
+        //         surname: {
+        //             element: 'input',
+        //             type: 'text'
+        //         },
+        //         birthdate: {
+        //             element: 'date',
+        //             type: 'date'
+        //         },
+        //         nif: {
+        //             element: 'input',
+        //             type: 'text'
+        //         },
+        //         sex: {
+        //             element: 'select',
+        //             options: [
+        //                 {
+        //                     // label: $filter('i18next')('user.genre_male'),
+        //                     label: i18next.t('user.genre_male'),
+        //                     slug: 'male'
+        //                 },
+        //                 {
+        //                     label: $filter('i18next')('user.genre_female'),
+        //                     slug: 'female'
+        //                 }
+        //             ]
+        //         },
+        //         locale: {
+        //             element: 'select',
+        //             options: [
+        //                 {
+        //                     label: $filter('i18next')('locale.es'),
+        //                     slug: 'es'
+        //                 },
+        //                 {
+        //                     label: $filter('i18next')('locale.en'),
+        //                     slug: 'en'
+        //                 },
+        //                 {
+        //                     label: $filter('i18next')('locale.ca'),
+        //                     slug: 'ca'
+        //                 }
+        //             ]
+        //         }
+        //     };
+        // }
+
+       // $timeout( function () {
+       //      loadFields();
+       //  }, 500 );
 
         $scope.open = function () {
             $scope.status.opened = true;
@@ -828,14 +884,42 @@ function toGMT0(date) {
         //}, true);
 
         $scope.save = function () {
+            if ( $scope.flag ) return;
             $scope.profileStatus = 0;
-            UserFactory.saveProfile($scope.user)
-                .then(function () {
+            UserFactory.saveProfile( $scope.user )
+                .then( function ( data ) {
+                    console.log( data );
                     $scope.profileStatus = 1;
-                }, function () {
-                    $scope.profileStatus = 2;
+                })
+                .catch( function( err ) {
+                    console.log( err );
+                    $scope.profileStatus = 2;                    
                 });
         };
+
+        function usernameValidation( event ) {
+            if ( $scope.user.username ) { // if valid email comes here...
+                var emailToVerify = $scope.user.username.trim();
+                if ( emailToVerify != originalUsername ) { // if originalEmail != introducedEmail continues to API to verify that email not exists
+                    UserFactory.verifyUniqueUserEmail( emailToVerify )
+                        .then( function ( data ) {
+                            $scope.flag = data.data.found;
+                        });
+                } else {
+                    $scope.$apply( function() {
+                        $scope.flag = false;
+                    });
+                }
+            }
+        };
+
+// $scope.fn = function() {
+    // $timeout(function() {
+       // $rootScope.userProfileForm.birthdate.$setValidity('required', true);
+       // $scope.userProfileForm.birthdate.$setValidity('required', false);
+       // $scope.userProfileForm.birthdate.$setValidity("birthdate", false);
+    // })
+// };
 
     }
 }());

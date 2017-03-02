@@ -5,7 +5,6 @@
     padding-left: 0;
     // @include transition(all .4s ease);
     &.toggled {
-      background-color: orange;
       padding-left: 250px;
       #sidebar-wrapper {
         width: 250px;
@@ -35,7 +34,8 @@
     height: 100%;
     margin-left: -250px;
     overflow-y: auto;
-    background: #FFF;
+    background-color: #FFF;
+
     // @include transition(all .4s ease);
     box-shadow: 0 0 25px rgba(black, 0.07);
     transition: all .7s ease;
@@ -61,6 +61,8 @@
     padding: 5px 0 55px;
     list-style: none;
     li {
+      overflow: hidden;
+      margin-right: 10px;
       white-space : nowrap;
       text-indent: 3px;
       &.top-separator {
@@ -99,7 +101,7 @@
             background: $zemsania;
           }
         }
-        &:hover:not(.noShadowPlease) {
+        &:hover:not(.noShadowForMePlease) {
           text-decoration: none;
           color: $zemsania;
           box-shadow: inset 45px 0 $zemsania;
@@ -113,7 +115,7 @@
         }
       }
     }
-    > .sidebar-brand {
+    > .sidebar-brand {      
       z-index: 10;
       background: white;
       position: fixed;
@@ -198,6 +200,11 @@
       font-weight: 100;
       font-size: 30px;
     }
+  }
+
+  #xxxx {
+    // position: fixed;
+    // right: 0;
   }
 
   .header-mobile {

@@ -1,40 +1,79 @@
-<div class="box-shadow p20 top-bar">
+<div id="xxxx" class="box-shadow p20 top-bar">
     <div class="pull-left">
         <h3>{{'auth.profile.title' | i18next}}</h3>
     </div>
     <div class="pull-right">
-        <button class="btn btn-primary no-margin" ng-click="save()">{{'actions.save' | i18next}}</button>
+        <button ng-disabled="userProfileForm.$invalid" class="btn no-margin" ng-click="save()"
+                ng-class="{ 'btn-success': userProfileForm.$invalid }">{{'actions.save' | i18next}}</button>
+        <!-- <button class="btn btn-primary no-margin" ng-click="save()">{{'actions.save' | i18next}}</button> -->
     </div>
 </div>
+
+<!-- <button class="btn btn-md btn-success" ng-click="fn()">Go!</button> -->
+<!-- <h2>{{userProfileForm.$invalid}}</h2> -->
 
 <div class="box-shadow p20 over-visible">
     <div ng-show="profileStatus === 1" class="alert alert-success">{{'auth.profile.saveSuccess' | i18next}}</div>
     <div ng-show="profileStatus === 2" class="alert alert-danger">{{'auth.profile.saveError' | i18next}}</div>
     <div class="auto-form simple-input">
 
-        <div ng-repeat="(key, field) in formFields" ng-switch="field.element" class="col-md-4 inline">
-            <label>{{'user.'+key | i18next}}</label>
-            <div ng-switch-when="input">
-                <input id="el_{{$index}}" ng-model="user[key]" type="{{field.type}}">
-                <label for="el_{{$index}}" ng-show="field.label" class="aux">{{field.label | i18next}}</label>
+        <form name="userProfileForm" novalidate>
+ 
+            <!-- USERNAME - EMAIL -->
+            <div class="form-group" ng-class="{ 'has-error': userProfileForm.username.$dirty && userProfileForm.username.$invalid || flag }" >
+                <label class="control-label">{{'userProfile.user.username' | i18next}}</label>
+                <input type="email" id="surnameInput" maxlength="40" class="form-control" name="username" ng-model="user.username" required autofocus placeholder="Email" />
+                <span class="help-block" ng-show="userProfileForm.username.$dirty && userProfileForm.username.$invalid">{{'userProfile.formValidations.usernameValid' | i18next}}</span>
+                <span class="help-block" ng-show="flag">{{'userProfile.formValidations.usernameAlreadyExists' | i18next}}</span>
+            </div>
+            <!-- NAME -->
+            <div class="form-group" ng-class="{ 'has-error': userProfileForm.name.$dirty && userProfileForm.name.$invalid }" >
+                <label class="control-label">{{'userProfile.user.name' | i18next}}</label>
+                <input type="text" maxlength="40" class="form-control" name="name" ng-model="user.name" required placeholder="{{'userProfile.user.name' | i18next}}" />
+                <span class="help-block" ng-show="userProfileForm.name.$dirty && userProfileForm.name.$invalid">{{'userProfile.formValidations.name' | i18next}}</span>
+            </div>
+            <!-- SURNAME -->
+            <div class="form-group" ng-class="{ 'has-error': userProfileForm.surname.$dirty && userProfileForm.surname.$invalid }">
+                <label class="control-label">{{'userProfile.user.surname' | i18next}}</label>
+                <input type="text" maxlength="40" class="form-control" name="surname" ng-model="user.surname" required placeholder="{{'userProfile.user.surname' | i18next}}" />
+                <span class="help-block" ng-show="userProfileForm.surname.$dirty && userProfileForm.surname.$invalid">{{'userProfile.formValidations.surname' | i18next}}</span>
             </div>
 
-            <div ng-switch-when="date">
-                <p class="input-group">
-                    <button type="button" class="form-control button-text" ng-click="open()">{{user[key] | date: 'dd/MM/yyyy'}}</button>
-                    <input type="hidden" class="form-control" uib-datepicker-popup="dd/MM/yyyy" ng-model="user[key]" is-open="status.opened" datepicker-options="dateOptions" close-text="{{'actions.close' | i18next}}" />
+            <!-- BIRTHDAY -->
+            <!-- DEVELOPING NOTE : This hidden input makes all form INVALID. How to disable this input validation?
+             -->
+            <div class="form-group" ng-class="{ 'has-error': userProfileForm.birthdate.$invalid }">
+                <label class="control-label">{{'userProfile.user.birthdate' | i18next}}</label>
+                <div class="input-group">
+                    <button type="button" class="form-control button-text" ng-click="open()">{{user.birthdate | date: 'dd/MM/yyyy'}}</button>
+                    <input type="hidden" class="form-control" uib-datepicker-popup="dd/MM/yyyy" ng-model="user.birthdate" is-open="status.opened" datepicker-options="dateOptions" close-text="{{'actions.close' | i18next}}" name="birthdate" />
                     <span class="input-group-btn">
-                        <button type="button" class="btn btn-default" ng-click="open()"><i class="fa fa-calendar"></i></button>
+                        <button type="button" class="btn btn-default" ng-click="open()"><i style="font-size: 18px;" class="fa fa-calendar"></i></button>
                     </span>
-                </p>
-            </div>
+            <!-- <span class="help-block" ng-show="userProfileForm.birthdate.$invalid">BIRTHDATE WRONG</span> -->
+                </div>
+             </div>
+                <h3>{{userProfileForm.birthdate.$invalid}}</h3>
 
-            <div ng-switch-when="select">
-                <select ng-model="user[key]" ng-options="option.slug as option.label for option in field.options"></select>
+            <!-- NIF -->
+            <div class="form-group" ng-class="{ 'has-error': userProfileForm.nif.$dirty && userProfileForm.nif.$invalid }">
+                <label class="control-label">{{'userProfile.user.nif' | i18next}}</label>
+                <input type="text" maxlength="15" class="form-control" name="nif" ng-model="user.nif" required placeholder="Nif" />
+                <span class="help-block" ng-show="userProfileForm.nif.$dirty && userProfileForm.nif.$invalid">{{'userProfile.formValidations.nif' | i18next}}</span>
             </div>
-        </div>
+            <!-- GENRE -->
+            <div class="form-group">
+                <label class="control-label">{{'userProfile.user.sex' | i18next}}</label>
+                <select ng-model="user.sex" ng-options="option.slug as option.label for option in options.genre"></select>
+            </div>
+            <!-- LANGUAGE -->
+            <div class="form-group">
+                <label class="control-label">{{'userProfile.user.locale' | i18next}}</label>
+                <select ng-model="user.locale" ng-options="option.slug as option.label for option in options.locale"></select>
+            </div>
+        </form>
+
     </div>
-
     <section>
         <h5 class="modal-header no-padding-l text-upper text-primary" ng-click="showPwdContent=!showPwdContent">
             <span class="fa" ng-class="{'fa-minus': showPwdContent, 'fa-plus': !showPwdContent}"></span>&nbsp; {{'auth.changePassword.title' | i18next}}

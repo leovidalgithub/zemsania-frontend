@@ -55,26 +55,36 @@
         "moderateAbsences": "Gestión de ausencias",
         "exportFiles": "Exportación de tablas "
     },
-    "user": {
-        "name": "Nombre",
-        "surname": "Apellidos",
-        "lastname": "Apellido",
-        "lastname_plural": "Apellidos",
-        "nif": "NIF",
-        "sex": "Género",
-        "genre": "Género",
-        "genre_male": "Masculino",
-        "genre_female": "Femenino",
-        "username": "Correo electrónico",
-        "email": "Correo electrónico",
-        "birthdate": "Fecha de nacimiento",
-        "locale": "Idioma del panel",
-        "enabled": "Empleado habilitado",
-        "notFound": "No se ha encontrado ningún empleado",
-        "roles": "Roles del empleado",
-        "userNotFound": "Empleado no encontrado",
-        "superior": "empleado superior",
-        "company": "empresa"
+    "userProfile": {
+        "user" : {
+            "name"            : "Nombre",
+            "surname"         : "Apellidos",
+            "lastname"        : "Apellido",
+            "lastname_plural" : "Apellidos",
+            "nif"             : "NIF",
+            "sex"             : "Género",
+            "genre"           : "Género",
+            "genre_male"      : "Masculino",
+            "genre_female"    : "Femenino",
+            "username"        : "Correo electrónico",
+            "email"           : "Correo electrónico",
+            "birthdate"       : "Fecha de nacimiento",
+            "locale"          : "Idioma del panel",
+            "enabled"         : "Empleado habilitado",
+            "notFound"        : "No se ha encontrado ningún empleado",
+            "roles"           : "Roles del empleado",
+            "userNotFound"    : "Empleado no encontrado",
+            "superior"        : "Supervisor",
+            "company"         : "Empresa"
+        },
+        "formValidations" : {
+            "usernameValid"         : "Se requiere un correo electrónico válido",
+            "usernameAlreadyExists" : "El correo introducido ya existe",
+            "name"        : "Se requiere un nombre",
+            "surname"     : "Se requiere al menos un apellido",
+            "nif"         : "Se requiere un NIF válido",
+            "birthday"    : "La fecha no debe ser menor a 18 años"
+        }
     },
     "actions": {
         "generate": "Generar",

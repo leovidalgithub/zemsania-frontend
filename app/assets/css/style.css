@@ -7,7 +7,6 @@
   padding-left: 0;
 }
 #complex_layout #wrapper.toggled {
-  background-color: orange;
   padding-left: 250px;
 }
 #complex_layout #wrapper.toggled #sidebar-wrapper {
@@ -37,7 +36,7 @@
   height: 100%;
   margin-left: -250px;
   overflow-y: auto;
-  background: #FFF;
+  background-color: #FFF;
   box-shadow: 0 0 25px rgba(0, 0, 0, 0.07);
   transition: all .7s ease;
 }
@@ -61,6 +60,8 @@
   list-style: none;
 }
 #complex_layout .sidebar-nav li {
+  overflow: hidden;
+  margin-right: 10px;
   white-space: nowrap;
   text-indent: 3px;
 }
@@ -96,12 +97,12 @@
   color: white;
   background: #F15A29;
 }
-#complex_layout .sidebar-nav li a:hover:not(.noShadowPlease) {
+#complex_layout .sidebar-nav li a:hover:not(.noShadowForMePlease) {
   text-decoration: none;
   color: #F15A29;
   box-shadow: inset 45px 0 #F15A29;
 }
-#complex_layout .sidebar-nav li a:hover:not(.noShadowPlease) i {
+#complex_layout .sidebar-nav li a:hover:not(.noShadowForMePlease) i {
   color: white;
 }
 #complex_layout .sidebar-nav li a:focus, #complex_layout .sidebar-nav li a:active {
@@ -729,7 +730,7 @@ html.blockView {
 }
 
 .object-shadow, #complex_layout .box-shadow, #complex_layout .header-mobile, #complex_layout .dropdown-menu[uib-datepicker-popup-wrap], #complex_layout .table-pagination .pagination, .simple-input button.button-text, .modal-open .modal .modal-content {
-  box-shadow: 0 5px 15px -5px rgba(0, 0, 0, 0.1);
+  box-shadow: 5px 8px 15px -5px gray;
 }
 
 .alert {
