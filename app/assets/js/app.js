@@ -519,7 +519,7 @@ function toGMT0(date) {
 
                 return dfd.promise;
             },
-            doChangePassword: function (credentials) { // ***************** NOT SEEN *****************
+            doChangePassword: function (credentials) { // LEO IS WORKING HERE
                 var dfd = $q.defer();
                 var passwordReset = {
                     oldPassword: credentials.oldPassword,
@@ -693,6 +693,34 @@ function toGMT0(date) {
     }
 }());
 (function () {
+    'use strict';
+    angular
+        .module('hours.auth')
+        .controller('RecoveryController', RecoveryController);
+
+    RecoveryController.$invoke = ['$scope', 'UserFactory', '$state', '$timeout'];
+    function RecoveryController($scope, UserFactory, $state, $timeout) {
+        initialVertex();
+        $scope.recoveryForm = {
+            email: null
+        };
+
+        $scope.recovery = function () {
+            $scope.recoveryForm.error = false;
+            $scope.recoveryForm.success = false;
+            UserFactory.doPasswordRecovery($scope.recoveryForm)
+                .then(function () {
+                    $scope.recoveryForm.success = true;
+                    $timeout(function () {
+                        $state.go('login');
+                    }, 1500);
+                }, function (err) {
+                    $scope.recoveryForm.error = err;
+                });
+        };
+    }
+}());
+(function () {
 'use strict';
     angular
         .module('hours.auth')
@@ -736,34 +764,6 @@ function toGMT0(date) {
 (function () {
     'use strict';
     angular
-        .module('hours.auth')
-        .controller('RecoveryController', RecoveryController);
-
-    RecoveryController.$invoke = ['$scope', 'UserFactory', '$state', '$timeout'];
-    function RecoveryController($scope, UserFactory, $state, $timeout) {
-        initialVertex();
-        $scope.recoveryForm = {
-            email: null
-        };
-
-        $scope.recovery = function () {
-            $scope.recoveryForm.error = false;
-            $scope.recoveryForm.success = false;
-            UserFactory.doPasswordRecovery($scope.recoveryForm)
-                .then(function () {
-                    $scope.recoveryForm.success = true;
-                    $timeout(function () {
-                        $state.go('login');
-                    }, 1500);
-                }, function (err) {
-                    $scope.recoveryForm.error = err;
-                });
-        };
-    }
-}());
-(function () {
-    'use strict';
-    angular
         .module( 'hours.auth' )
         .controller( 'UserProfileController', UserProfileController );
 
@@ -771,11 +771,14 @@ function toGMT0(date) {
     function UserProfileController( $scope, UserFactory, $filter, $timeout, $rootScope ) {
 
         var originalUsername;
-        $scope.flag = false;     
+        $scope.showPwdContent = false;
 
         $timeout( function () {
             $scope.user = angular.copy( UserFactory.getUser() );
-            originalUsername = angular.copy( $scope.user.username );             
+            originalUsername = angular.copy( $scope.user.username );
+            // On birthdate input, uib-datepicker-popup="dd/MM/yyyy" makes userProfileForm.birthdate = $invalid (I do not why)
+            // so, assigning date in this way take the problem away
+            $scope.user.birthdate = new Date($scope.user.birthdate);
             $( '#surnameInput' ).bind( 'focus blur', usernameValidation ); // bind blur&focus username input field to verify email
             $scope.options = {
                 genre :  [{
@@ -883,6 +886,11 @@ function toGMT0(date) {
         //    }
         //}, true);
 
+        $scope.changePassClick = function() {
+            $scope.showPwdContent = !$scope.showPwdContent;
+            $( '#page-content-wrapper' ).animate( { scrollTop: 0 }, 'slow' );
+        };
+
         $scope.save = function () {
             if ( $scope.flag ) return;
             $scope.profileStatus = 0;
@@ -894,6 +902,9 @@ function toGMT0(date) {
                 .catch( function( err ) {
                     console.log( err );
                     $scope.profileStatus = 2;                    
+                })
+                .finally( function() {
+                    $( '#page-content-wrapper' ).animate( { scrollTop: 0 }, 'slow' );
                 });
         };
 
@@ -912,6 +923,29 @@ function toGMT0(date) {
                 }
             }
         };
+
+        $scope.processPWDChange = function() {
+
+// console.log('$scope.newPassword');
+// console.log($scope.newPassword);
+
+            if (($scope.newPassword.confirmInvalid = $scope.newPassword.new != $scope.newPassword.confirm)) return;
+            
+            $scope.newPassword.currentInvalid = false;
+
+
+            return;
+            
+            UserFactory
+                .doChangePassword({ oldPassword: $scope.newPassword.current, password: $scope.newPassword.new }, true)
+                .then(function() {
+                    for (var p in $scope.newPassword)
+                        if ($scope.newPassword.hasOwnProperty(p)) $scope.newPassword[p] = null;
+                }, function(err) {
+                    $scope.newPassword.currentInvalid = true;
+                });
+        };
+
 
 // $scope.fn = function() {
     // $timeout(function() {

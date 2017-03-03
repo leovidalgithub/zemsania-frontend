@@ -19,7 +19,7 @@
             "successRecovery": "Te hemos enviado un correo de recuperación"
         },
         "changePassword": {
-            "title": "Cambio de contraseña",
+            "title": "Cambiar contraseña",
             "password": "Contraseña nueva",
             "password2": "Repetir contraseña nueva",
             "oldPassword": "Contraseña actual",
@@ -31,13 +31,14 @@
             "success": "Contraseña cambiada con éxito. Redirigiendo a Login."
         },
         "profile": {
-            "title": "Mi cuenta",
+            "title": "Mi perfil",
             "saveSuccess": "El perfil se ha actualziado con éxito.",
             "saveError": "Ha ocurrido un problema mientras se guardaba tu perfil."
         }
     },
     "sidebar": {
-        "userProfile": "Mi cuenta",
+        "dashboard": "Página principal",
+        "userProfile": "Mi perfil",
         "employeeManager": "Gestionar empleados",
         "userConfig": "Configuración",
         "timeCalendar": "Imputar horas",

@@ -3,6 +3,7 @@
   #wrapper {
     height: 100%;
     padding-left: 0;
+
     // @include transition(all .4s ease);
     &.toggled {
       padding-left: 250px;
@@ -44,12 +45,27 @@
   #page-content-wrapper {
     width: 100%;
     position: absolute;
-    padding: 15px;
-    z-index: 99999;
+    /*padding: 15px;*/
+    /*z-index: 99999;*/
     @media #{$mobile} {
       padding-top: 50px;
     }
-  }
+      #tool-bar {
+        max-width: inherit !important;
+        position: fixed;
+        width: 70% !important;
+        z-index: 10000;
+        display: flex;
+        flex-flow: row wrap;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #F9F9F9;
+        .rightContent > * {
+            margin-right: 10px !important;
+        }
+    }
+ }
+  
 
   /* Sidebar Styles */
 
@@ -200,11 +216,6 @@
       font-weight: 100;
       font-size: 30px;
     }
-  }
-
-  #xxxx {
-    // position: fixed;
-    // right: 0;
   }
 
   .header-mobile {

@@ -43,13 +43,27 @@
 #complex_layout #page-content-wrapper {
   width: 100%;
   position: absolute;
-  padding: 15px;
-  z-index: 99999;
+  /*padding: 15px;*/
+  /*z-index: 99999;*/
 }
 @media (max-width: 767px) {
   #complex_layout #page-content-wrapper {
     padding-top: 50px;
   }
+}
+#complex_layout #page-content-wrapper #tool-bar {
+  max-width: inherit !important;
+  position: fixed;
+  width: 70% !important;
+  z-index: 10000;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #F9F9F9;
+}
+#complex_layout #page-content-wrapper #tool-bar .rightContent > * {
+  margin-right: 10px !important;
 }
 #complex_layout .sidebar-nav {
   position: absolute;

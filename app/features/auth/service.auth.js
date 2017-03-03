@@ -73,7 +73,7 @@
 
                 return dfd.promise;
             },
-            doChangePassword: function (credentials) { // ***************** NOT SEEN *****************
+            doChangePassword: function (credentials) { // LEO IS WORKING HERE
                 var dfd = $q.defer();
                 var passwordReset = {
                     oldPassword: credentials.oldPassword,

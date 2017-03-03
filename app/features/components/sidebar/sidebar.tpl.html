@@ -4,19 +4,17 @@
     <div class="sidebar-brand">
 
         <li>
-            <a class="noShadowForMePlease" ui-sref="dashboard">
+            <a class="noShadowForMePlease" ui-sref="dashboard" title="{{'sidebar.dashboard' | i18next}}">
                 <img src="/assets/img/zemsania.png">
             </a>
         </li>
-
         <li class="top-separator">
-            <a ui-sref="userProfile" ui-sref-active="active">
+            <a ui-sref="userProfile" ui-sref-active="active" title="{{'sidebar.userProfile' | i18next}}">
                 <i class="fa fa-user"></i> {{username.name + ' ' + username.surname}}</a>
         </li>
     </div>
 
 <div class="sidebar-mobile">
-    
         <li class="myTop">
             <a ui-sref="calendarImputeHours" ui-sref-active="active" ng-class="{'active' : activeState === 'userConfig'}"><i class="fa fa-clock-o"></i>
                 {{'sidebar.timeCalendar' | i18next}}</a>
