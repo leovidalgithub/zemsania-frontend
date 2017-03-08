@@ -1,26 +1,34 @@
-(function () {
+( function () {
     'use strict';
     angular
-        .module('hours.auth')
-        .controller('RecoveryController', RecoveryController);
+        .module( 'hours.auth' )
+        .controller( 'RecoveryController', RecoveryController );
 
-    RecoveryController.$invoke = ['$scope', 'UserFactory', '$state', '$timeout'];
-    function RecoveryController($scope, UserFactory, $state, $timeout) {
+    RecoveryController.$invoke = [ '$scope', 'UserFactory', '$state', '$timeout' ];
+    function RecoveryController( $scope, UserFactory, $state, $timeout ) {
+
         initialVertex();
+
         $scope.recoveryForm = {
-            email: null
-        };
+                            email: null
+                        };
 
         $scope.recovery = function () {
-            $scope.recoveryForm.error = false;
+            $scope.recoveryForm.error   = false;
             $scope.recoveryForm.success = false;
-            UserFactory.doPasswordRecovery($scope.recoveryForm)
-                .then(function () {
+  
+            UserFactory.doPasswordRecovery( $scope.recoveryForm )
+                .then( function( data ) {
+                    console.log('Great');
                     $scope.recoveryForm.success = true;
-                    $timeout(function () {
-                        $state.go('login');
-                    }, 1500);
-                }, function (err) {
+                    
+                    $timeout( function ( data ) {
+                        $state.go( 'login' );
+                    }, 5000 );
+
+                })
+                .catch( function ( err ) {
+                    console.log('Shit');
                     $scope.recoveryForm.error = err;
                 });
         };

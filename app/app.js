@@ -27,7 +27,7 @@
             // 'hours.errors',
             'hours.dashboard',
             'hours.components',
-            // 'hours.employeeManager',
+            'hours.employeeManager',
             // 'hours.calendar',
             // 'hours.reports',
             // 'hours.projects',

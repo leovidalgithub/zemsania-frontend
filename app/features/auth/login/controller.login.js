@@ -4,8 +4,8 @@
         .module('hours.auth')
         .controller('LoginController', LoginController);
 
-    LoginController.$invoke = ['$scope', 'UserFactory', '$state'];
-    function LoginController($scope, UserFactory, $state) {
+    LoginController.$invoke = [ '$scope', 'UserFactory', '$state' ];
+    function LoginController( $scope, UserFactory, $state ) {
         initialVertex();
         $scope.loginForm = {
             username: null,
@@ -21,14 +21,15 @@
         $scope.login = function () {
             $scope.loginForm.error = false;
             $scope.loginForm.disabled = true;
-            UserFactory.doLogin($scope.loginForm)
-                .then(function (user) {
-                    if (user.defaultPassword) {
-                        $state.go('changePassword');
+            UserFactory.doLogin( $scope.loginForm )
+                .then( function ( data ) {
+                    if ( data.defaultPassword ) {
+                        $state.go( 'changePassword' );
                     } else {
-                        $state.go('dashboard');
+                        $state.go( 'dashboard' );
                     }
-                }, function (err) {
+                })
+                .catch( function ( err ) {
                     $scope.loginForm.disabled = false;
                     $scope.loginForm.error = err;
                 });

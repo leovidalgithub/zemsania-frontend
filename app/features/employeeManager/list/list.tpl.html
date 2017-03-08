@@ -1,0 +1,73 @@
+<div>
+    <div class="box-shadow p20 top-bar">
+        <div class="pull-left">
+            <h3>{{'employeeManager.list.title' | i18next}}</h3>
+        </div>
+        <div class="pull-right">
+            <a ui-sref="employeeManagerCreate"
+               uib-tooltip="{{'employeeManager.list.createNew' | i18next}}" tooltip-placement="left"
+               tooltip-trigger="mouseenter"><i class="fa fa-user-plus"></i></a>
+            <a ng-click="toggleAdvancedSearch()" ng-class="{'active' : showAdvancedSearch}"
+               uib-tooltip="{{'employeeManager.list.advancedSearch' | i18next}}"
+               tooltip-placement="left" tooltip-trigger="mouseenter"><i class="fa fa-search"></i></a>
+        </div>
+    </div>
+
+    <div class="alert alert-danger alert-material" ng-show="removeStatus === 2">
+        {{'employeeManager.list.removeUserError' | i18next}}
+    </div>
+    <div class="alert alert-success alert-material" ng-show="removeStatus === 1">
+        {{'employeeManager.list.removeUserSuccess' | i18next}}
+    </div>
+
+    <div class="box-shadow p20 advanced-search" ng-show="showAdvancedSearch">
+        <h4>{{'employeeManager.list.advancedSearch' | i18next}}</h4>
+
+        <form class="form-inline simple-input" ng-submit="avancedSearch()">
+            <div class="col-md-12 form-elements">
+                <div class="form-group col-md-3">
+                    <input type="email" class="form-control"
+                           placeholder="{{'userProfile.user.email' | i18next}}" ng-model="search.username">
+                </div>
+                <div class="form-group col-md-3">
+                    <input type="text" class="form-control"
+                           placeholder="{{'userProfile.user.name' | i18next}}" ng-model="search.name">
+                </div>
+                <div class="form-group col-md-3">
+                    <input type="text" class="form-control"
+                           placeholder="{{'userProfile.user.lastname' | i18next}}" ng-model="search.surname">
+                </div>
+                <div class="form-group col-md-3">
+                    <input type="text" class="form-control"
+                           placeholder="{{'userProfile.user.nif' | i18next}}" ng-model="search.nif">
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="reset" class="btn btn-warning">{{'actions.reset' | i18next}}</button>
+                <button type="submit" class="btn btn-primary">{{'actions.search' | i18next}}</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="box-shadow p20">
+        <table at-table at-config="tableConfig" at-paginated at-list="employees" class="table table-striped">
+            <div class="table-thead">
+                <thead></thead>
+            </div>
+            <tbody>
+            <tr>
+                <td at-implicit at-sortable at-attribute="name" at-title="{{'userProfile.user.name' | i18next}}"></td>
+                <td at-implicit at-sortable at-attribute="surname" at-title="{{'userProfile.user.lastname_plural' | i18next}}"></td>
+                <td at-implicit at-sortable at-attribute="nif" at-title="{{'userProfile.user.nif' | i18next}}"></td>
+                <td at-implicit at-sortable at-attribute="sex" at-title="{{'userProfile.user.genre' | i18next}}"></td>
+                <td at-implicit at-sortable at-attribute="username" at-title="{{'userProfile.user.email' | i18next}}"></td>
+                <td class="options-section">
+                    <a ui-sref="employeeManagerEdit({id: item._id})" class="btn btn-success">
+                        <i class="fa fa-pencil"></i></a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <at-pagination at-config="tableConfig" at-list="employees" class="table-pagination"></at-pagination>
+</div>

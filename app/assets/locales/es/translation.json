@@ -15,20 +15,23 @@
             "title": "Recuperar contraseña",
             "recovery": "Recuperar",
             "email": "Correo electrónico",
-            "errorRecovery": "El usuario no está registrado",
+            "errorRecovery": "No se ha podido realizar la operación",
             "successRecovery": "Te hemos enviado un correo de recuperación"
         },
         "changePassword": {
             "title": "Cambiar contraseña",
-            "password": "Contraseña nueva",
-            "password2": "Repetir contraseña nueva",
-            "oldPassword": "Contraseña actual",
-            "passwordNotMatching": "Las contraseñas no coinciden",
+            "currentPassword": "Contraseña actual",
+            "newPassword": "Contraseña nueva",
+            "confirmPassword": "Repetir contraseña nueva",
+            "enterCurrent": "Actual",
             "enterNew": "Nueva",
-            "confirmNew": "Confirmar",
-            "changeBtn": "Cambiar",
+            "enterConfirm": "Confirmar",
+            "currentPassIncorrect": "Contraseña actual incorrecta",
+            "newConfirmNotMatching": "Las contraseñas no coinciden",
+            "userNotFound": "Usuario no encontrado",
             "error": "Error cambiar la contraseña",
-            "success": "Contraseña cambiada con éxito. Redirigiendo a Login."
+            "success": "Contraseña cambiada con éxito",
+            "changeBtn": "Cambiar"
         },
         "profile": {
             "title": "Mi perfil",

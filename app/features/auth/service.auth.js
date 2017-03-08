@@ -19,49 +19,45 @@
             doLogout: function () {
                 delete $localStorage.User;
             },
-            doLogin: function ( credentials ) {
+            doLogin: function ( credentials ) { // LEO WAS HERE
                 var dfd = $q.defer();
                 $http
-                    .post(buildURL( 'login' ), credentials)
-                    .then(function ( response ) {
-                        if (response.data.success) {
+                    .post( buildURL( 'login' ), credentials )
+                    .then( function ( response ) {
+                        if ( response.data.success) {
                             var userModel = response.data.user;
 
-                            if (userModel.roles.indexOf('ROLE_USER') > -1) {
+                            if ( userModel.roles.indexOf( 'ROLE_USER' ) > -1) {
                                 userModel.role = 'user';
                             }
-
-                            if (userModel.roles.indexOf('ROLE_MANAGER') > -1) {
+                            if ( userModel.roles.indexOf( 'ROLE_MANAGER' ) > -1) {
                                 userModel.role = 'manager';
                             }
-
-                            if (userModel.roles.indexOf('ROLE_DELIVERY') > -1) {
+                            if ( userModel.roles.indexOf( 'ROLE_DELIVERY' ) > -1) {
                                 userModel.role = 'delivery';
                             }
-
-                            if (userModel.roles.indexOf('ROLE_BACKOFFICE') > -1) {
+                            if ( userModel.roles.indexOf( 'ROLE_BACKOFFICE' ) > -1) {
                                 userModel.role = 'administrator';
                             }
 
-                            userModel.token = response.data.token;
+                            userModel.token    = response.data.token;
                             $localStorage.User = userModel;
-
-                            dfd.resolve(userModel);
+                            dfd.resolve( userModel );
                         } else {
-                            dfd.reject(response);
+                            dfd.reject( response );
                         }
-                    }, function (err) {
-                        dfd.reject(err);
+                    })
+                    .catch( function ( err ) {
+                        dfd.reject( err );
                     });
 
                 return dfd.promise;
             },
-            doPasswordRecovery: function (credentials) { // ***************** NOT SEEN *****************
+            doPasswordRecovery: function ( credentials ) { // ***************** LEO WORKING HERE *****************                
                 var dfd = $q.defer();
 
-                $http
-                    .post(buildURL('passwordRecovery'), credentials)
-                    .then(function (response) {
+                $http.post( buildURL( 'passwordRecovery' ), credentials )
+                    .then( function ( response ) {
                         if (response.data.success) {
                             dfd.resolve(true);
                         } else {
@@ -73,61 +69,44 @@
 
                 return dfd.promise;
             },
-            doChangePassword: function (credentials) { // LEO IS WORKING HERE
-                var dfd = $q.defer();
+            doChangePassword: function ( credentials ) { // LEO WAS HERE
+                var dfd           = $q.defer();
                 var passwordReset = {
-                    oldPassword: credentials.oldPassword,
-                    newPassword: credentials.password
+                        currentPassword : credentials.current,
+                        newPassword     : credentials.new
                 };
-
-                $http
-                    .post(buildURL('passwordReset'), passwordReset)
-                    .then(function (response) {
-                        if (response.data.success) {
-                            delete $localStorage.User;
-                            dfd.resolve();
-                        } else {
-                            dfd.reject(response);
-                        }
-                    }, function (err) {
-                        dfd.reject(err);
+                $http.post( buildURL( 'passwordReset' ), passwordReset )
+                    .then( function ( data ) {
+                            // delete $localStorage.User;
+                        dfd.resolve( data );
+                    })
+                    .catch( function ( err ) {
+                        dfd.reject( err );
                     });
-
                 return dfd.promise;
             },            
             saveProfile: function ( credentials ) { // ***************** LEO WAS HERE *****************
                 var dfd = $q.defer();
-                $http
-                    .put( buildURL( 'saveUser' ), credentials)
-                        .then( function ( response ) {                            
-                            // if ( response.data.success ) {
-                                $localStorage.User = credentials;
-                                dfd.resolve( response );
-                            // } else {
-                                // dfd.reject( response );
-                            // }
-                        })
-                        .catch( function( err ) {
-                            dfd.reject( err );
-                        });
+                $http.put( buildURL( 'saveUser' ), credentials )
+                    .then( function ( response ) {                            
+                        $localStorage.User = credentials;
+                        dfd.resolve( response );
+                    })
+                    .catch( function( err ) {
+                        dfd.reject( err );
+                    });
                 return dfd.promise;
             },
 
             verifyUniqueUserEmail: function ( emailToVerify ) { // ***************** LEO WAS HERE *****************
                 var dfd = $q.defer();
-                $http
-                    .get( buildURL( 'verifyUniqueUserEmail' ) + emailToVerify )
-                        .then( function ( response ) {                            
-                            // if ( response.data.success ) {
-                                // $localStorage.User = credentials;
-                                dfd.resolve( response );
-                            // } else {
-                                // dfd.reject( response );
-                            // }
-                        })
-                        .catch( function( err ) {
-                            dfd.reject( err );
-                        });
+                $http.get( buildURL( 'verifyUniqueUserEmail' ) + emailToVerify )
+                    .then( function ( response ) {                            
+                        dfd.resolve( response );
+                    })
+                    .catch( function( err ) {
+                        dfd.reject( err );
+                    });
                 return dfd.promise;
             },
 

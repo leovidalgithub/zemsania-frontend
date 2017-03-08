@@ -1,4 +1,4 @@
-(function () {
+( function () {
     'use strict';
     angular
         .module( 'hours.auth' )
@@ -7,8 +7,12 @@
     UserProfileController.$invoke = [ '$scope', 'UserFactory', '$filter', '$timeout', '$rootScope' ];
     function UserProfileController( $scope, UserFactory, $filter, $timeout, $rootScope ) {
 
+
         var originalUsername;
         $scope.showPwdContent = false;
+        $scope.changePassword = {};
+        $scope.changePassword.displayMessage = 0;
+        $scope.changePassword.messageToDisplay = '';
 
         $timeout( function () {
             $scope.user = angular.copy( UserFactory.getUser() );
@@ -19,23 +23,23 @@
             $( '#surnameInput' ).bind( 'focus blur', usernameValidation ); // bind blur&focus username input field to verify email
             $scope.options = {
                 genre :  [{
-                                label: i18next.t('userProfile.user.genre_male'),
+                                label: i18next.t( 'userProfile.user.genre_male' ),
                                 slug: 'male'
                             },
                             {
-                                label: $filter('i18next')('userProfile.user.genre_female'),
+                                label: $filter( 'i18next')( 'userProfile.user.genre_female'),
                                 slug: 'female'
                          }],
                 locale : [{
-                                label: $filter('i18next')('locale.es'),
+                                label: $filter( 'i18next')( 'locale.es' ),
                                 slug: 'es'
                             },
                             {
-                                label: $filter('i18next')('locale.en'),
+                                label: $filter( 'i18next')( 'locale.en' ),
                                 slug: 'en'
                             },
                             {
-                                label: $filter('i18next')('locale.ca'),
+                                label: $filter( 'i18next')( 'locale.ca' ),
                                 slug: 'ca'
                          }]
             };
@@ -162,25 +166,37 @@
         };
 
         $scope.processPWDChange = function() {
+            $scope.changePassword.displayMessage = 0;
+            $scope.changePassword.messageToDisplay = '';
 
-// console.log('$scope.newPassword');
-// console.log($scope.newPassword);
-
-            if (($scope.newPassword.confirmInvalid = $scope.newPassword.new != $scope.newPassword.confirm)) return;
-            
-            $scope.newPassword.currentInvalid = false;
-
-
-            return;
-            
-            UserFactory
-                .doChangePassword({ oldPassword: $scope.newPassword.current, password: $scope.newPassword.new }, true)
-                .then(function() {
-                    for (var p in $scope.newPassword)
-                        if ($scope.newPassword.hasOwnProperty(p)) $scope.newPassword[p] = null;
-                }, function(err) {
-                    $scope.newPassword.currentInvalid = true;
-                });
+            if ( $scope.changePassword.new != $scope.changePassword.confirm ) {
+                $scope.changePassword.displayMessage = -1;
+                $scope.changePassword.messageToDisplay = 'newConfirmNotMatching';
+            } else {
+                UserFactory
+                    .doChangePassword( $scope.changePassword )
+                    .then( function( data ) {
+                        if ( data.data.success ) {
+                            $scope.changePassword.displayMessage = 1;
+                            $scope.changePassword.messageToDisplay = 'success';
+                        } else {
+                            $scope.changePassword.displayMessage = -1;
+                            switch( data.data.code ) {
+                                case 101:
+                                    $scope.changePassword.messageToDisplay = 'userNotFound';
+                                    break;
+                                case 102:
+                                    $scope.changePassword.messageToDisplay = 'currentPassIncorrect';
+                            }
+                        };
+                        // for (var p in $scope.changePassword)
+                            // if ($scope.changePassword.hasOwnProperty(p)) $scope.changePassword[p] = null;
+                    })
+                    .catch( function( err ) {
+                        $scope.changePassword.displayMessage = -1;
+                        $scope.changePassword.messageToDisplay = 'error';
+                    });
+            };
         };
 
 

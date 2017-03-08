@@ -19,9 +19,8 @@
         <div class="alert alert-danger" ng-show="loginForm.error">{{'auth.login.errorAtLogin' | i18next}}</div>
         <button ng-disabled="form.$invalid || loginForm.disabled" type="submit" class="btn btn-primary">
             {{'auth.login.login' | i18next}}
-            <span ng-show="loginCategory=='ldap'">LDAP</span>
         </button>
-        <p class="restore-password" ng-show="loginCategory == 'standard'">
+        <p class="restore-password">
             <a ui-sref="recovery">{{'auth.login.passwordRecovery' | i18next}}</a>
         </p>
     </div>
