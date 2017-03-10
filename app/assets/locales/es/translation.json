@@ -132,7 +132,7 @@
     },
     "employeeManager": {
         "list": {
-            "title": "Listado de empleados",
+            "title": "Gestionar empleados",
             "removeUserSuccess": "El empleado ha sido borrado con éxito",
             "removeUserError": "Ha ocurrido un problema borrando el empleado.",
             "createNew": "Dar de alta un empleado",
@@ -164,7 +164,7 @@
         "description": "Crear esquemas de vacaciones para, gestionar diferentes tipos de vacaciones de usuario. Los nuevos usuarios se agregan automáticamente al esquema de vacaciones predeterminado."
     },
     "workloadSchemes": {
-        "title": "Patron Horario",
+        "title": "Patrón Horario",
         "description": "Creación de esquemas de carga de trabajo para gestionar diferentes tipos de carga de trabajo del usuario. El cálculo de las horas requeridas por día se basa en el esquema de carga de trabajo de un usuario. Los nuevos usuarios se agregan automáticamente al esquema de carga de trabajo predeterminado."
     },
     "calendar": {

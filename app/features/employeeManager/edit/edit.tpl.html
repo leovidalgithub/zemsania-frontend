@@ -1,16 +1,17 @@
-<div class="box-shadow p20 top-bar">
+<div class="box-shadow p20 top-bar tool-bar">
     <div class="pull-left">
         <h3>{{'employeeManager.edit.title' | i18next}}</h3>
     </div>
     <div class="pull-right buttons">
-        <button class="btn btn-success no-margin">
-            REGRESAR
+        <button ui-sref="employeeManager" class="btn btn-gray no-margin">
+            {{'actions.cancel' | i18next}}
         </button>
         <button class="btn btn-primary no-margin" ng-disabled="employeeForm.$invalid" ng-click="editUser()">
             {{'actions.save' | i18next}}
         </button>
     </div>
 </div>
+<br><br><br><br>
 
 <div class="alert alert-danger" ng-show="employee.error">{{'employeeManager.edit.saveError' | i18next}}</div>
 <div class="alert alert-success" ng-show="employee.success">{{'employeeManager.edit.saveSuccess' | i18next}}</div>
@@ -75,7 +76,7 @@
             <div class="col-md-4">
                 <div>
                     <label for="user_superior">{{'userProfile.user.superior' | i18next}}</label>
-                    <select id="user_superior" ng-model="employee.superior" class="col-md-12 text-capitalize" ng-options="emp._id as (emp.name + ' ' + emp.surname) for emp in employees">
+                    <select id="user_superior" ng-model="employee.superior" class="col-md-12 text-capitalize" ng-options="sup._id as (sup.name + ' ' + sup.surname) for sup in supervisors">
                     </select>
                 </div>
                 <span class="text-muted">-</span>
@@ -86,14 +87,18 @@
             <div class="col-md-4">
                 <label for="user_genre">{{'userProfile.user.roles' | i18next}}</label>
                 <div class="col-md-12" ng-repeat="role in roles">
-                    <input id="user_role_{{role.slug}}" ng-disabled="role.slug === 'ROLE_USER'" type="checkbox" ng-checked="role.active || role.slug === 'ROLE_USER'" ng-model="role.active" value="active" ng-change="changeRole(roles)">
+
+                    <input id="user_role_{{role.slug}}" ng-disabled="role.slug === 'ROLE_USER'" type="checkbox" ng-checked="role.active || role.slug === 'ROLE_USER'" ng-model="role.active" value="active" ng-change="changeRole()">
+
                     <label class="no-bold" for="user_role_{{role.slug}}">{{role.name}}</label>
+
                 </div>
                 <div class="col-md-12 row">
                     <div class="alert alert-danger" ng-hide="employee.roles.length">{{'employeeManager.edit.minRoles' | i18next}}
                     </div>
                 </div>
             </div>
+            
             <div class="col-md-4">
                 <label for="user_enable">{{'userProfile.user.enabled' | i18next}}</label>
 
@@ -105,7 +110,7 @@
             <div class="col-md-4">
                 <div>
                     <label for="user_superior">{{'userProfile.user.company' | i18next}}</label>
-                    <select id="user_superior" ng-model="employee.company" class="col-md-12 text-capitalize" ng-options="c._id as c.name for c in companies">
+                    <select id="user_superior" ng-model="employee.company._id" class="col-md-12 text-capitalize" ng-options="c._id as c.enterpriseName for c in companies">
                     </select>
                 </div>
                 <span class="text-muted">-</span>

@@ -4,11 +4,14 @@
         .module( 'hours.employeeManager' )
         .controller( 'editEmployeeController', editEmployeeController );
 
-    editEmployeeController.$invoke = [ '$scope', '$state', 'employee', '$filter', '$timeout', 'EmployeeManagerFactory' ];
-    function editEmployeeController( $scope, $state, employee, $filter, $timeout, EmployeeManagerFactory ) {
-        employee.birthdate = new Date( employee.birthdate );
+    editEmployeeController.$invoke = [ '$scope', '$state', 'data', '$filter', '$timeout', 'EmployeeManagerFactory' ];
+    function editEmployeeController( $scope, $state, data, $filter, $timeout, EmployeeManagerFactory ) {
+        
+        $scope.companies = data.enterprises;
+        $scope.supervisors = data.supervisors;
 
-        $scope.employee = employee;
+        data.employee.birthdate = new Date( data.employee.birthdate );
+        $scope.employee = data.employee;
         $scope.maxDate = new Date();
 
         $scope.open = function () {
@@ -71,52 +74,35 @@
                 }
             ];
 
-            employee.roles.forEach(function (role) {
-                $filter('filter')($scope.roles, {slug: role})[0].active = true;
+            data.employee.roles.forEach( function( role ) {
+                $filter( 'filter' )($scope.roles, { slug: role })[0].active = true;
             });
 
         }
 
-        $timeout(function () {
+        $timeout( function () {
             loadSelectsTranslate();
-        }, 100);
+        }, 100 );
 
-        $scope.changeRole = function (role) {
-            var allow = [];
-            switch (role) {
-                case 'ROLE_BACKOFFICE' :
-                    allow = ['ROLE_DELIVERY', 'ROLE_MANAGER', 'ROLE_USER'];
-                    break;
-                case 'ROLE_DELIVERY' :
-                    allow = ['ROLE_MANAGER', 'ROLE_USER'];
-                    break;
-                case 'ROLE_MANAGER' :
-                    allow = ['ROLE_USER'];
-                    break;
-                default :
-                    allow = ['ROLE_USER'];
-                    break;
-            }
-
-            $scope.roles.forEach(function (role) {
-                if (allow.indexOf(role.slug) > -1) {
-                    role.active = true;
+        $scope.changeRole = function () {
+            $scope.employee.roles = [];
+            $scope.roles.forEach( function( role ) {
+                if ( role.active ) {
+                    $scope.employee.roles.push( role.slug );
                 }
             });
-
-            employee.roles = allow;
         };
 
         $scope.editUser = function () {
             $scope.employee.error = false;
-            EmployeeManagerFactory.updateEmployee($scope.employee)
-                .then(function () {
+            EmployeeManagerFactory.updateEmployee( $scope.employee )
+                .then( function () {
                         $scope.employee.success = true;
-                        $timeout(function () {
-                            $state.go('employeeManager');
-                        }, 1500);
-                    },
-                    function () {
+                        $timeout( function () {
+                            $state.go( 'employeeManager' );
+                        }, 1500 );
+                    })
+                .catch( function () {
                         $scope.employee.error = true;
                     });
         };

@@ -1,5 +1,5 @@
 <div>
-    <div class="box-shadow p20 top-bar">
+    <div class="box-shadow p20 top-bar tool-bar">
         <div class="pull-left">
             <h3>{{'employeeManager.list.title' | i18next}}</h3>
         </div>
@@ -12,8 +12,9 @@
                tooltip-placement="left" tooltip-trigger="mouseenter"><i class="fa fa-search"></i></a>
         </div>
     </div>
+    <br><br><br><br>
 
-    <div class="alert alert-danger alert-material" ng-show="removeStatus === 2">
+     <div class="alert alert-danger alert-material" ng-show="removeStatus === 2">
         {{'employeeManager.list.removeUserError' | i18next}}
     </div>
     <div class="alert alert-success alert-material" ng-show="removeStatus === 1">
@@ -56,10 +57,10 @@
             </div>
             <tbody>
             <tr>
-                <td at-implicit at-sortable at-attribute="name" at-title="{{'userProfile.user.name' | i18next}}"></td>
+                <td at-implicit at-sortable at-initial-sorting="asc" at-attribute="name" at-title="{{'userProfile.user.name' | i18next}}"></td>
                 <td at-implicit at-sortable at-attribute="surname" at-title="{{'userProfile.user.lastname_plural' | i18next}}"></td>
                 <td at-implicit at-sortable at-attribute="nif" at-title="{{'userProfile.user.nif' | i18next}}"></td>
-                <td at-implicit at-sortable at-attribute="sex" at-title="{{'userProfile.user.genre' | i18next}}"></td>
+                <!-- <td at-implicit at-sortable at-attribute="sex" at-title="{{'userProfile.user.genre' | i18next}}"></td> -->
                 <td at-implicit at-sortable at-attribute="username" at-title="{{'userProfile.user.email' | i18next}}"></td>
                 <td class="options-section">
                     <a ui-sref="employeeManagerEdit({id: item._id})" class="btn btn-success">
@@ -69,5 +70,5 @@
             </tbody>
         </table>
     </div>
-    <at-pagination at-config="tableConfig" at-list="employees" class="table-pagination"></at-pagination>
+    <at-pagination style="position: fixed;bottom: 0; right: 50px;" at-config="tableConfig" at-list="employees" class="table-pagination"></at-pagination>
 </div>

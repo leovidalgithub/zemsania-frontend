@@ -10,6 +10,7 @@ var API_paths = {
     getAllUsers: 'user/all',
     saveUser: 'user/profile',
     searchUser: 'user/search',
+    newSearchUser: 'user/newSearch',
     removeUser: 'user/delete',
 
     dayGet: 'dailyReport/get',
@@ -51,6 +52,8 @@ var API_paths = {
     absencesDelete: 'absences/delete',
 
     getMasterCollection: 'mcollections/',
+    getEnterprisesCollection: 'mcollections/enterprises',
+    getSupervisors: 'mcollections/supervisors/',
 
     filesUpload: 'files/upload',
     filesView: 'files/view',

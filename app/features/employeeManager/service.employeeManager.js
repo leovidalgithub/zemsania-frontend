@@ -7,7 +7,7 @@
     EmployeeManagerFactory.$invoke = [ '$http', 'UserFactory', '$q' ];
     function EmployeeManagerFactory( $http, $q, UserFactory ) {
         return {
-            getEmployeeList: function () {
+            getEmployeeList: function () { // LEO WORKING HERE
                 var dfd = $q.defer();
                 $http.get( buildURL( 'getAllUsers' ))
                     .then( function ( response ) {
@@ -52,42 +52,32 @@
                     }, function (err) {
                         dfd.reject(err);
                     });
-
                 return dfd.promise;
             },
-            getEmployeeFromID: function (userID) {
+
+            getEmployeeFromID: function ( userID ) { // LEO WORKING HERE
                 var dfd = $q.defer();
-                if (!userID) {
+                if ( !userID ) {
                     dfd.reject();
                 }
-                $http
-                    .post(buildURL('searchUser'), {_id: userID})
-                    .then(function (response) {
-                        if (response.data.success) {
-                            var user = response.data.users[0];
-                            dfd.resolve(user);
-                        } else {
-                            dfd.reject(response);
-                        }
-                    }, function (err) {
-                        dfd.reject(err);
+                $http.post( buildURL( 'newSearchUser' ), { _id: userID } )
+                    .then( function ( response ) {
+                        var user = response.data.user;
+                        dfd.resolve( user );
+                    })
+                    .catch( function ( err ) {
+                        dfd.reject( err );
                     });
-
                 return dfd.promise;
+
             },
-            updateEmployee: function (credentials) {
-
-console.log('**************');
-console.log(buildURL('saveUser') + '/' + credentials._id);
-console.log('**************');
-
+            updateEmployee: function ( credentials ) { // LEO WORKING HERE
                 var dfd = $q.defer();
                 delete credentials.error;
 
-                $http
-                    .put(buildURL('saveUser') + '/' + credentials._id, credentials)
-                    .then(function (response) {
-                        if (response.data.success) {
+                $http.put( buildURL( 'saveUser' ), credentials )
+                    .then( function ( response ) {
+                        if ( response.data.success ) {
                             dfd.resolve(response.data);
                         } else {
                             dfd.reject(response);
@@ -134,6 +124,28 @@ console.log('**************');
                         dfd.reject(err);
                     });
 
+                return dfd.promise;
+            },
+            getEnterprises: function() { // LEO WAS HERE
+                var dfd = $q.defer();
+                $http.get( buildURL( 'getEnterprisesCollection' ) )
+                    .then( function ( data ) {
+                        dfd.resolve( data.data.results );
+                    })
+                    .catch( function ( err ) {
+                        dfd.reject( err );
+                    });
+                return dfd.promise;
+            },
+            getSupervisors: function( userID ) { // LEO WAS HERE
+                var dfd = $q.defer();
+                $http.get( buildURL( 'getSupervisors' ) + userID )
+                    .then( function ( data ) {
+                        dfd.resolve( data.data.results );
+                    })
+                    .catch( function ( err ) {
+                        dfd.reject( err );
+                    });
                 return dfd.promise;
             }
         };

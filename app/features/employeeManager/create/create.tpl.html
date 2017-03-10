@@ -1,13 +1,17 @@
-<div class="box-shadow p20 top-bar">
+<div class="box-shadow p20 top-bar tool-bar">
     <div class="pull-left">
         <h3>{{'employeeManager.create.title' | i18next}}</h3>
     </div>
     <div class="pull-right buttons">
+        <button ui-sref="employeeManager" class="btn btn-gray no-margin">
+            {{'actions.cancel' | i18next}}
+        </button>
         <button class="btn btn-primary no-margin" ng-disabled="employeeForm.$invalid" ng-click="signupUser()">{{'actions.save' |
             i18next}}
         </button>
     </div>
 </div>
+<br><br><br><br>
 
 <div class="alert alert-danger" ng-show="employee.error">{{'employeeManager.create.saveError' | i18next}}</div>
 <div class="alert alert-success" ng-show="employee.success">{{'employeeManager.create.saveSuccess' | i18next}}</div>

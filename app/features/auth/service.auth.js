@@ -1,4 +1,4 @@
-(function () {
+( function () {
     'use strict';
     angular
         .module( 'hours.auth' )
@@ -19,7 +19,7 @@
             doLogout: function () {
                 delete $localStorage.User;
             },
-            doLogin: function ( credentials ) { // LEO WAS HERE
+            doLogin: function ( credentials ) { // ***************** LEO WAS HERE *****************
                 var dfd = $q.defer();
                 $http
                     .post( buildURL( 'login' ), credentials )
@@ -53,7 +53,7 @@
 
                 return dfd.promise;
             },
-            doPasswordRecovery: function ( credentials ) { // ***************** LEO WORKING HERE *****************                
+            doPasswordRecovery: function ( credentials ) { // ***************** LEO WAS HERE *****************
                 var dfd = $q.defer();
 
                 $http.post( buildURL( 'passwordRecovery' ), credentials )
@@ -69,7 +69,7 @@
 
                 return dfd.promise;
             },
-            doChangePassword: function ( credentials ) { // LEO WAS HERE
+            doChangePassword: function ( credentials ) { // ***************** LEO WAS HERE *****************
                 var dfd           = $q.defer();
                 var passwordReset = {
                         currentPassword : credentials.current,
@@ -110,13 +110,7 @@
                 return dfd.promise;
             },
 
-
-
-
-
-
-
-            getUsersBySupervisor: function () { // ***************** NOT SEEN *****************
+            getUsersBySupervisor: function () {
                 var dfd = $q.defer();
                 var email = UserFactory.getUser().username;
 

@@ -7,7 +7,7 @@
     emConfig.$invoke = [ '$stateProvider' ];
     function emConfig( $stateProvider ) {
         $stateProvider
-            .state( 'employeeManager', {
+            .state( 'employeeManager', { // LEO WAS HERE
                 url: '/employeeManager/list',
                 templateUrl: '/features/employeeManager/list/list.tpl.html',
                 controller: 'listEmployeeController',
@@ -25,7 +25,7 @@
                     }
                 }
             })
-            .state('employeeManagerEdit', {
+            .state( 'employeeManagerEdit', { // LEO WAS HERE
                 url: '/employeeManager/edit/:id',
                 templateUrl: '/features/employeeManager/edit/edit.tpl.html',
                 controller: 'editEmployeeController',
@@ -38,10 +38,14 @@
                     }
                 },
                 resolve: {
-                    employee: function (EmployeeManagerFactory, $stateParams) {
-                        return EmployeeManagerFactory.getEmployeeFromID($stateParams.id);
+                    data: function ( EmployeeManagerFactory, $stateParams, $q ) {
+                        var employee    = EmployeeManagerFactory.getEmployeeFromID( $stateParams.id );
+                        var enterprises = EmployeeManagerFactory.getEnterprises();
+                        var supervisors = EmployeeManagerFactory.getSupervisors( $stateParams.id );
+                        return $q.all( { employee : employee, enterprises : enterprises, supervisors : supervisors } );
                     }
                 }
+
             })
             .state('employeeManagerCreate', {
                 url: '/employeeManager/create',

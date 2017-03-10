@@ -7,7 +7,7 @@ var concat    = require( 'gulp-concat' );
 var uglify    = require( 'gulp-uglify' );
 var minifyCss = require( 'gulp-minify-css' );
 
-gulp.task('connect', function () {
+gulp.task( 'connect', function () {
     connect.server({
         root: 'app',
         port: 8080,
@@ -16,36 +16,36 @@ gulp.task('connect', function () {
     });
 });
 
-gulp.task('sass', function () {
-    gulp.src('./app/**/*.scss')
-        .pipe(compass({
+gulp.task( 'sass', function () {
+    gulp.src( './app/**/*.scss')
+        .pipe( compass({
             config_file: './app/assets/config.rb',
             css: './app/assets/css',
             sass: './app/assets/sass'
         }))
         // .pipe(gulp.dest('temp'))
-        .pipe(connect.reload());
+        .pipe( connect.reload() );
 });
 
-gulp.task('html', function () {
-    gulp.src('./app/**/*.html')
-        .pipe(connect.reload());
+gulp.task( 'html', function () {
+    gulp.src( './app/**/*.html' )
+        .pipe( connect.reload() );
 });
 
-gulp.task('json', function () {
-    gulp.src('./app/**/*.json')
-        .pipe(connect.reload());
+gulp.task( 'json', function () {
+    gulp.src( './app/**/*.json')
+        .pipe( connect.reload() );
 });
 
-gulp.task('watch', function () {
-    gulp.watch(['./app/**/*.html'], ['html']);
-    gulp.watch(['./app/**/*.json'], ['json']);
-    // gulp.watch(['./app/**/*.js', '!./app/assets/**/*.js'], ['js']);
-    gulp.watch(['./app/**/*.js'], ['js']);
-    gulp.watch(['./app/**/*.scss'], ['sass']);
+gulp.task( 'watch', function () {
+    gulp.watch( ['./app/**/*.html'], ['html'] );
+    gulp.watch( ['./app/**/*.json'], ['json'] );
+    // gulp.watch( ['./app/**/*.js', '!./app/assets/**/*.js'], ['js'] );
+    gulp.watch( ['./app/**/*.js'], ['js'] );
+    gulp.watch( ['./app/**/*.scss'], ['sass'] );
 });
 
-gulp.task('js', function () {
+gulp.task( 'js', function () {
     return gulp.src([
             './app/app.js',
             './app/features/components/formly/formlyConfig.js',
@@ -55,21 +55,21 @@ gulp.task('js', function () {
             './app/features/**/controller.*.js',
             './app/assets/js/vertex.js'
         ])
-        .pipe(concat('app.js'))
-        .pipe(gulp.dest('./app/assets/js/'))
-        .pipe(connect.reload());
+        .pipe( concat('app.js') )
+        .pipe( gulp.dest('./app/assets/js/') )
+        .pipe( connect.reload() );
 });
 
-gulp.task('js:compress', function () {
-    return gulp.src(['./app/assets/js/app.js'])
-        .pipe(concat('app.js'))
-        .pipe(uglify({
+gulp.task( 'js:compress', function () {
+    return gulp.src( ['./app/assets/js/app.js'] )
+        .pipe( concat( 'app.js' ) )
+        .pipe( uglify({
             mangle: false
         }))
-        .pipe(gulp.dest('./app/assets/js/'))
+        .pipe( gulp.dest( './app/assets/js/' ) )
 });
 
-gulp.task('vendors:css', function () {
+gulp.task( 'vendors:css', function () {
     return gulp.src([
             './bower_components/angular-loading-bar/build/loading-bar.min.css',
             './bower_components/bootstrap/dist/css/bootstrap.min.css',
@@ -79,12 +79,12 @@ gulp.task('vendors:css', function () {
 
             './lib/ui-bootstrap/ui-bootstrap-custom-0.14.3-csp.css'
         ])
-        .pipe(concat('vendors.css'))
-        .pipe(minifyCss())
-        .pipe(gulp.dest('./app/assets/css/'));
+        .pipe( concat( 'vendors.css') )
+        .pipe( minifyCss() )
+        .pipe( gulp.dest( './app/assets/css/') );
 });
 
-gulp.task('vendors:js', function () {
+gulp.task( 'vendors:js', function () {
     return gulp.src([
             // './bower_components/angular/angular.min.js',
             './bower_components/angular/angular.js',
@@ -110,15 +110,14 @@ gulp.task('vendors:js', function () {
             './bower_components/angular-formly/dist/formly.js',
             './bower_components/angular-formly-templates-bootstrap/dist/angular-formly-templates-bootstrap.min.js',
             './bower_components/angular-file-saver/dist/angular-file-saver.bundle.min.js',
-
             './lib/ui-bootstrap/ui-bootstrap-custom-tpls-0.14.3.min.js'
         ])
-        .pipe(concat('vendors.js'))
-        // .pipe(uglify())
-        .pipe(gulp.dest('./app/assets/js/'));
+        .pipe( concat( 'vendors.js') )
+        .pipe( uglify() )
+        .pipe( gulp.dest( './app/assets/js/') );
 });
 
-gulp.task('vendors', ['vendors:js', 'vendors:css']);
-gulp.task('start', ['connect', 'watch']);
-gulp.task('compile', ['vendors', 'js', 'js:compress']);
+gulp.task( 'vendors', [ 'vendors:js', 'vendors:css' ] );
+gulp.task( 'start', [ 'connect', 'watch' ]);
+gulp.task( 'compile', [ 'vendors', 'js', 'js:compress' ] );
 

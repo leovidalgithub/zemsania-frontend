@@ -194,6 +194,7 @@ var API_paths = {
     getAllUsers: 'user/all',
     saveUser: 'user/profile',
     searchUser: 'user/search',
+    newSearchUser: 'user/newSearch',
     removeUser: 'user/delete',
 
     dayGet: 'dailyReport/get',
@@ -235,6 +236,8 @@ var API_paths = {
     absencesDelete: 'absences/delete',
 
     getMasterCollection: 'mcollections/',
+    getEnterprisesCollection: 'mcollections/enterprises',
+    getSupervisors: 'mcollections/supervisors/',
 
     filesUpload: 'files/upload',
     filesView: 'files/view',
@@ -453,7 +456,7 @@ function toGMT0(date) {
     emConfig.$invoke = [ '$stateProvider' ];
     function emConfig( $stateProvider ) {
         $stateProvider
-            .state( 'employeeManager', {
+            .state( 'employeeManager', { // LEO WAS HERE
                 url: '/employeeManager/list',
                 templateUrl: '/features/employeeManager/list/list.tpl.html',
                 controller: 'listEmployeeController',
@@ -471,7 +474,7 @@ function toGMT0(date) {
                     }
                 }
             })
-            .state('employeeManagerEdit', {
+            .state( 'employeeManagerEdit', { // LEO WAS HERE
                 url: '/employeeManager/edit/:id',
                 templateUrl: '/features/employeeManager/edit/edit.tpl.html',
                 controller: 'editEmployeeController',
@@ -484,10 +487,14 @@ function toGMT0(date) {
                     }
                 },
                 resolve: {
-                    employee: function (EmployeeManagerFactory, $stateParams) {
-                        return EmployeeManagerFactory.getEmployeeFromID($stateParams.id);
+                    data: function ( EmployeeManagerFactory, $stateParams, $q ) {
+                        var employee    = EmployeeManagerFactory.getEmployeeFromID( $stateParams.id );
+                        var enterprises = EmployeeManagerFactory.getEnterprises();
+                        var supervisors = EmployeeManagerFactory.getSupervisors( $stateParams.id );
+                        return $q.all( { employee : employee, enterprises : enterprises, supervisors : supervisors } );
                     }
                 }
+
             })
             .state('employeeManagerCreate', {
                 url: '/employeeManager/create',
@@ -505,7 +512,7 @@ function toGMT0(date) {
     }
 }());
 
-(function () {
+( function () {
     'use strict';
     angular
         .module( 'hours.auth' )
@@ -526,7 +533,7 @@ function toGMT0(date) {
             doLogout: function () {
                 delete $localStorage.User;
             },
-            doLogin: function ( credentials ) { // LEO WAS HERE
+            doLogin: function ( credentials ) { // ***************** LEO WAS HERE *****************
                 var dfd = $q.defer();
                 $http
                     .post( buildURL( 'login' ), credentials )
@@ -560,7 +567,7 @@ function toGMT0(date) {
 
                 return dfd.promise;
             },
-            doPasswordRecovery: function ( credentials ) { // ***************** LEO WORKING HERE *****************                
+            doPasswordRecovery: function ( credentials ) { // ***************** LEO WAS HERE *****************
                 var dfd = $q.defer();
 
                 $http.post( buildURL( 'passwordRecovery' ), credentials )
@@ -576,7 +583,7 @@ function toGMT0(date) {
 
                 return dfd.promise;
             },
-            doChangePassword: function ( credentials ) { // LEO WAS HERE
+            doChangePassword: function ( credentials ) { // ***************** LEO WAS HERE *****************
                 var dfd           = $q.defer();
                 var passwordReset = {
                         currentPassword : credentials.current,
@@ -617,13 +624,7 @@ function toGMT0(date) {
                 return dfd.promise;
             },
 
-
-
-
-
-
-
-            getUsersBySupervisor: function () { // ***************** NOT SEEN *****************
+            getUsersBySupervisor: function () {
                 var dfd = $q.defer();
                 var email = UserFactory.getUser().username;
 
@@ -706,7 +707,7 @@ function toGMT0(date) {
     EmployeeManagerFactory.$invoke = [ '$http', 'UserFactory', '$q' ];
     function EmployeeManagerFactory( $http, $q, UserFactory ) {
         return {
-            getEmployeeList: function () {
+            getEmployeeList: function () { // LEO WORKING HERE
                 var dfd = $q.defer();
                 $http.get( buildURL( 'getAllUsers' ))
                     .then( function ( response ) {
@@ -751,42 +752,32 @@ function toGMT0(date) {
                     }, function (err) {
                         dfd.reject(err);
                     });
-
                 return dfd.promise;
             },
-            getEmployeeFromID: function (userID) {
+
+            getEmployeeFromID: function ( userID ) { // LEO WORKING HERE
                 var dfd = $q.defer();
-                if (!userID) {
+                if ( !userID ) {
                     dfd.reject();
                 }
-                $http
-                    .post(buildURL('searchUser'), {_id: userID})
-                    .then(function (response) {
-                        if (response.data.success) {
-                            var user = response.data.users[0];
-                            dfd.resolve(user);
-                        } else {
-                            dfd.reject(response);
-                        }
-                    }, function (err) {
-                        dfd.reject(err);
+                $http.post( buildURL( 'newSearchUser' ), { _id: userID } )
+                    .then( function ( response ) {
+                        var user = response.data.user;
+                        dfd.resolve( user );
+                    })
+                    .catch( function ( err ) {
+                        dfd.reject( err );
                     });
-
                 return dfd.promise;
+
             },
-            updateEmployee: function (credentials) {
-
-console.log('**************');
-console.log(buildURL('saveUser') + '/' + credentials._id);
-console.log('**************');
-
+            updateEmployee: function ( credentials ) { // LEO WORKING HERE
                 var dfd = $q.defer();
                 delete credentials.error;
 
-                $http
-                    .put(buildURL('saveUser') + '/' + credentials._id, credentials)
-                    .then(function (response) {
-                        if (response.data.success) {
+                $http.put( buildURL( 'saveUser' ), credentials )
+                    .then( function ( response ) {
+                        if ( response.data.success ) {
                             dfd.resolve(response.data);
                         } else {
                             dfd.reject(response);
@@ -834,10 +825,33 @@ console.log('**************');
                     });
 
                 return dfd.promise;
+            },
+            getEnterprises: function() { // LEO WAS HERE
+                var dfd = $q.defer();
+                $http.get( buildURL( 'getEnterprisesCollection' ) )
+                    .then( function ( data ) {
+                        dfd.resolve( data.data.results );
+                    })
+                    .catch( function ( err ) {
+                        dfd.reject( err );
+                    });
+                return dfd.promise;
+            },
+            getSupervisors: function( userID ) { // LEO WAS HERE
+                var dfd = $q.defer();
+                $http.get( buildURL( 'getSupervisors' ) + userID )
+                    .then( function ( data ) {
+                        dfd.resolve( data.data.results );
+                    })
+                    .catch( function ( err ) {
+                        dfd.reject( err );
+                    });
+                return dfd.promise;
             }
         };
     }
 }());
+
 ( function () {
     'use strict';
     angular
@@ -1388,11 +1402,14 @@ console.log('**************');
         .module( 'hours.employeeManager' )
         .controller( 'editEmployeeController', editEmployeeController );
 
-    editEmployeeController.$invoke = [ '$scope', '$state', 'employee', '$filter', '$timeout', 'EmployeeManagerFactory' ];
-    function editEmployeeController( $scope, $state, employee, $filter, $timeout, EmployeeManagerFactory ) {
-        employee.birthdate = new Date( employee.birthdate );
+    editEmployeeController.$invoke = [ '$scope', '$state', 'data', '$filter', '$timeout', 'EmployeeManagerFactory' ];
+    function editEmployeeController( $scope, $state, data, $filter, $timeout, EmployeeManagerFactory ) {
+        
+        $scope.companies = data.enterprises;
+        $scope.supervisors = data.supervisors;
 
-        $scope.employee = employee;
+        data.employee.birthdate = new Date( data.employee.birthdate );
+        $scope.employee = data.employee;
         $scope.maxDate = new Date();
 
         $scope.open = function () {
@@ -1455,52 +1472,35 @@ console.log('**************');
                 }
             ];
 
-            employee.roles.forEach(function (role) {
-                $filter('filter')($scope.roles, {slug: role})[0].active = true;
+            data.employee.roles.forEach( function( role ) {
+                $filter( 'filter' )($scope.roles, { slug: role })[0].active = true;
             });
 
         }
 
-        $timeout(function () {
+        $timeout( function () {
             loadSelectsTranslate();
-        }, 100);
+        }, 100 );
 
-        $scope.changeRole = function (role) {
-            var allow = [];
-            switch (role) {
-                case 'ROLE_BACKOFFICE' :
-                    allow = ['ROLE_DELIVERY', 'ROLE_MANAGER', 'ROLE_USER'];
-                    break;
-                case 'ROLE_DELIVERY' :
-                    allow = ['ROLE_MANAGER', 'ROLE_USER'];
-                    break;
-                case 'ROLE_MANAGER' :
-                    allow = ['ROLE_USER'];
-                    break;
-                default :
-                    allow = ['ROLE_USER'];
-                    break;
-            }
-
-            $scope.roles.forEach(function (role) {
-                if (allow.indexOf(role.slug) > -1) {
-                    role.active = true;
+        $scope.changeRole = function () {
+            $scope.employee.roles = [];
+            $scope.roles.forEach( function( role ) {
+                if ( role.active ) {
+                    $scope.employee.roles.push( role.slug );
                 }
             });
-
-            employee.roles = allow;
         };
 
         $scope.editUser = function () {
             $scope.employee.error = false;
-            EmployeeManagerFactory.updateEmployee($scope.employee)
-                .then(function () {
+            EmployeeManagerFactory.updateEmployee( $scope.employee )
+                .then( function () {
                         $scope.employee.success = true;
-                        $timeout(function () {
-                            $state.go('employeeManager');
-                        }, 1500);
-                    },
-                    function () {
+                        $timeout( function () {
+                            $state.go( 'employeeManager' );
+                        }, 1500 );
+                    })
+                .catch( function () {
                         $scope.employee.error = true;
                     });
         };
@@ -1512,17 +1512,25 @@ console.log('**************');
     angular
         .module( 'hours.employeeManager' )
         .controller( 'listEmployeeController', listEmployeeController );
+        // .directive('myRole', myRole);
 
     listEmployeeController.$invoke = [ '$scope', 'employees', 'EmployeeManagerFactory', '$timeout', '$filter' ];
     function listEmployeeController( $scope, employees, EmployeeManagerFactory, $timeout, $filter ) {
         $scope.tableConfig = {
-            itemsPerPage: "8",
+            itemsPerPage: getViwePortHeight(),
             maxPages: "3",
             fillLastPage: false,
             currentPage: $scope.tmpData( 'get', 'employeeManagerListPage' ) || 0
         };
+
+        function getViwePortHeight() {
+            return Math.floor( window.innerHeight / 80 ).toString();
+        };
+
         $scope.search = {};
         $scope.employees = employees;
+
+        $scope.var = false;
 
         $scope.toggleAdvancedSearch = function () {
             $scope.showAdvancedSearch = !$scope.showAdvancedSearch;
@@ -1542,15 +1550,37 @@ console.log('**************');
 
         $timeout( function () { // ???
             $( '[ng-click="stepPage(-numberOfPages)"]' ).text( $filter( 'i18next' )( 'actions.nextPage' ) );
-            $( '[ng-click="stepPage(numberOfPages)"]' ).text( $filter( 'i18next' )( 'actions.lastPage' ) );
+            $( '[ng-click="stepPage(numberOfPages)"]'  ).text( $filter( 'i18next' )( 'actions.lastPage' ) );
         });
 
-        $scope.$on('$destroy', function () {
-            $scope.tmpData('add', 'employeeManagerListPage', $scope.tableConfig.currentPage);
+        $scope.$on( '$destroy', function () {
+            $scope.tmpData( 'add', 'employeeManagerListPage', $scope.tableConfig.currentPage );
         });
 
-    }
+}
+
+    // function myRole(UserFactory) {
+    //     return {
+    //         restrict: 'A',
+    //         scope: {
+    //             'myRole': '@'
+    //         },
+    //         compile: function(element, attributes){  
+    //             return {
+    //                 pre: function(scope, element, attributes, controller, transcludeFn){
+    //                     element.remove();
+    //                 },
+    //                 post: function(scope, element, attributes, controller, transcludeFn){
+    //                 }
+    //             }
+    //         },
+    //         link: function compile(scope, element, attrs) {
+    //         }
+    //     };
+    // }
+
 }());
+
 var TAU = 2 * Math.PI;
 var canvas;
 var ctx;
