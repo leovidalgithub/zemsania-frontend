@@ -33,40 +33,35 @@
             // 'hours.projects',
             // 'hours.excelExport'
         ])
-        .config(appConfig)
-        .run(appRun);
+        .config( appConfig )
+        .run( appRun );
 
-    appConfig.$invoke = ['$locationProvider', '$i18nextProvider', 'cfpLoadingBarProvider', '$urlRouterProvider'];
-
-    function appConfig($locationProvider, $i18nextProvider, cfpLoadingBarProvider, $urlRouterProvider) {
-        $urlRouterProvider.otherwise(function($injector) {
-            var $state = $injector.get("$state");
-            $state.transitionTo('login');
+    appConfig.$invoke = [ '$locationProvider', '$i18nextProvider', 'cfpLoadingBarProvider', '$urlRouterProvider' ];
+    function appConfig( $locationProvider, $i18nextProvider, cfpLoadingBarProvider, $urlRouterProvider ) {
+        $urlRouterProvider.otherwise( function( $injector ) {
+            var $state = $injector.get( "$state" );
+            $state.transitionTo( 'login' );
         });
-
         cfpLoadingBarProvider.includeSpinner = false;
     }
 
     appRun.$invoke = [ 'PermRoleStore', 'UserFactory', '$rootScope', '$http', 'formlyConfig', '$uibModal', '$localStorage','$i18next' ];
-
-    function appRun(PermRoleStore, UserFactory, $rootScope, $http, formlyConfig, $uibModal, $localStorage, $i18next) {
+    function appRun( PermRoleStore, UserFactory, $rootScope, $http, formlyConfig, $uibModal, $localStorage, $i18next ) {
 
         window.i18next
-            .use(window.i18nextXHRBackend);
+            .use( window.i18nextXHRBackend );
         window.i18next.init({
             lng: 'es', // If not given, i18n will detect the browser language.
             fallbackLng: 'dev', // Default is dev
             backend: {
                 loadPath: 'assets/locales/{{lng}}/{{ns}}.json'
             }
-        }, function (err, t) {
+        }, function ( err, t ) {
             // console.log('resources loaded');
             $rootScope.$apply();
         });
 
-        $rootScope.$on('$stateChangePermissionStart', function(event, args) {            
-
-            
+        $rootScope.$on( '$stateChangePermissionStart', function( event, args ) {            
             var reqPerms = args.data.permissions;
             var anonymousUser = angular.isDefined(reqPerms.only) && reqPerms.only[0] === 'anonymous';
             var locale = (navigator.language || navigator.userLanguage).split('-')[0];

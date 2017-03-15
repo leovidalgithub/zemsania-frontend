@@ -72,6 +72,7 @@
             "genre_female"    : "Femenino",
             "username"        : "Correo electrónico",
             "email"           : "Correo electrónico",
+            "password"        : "Contraseña",
             "birthdate"       : "Fecha de nacimiento",
             "locale"          : "Idioma del panel",
             "enabled"         : "Empleado habilitado",
@@ -135,13 +136,14 @@
             "title": "Gestionar empleados",
             "removeUserSuccess": "El empleado ha sido borrado con éxito",
             "removeUserError": "Ha ocurrido un problema borrando el empleado.",
-            "createNew": "Dar de alta un empleado",
-            "advancedSearch": "Búsqueda avanzada"
+            "createNew": "Dar de alta",
+            "advancedSearch": "Búsqueda"
         },
         "create": {
-            "title": "Dar de alta un empleado",
+            "title": "Dar de alta",
             "saveSuccess": "Empleado dado de alta con éxito",
-            "saveError": "Ha ocurrido un error al dar de alta el empleado. Inténtalo más tarde"
+            "userAlreadyExists": "Este usuario ya existe en la base de datos.",
+            "saveError": "Ha ocurrido un error al dar de alta el empleado. Inténtalo más tarde."
         },
         "edit": {
             "title": "Edición de empleados",

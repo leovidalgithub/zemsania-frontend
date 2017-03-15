@@ -24,7 +24,7 @@ var API_paths = {
     projectSearch: 'project/search',
     projectGetUsers: 'projectUsers/getUsersByProjectID',
     projectUserSave: 'projectUsers/save',
-    getUsersBySupervisor: 'projectUsers/getUsersBySupervisor',
+    // getUsersBySupervisor: 'projectUsers/getUsersBySupervisor',
     projectUserUpdate: 'projectUsers/update',
     projectUserDelete: 'projectUsers/delete',
 
@@ -43,7 +43,6 @@ var API_paths = {
     spents: 'spents',
     spentsDelete: 'spents/delete',
 
-
     getAbsences: 'absences/get',
     getAbsencesById: 'absences/search',
     absencesImpute: 'absences/impute',
@@ -53,12 +52,15 @@ var API_paths = {
 
     getMasterCollection: 'mcollections/',
     getEnterprisesCollection: 'mcollections/enterprises',
-    getSupervisors: 'mcollections/supervisors/',
+
+    getSupervisors: 'mcollections/supervisorsExceptID/',
+    getAllSupervisors: 'mcollections/allSupervisors',
+
+    getDefaultPassword: 'mcollections/defaultPassword',
 
     filesUpload: 'files/upload',
     filesView: 'files/view',
     filesRemove: 'files/remove'
-
 };
 
 function buildURL( path ) { // ***************** LEO WAS HERE *****************

@@ -34,7 +34,7 @@ $orange: #FFA726;
 
 html, body, body > div, div[ui-view] {
   height: 100%;
-  overflow: visible;
+  overflow: hidden;
 }
 
 * {
@@ -53,7 +53,7 @@ html {
   font-family: open-sans, sans-serif;
   background: $smookeWhite;
   @media #{$mobile} {
-    display: table;
+    // display: table;
   }
   &.blockView {
     overflow: hidden;
@@ -61,9 +61,7 @@ html {
 }
 
 .object-shadow {
-  // box-shadow: 0 5px 15px -5px rgba(black, 0.1);
-  box-shadow: 5px 8px 15px -5px rgba(gray, 1);
-
+  box-shadow: 6px 9px 15px -5px rgba(gray, 1);
 }
 
 .alert {

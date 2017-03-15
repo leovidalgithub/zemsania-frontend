@@ -33,40 +33,35 @@
             // 'hours.projects',
             // 'hours.excelExport'
         ])
-        .config(appConfig)
-        .run(appRun);
+        .config( appConfig )
+        .run( appRun );
 
-    appConfig.$invoke = ['$locationProvider', '$i18nextProvider', 'cfpLoadingBarProvider', '$urlRouterProvider'];
-
-    function appConfig($locationProvider, $i18nextProvider, cfpLoadingBarProvider, $urlRouterProvider) {
-        $urlRouterProvider.otherwise(function($injector) {
-            var $state = $injector.get("$state");
-            $state.transitionTo('login');
+    appConfig.$invoke = [ '$locationProvider', '$i18nextProvider', 'cfpLoadingBarProvider', '$urlRouterProvider' ];
+    function appConfig( $locationProvider, $i18nextProvider, cfpLoadingBarProvider, $urlRouterProvider ) {
+        $urlRouterProvider.otherwise( function( $injector ) {
+            var $state = $injector.get( "$state" );
+            $state.transitionTo( 'login' );
         });
-
         cfpLoadingBarProvider.includeSpinner = false;
     }
 
     appRun.$invoke = [ 'PermRoleStore', 'UserFactory', '$rootScope', '$http', 'formlyConfig', '$uibModal', '$localStorage','$i18next' ];
-
-    function appRun(PermRoleStore, UserFactory, $rootScope, $http, formlyConfig, $uibModal, $localStorage, $i18next) {
+    function appRun( PermRoleStore, UserFactory, $rootScope, $http, formlyConfig, $uibModal, $localStorage, $i18next ) {
 
         window.i18next
-            .use(window.i18nextXHRBackend);
+            .use( window.i18nextXHRBackend );
         window.i18next.init({
             lng: 'es', // If not given, i18n will detect the browser language.
             fallbackLng: 'dev', // Default is dev
             backend: {
                 loadPath: 'assets/locales/{{lng}}/{{ns}}.json'
             }
-        }, function (err, t) {
+        }, function ( err, t ) {
             // console.log('resources loaded');
             $rootScope.$apply();
         });
 
-        $rootScope.$on('$stateChangePermissionStart', function(event, args) {            
-
-            
+        $rootScope.$on( '$stateChangePermissionStart', function( event, args ) {            
             var reqPerms = args.data.permissions;
             var anonymousUser = angular.isDefined(reqPerms.only) && reqPerms.only[0] === 'anonymous';
             var locale = (navigator.language || navigator.userLanguage).split('-')[0];
@@ -208,7 +203,7 @@ var API_paths = {
     projectSearch: 'project/search',
     projectGetUsers: 'projectUsers/getUsersByProjectID',
     projectUserSave: 'projectUsers/save',
-    getUsersBySupervisor: 'projectUsers/getUsersBySupervisor',
+    // getUsersBySupervisor: 'projectUsers/getUsersBySupervisor',
     projectUserUpdate: 'projectUsers/update',
     projectUserDelete: 'projectUsers/delete',
 
@@ -227,7 +222,6 @@ var API_paths = {
     spents: 'spents',
     spentsDelete: 'spents/delete',
 
-
     getAbsences: 'absences/get',
     getAbsencesById: 'absences/search',
     absencesImpute: 'absences/impute',
@@ -237,12 +231,15 @@ var API_paths = {
 
     getMasterCollection: 'mcollections/',
     getEnterprisesCollection: 'mcollections/enterprises',
-    getSupervisors: 'mcollections/supervisors/',
+
+    getSupervisors: 'mcollections/supervisorsExceptID/',
+    getAllSupervisors: 'mcollections/allSupervisors',
+
+    getDefaultPassword: 'mcollections/defaultPassword',
 
     filesUpload: 'files/upload',
     filesView: 'files/view',
     filesRemove: 'files/remove'
-
 };
 
 function buildURL( path ) { // ***************** LEO WAS HERE *****************
@@ -390,62 +387,32 @@ function toGMT0(date) {
             });
     }
 }());
-(function () {
+( function () {
     'use strict';
     angular
-        .module('hours.components', [])
-        .directive('roleAuth', roleAuth);
+        .module( 'hours.components', [] )
+        .directive( 'roleAuth', roleAuth );
 
-    function roleAuth(UserFactory) {
+    function roleAuth( UserFactory ) {
         return {
             restrict: 'A',
             scope: {
                 'roleAuth': '@'
             },
-            link: function compile(scope, element, attrs) {                
+            link: function compile( scope, element, attrs ) {                
                 var authRoles = JSON.parse(attrs.roleAuth.replace(/'/g, '"')); // convert to JSON object
                 var userRole = UserFactory.getUser().role;
 
-                if (angular.isDefined(authRoles.only) && authRoles.only.indexOf(userRole) < 0) {
+                if ( angular.isDefined( authRoles.only ) && authRoles.only.indexOf( userRole ) < 0 ) {
                     element.remove();
                 }
-                if (angular.isDefined(authRoles.except) && authRoles.except.indexOf(userRole) >= 0) {
+                if ( angular.isDefined( authRoles.except ) && authRoles.except.indexOf( userRole ) >= 0 ) {
                     element.remove();
                 }
             }
         };
     }
 }());
-
-(function () {
-    'use strict';
-    angular
-        .module('hours.dashboard', [])
-        .config(dashboardConfig);
-
-    dashboardConfig.$invoke = ['$stateProvider'];
-    function dashboardConfig($stateProvider) {
-        $stateProvider
-            .state('dashboard', {
-                url: '/dashboard',
-                templateUrl: '/features/dashboard/home/home.tpl.html',
-                controller: 'HomeController',
-                data: {
-                    template: 'complex',
-                    permissions: {
-                        except: ['anonymous'],
-                        redirectTo: 'login'
-                    }
-                },
-                resolve: {
-                    notifications: function (DashboardFactory) {
-                        return DashboardFactory.getUnreadNotifications();
-                    }
-                }
-            });
-    }
-}());
-
 
 ( function () {
     'use strict';
@@ -490,13 +457,13 @@ function toGMT0(date) {
                     data: function ( EmployeeManagerFactory, $stateParams, $q ) {
                         var employee    = EmployeeManagerFactory.getEmployeeFromID( $stateParams.id );
                         var enterprises = EmployeeManagerFactory.getEnterprises();
-                        var supervisors = EmployeeManagerFactory.getSupervisors( $stateParams.id );
+                        var supervisors = EmployeeManagerFactory.supervisorsExceptID( $stateParams.id );
                         return $q.all( { employee : employee, enterprises : enterprises, supervisors : supervisors } );
                     }
                 }
 
             })
-            .state('employeeManagerCreate', {
+            .state( 'employeeManagerCreate', { // LEO WAS HERE
                 url: '/employeeManager/create',
                 templateUrl: '/features/employeeManager/create/create.tpl.html',
                 controller: 'createEmployeeController',
@@ -507,10 +474,48 @@ function toGMT0(date) {
                         only: ['administrator'],
                         redirectTo: 'dashboard'
                     }
+                },
+                resolve: {
+                    data: function ( EmployeeManagerFactory, $stateParams, $q ) {
+                        var enterprises     = EmployeeManagerFactory.getEnterprises();
+                        var supervisors     = EmployeeManagerFactory.getAllSupervisors();                        
+                        var defaultPassword = EmployeeManagerFactory.getDefaultPassword();
+                        return $q.all( { enterprises : enterprises, supervisors : supervisors, defaultPassword : defaultPassword } );
+                    }
                 }
             });
     }
 }());
+
+(function () {
+    'use strict';
+    angular
+        .module('hours.dashboard', [])
+        .config(dashboardConfig);
+
+    dashboardConfig.$invoke = ['$stateProvider'];
+    function dashboardConfig($stateProvider) {
+        $stateProvider
+            .state('dashboard', {
+                url: '/dashboard',
+                templateUrl: '/features/dashboard/home/home.tpl.html',
+                controller: 'HomeController',
+                data: {
+                    template: 'complex',
+                    permissions: {
+                        except: ['anonymous'],
+                        redirectTo: 'login'
+                    }
+                },
+                resolve: {
+                    notifications: function (DashboardFactory) {
+                        return DashboardFactory.getUnreadNotifications();
+                    }
+                }
+            });
+    }
+}());
+
 
 ( function () {
     'use strict';
@@ -645,6 +650,176 @@ function toGMT0(date) {
         };
     }
 }());
+( function () {
+    'use strict';
+    angular
+        .module( 'hours.employeeManager' )
+        .factory( 'EmployeeManagerFactory', EmployeeManagerFactory );
+
+    EmployeeManagerFactory.$invoke = [ '$http', 'UserFactory', '$q' ];
+    function EmployeeManagerFactory( $http, $q, UserFactory ) {
+        return {
+            getEmployeeList: function () { // LEO WAS HERE
+                var dfd = $q.defer();
+                $http.get( buildURL( 'getAllUsers' ) )
+                    .then( function ( response ) {
+                        if ( response.data.success ) {
+                                dfd.resolve( response.data.users );
+                        } else {
+                            dfd.reject( response );
+                        }
+                    }, function ( err ) {
+                        dfd.reject( err );
+                    });
+                return dfd.promise;
+            },
+
+            searchEmployee: function( query ) { // LEO WAS HERE
+                var dfd = $q.defer();
+                $http.post( buildURL( 'searchUser' ), query)
+                    .then( function ( response ) {
+                        if ( response.data.success ) {
+                            var employees = response.data.users;
+                            dfd.resolve( employees );
+                        } else {
+                            dfd.reject( response );
+                        }
+                    })
+                    .catch( function ( err ) {
+                        dfd.reject( err );
+                    });
+                return dfd.promise;
+
+            },
+
+            getEmployeeFromID: function ( userID ) { // LEO WAS HERE
+                var dfd = $q.defer();
+                if ( !userID ) {
+                    dfd.reject();
+                }
+                $http.post( buildURL( 'newSearchUser' ), { _id: userID } )
+                    .then( function ( response ) {
+                        var user = response.data.user;
+                        dfd.resolve( user );
+                    })
+                    .catch( function ( err ) {
+                        dfd.reject( err );
+                    });
+                return dfd.promise;
+
+            },
+            updateEmployee: function ( credentials ) { // LEO WAS HERE
+                var dfd = $q.defer();
+                delete credentials.error;
+
+                $http.put( buildURL( 'saveUser' ), credentials )
+                    .then( function ( response ) {
+                        if ( response.data.success ) {
+                            dfd.resolve( response.data );
+                        } else {
+                            dfd.reject( response );
+                        }
+                    }, function ( err ) {
+                        dfd.reject( err );
+                    });
+                return dfd.promise;
+            },
+
+            createEmployee: function ( credentials ) { // LEO WAS HERE
+                var dfd = $q.defer();
+                delete credentials.error;
+
+                $http.post( buildURL( 'createUser' ), credentials )
+                    .then( function ( response ) {
+                        dfd.resolve( response.data );
+                    })
+                    .catch( function ( err ) {
+                        dfd.reject( err );
+                    });
+                return dfd.promise;
+            },
+
+            // removeEmployee: function (query) {
+            //     var dfd = $q.defer();
+            //     $http
+            //         .delete(buildURL('removeUser'), {data: query})
+            //         .then(function (response) {
+            //             if (response.data.success) {
+            //                 dfd.resolve(true);
+            //             } else {
+            //                 dfd.reject(response);
+            //             }
+            //         }, function (err) {
+            //             dfd.reject(err);
+            //         });
+            //     return dfd.promise;
+            // },
+
+            // getUsersBySupervisor: function () {
+            //     var dfd = $q.defer();
+            //     var email = UserFactory.getUser().username;
+            //     $http
+            //         .post(buildURL('getUsersBySupervisor'), {"email": email})
+            //         .then(function (response) {
+            //             if (response.data.success) {
+            //                 dfd.resolve(response.data.users);
+            //             } else {
+            //                 dfd.reject(response.data.errors);
+            //             }
+            //         }, function (err) {
+            //             dfd.reject(err);
+            //         });
+            //     return dfd.promise;
+            // },
+
+            getEnterprises: function() { // LEO WAS HERE
+                var dfd = $q.defer();
+                $http.get( buildURL( 'getEnterprisesCollection' ) )
+                    .then( function ( data ) {
+                        dfd.resolve( data.data.results );
+                    })
+                    .catch( function ( err ) {
+                        dfd.reject( err );
+                    });
+                return dfd.promise;
+            },
+
+            supervisorsExceptID: function( userID ) { // LEO WAS HERE
+                var dfd = $q.defer();
+                $http.get( buildURL( 'getSupervisors' ) + userID )
+                    .then( function ( data ) {
+                        dfd.resolve( data.data.results );
+                    })
+                    .catch( function ( err ) {
+                        dfd.reject( err );
+                    });
+                return dfd.promise;
+            },
+
+            getAllSupervisors: function() { // LEO WAS HERE
+                var dfd = $q.defer();
+                $http.get( buildURL( 'getAllSupervisors' ) )
+                    .then( function ( data ) {
+                        dfd.resolve( data.data.results );
+                    })
+                    .catch( function ( err ) {
+                        dfd.reject( err );
+                    });
+                return dfd.promise;
+            },
+
+            getDefaultPassword: function() { // LEO WAS HERE
+                var dfd = $q.defer();
+                $http.get( buildURL( 'getDefaultPassword' ) )
+                    .then( function ( data ) {
+                        dfd.resolve( data.data );
+                    })
+                return dfd.promise;
+            }
+        };
+    }
+}());
+
 (function () {
     'use strict';
     angular
@@ -692,160 +867,6 @@ function toGMT0(date) {
                         dfd.resolve(err);
                     });
 
-                return dfd.promise;
-            }
-        };
-    }
-}());
-
-(function () {
-    'use strict';
-    angular
-        .module( 'hours.employeeManager' )
-        .factory( 'EmployeeManagerFactory', EmployeeManagerFactory );
-
-    EmployeeManagerFactory.$invoke = [ '$http', 'UserFactory', '$q' ];
-    function EmployeeManagerFactory( $http, $q, UserFactory ) {
-        return {
-            getEmployeeList: function () { // LEO WORKING HERE
-                var dfd = $q.defer();
-                $http.get( buildURL( 'getAllUsers' ))
-                    .then( function ( response ) {
-                        if ( response.data.success ) {
-                                dfd.resolve( response.data.users );
-                        } else {
-                            dfd.reject( response );
-                        }
-                    }, function ( err ) {
-                        dfd.reject( err );
-                    });
-
-                return dfd.promise;
-            },
-            searchEmployee: function (query) {
-                var dfd = $q.defer();
-                $http
-                    .post(buildURL('searchUser'), query)
-                    .then(function (response) {
-                        if (response.data.success) {
-                            var employees = response.data.users;
-                            dfd.resolve(employees);
-                        } else {
-                            dfd.reject(response);
-                        }
-                    }, function (err) {
-                        dfd.reject(err);
-                    });
-
-                return dfd.promise;
-            },
-            removeEmployee: function (query) {
-                var dfd = $q.defer();
-                $http
-                    .delete(buildURL('removeUser'), {data: query})
-                    .then(function (response) {
-                        if (response.data.success) {
-                            dfd.resolve(true);
-                        } else {
-                            dfd.reject(response);
-                        }
-                    }, function (err) {
-                        dfd.reject(err);
-                    });
-                return dfd.promise;
-            },
-
-            getEmployeeFromID: function ( userID ) { // LEO WORKING HERE
-                var dfd = $q.defer();
-                if ( !userID ) {
-                    dfd.reject();
-                }
-                $http.post( buildURL( 'newSearchUser' ), { _id: userID } )
-                    .then( function ( response ) {
-                        var user = response.data.user;
-                        dfd.resolve( user );
-                    })
-                    .catch( function ( err ) {
-                        dfd.reject( err );
-                    });
-                return dfd.promise;
-
-            },
-            updateEmployee: function ( credentials ) { // LEO WORKING HERE
-                var dfd = $q.defer();
-                delete credentials.error;
-
-                $http.put( buildURL( 'saveUser' ), credentials )
-                    .then( function ( response ) {
-                        if ( response.data.success ) {
-                            dfd.resolve(response.data);
-                        } else {
-                            dfd.reject(response);
-                        }
-                    }, function (err) {
-                        dfd.reject(err);
-                    });
-
-
-                return dfd.promise;
-            },
-            createEmployee: function (credentials) {
-                var dfd = $q.defer();
-                delete credentials.error;
-
-                $http
-                    .post(buildURL('createUser'), credentials)
-                    .then(function (response) {
-                        if (response.data.success) {
-                            dfd.resolve(response.data);
-                        } else {
-                            dfd.reject(response);
-                        }
-                    }, function (err) {
-                        dfd.reject(err);
-                    });
-
-
-                return dfd.promise;
-            },
-            getUsersBySupervisor: function () {
-                var dfd = $q.defer();
-                var email = UserFactory.getUser().username;
-
-                $http
-                    .post(buildURL('getUsersBySupervisor'), {"email": email})
-                    .then(function (response) {
-                        if (response.data.success) {
-                            dfd.resolve(response.data.users);
-                        } else {
-                            dfd.reject(response.data.errors);
-                        }
-                    }, function (err) {
-                        dfd.reject(err);
-                    });
-
-                return dfd.promise;
-            },
-            getEnterprises: function() { // LEO WAS HERE
-                var dfd = $q.defer();
-                $http.get( buildURL( 'getEnterprisesCollection' ) )
-                    .then( function ( data ) {
-                        dfd.resolve( data.data.results );
-                    })
-                    .catch( function ( err ) {
-                        dfd.reject( err );
-                    });
-                return dfd.promise;
-            },
-            getSupervisors: function( userID ) { // LEO WAS HERE
-                var dfd = $q.defer();
-                $http.get( buildURL( 'getSupervisors' ) + userID )
-                    .then( function ( data ) {
-                        dfd.resolve( data.data.results );
-                    })
-                    .catch( function ( err ) {
-                        dfd.reject( err );
-                    });
                 return dfd.promise;
             }
         };
@@ -902,48 +923,6 @@ function toGMT0(date) {
         });
     }
 }());
-(function () {
-'use strict';
-    angular
-        .module('hours.auth')
-        .controller('LoginController', LoginController);
-
-    LoginController.$invoke = [ '$scope', 'UserFactory', '$state' ];
-    function LoginController( $scope, UserFactory, $state ) {
-        initialVertex();
-        $scope.loginForm = {
-            username: null,
-            password: null
-        };
-
-        // $scope.loginCategory = $localStorage.loginCategory || 'standard';
-        // $scope.switchLoginCategory = function(cat) { $localStorage.loginCategory = $scope.loginCategory = cat; }
-        // $scope.isCategoryActive = function(cat) {
-        //     return $scope.loginCategory == cat;
-        // }
-
-        $scope.login = function () {
-            $scope.loginForm.error = false;
-            $scope.loginForm.disabled = true;
-            UserFactory.doLogin( $scope.loginForm )
-                .then( function ( data ) {
-                    if ( data.defaultPassword ) {
-                        $state.go( 'changePassword' );
-                    } else {
-                        $state.go( 'dashboard' );
-                    }
-                })
-                .catch( function ( err ) {
-                    $scope.loginForm.disabled = false;
-                    $scope.loginForm.error = err;
-                });
-        };
-
-        $scope.$on('$destroy', function () {
-            window.continueVertexPlay = false;
-        });
-    }
-}());
 ( function () {
     'use strict';
     angular
@@ -978,6 +957,42 @@ function toGMT0(date) {
                     $scope.recoveryForm.error = err;
                 });
         };
+    }
+}());
+( function () {
+'use strict';
+    angular
+        .module( 'hours.auth' )
+        .controller( 'LoginController', LoginController );
+
+    LoginController.$invoke = [ '$scope', 'UserFactory', '$state' ];
+    function LoginController( $scope, UserFactory, $state ) {
+        initialVertex();
+        $scope.loginForm = {
+            username: null,
+            password: null
+        };
+
+        $scope.login = function () {
+            $scope.loginForm.error = false;
+            $scope.loginForm.disabled = true;
+            UserFactory.doLogin( $scope.loginForm )
+                .then( function ( data ) {
+                    if ( data.defaultPassword ) {
+                        $state.go( 'changePassword' );
+                    } else {
+                        $state.go( 'dashboard' );
+                    }
+                })
+                .catch( function ( err ) {
+                    $scope.loginForm.disabled = false;
+                    $scope.loginForm.error = err;
+                });
+        };
+
+        $scope.$on( '$destroy', function () {
+            window.continueVertexPlay = false;
+        });
     }
 }());
 ( function () {
@@ -1111,7 +1126,7 @@ function toGMT0(date) {
 
         $scope.changePassClick = function() {
             $scope.showPwdContent = !$scope.showPwdContent;
-            $( '#page-content-wrapper' ).animate( { scrollTop: 0 }, 'slow' );
+            $( '#page-content-wrapper #section' ).animate( { scrollTop: 0 }, 'slow' );
         };
 
         $scope.save = function () {
@@ -1127,7 +1142,7 @@ function toGMT0(date) {
                     $scope.profileStatus = 2;                    
                 })
                 .finally( function() {
-                    $( '#page-content-wrapper' ).animate( { scrollTop: 0 }, 'slow' );
+                    $( '#page-content-wrapper #section' ).animate( { scrollTop: 0 }, 'slow' );
                 });
         };
 
@@ -1161,6 +1176,9 @@ function toGMT0(date) {
                         if ( data.data.success ) {
                             $scope.changePassword.displayMessage = 1;
                             $scope.changePassword.messageToDisplay = 'success';
+                            $timeout( function() {
+                                $scope.showPwdContent = false;
+                            }, 3500);
                         } else {
                             $scope.changePassword.displayMessage = -1;
                             switch( data.data.code ) {
@@ -1192,18 +1210,17 @@ function toGMT0(date) {
 
     }
 }());
-(function () {
+( function () {
     'use strict';
     angular
-        .module('hours.components')
-        .directive('zemSidebar', zemSidebar)
-        .controller('SidebarComponentController', SidebarComponentController);
+        .module( 'hours.components' )
+        .directive( 'zemSidebar', zemSidebar )
+        .controller( 'SidebarComponentController', SidebarComponentController );
 
-    SidebarComponentController.$invoke = ['$scope', 'UserFactory'];
-    function SidebarComponentController($scope, UserFactory) {
+    SidebarComponentController.$invoke = [ '$scope', 'UserFactory' ];
+    function SidebarComponentController( $scope, UserFactory ) {
         $scope.username = UserFactory.getUser();
     }
-
     function zemSidebar() {
         return {
             restrict: 'E',
@@ -1212,6 +1229,343 @@ function toGMT0(date) {
             controller: 'SidebarComponentController'
         };
     }
+}());
+
+( function () {
+    'use strict';
+    angular
+        .module( 'hours.employeeManager' )
+        .controller( 'createEmployeeController', createEmployeeController );
+
+    createEmployeeController.$invoke = [ '$scope', '$state', 'data', '$filter', '$timeout', 'EmployeeManagerFactory' ];
+    function createEmployeeController( $scope, $state, data, $filter, $timeout, EmployeeManagerFactory ) {
+
+        $scope.companies = data.enterprises;
+        $scope.supervisors = data.supervisors;
+
+        var employee = {
+            roles: ['ROLE_USER'],
+            enabled: true,
+            password: data.defaultPassword.defaultPassword
+        };
+
+        $scope.employee = employee;
+        $scope.maxDate = new Date();
+
+        $scope.open = function () {
+            $scope.status.opened = true;
+        };
+
+        $scope.dateOptions = {
+            formatYear: 'yy',
+            startingDay: 1,
+            showWeeks: false
+        };
+
+        $scope.status = {
+            opened: false
+        };
+
+        function loadSelectsTranslate() {
+            $scope.genres = [
+                {
+                    name: $filter( 'i18next' )( 'userProfile.user.genre_male' ),
+                    slug: 'male'
+                },
+                {
+                    name: $filter( 'i18next' )( 'userProfile.user.genre_female' ),
+                    slug: 'female'
+                }
+            ];
+
+            $scope.locales = [
+                {
+                    name: 'Español',
+                    slug: 'es'
+                },
+                {
+                    name: 'English',
+                    slug: 'en'
+                },
+                {
+                    name: 'Catalán',
+                    slug: 'ca'
+                }
+            ];
+
+            $scope.roles = [
+                {
+                    name: $filter( 'i18next' )( 'role.ROLE_BACKOFFICE' ),
+                    slug: 'ROLE_BACKOFFICE'
+                },
+                {
+                    name: $filter( 'i18next' )( 'role.ROLE_DELIVERY' ),
+                    slug: 'ROLE_DELIVERY'
+                },
+                {
+                    name: $filter( 'i18next' )( 'role.ROLE_MANAGER' ),
+                    slug: 'ROLE_MANAGER'
+                },
+                {
+                    name: $filter( 'i18next' )( 'role.ROLE_USER' ),
+                    slug: 'ROLE_USER'
+                }
+            ];
+
+            employee.roles.forEach( function ( role ) {
+                $filter( 'filter' )( $scope.roles, { slug: role} )[0].active = true;
+            });
+
+        }
+
+        $timeout( function () {
+            loadSelectsTranslate();
+        }, 100 );
+
+        $scope.changeRole = function () {
+            $scope.employee.roles = [];
+            $scope.roles.forEach( function( role ) {
+                if ( role.active ) {
+                    $scope.employee.roles.push( role.slug );
+                }
+            });
+        };
+
+        $scope.signupUser = function () {
+            $scope.employee.error = false;
+            $scope.employee.alreadyExists = false;
+            $( '#page-content-wrapper #section' ).animate( { scrollTop: 0 }, 'slow' );
+            
+            EmployeeManagerFactory.createEmployee( $scope.employee )
+                .then( function ( data ) {
+                    if( data.success ) {
+                        $scope.employee.success = true;
+                        $timeout( function () {
+                            $state.go( 'employeeManager' );
+                        }, 2500 );
+                    } else {
+                        $scope.employee.alreadyExists = true;
+                    }
+                })
+                .catch( function ( err ) {
+                    $scope.employee.error = true;
+                });
+        };
+    }
+}());
+( function () {
+    'use strict';
+    angular
+        .module( 'hours.employeeManager' )
+        .controller( 'editEmployeeController', editEmployeeController );
+
+    editEmployeeController.$invoke = [ '$scope', '$state', 'data', '$filter', '$timeout', 'EmployeeManagerFactory' ];
+    function editEmployeeController( $scope, $state, data, $filter, $timeout, EmployeeManagerFactory ) {
+        
+        $scope.companies = data.enterprises;
+        $scope.supervisors = data.supervisors;
+
+        data.employee.birthdate = new Date( data.employee.birthdate );
+        $scope.employee = data.employee;
+        $scope.maxDate = new Date();
+
+        $scope.open = function () {
+            $scope.status.opened = true;
+        };
+
+        $scope.dateOptions = {
+            formatYear: 'yy',
+            startingDay: 1,
+            showWeeks: false
+        };
+
+        $scope.status = {
+            opened: false
+        };
+
+        function loadSelectsTranslate() {
+            $scope.genres = [
+                {
+                    name: $filter( 'i18next' )( 'userProfile.user.genre_male' ),
+                    slug: 'male'
+                },
+                {
+                    name: $filter( 'i18next' )( 'userProfile.user.genre_female' ),
+                    slug: 'female'
+                }
+            ];
+
+            $scope.locales = [
+                {
+                    name: 'Español',
+                    slug: 'es'
+                },
+                {
+                    name: 'English',
+                    slug: 'en'
+                },
+                {
+                    name: 'Catalán',
+                    slug: 'ca'
+                }
+            ];
+
+            $scope.roles = [
+                {
+                    name: $filter( 'i18next' )( 'role.ROLE_BACKOFFICE' ),
+                    slug: 'ROLE_BACKOFFICE'
+                },
+                {
+                    name: $filter( 'i18next' )( 'role.ROLE_DELIVERY' ),
+                    slug: 'ROLE_DELIVERY'
+                },
+                {
+                    name: $filter( 'i18next' )( 'role.ROLE_MANAGER' ),
+                    slug: 'ROLE_MANAGER'
+                },
+                {
+                    name: $filter( 'i18next' )( 'role.ROLE_USER' ),
+                    slug: 'ROLE_USER'
+                }
+            ];
+
+            data.employee.roles.forEach( function( role ) {
+                $filter( 'filter' )( $scope.roles, { slug: role })[0].active = true;
+            });
+
+        }
+
+        $timeout( function () {
+            loadSelectsTranslate();
+        }, 100 );
+
+        $scope.changeRole = function () {
+            $scope.employee.roles = [];
+            $scope.roles.forEach( function( role ) {
+                if ( role.active ) {
+                    $scope.employee.roles.push( role.slug );
+                }
+            });
+        };
+
+        $scope.editUser = function () {
+            $( '#page-content-wrapper #section' ).animate( { scrollTop: 0 }, 'slow' );
+            $scope.employee.error = false;
+            EmployeeManagerFactory.updateEmployee( $scope.employee )
+                .then( function () {
+                        $scope.employee.success = true;
+                        $timeout( function () {
+                            $state.go( 'employeeManager' );
+                        }, 2500 );
+                    })
+                .catch( function () {
+                        $scope.employee.error = true;
+                    });
+        };
+
+    }
+}());
+( function () {
+    'use strict';
+    angular
+        .module( 'hours.employeeManager' )
+        .controller( 'listEmployeeController', listEmployeeController );
+        // .directive('myRole', myRole);
+
+    listEmployeeController.$invoke = [ '$scope', 'employees', 'EmployeeManagerFactory', '$timeout', '$filter', '$window' ];
+    function listEmployeeController( $scope, employees, EmployeeManagerFactory, $timeout, $filter ,$window ) {
+
+        $scope.tableConfig = {
+            itemsPerPage: getItemsPerPage(),
+            maxPages: "3",
+            fillLastPage: false,
+            currentPage: $scope.tmpData( 'get', 'employeeManagerListPage' ) || 0
+        };
+
+        function getItemsPerPage() {
+            return Math.floor( window.innerHeight / 60 ).toString();
+        };
+
+        $scope.search = {};
+        $scope.employees = employees;
+        $scope.var = false;
+        setUsersView();
+
+        $scope.toggleAdvancedSearch = function () {
+            $scope.showAdvancedSearch = !$scope.showAdvancedSearch;
+            if ( !$scope.showAdvancedSearch ) {
+                $scope.employees = employees;
+            } else {
+                $scope.avancedSearch();
+            }
+        };
+
+        $scope.avancedSearch = function () {
+            EmployeeManagerFactory.searchEmployee( $scope.search )
+                .then( function ( foundEmployees ) {
+                    $scope.employees = foundEmployees;
+                });
+        };
+
+        $timeout( function () { // ???
+            $( '[ng-click="stepPage(-numberOfPages)"]' ).text( $filter( 'i18next' )( 'actions.nextPage' ) );
+            $( '[ng-click="stepPage(numberOfPages)"]'  ).text( $filter( 'i18next' )( 'actions.lastPage' ) );
+        });
+
+        $scope.pageGetUp = function() {
+            $( '#page-content-wrapper #section' ).animate( { scrollTop: 0 }, 'slow' );
+        };
+
+        $scope.$on( '$destroy', function () {
+            $scope.tmpData( 'add', 'employeeManagerListPage', $scope.tableConfig.currentPage );
+        });
+
+
+        angular.element( $window ).bind( 'resize', function() {
+            $scope.$digest();
+            setUsersView();
+        });
+        function setUsersView() {
+            if( $window.innerWidth < 930 ) {
+                $scope.viewSet = false;
+            } else {
+                $scope.viewSet = true;            
+            }
+        }
+
+        var wrapper = document.getElementById( 'section' );
+        wrapper.onscroll = function ( event ) {
+            // if ( wrapper.scrollTop + window.innerHeight >= wrapper.scrollHeight ) {
+            if ( wrapper.scrollTop >= 400 ) {
+                $( '#toUpButton' ).fadeIn( 'slow' );
+            }
+                if ( wrapper.scrollTop < 400 ) {
+            $( '#toUpButton' ).fadeOut( 'slow' );
+            }
+        };
+
+}
+
+    // function myRole(UserFactory) {
+    //     return {
+    //         restrict: 'A',
+    //         scope: {
+    //             'myRole': '@'
+    //         },
+    //         compile: function(element, attributes){  
+    //             return {
+    //                 pre: function(scope, element, attributes, controller, transcludeFn){
+    //                     element.remove();
+    //                 },
+    //                 post: function(scope, element, attributes, controller, transcludeFn){
+    //                 }
+    //             }
+    //         },
+    //         link: function compile(scope, element, attrs) {
+    //         }
+    //     };
+    // }
+
 }());
 
 (function () {
@@ -1270,317 +1624,6 @@ function toGMT0(date) {
         };
     }
 }());
-(function () {
-    'use strict';
-    angular
-        .module('hours.employeeManager')
-        .controller('createEmployeeController', createEmployeeController);
-
-    createEmployeeController.$invoke = ['$scope', '$state', '$filter', '$timeout', 'EmployeeManagerFactory'];
-    function createEmployeeController($scope, $state, $filter, $timeout, EmployeeManagerFactory) {
-        var employee = {
-            roles: ['ROLE_USER'],
-            enabled: true,
-            password: 'zemsania$15'
-        };
-
-        $scope.employee = employee;
-
-        $scope.maxDate = new Date();
-
-        $scope.open = function () {
-            $scope.status.opened = true;
-        };
-
-        $scope.dateOptions = {
-            formatYear: 'yy',
-            startingDay: 1,
-            showWeeks: false
-        };
-
-        $scope.status = {
-            opened: false
-        };
-
-        function loadSelectsTranslate() {
-            $scope.genres = [
-                {
-                    name: $filter('i18next')('user.genre_male'),
-                    slug: 'male'
-                },
-                {
-                    name: $filter('i18next')('user.genre_female'),
-                    slug: 'female'
-                }
-            ];
-
-            $scope.locales = [
-                {
-                    name: 'Español',
-                    slug: 'es'
-                },
-                {
-                    name: 'English',
-                    slug: 'en'
-                }
-            ];
-
-            $scope.roles = [
-                {
-                    name: $filter('i18next')('role.ROLE_BACKOFFICE'),
-                    slug: 'ROLE_BACKOFFICE'
-                },
-                {
-                    name: $filter('i18next')('role.ROLE_DELIVERY'),
-                    slug: 'ROLE_DELIVERY'
-                },
-                {
-                    name: $filter('i18next')('role.ROLE_MANAGER'),
-                    slug: 'ROLE_MANAGER'
-                },
-                {
-                    name: $filter('i18next')('role.ROLE_USER'),
-                    slug: 'ROLE_USER'
-                }
-            ];
-
-            employee.roles.forEach(function (role) {
-                $filter('filter')($scope.roles, {slug: role})[0].active = true;
-            });
-
-        }
-
-        $timeout(function () {
-            loadSelectsTranslate();
-        }, 100);
-
-        $scope.changeRole = function (role) {
-            var allow = [];
-            switch (role) {
-                case 'ROLE_BACKOFFICE' :
-                    allow = ['ROLE_DELIVERY', 'ROLE_MANAGER', 'ROLE_USER'];
-                    break;
-                case 'ROLE_DELIVERY' :
-                    allow = ['ROLE_MANAGER', 'ROLE_USER'];
-                    break;
-                case 'ROLE_MANAGER' :
-                    allow = ['ROLE_USER'];
-                    break;
-                default :
-                    allow = ['ROLE_USER'];
-                    break;
-            }
-
-            $scope.roles.forEach(function (role) {
-                if (allow.indexOf(role.slug) > -1) {
-                    role.active = true;
-                }
-            });
-
-            employee.roles = allow;
-        };
-
-        $scope.signupUser = function () {
-            $scope.employee.error = false;
-            EmployeeManagerFactory.createEmployee($scope.employee)
-                .then(function () {
-                        $scope.employee.success = true;
-                        $timeout(function () {
-                            $state.go('employeeManager');
-                        }, 1500);
-                    },
-                    function () {
-                        $scope.employee.error = true;
-                    });
-        };
-
-    }
-}());
-( function () {
-    'use strict';
-    angular
-        .module( 'hours.employeeManager' )
-        .controller( 'editEmployeeController', editEmployeeController );
-
-    editEmployeeController.$invoke = [ '$scope', '$state', 'data', '$filter', '$timeout', 'EmployeeManagerFactory' ];
-    function editEmployeeController( $scope, $state, data, $filter, $timeout, EmployeeManagerFactory ) {
-        
-        $scope.companies = data.enterprises;
-        $scope.supervisors = data.supervisors;
-
-        data.employee.birthdate = new Date( data.employee.birthdate );
-        $scope.employee = data.employee;
-        $scope.maxDate = new Date();
-
-        $scope.open = function () {
-            $scope.status.opened = true;
-        };
-
-        $scope.dateOptions = {
-            formatYear: 'yy',
-            startingDay: 1,
-            showWeeks: false
-        };
-
-        $scope.status = {
-            opened: false
-        };
-
-        function loadSelectsTranslate() {
-            $scope.genres = [
-                {
-                    name: $filter('i18next')('userProfile.user.genre_male'),
-                    slug: 'male'
-                },
-                {
-                    name: $filter('i18next')('userProfile.user.genre_female'),
-                    slug: 'female'
-                }
-            ];
-
-            $scope.locales = [
-                {
-                    name: 'Español',
-                    slug: 'es'
-                },
-                {
-                    name: 'English',
-                    slug: 'en'
-                },
-                {
-                    name: 'Catalán',
-                    slug: 'ca'
-                }
-            ];
-
-            $scope.roles = [
-                {
-                    name: $filter('i18next')('role.ROLE_BACKOFFICE'),
-                    slug: 'ROLE_BACKOFFICE'
-                },
-                {
-                    name: $filter('i18next')('role.ROLE_DELIVERY'),
-                    slug: 'ROLE_DELIVERY'
-                },
-                {
-                    name: $filter('i18next')('role.ROLE_MANAGER'),
-                    slug: 'ROLE_MANAGER'
-                },
-                {
-                    name: $filter('i18next')('role.ROLE_USER'),
-                    slug: 'ROLE_USER'
-                }
-            ];
-
-            data.employee.roles.forEach( function( role ) {
-                $filter( 'filter' )($scope.roles, { slug: role })[0].active = true;
-            });
-
-        }
-
-        $timeout( function () {
-            loadSelectsTranslate();
-        }, 100 );
-
-        $scope.changeRole = function () {
-            $scope.employee.roles = [];
-            $scope.roles.forEach( function( role ) {
-                if ( role.active ) {
-                    $scope.employee.roles.push( role.slug );
-                }
-            });
-        };
-
-        $scope.editUser = function () {
-            $scope.employee.error = false;
-            EmployeeManagerFactory.updateEmployee( $scope.employee )
-                .then( function () {
-                        $scope.employee.success = true;
-                        $timeout( function () {
-                            $state.go( 'employeeManager' );
-                        }, 1500 );
-                    })
-                .catch( function () {
-                        $scope.employee.error = true;
-                    });
-        };
-
-    }
-}());
-( function () {
-    'use strict';
-    angular
-        .module( 'hours.employeeManager' )
-        .controller( 'listEmployeeController', listEmployeeController );
-        // .directive('myRole', myRole);
-
-    listEmployeeController.$invoke = [ '$scope', 'employees', 'EmployeeManagerFactory', '$timeout', '$filter' ];
-    function listEmployeeController( $scope, employees, EmployeeManagerFactory, $timeout, $filter ) {
-        $scope.tableConfig = {
-            itemsPerPage: getViwePortHeight(),
-            maxPages: "3",
-            fillLastPage: false,
-            currentPage: $scope.tmpData( 'get', 'employeeManagerListPage' ) || 0
-        };
-
-        function getViwePortHeight() {
-            return Math.floor( window.innerHeight / 80 ).toString();
-        };
-
-        $scope.search = {};
-        $scope.employees = employees;
-
-        $scope.var = false;
-
-        $scope.toggleAdvancedSearch = function () {
-            $scope.showAdvancedSearch = !$scope.showAdvancedSearch;
-            if ( !$scope.showAdvancedSearch ) {
-                $scope.employees = employees;
-            } else {
-                $scope.avancedSearch();
-            }
-        };
-
-        $scope.avancedSearch = function () {
-            EmployeeManagerFactory.searchEmployee( $scope.search )
-                .then( function ( foundEmployees ) {
-                    $scope.employees = foundEmployees;
-                });
-        };
-
-        $timeout( function () { // ???
-            $( '[ng-click="stepPage(-numberOfPages)"]' ).text( $filter( 'i18next' )( 'actions.nextPage' ) );
-            $( '[ng-click="stepPage(numberOfPages)"]'  ).text( $filter( 'i18next' )( 'actions.lastPage' ) );
-        });
-
-        $scope.$on( '$destroy', function () {
-            $scope.tmpData( 'add', 'employeeManagerListPage', $scope.tableConfig.currentPage );
-        });
-
-}
-
-    // function myRole(UserFactory) {
-    //     return {
-    //         restrict: 'A',
-    //         scope: {
-    //             'myRole': '@'
-    //         },
-    //         compile: function(element, attributes){  
-    //             return {
-    //                 pre: function(scope, element, attributes, controller, transcludeFn){
-    //                     element.remove();
-    //                 },
-    //                 post: function(scope, element, attributes, controller, transcludeFn){
-    //                 }
-    //             }
-    //         },
-    //         link: function compile(scope, element, attrs) {
-    //         }
-    //     };
-    // }
-
-}());
-
 var TAU = 2 * Math.PI;
 var canvas;
 var ctx;

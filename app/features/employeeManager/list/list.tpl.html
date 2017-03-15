@@ -1,29 +1,34 @@
-<div>
-    <div class="box-shadow p20 top-bar tool-bar">
-        <div class="pull-left">
-            <h3>{{'employeeManager.list.title' | i18next}}</h3>
+    <!-- HEADER TOOL-BAR -->
+    <header id="header">
+        <div id="headerContent">
+            <div class="flexDesign box-shadow p20 top-bar">
+                <div>
+                    <h3>{{'employeeManager.list.title' | i18next}}</h3>
+                </div>
+                <div class="rightMargin">
+                    <button ui-sref="employeeManagerCreate" class="btn btn-primary no-margin">
+                        {{'employeeManager.list.createNew' | i18next}}
+                    </button>
+                    <button class="btn btn-primary no-margin" ng-click="toggleAdvancedSearch()" ng-class="{'active' : showAdvancedSearch}">
+                        {{'employeeManager.list.advancedSearch' | i18next}}
+                    </button>
+                </div>
+            </div>
         </div>
-        <div class="pull-right">
-            <a ui-sref="employeeManagerCreate"
-               uib-tooltip="{{'employeeManager.list.createNew' | i18next}}" tooltip-placement="left"
-               tooltip-trigger="mouseenter"><i class="fa fa-user-plus"></i></a>
-            <a ng-click="toggleAdvancedSearch()" ng-class="{'active' : showAdvancedSearch}"
-               uib-tooltip="{{'employeeManager.list.advancedSearch' | i18next}}"
-               tooltip-placement="left" tooltip-trigger="mouseenter"><i class="fa fa-search"></i></a>
-        </div>
-    </div>
-    <br><br><br><br>
+    </header>
 
-     <div class="alert alert-danger alert-material" ng-show="removeStatus === 2">
+    <!-- SECTION MAIN CONTENT -->
+    <section id="section" class="box-shadow p20">
+        <div class="alert alert-danger alert-material" ng-show="removeStatus === 2">
         {{'employeeManager.list.removeUserError' | i18next}}
     </div>
     <div class="alert alert-success alert-material" ng-show="removeStatus === 1">
         {{'employeeManager.list.removeUserSuccess' | i18next}}
     </div>
 
-    <div class="box-shadow p20 advanced-search" ng-show="showAdvancedSearch">
+    <div class="advanced-search" ng-show="showAdvancedSearch">
         <h4>{{'employeeManager.list.advancedSearch' | i18next}}</h4>
-
+        <!-- ADVANCED SEARCH -->
         <form class="form-inline simple-input" ng-submit="avancedSearch()">
             <div class="col-md-12 form-elements">
                 <div class="form-group col-md-3">
@@ -50,25 +55,52 @@
         </form>
     </div>
 
-    <div class="box-shadow p20">
-        <table at-table at-config="tableConfig" at-paginated at-list="employees" class="table table-striped">
-            <div class="table-thead">
-                <thead></thead>
+    <div>
+        <div ng-show="viewSet">
+            <table at-table at-config="tableConfig" at-paginated at-list="employees" class="table table-striped">
+                <div class="table-thead">
+                    <thead></thead>
+                </div>
+                <tbody>
+                <tr ng-class="{'userDisabled':!item.enabled}">
+                    <td at-implicit at-sortable at-initial-sorting="asc" at-attribute="name" at-title="{{'userProfile.user.name' | i18next}}"></td>
+                    <td at-implicit at-sortable at-attribute="surname" at-title="{{'userProfile.user.lastname_plural' | i18next}}"></td>
+                    <td at-implicit at-sortable at-attribute="nif" at-title="{{'userProfile.user.nif' | i18next}}"></td>
+                    <!-- <td at-implicit at-sortable at-attribute="sex" at-title="{{'userProfile.user.genre' | i18next}}"></td> -->
+                    <td at-implicit at-sortable at-attribute="username" at-title="{{'userProfile.user.email' | i18next}}"></td>
+                    <td class="options-section">
+                        <a ui-sref="employeeManagerEdit({id: item._id})" class="btn btn-success">
+                            <i class="fa fa-pencil"></i></a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div ng-hide="viewSet">
+            <div id="itemsList" ng-repeat="(key, value) in employees">
+                <div class="usersList">
+                    <ul>
+                        <li><strong>{{value.name}} {{value.surname}}</strong></li>
+                        <li>{{value.nif}}</li>
+                        <li>{{value.username}}</li>
+                    </ul>
+                        <a ui-sref="employeeManagerEdit({id: value._id })" class="btn btn-success">
+                                <i class="fa fa-pencil"></i>
+                        </a>
+                </div>
             </div>
-            <tbody>
-            <tr>
-                <td at-implicit at-sortable at-initial-sorting="asc" at-attribute="name" at-title="{{'userProfile.user.name' | i18next}}"></td>
-                <td at-implicit at-sortable at-attribute="surname" at-title="{{'userProfile.user.lastname_plural' | i18next}}"></td>
-                <td at-implicit at-sortable at-attribute="nif" at-title="{{'userProfile.user.nif' | i18next}}"></td>
-                <!-- <td at-implicit at-sortable at-attribute="sex" at-title="{{'userProfile.user.genre' | i18next}}"></td> -->
-                <td at-implicit at-sortable at-attribute="username" at-title="{{'userProfile.user.email' | i18next}}"></td>
-                <td class="options-section">
-                    <a ui-sref="employeeManagerEdit({id: item._id})" class="btn btn-success">
-                        <i class="fa fa-pencil"></i></a>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+        </div>
     </div>
-    <at-pagination style="position: fixed;bottom: 0; right: 50px;" at-config="tableConfig" at-list="employees" class="table-pagination"></at-pagination>
-</div>
+    </section>
+
+    <footer id="footer">
+        <div id="footerContent">
+            <at-pagination ng-show="viewSet" at-config="tableConfig" at-list="employees" class="table-pagination"></at-pagination>
+            <a id="toUpButton" class="pull-right" ng-click="pageGetUp()">
+                <i style="font-size: 62px;" class="fa fa-arrow-circle-o-up"></i>
+            </a>
+        </div>
+    </footer>
+
+

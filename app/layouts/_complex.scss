@@ -3,71 +3,140 @@
   #wrapper {
     height: 100%;
     padding-left: 0;
-
+    // overflow: auto;
     // @include transition(all .4s ease);
-    &.toggled {
-      padding-left: 250px;
-      #sidebar-wrapper {
-        width: 250px;
-      }
-      #page-content-wrapper {
-        position: absolute;
-        margin-right: -250px;
-      }
-    }
+    // &.toggled {
+    //   padding-left: 250px;
+    //   #sidebar-wrapper {
+    //     width: 250px;
+    //   }
+    //   #page-content-wrapper {
+    //     position: absolute;
+    //     margin-right: -250px;
+    //   }
+    // }
+
     #page-content-wrapper {
-      height: 100%;
-      overflow-y: scroll;
-      > .container-fluid {
-        min-height: 100%;
-        @media #{$mobile} {
-          padding: 0;
-        }
-      }
+      // height: 100%;
+      // overflow-y: scroll;
+      // > .container-fluid {
+      //   min-height: 100%;
+      //   @media #{$mobile} {
+      //     padding: 0;
+      //   }
+      // }
+
     }
-  }
-
-  #sidebar-wrapper {
-    z-index: 1000;
-    position: fixed;
-    left: 250px;
-    width: 0;
-    height: 100%;
-    margin-left: -250px;
-    overflow-y: auto;
-    background-color: #FFF;
-
-    // @include transition(all .4s ease);
-    box-shadow: 0 0 25px rgba(black, 0.07);
-    transition: all .7s ease;
+    #menuButton {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      display: none;
+      z-index: 1000;
+    }
   }
 
   #page-content-wrapper {
-    width: 100%;
-    position: absolute;
-    /*padding: 15px;*/
-    /*z-index: 99999;*/
+    height: 100%;
+    margin: 10px;
+    margin-left: 255px;
+    position: relative;
+    transition: all .7s ease;
+    z-index: 10;
     @media #{$mobile} {
-      padding-top: 50px;
+      // padding-top: 50px;
     }
-      .tool-bar {
-        max-width: inherit !important;
-        position: fixed;
-        width: 70% !important;
-        z-index: 10000;
+    #header {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        overflow: hidden;
+        height: 80px;
+        #headerContent {
+          width: 95%;
+          margin: auto;
+        }
+    }
+    #section {
+        position: absolute;
+        top: 85px;
+        bottom: 65px;
+        left: 0;
+        right: 0;
+        overflow: auto;
+        border: 1px solid #DDDDDD;
+    }
+    #footer {
+        position: absolute;
+        bottom: 15px;
+        left: 0;
+        right: 0;
+        overflow: hidden;
+        height: 60px;
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: flex-end;
+        align-items: center;
+        #footerContent {
+          width: 80%;
+          margin: 0 auto;
+        }
+    }
+    .flexDesign {
         display: flex;
         flex-flow: row wrap;
         justify-content: space-between;
         align-items: center;
-        background-color: #F9F9F9;
-        .rightContent > * {
-            margin-right: 10px !important;
+    }
+    .rightMargin > * {
+        margin-right: 10px !important;      
+    }
+
+  /* users list on employeeManager/List */
+    #itemsList {
+        width: 80%;
+        margin: 15px auto;
+        padding: 15px;
+        border: 1px solid #E0E0E0;
+        ul li { 
+          list-style: none;
+        }
+        .usersList {
+          display: flex;
+          flex-flow: row nowrap;
+          justify-content: space-between;
+          align-items: center;
         }
     }
- }
-  
+    #toUpButton {
+        display: none;
+    }
+ } // #page-content-wrapper  
+
 
   /* Sidebar Styles */
+   #sidebar-wrapper {
+      width: 250px;
+      height: 100%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      background-color: #FFF;
+      overflow-y: auto;
+      transition: all 2s ease;
+      z-index: 100;
+    // position: fixed;
+    // left: 250px;
+    // width: 0;
+    // height: 100%;
+    // margin-left: -250px;
+    // @include transition(all .4s ease);
+    // box-shadow: 0 0 25px rgba(black, 0.07);
+    &.toggled {
+      left: 0;
+    }
+  }
 
   .sidebar-nav {
     position: absolute;
@@ -114,7 +183,7 @@
         &.active {
           i {
             color: white;
-            background: $zemsania;
+            background-color: $zemsania;
           }
         }
         &:hover:not(.noShadowForMePlease) {
@@ -138,13 +207,12 @@
       top: 0;
       width: 250px;
       box-shadow: 0 20px 25px -25px rgba(black, .1);
-
       a {
         height: auto;
         &:hover {
         }
         img {
-          padding: 0 15px;
+          padding: 10px 0 0 50px;
           height: 60px;
           display: block;
         }
@@ -156,33 +224,32 @@
       top: 95px;
       left: 0;
     }
+  } // .sidebar-nav
 
-  }
-
-  @media(min-width: 768px) {
+  @media(max-width: 768px) {
     #wrapper {
-      padding-left: 250px;
-      &.toggled {
-        padding-left: 0;
-        #sidebar-wrapper {
-          width: 0;
-        }
-        #page-content-wrapper {
-          position: relative;
-          margin-right: 0;
-        }
-      }
+      // padding-left: 250px;
+      // &.toggled {
+      //   padding-left: 0;
+      //   #sidebar-wrapper {
+      //     width: 0;
+      //   }
+      //   #page-content-wrapper {
+      //     position: relative;
+      //     margin-right: 0;
+      //   }
+      // }
+          #menuButton {
+            display: block;
+          }
     }
 
-    #sidebar-wrapper {
-      width: 250px;
+   #sidebar-wrapper {
+      left: -250px;
+  }
+   #page-content-wrapper {
+      margin-left: 42px;
     }
-
-    #page-content-wrapper {
-      padding: 20px;
-      position: relative;
-    }
-
   }
 
   .box-shadow {
@@ -218,6 +285,11 @@
     }
   }
 
+  .userDisabled {
+    text-decoration: line-through;
+    color: #FFC0C0;
+  }
+
   .header-mobile {
     top: 0;
     left: 0;
@@ -232,13 +304,12 @@
       color: $zemsania;
       border: none;
       background: transparent;
-
     }
   }
 
-  .toggled .header-mobile {
-    left: 250px;
-  }
+  // .toggled .header-mobile {
+  //   left: 250px;
+  // }
 
   table.table-striped.table {
     .table-thead {

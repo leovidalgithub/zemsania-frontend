@@ -1,8 +1,8 @@
-(function () {
+( function () {
 'use strict';
     angular
-        .module('hours.auth')
-        .controller('LoginController', LoginController);
+        .module( 'hours.auth' )
+        .controller( 'LoginController', LoginController );
 
     LoginController.$invoke = [ '$scope', 'UserFactory', '$state' ];
     function LoginController( $scope, UserFactory, $state ) {
@@ -11,12 +11,6 @@
             username: null,
             password: null
         };
-
-        // $scope.loginCategory = $localStorage.loginCategory || 'standard';
-        // $scope.switchLoginCategory = function(cat) { $localStorage.loginCategory = $scope.loginCategory = cat; }
-        // $scope.isCategoryActive = function(cat) {
-        //     return $scope.loginCategory == cat;
-        // }
 
         $scope.login = function () {
             $scope.loginForm.error = false;
@@ -35,7 +29,7 @@
                 });
         };
 
-        $scope.$on('$destroy', function () {
+        $scope.$on( '$destroy', function () {
             window.continueVertexPlay = false;
         });
     }

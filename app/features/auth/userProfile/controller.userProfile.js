@@ -129,7 +129,7 @@
 
         $scope.changePassClick = function() {
             $scope.showPwdContent = !$scope.showPwdContent;
-            $( '#page-content-wrapper' ).animate( { scrollTop: 0 }, 'slow' );
+            $( '#page-content-wrapper #section' ).animate( { scrollTop: 0 }, 'slow' );
         };
 
         $scope.save = function () {
@@ -145,7 +145,7 @@
                     $scope.profileStatus = 2;                    
                 })
                 .finally( function() {
-                    $( '#page-content-wrapper' ).animate( { scrollTop: 0 }, 'slow' );
+                    $( '#page-content-wrapper #section' ).animate( { scrollTop: 0 }, 'slow' );
                 });
         };
 
@@ -179,6 +179,9 @@
                         if ( data.data.success ) {
                             $scope.changePassword.displayMessage = 1;
                             $scope.changePassword.messageToDisplay = 'success';
+                            $timeout( function() {
+                                $scope.showPwdContent = false;
+                            }, 3500);
                         } else {
                             $scope.changePassword.displayMessage = -1;
                             switch( data.data.code ) {

@@ -41,13 +41,13 @@
                     data: function ( EmployeeManagerFactory, $stateParams, $q ) {
                         var employee    = EmployeeManagerFactory.getEmployeeFromID( $stateParams.id );
                         var enterprises = EmployeeManagerFactory.getEnterprises();
-                        var supervisors = EmployeeManagerFactory.getSupervisors( $stateParams.id );
+                        var supervisors = EmployeeManagerFactory.supervisorsExceptID( $stateParams.id );
                         return $q.all( { employee : employee, enterprises : enterprises, supervisors : supervisors } );
                     }
                 }
 
             })
-            .state('employeeManagerCreate', {
+            .state( 'employeeManagerCreate', { // LEO WAS HERE
                 url: '/employeeManager/create',
                 templateUrl: '/features/employeeManager/create/create.tpl.html',
                 controller: 'createEmployeeController',
@@ -57,6 +57,14 @@
                     permissions: {
                         only: ['administrator'],
                         redirectTo: 'dashboard'
+                    }
+                },
+                resolve: {
+                    data: function ( EmployeeManagerFactory, $stateParams, $q ) {
+                        var enterprises     = EmployeeManagerFactory.getEnterprises();
+                        var supervisors     = EmployeeManagerFactory.getAllSupervisors();                        
+                        var defaultPassword = EmployeeManagerFactory.getDefaultPassword();
+                        return $q.all( { enterprises : enterprises, supervisors : supervisors, defaultPassword : defaultPassword } );
                     }
                 }
             });
