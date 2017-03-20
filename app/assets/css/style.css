@@ -61,7 +61,7 @@
 }
 #complex_layout #page-content-wrapper .flexDesign {
   display: flex;
-  flex-flow: row wrap;
+  flex-flow: row nowrap;
   justify-content: space-between;
   align-items: center;
 }
@@ -99,6 +99,7 @@
 }
 #complex_layout #sidebar-wrapper.toggled {
   left: 0;
+  top: 0;
 }
 #complex_layout .sidebar-nav {
   position: absolute;
@@ -179,15 +180,34 @@
   top: 95px;
   left: 0;
 }
+#complex_layout .sidebar-nav .not-active {
+  pointer-events: none;
+  cursor: default;
+  color: #C2C2C2;
+}
 @media (max-width: 768px) {
   #complex_layout #wrapper #menuButton {
     display: block;
   }
   #complex_layout #sidebar-wrapper {
     left: -250px;
+    top: -135px;
   }
   #complex_layout #page-content-wrapper {
     margin-left: 42px;
+  }
+  #complex_layout #page-content-wrapper #itemsList {
+    width: 95%;
+    margin: 15px auto;
+    padding: 8px 2px;
+  }
+}
+@media (max-width: 1044px) {
+  #complex_layout #page-content-wrapper .flexDesign {
+    flex-flow: column nowrap;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
   }
 }
 #complex_layout .box-shadow, #complex_layout .header-mobile, #complex_layout .dropdown-menu[uib-datepicker-popup-wrap] {
@@ -764,6 +784,7 @@ html.blockView {
 
 .object-shadow, #complex_layout .box-shadow, #complex_layout .header-mobile, #complex_layout .dropdown-menu[uib-datepicker-popup-wrap], #complex_layout .table-pagination .pagination, .simple-input button.button-text, .modal-open .modal .modal-content {
   box-shadow: 6px 9px 15px -5px gray;
+  border-radius: 5px;
 }
 
 .alert {

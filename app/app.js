@@ -28,7 +28,7 @@
             'hours.dashboard',
             'hours.components',
             'hours.employeeManager',
-            // 'hours.calendar',
+            'hours.calendar'
             // 'hours.reports',
             // 'hours.projects',
             // 'hours.excelExport'

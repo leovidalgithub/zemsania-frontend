@@ -51,7 +51,7 @@
         "vacationManager": "Revisar vacaciones",
         "moderateSpents": "Gestión de gastos",
         "imputeSpents": "Listado de gastos",
-        "holidaySchemes": "Calendarios",
+        "calendars": "Calendarios",
         "workloadSchemes": "Horarios",
         "employeeTimesheets": "Aprobacion Gestor",
         "projectTimesheets": "Aprobacion proyecto",
@@ -109,7 +109,8 @@
         "done": "Finalizar",
         "remove": "Eliminar",
         "sure": "¿Seguro?",
-        "search": "Buscar",
+        "search": "Búsqueda",
+        "toSearch": "Buscar",
         "create": "Crear",
         "reset": "Borrar",
         "next": "Continuar",
@@ -146,7 +147,7 @@
             "saveError": "Ha ocurrido un error al dar de alta el empleado. Inténtalo más tarde."
         },
         "edit": {
-            "title": "Edición de empleados",
+            "title": "Editar empleado",
             "minRoles": "Mínimo tiene que existir un rol",
             "saveSuccess": "Los datos se han guardado con éxito",
             "saveError": "Ha ocurrido un error al guardar los datos. Inténtalo más tarde"
@@ -161,9 +162,9 @@
         "title": "Aprobacion Via Proyectos",
         "description": "La descripción de las páginas de los proyectos .."
     },
-    "holidaySchemes": {
+    "calendars": {
         "title": "Esquemas de Calendarios",
-        "description": "Crear esquemas de vacaciones para, gestionar diferentes tipos de vacaciones de usuario. Los nuevos usuarios se agregan automáticamente al esquema de vacaciones predeterminado."
+        "description": "Esquema de Calendarios. Los nuevos usuarios se agregan automáticamente al esquema predeterminado."
     },
     "workloadSchemes": {
         "title": "Patrón Horario",
@@ -241,6 +242,10 @@
         },
         "calendarCreator": {
             "weekendsAreHolidays": "Fines de semana no laborables"
+        },
+        "calendars": {
+            "name": "Nombre del Calendario",
+            "description": "Descripción"
         }
     },
     "projects": {

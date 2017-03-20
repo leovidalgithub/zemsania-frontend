@@ -16,7 +16,7 @@
         };
 
         function getItemsPerPage() {
-            return Math.floor( window.innerHeight / 60 ).toString();
+            return Math.floor( window.innerHeight / 65 ).toString();
         };
 
         $scope.search = {};
@@ -25,6 +25,7 @@
         setUsersView();
 
         $scope.toggleAdvancedSearch = function () {
+            $( '#page-content-wrapper #section' ).animate( { scrollTop: 0 }, 'slow' );
             $scope.showAdvancedSearch = !$scope.showAdvancedSearch;
             if ( !$scope.showAdvancedSearch ) {
                 $scope.employees = employees;

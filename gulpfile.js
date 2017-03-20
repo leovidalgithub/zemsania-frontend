@@ -17,7 +17,7 @@ gulp.task( 'connect', function () {
 });
 
 gulp.task( 'sass', function () {
-    gulp.src( './app/**/*.scss')
+    gulp.src( './app/**/*.scss' )
         .pipe( compass({
             config_file: './app/assets/config.rb',
             css: './app/assets/css',
@@ -81,7 +81,7 @@ gulp.task( 'vendors:css', function () {
         ])
         .pipe( concat( 'vendors.css') )
         .pipe( minifyCss() )
-        .pipe( gulp.dest( './app/assets/css/') );
+        .pipe( gulp.dest( './app/assets/css/' ) );
 });
 
 gulp.task( 'vendors:js', function () {
@@ -118,6 +118,5 @@ gulp.task( 'vendors:js', function () {
 });
 
 gulp.task( 'vendors', [ 'vendors:js', 'vendors:css' ] );
-gulp.task( 'start', [ 'connect', 'watch' ]);
+gulp.task( 'start',   [ 'connect', 'watch' ] );
 gulp.task( 'compile', [ 'vendors', 'js', 'js:compress' ] );
-

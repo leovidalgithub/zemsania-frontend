@@ -1,0 +1,85 @@
+    <!-- HEADER TOOL-BAR -->
+    <header id="header">
+        <div id="headerContent">
+            <div class="flexDesign box-shadow p20 top-bar">
+                <div>
+                    <h3>{{'calendars.title' | i18next}}</h3>
+                </div>
+                <div class="rightMargin">
+<!--                     <button ui-sref="employeeManagerCreate" class="btn btn-primary no-margin">
+                        {{'employeeManager.list.createNew' | i18next}}
+                    </button>
+ -->                    
+                    <button class="btn btn-primary no-margin" ng-click="toggleAdvancedSearch()" ng-class="{'active' : showAdvancedSearch}">
+                        {{'actions.search' | i18next}}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- SECTION MAIN CONTENT -->
+    <section id="section" class="box-shadow p20">
+
+        <div class="advanced-search" ng-show="showAdvancedSearch">
+            <h4>{{'actions.search' | i18next}}</h4>
+            <!-- ADVANCED SEARCH -->
+            <form class="form-inline simple-input" ng-submit="avancedSearch()">
+                <div class="col-md-12 form-elements">
+                    <div class="form-group col-md-6">
+                        <input type="text" class="form-control"
+                               placeholder="{{'calendar.calendars.name' | i18next}}" ng-model="search.name">
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="reset" class="btn btn-warning">{{'actions.reset' | i18next}}</button>
+                    <button type="submit" class="btn btn-primary">{{'actions.toSearch' | i18next}}</button>
+                </div>
+            </form>
+        </div>
+
+    <div>
+        <div ng-show="viewSet">
+            <table at-table at-config="tableConfig" at-paginated at-list="calendars" class="table table-striped">
+                <div class="table-thead">
+                    <thead></thead>
+                </div>
+                <tbody>
+                <tr ng-class="{'userDisabled':!item.enabled}">
+                    <td at-implicit at-sortable at-initial-sorting="asc" at-attribute="name" at-title="{{'calendar.calendars.name' | i18next}}"></td>
+                    <td at-implicit at-sortable at-attribute="description" at-title="{{'calendar.calendars.description' | i18next}}"></td>
+                    <td class="options-section">
+                        <a ui-sref="employeeManagerEdit({id: item._id})" class="btn btn-success">
+                            <i class="fa fa-pencil"></i></a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div ng-hide="viewSet">
+            <div id="itemsList" ng-repeat="(key, value) in calendars">
+                <div class="usersList">
+                    <ul>
+                        <li><strong>{{value.name}}</strong></li>
+                        <li>{{value.description}}</li>
+                    </ul>
+                        <a ui-sref="employeeManagerEdit({id: value._id })" class="btn btn-success">
+                                <i class="fa fa-pencil"></i>
+                        </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    </section>
+
+    <footer id="footer">
+        <div id="footerContent">
+            <at-pagination ng-show="viewSet" at-config="tableConfig" at-list="calendars" class="table-pagination"></at-pagination>
+            <a id="toUpButton" class="pull-right" ng-click="pageGetUp()">
+                <i style="font-size: 62px;" class="fa fa-arrow-circle-o-up"></i>
+            </a>
+        </div>
+    </footer>
+
+
