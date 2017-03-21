@@ -4,19 +4,10 @@
         .module( 'hours.calendar' )
         .controller( 'CalendarsController', CalendarsController );
 
-    CalendarsController.$invoke = [ '$scope', '$filter', '$window' ];
-    function CalendarsController( $scope, $filter, $window ) {
+    CalendarsController.$invoke = [ '$scope', '$filter', '$window', 'CalendarFactory', 'calendars' ];
+    function CalendarsController( $scope, $filter, $window, CalendarFactory, calendars ) {
 
-        $scope.calendars = [
-                {
-                    name : 'Coruña',
-                    description : 'Calendario de La Coruña'
-                },
-                {
-                    name : 'CCS',
-                    description : 'Calendario de Caracas'
-                }
-        ];
+        $scope.calendars = calendars;
 
         $scope.tableConfig = {
             itemsPerPage: getItemsPerPage(),

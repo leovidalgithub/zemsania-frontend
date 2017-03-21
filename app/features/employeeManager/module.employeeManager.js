@@ -45,8 +45,8 @@
                         return $q.all( { employee : employee, enterprises : enterprises, supervisors : supervisors } );
                     }
                 }
-
             })
+            
             .state( 'employeeManagerCreate', { // LEO WAS HERE
                 url: '/employeeManager/create',
                 templateUrl: '/features/employeeManager/create/create.tpl.html',

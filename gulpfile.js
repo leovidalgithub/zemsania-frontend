@@ -71,12 +71,12 @@ gulp.task( 'js:compress', function () {
 
 gulp.task( 'vendors:css', function () {
     return gulp.src([
+            './bower_components/jquery-ui/themes/smoothness/jquery-ui.css',
             './bower_components/angular-loading-bar/build/loading-bar.min.css',
             './bower_components/bootstrap/dist/css/bootstrap.min.css',
             './bower_components/fullcalendar/dist/fullcalendar.min.css',
             './bower_components/animate.css/animate.min.css',
             './bower_components/font-awesome/css/font-awesome.css',
-
             './lib/ui-bootstrap/ui-bootstrap-custom-0.14.3-csp.css'
         ])
         .pipe( concat( 'vendors.css') )
@@ -86,9 +86,9 @@ gulp.task( 'vendors:css', function () {
 
 gulp.task( 'vendors:js', function () {
     return gulp.src([
-            // './bower_components/angular/angular.min.js',
             './bower_components/angular/angular.js',
-            './bower_components/jquery/dist/jquery.min.js',
+            './bower_components/jquery/jquery.js',
+            './bower_components/jquery-ui/ui/jquery-ui.js',
             './bower_components/angular-ui-router/release/angular-ui-router.min.js',
             './bower_components/angular-permission/dist/angular-permission.js',
             './bower_components/angular-permission/dist/angular-permission-ui.js',

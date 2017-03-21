@@ -215,6 +215,9 @@ var API_paths = {
     holidaysApprove: 'holidays/approve',
     holidaysReject: 'holidays/reject',
 
+    getCalendars : 'calendar/getCalendars',
+    getCalendarById : 'calendar/getCalendarById/',
+
     getSpents: 'spents/get',
     getSpentById: 'spents/search',
     spentsImpute: 'spents/impute',
@@ -396,9 +399,9 @@ function toGMT0(date) {
     calendarsConfig.$invoke = [ '$stateProvider' ];
     function calendarsConfig( $stateProvider ) {
         $stateProvider
-            .state( 'calendars', {
+            .state( 'calendars', { // LEO WORKING HERE
                 url: '/calendars',
-                templateUrl: '/features/calendar/calendars/calendars.list.tpl.html',
+                templateUrl: '/features/calendar/calendars/list/calendars.list.tpl.html',
                 controller: 'CalendarsController',
                 data: {
                     template: 'complex',
@@ -408,11 +411,25 @@ function toGMT0(date) {
                     }
                 },
                 resolve : {
-                    // dailyConcepts : function(CalendarFactory){
-                    //     return CalendarFactory.getDailyConcepts();
-                    // }
+                    calendars : function( CalendarFactory ) {
+                        return CalendarFactory.getCalendars();
+                    }
                 }
-            });
+            })
+
+            .state( 'calendarsEdit', { // LEO WORKING HERE
+                url: '/calendars/edit/:id',
+                templateUrl: '/features/calendar/calendars/edit/calendars.edit.tpl.html',
+                controller: 'editCalendarsController',
+                data: {
+                    // state: 'employeeManager',
+                    template: 'complex',
+                    permissions: {
+                        except: [ 'anonymous' ],
+                        redirectTo: 'login'
+                    }
+                }
+            })
     }
 }());
 
@@ -520,8 +537,8 @@ function toGMT0(date) {
                         return $q.all( { employee : employee, enterprises : enterprises, supervisors : supervisors } );
                     }
                 }
-
             })
+            
             .state( 'employeeManagerCreate', { // LEO WAS HERE
                 url: '/employeeManager/create',
                 templateUrl: '/features/employeeManager/create/create.tpl.html',
@@ -679,338 +696,375 @@ function toGMT0(date) {
         };
     }
 }());
-(function () {
+( function () {
     'use strict';
     angular
-        .module('hours.calendar')
-        .factory('CalendarFactory', CalendarFactory);
+        .module( 'hours.calendar' )
+        .factory( 'CalendarFactory', CalendarFactory );
 
-    CalendarFactory.$invoke = ['$http', '$q', '$filter'];
-    function CalendarFactory($http, $q, $filter) {
+    CalendarFactory.$invoke = [ '$http', '$q', '$filter' ];
+    function CalendarFactory( $http, $q, $filter ) {
         return {
-            getCalendarByDates: function (initDate, endDate, user) {
+
+            getCalendars: function () { // LEO WORKING HERE
                 var dfd = $q.defer();
-                var dates = {
-                    initDate: initDate,
-                    endDate: endDate
-                };
-                /* global t_dates*/
-                window.t_dates = dates;
-                var serviceUrl = buildURL('dayGet');
-                if (user) {
-                    dates.userId = user;
-                    serviceUrl = buildURL('dayGetByUser');
-                }
+                $http.get( buildURL( 'getCalendars' ) )
+                    .then( function ( response ) {
 
-                $http
-                    .post(serviceUrl, dates)
-                    .then(function (response) {
-                        if (response.data.success) {
-                            var projects = response.data.projects;
-                            var dailyReports = response.data.dailyReports;
-                            var datesBlocked = response.data.datesBlocked;
-                            var todayDate = toGMT0(t_dates.initDate);
-                            var _end = toGMT0(angular.copy(todayDate));
-                            var weekEnd = toGMT0(new Date(_end.setDate(_end.getDate() + 6)));
-                            //
+                        dfd.resolve( response.data.calendars );
+                        // if ( response.data ) {
+                        //     dfd.resolve( response.data );
+                        // } else {
+                        //     dfd.reject( response.data );
+                        // }
 
-                            var blockDates = [];
-                            var serviceResponse = {};
-                            var customers_matrix = [];
-                            var customers = {};
-                            var userProjects = [];
-                            var workingDays = {};
-                            //
-
-                            datesBlocked.forEach(function (date) {
-                                blockDates.push(toGMT0(date).getDay());
-                            });
-
-                            projects.forEach(function (project) {
-                                var newProject = !$filter('filter')(userProjects, {projectRef: project.projectRef}, true).length;
-
-                                if (newProject && angular.isUndefined(workingDays[project.projectRef])) {
-                                    workingDays[project.projectRef] = [];
-                                }
-
-                                var projectInit = toGMT0(project.implicationInit);
-                                var projectEnd;
-                                if (angular.isDefined(project.implicationEnd)) {
-                                    projectEnd = toGMT0(project.implicationEnd);
-                                } else {
-                                    var inALongTime = new Date().setFullYear(6000);
-                                    projectEnd = toGMT0(inALongTime);
-                                }
-
-                                if (projectInit < todayDate) {
-                                    projectInit = angular.copy(todayDate);
-                                }
-
-                                if (projectEnd > weekEnd) {
-                                    projectEnd = weekEnd;
-                                }
-
-                                while (projectInit <= projectEnd) {
-                                    var add = new Date(toGMT0(projectInit)).getDay();
-                                    if (workingDays[project.projectRef].indexOf(add) < 0 &&
-                                        blockDates.indexOf(add) < 0) {
-
-                                        workingDays[project.projectRef].push(add);
-                                    }
-                                    projectInit = toGMT0(new Date(projectInit.setDate(projectInit.getDate() + 1)));
-                                }
-
-                                if (newProject) {
-                                    project.days = workingDays[project.projectRef];
-                                    project.reports = {};
-
-                                    project.days.forEach(function (day) {
-                                        var t_day = day - 1;
-                                        t_day = t_day < 0 ? 6 : t_day;
-                                        var t_initDate = new Date(t_dates.initDate);
-                                        var t_date = toGMT0(new Date(t_initDate.setDate(t_initDate.getDate() + t_day)));
-                                        var reportAssociated = $filter('filter')(dailyReports, {
-                                            projectId: project._id,
-                                            date: $filter('date')(t_date, 'yyyy-MM-dd')
-                                        });
-
-                                        project.subfamilies.forEach(function (family) {
-                                            project.reports[day + '_' + family] = {
-                                                date: t_date,
-                                                conceptDailyId: family,
-                                                projectId: project._id
-                                            };
-                                        });
-
-                                        if (reportAssociated.length) {
-                                            reportAssociated.forEach(function(repo){
-                                                project.reports[day+ '_' + repo.conceptDailyId].units = repo.units;
-                                                project.reports[day+ '_' + repo.conceptDailyId].report = repo.report;
-                                                project.status = reportAssociated[0].status;
-                                            });
-
-                                        }
-                                    });
-                                    userProjects.push(project);
-
-                                    if (angular.isUndefined(customers[project.customerName])) {
-                                        customers[project.customerName] = [];
-                                    }
-                                    customers[project.customerName].push(project);
-                                }
-                            });
-
-                            Object.keys(customers).forEach(function (customer) {
-                                var t_customer = {
-                                    customerName: customer,
-                                    projects: customers[customer]
-                                };
-                                customers_matrix.push(t_customer);
-                            });
-
-                            serviceResponse.customers = customers_matrix;
-                            serviceResponse.projects = projects;
-
-                            dfd.resolve(serviceResponse);
-                        } else {
-                            dfd.reject(response);
-                        }
-                    }, function (err) {
-                        dfd.reject(err);
+                    })
+                    .catch( function ( err ) {
+                        dfd.reject( err );
                     });
 
                 return dfd.promise;
             },
-            saveImputedHours: function (days) {
+
+            getCalendarById: function ( calendarID ) { // LEO WORKING HERE
                 var dfd = $q.defer();
-                $http
-                    .post(buildURL('dayImpute'), {"dailyReports": days})
-                    .then(function (response) {
-                        if (response.data.success) {
-                            dfd.resolve(response.data);
-                        } else {
-                            dfd.reject(response.data.errors);
-                        }
-                    }, function (err) {
-                        dfd.reject(err);
-                    });
-
-                return dfd.promise;
-            },
-            getDailyConcepts: function () {
-                var dfd = $q.defer();
-                $http
-                    .get(buildURL('getDailyConcepts'))
-                    .then(function (response) {
-                        if (response.data) {
-                            dfd.resolve(response.data);
-                        } else {
-                            dfd.reject(response.data);
-                        }
-                    }, function (err) {
-                        dfd.reject(err);
-                    });
-
-                return dfd.promise;
-            },
-            getUserHolidayCalendar: function (user) {
-                var dfd = $q.defer();
-                var specificUser = '';
-
-                if (angular.isDefined(user)) {
-                    specificUser = '/' + user;
-                }
-
-                $http
-                    .get(buildURL('holidays') + specificUser)
-                    .then(function (response) {
-                        if (response.data.success) {
-                            var holidays = response.data.holidays;
-                            var holidaysEvents = [];
-
-                            holidays.forEach(function (entry) {
-                                var status;
-                                var statusIcon;
-                                switch (entry.status) {
-                                    case 'requested':
-                                        statusIcon = 'fa-clock-o';
-                                        status = '';
-                                        break;
-                                    case 'approved':
-                                        statusIcon = 'fa-check';
-                                        status = '';
-                                        break;
-                                    case 'rejected':
-                                        statusIcon = 'fa-times';
-                                        status = '';
-                                        break;
-                                }
-
-                                holidaysEvents.push({
-                                    id: entry._id,
-                                    title: status,
-                                    status: entry.status,
-                                    icon: statusIcon,
-                                    start: new Date(entry.date),
-                                    end: new Date(entry.date),
-                                    className: 'event_' + entry.status
-                                });
-                            });
-
-                            dfd.resolve(holidaysEvents);
-                        } else {
-                            dfd.reject(response);
-                        }
-                    }, function (err) {
-                        dfd.reject(err);
-                    });
-
-                return dfd.promise;
-            },
-            requestHoliday: function (event) {
-                var dfd = $q.defer();
-
-                $http
-                    .post(buildURL('holidaysRequest'), {days: [event.start]})
-                    .then(function (response) {
-                        if (response.data.success) {
-                            event.id = 'new';
-                            event.end = event.start;
-                            event.title = '';
-                            event.status = 'requested';
-                            event.className = 'event_requested';
-                            dfd.resolve(event);
-                        } else {
-                            dfd.reject(response);
-                        }
-                    }, function (err) {
-                        dfd.reject(err);
-                    });
-
-                return dfd.promise;
-            },
-            removeHoliday: function (event) {
-                var dfd = $q.defer();
-
-                $http
-                    .delete(buildURL('holidays') + '/' + event.id)
-                    .then(function (response) {
-                        if (response.data.success) {
-                            dfd.resolve(event);
-                        } else {
-                            dfd.reject(response);
-                        }
-                    }, function (err) {
-                        dfd.reject(err);
-                    });
-
-                return dfd.promise;
-            },
-            updateHolidayStatus: function (type, event) {
-                var dfd = $q.defer();
-
-                $http
-                    .put(buildURL('holidays') + '/' + type, {holidays: [event.id]})
-                    .then(function (response) {
-                        if (response.data.success) {
-                            dfd.resolve(event);
-                        } else {
-                            dfd.reject(response);
-                        }
-                    }, function (err) {
-                        dfd.reject(err);
-                    });
-
-                return dfd.promise;
-            },
-            moderateImputedHours: function (dateLapse, userId, reject) {
-                var dfd = $q.defer();
-                var dateInterval = {
-                    initDate: new Date(dateLapse[0]).toGMTString(),
-                    endDate: new Date(dateLapse[1]).toGMTString(),
-                    userId: userId
-                };
-
-                var destUrl = buildURL('dayValidate');
-                if (angular.isDefined(reject)) {
-                    destUrl = buildURL('dayReject');
-                }
-
-                $http
-                    .post(destUrl, dateInterval)
-                    .then(function (response) {
-                        if (response.data.success) {
-                            dfd.resolve(response.data);
-                        } else {
-                            dfd.reject(response);
-                        }
-                    }, function (err) {
-                        dfd.reject(err);
-                    });
-
-                return dfd.promise;
-            },
-            sendImputedHours: function (dateLapse) {
-                var dfd = $q.defer();
-                var dateInterval = {
-                    initDate: new Date(dateLapse[0]).toGMTString(),
-                    endDate: new Date(dateLapse[1]).toGMTString()
-                };
-
-                $http
-                    .post(buildURL('daySend'), dateInterval)
-                    .then(function (response) {
-                        if (response.data.success) {
-                            dfd.resolve(response.data);
-                        } else {
-                            dfd.reject(response);
-                        }
-                    }, function (err) {
-                        dfd.reject(err);
+                $http.get( buildURL( 'getCalendarById' ) + calendarID )
+                    .then( function ( response ) {
+                        dfd.resolve( response.data.calendar );
+                    })
+                    .catch( function ( err ) {
+                        dfd.reject( err );
                     });
 
                 return dfd.promise;
             }
+
+            // getCalendarByDates: function (initDate, endDate, user) {
+            //     var dfd = $q.defer();
+            //     var dates = {
+            //         initDate: initDate,
+            //         endDate: endDate
+            //     };
+            //     /* global t_dates*/
+            //     window.t_dates = dates;
+            //     var serviceUrl = buildURL('dayGet');
+            //     if (user) {
+            //         dates.userId = user;
+            //         serviceUrl = buildURL('dayGetByUser');
+            //     }
+
+            //     $http
+            //         .post(serviceUrl, dates)
+            //         .then(function (response) {
+            //             if (response.data.success) {
+            //                 var projects = response.data.projects;
+            //                 var dailyReports = response.data.dailyReports;
+            //                 var datesBlocked = response.data.datesBlocked;
+            //                 var todayDate = toGMT0(t_dates.initDate);
+            //                 var _end = toGMT0(angular.copy(todayDate));
+            //                 var weekEnd = toGMT0(new Date(_end.setDate(_end.getDate() + 6)));
+            //                 //
+
+            //                 var blockDates = [];
+            //                 var serviceResponse = {};
+            //                 var customers_matrix = [];
+            //                 var customers = {};
+            //                 var userProjects = [];
+            //                 var workingDays = {};
+            //                 //
+
+            //                 datesBlocked.forEach(function (date) {
+            //                     blockDates.push(toGMT0(date).getDay());
+            //                 });
+
+            //                 projects.forEach(function (project) {
+            //                     var newProject = !$filter('filter')(userProjects, {projectRef: project.projectRef}, true).length;
+
+            //                     if (newProject && angular.isUndefined(workingDays[project.projectRef])) {
+            //                         workingDays[project.projectRef] = [];
+            //                     }
+
+            //                     var projectInit = toGMT0(project.implicationInit);
+            //                     var projectEnd;
+            //                     if (angular.isDefined(project.implicationEnd)) {
+            //                         projectEnd = toGMT0(project.implicationEnd);
+            //                     } else {
+            //                         var inALongTime = new Date().setFullYear(6000);
+            //                         projectEnd = toGMT0(inALongTime);
+            //                     }
+
+            //                     if (projectInit < todayDate) {
+            //                         projectInit = angular.copy(todayDate);
+            //                     }
+
+            //                     if (projectEnd > weekEnd) {
+            //                         projectEnd = weekEnd;
+            //                     }
+
+            //                     while (projectInit <= projectEnd) {
+            //                         var add = new Date(toGMT0(projectInit)).getDay();
+            //                         if (workingDays[project.projectRef].indexOf(add) < 0 &&
+            //                             blockDates.indexOf(add) < 0) {
+
+            //                             workingDays[project.projectRef].push(add);
+            //                         }
+            //                         projectInit = toGMT0(new Date(projectInit.setDate(projectInit.getDate() + 1)));
+            //                     }
+
+            //                     if (newProject) {
+            //                         project.days = workingDays[project.projectRef];
+            //                         project.reports = {};
+
+            //                         project.days.forEach(function (day) {
+            //                             var t_day = day - 1;
+            //                             t_day = t_day < 0 ? 6 : t_day;
+            //                             var t_initDate = new Date(t_dates.initDate);
+            //                             var t_date = toGMT0(new Date(t_initDate.setDate(t_initDate.getDate() + t_day)));
+            //                             var reportAssociated = $filter('filter')(dailyReports, {
+            //                                 projectId: project._id,
+            //                                 date: $filter('date')(t_date, 'yyyy-MM-dd')
+            //                             });
+
+            //                             project.subfamilies.forEach(function (family) {
+            //                                 project.reports[day + '_' + family] = {
+            //                                     date: t_date,
+            //                                     conceptDailyId: family,
+            //                                     projectId: project._id
+            //                                 };
+            //                             });
+
+            //                             if (reportAssociated.length) {
+            //                                 reportAssociated.forEach(function(repo){
+            //                                     project.reports[day+ '_' + repo.conceptDailyId].units = repo.units;
+            //                                     project.reports[day+ '_' + repo.conceptDailyId].report = repo.report;
+            //                                     project.status = reportAssociated[0].status;
+            //                                 });
+
+            //                             }
+            //                         });
+            //                         userProjects.push(project);
+
+            //                         if (angular.isUndefined(customers[project.customerName])) {
+            //                             customers[project.customerName] = [];
+            //                         }
+            //                         customers[project.customerName].push(project);
+            //                     }
+            //                 });
+
+            //                 Object.keys(customers).forEach(function (customer) {
+            //                     var t_customer = {
+            //                         customerName: customer,
+            //                         projects: customers[customer]
+            //                     };
+            //                     customers_matrix.push(t_customer);
+            //                 });
+
+            //                 serviceResponse.customers = customers_matrix;
+            //                 serviceResponse.projects = projects;
+
+            //                 dfd.resolve(serviceResponse);
+            //             } else {
+            //                 dfd.reject(response);
+            //             }
+            //         }, function (err) {
+            //             dfd.reject(err);
+            //         });
+
+            //     return dfd.promise;
+            // },
+            // saveImputedHours: function (days) {
+            //     var dfd = $q.defer();
+            //     $http
+            //         .post(buildURL('dayImpute'), {"dailyReports": days})
+            //         .then(function (response) {
+            //             if (response.data.success) {
+            //                 dfd.resolve(response.data);
+            //             } else {
+            //                 dfd.reject(response.data.errors);
+            //             }
+            //         }, function (err) {
+            //             dfd.reject(err);
+            //         });
+
+            //     return dfd.promise;
+            // },
+            // getDailyConcepts: function () {
+            //     var dfd = $q.defer();
+            //     $http
+            //         .get(buildURL('getDailyConcepts'))
+            //         .then(function (response) {
+            //             if (response.data) {
+            //                 dfd.resolve(response.data);
+            //             } else {
+            //                 dfd.reject(response.data);
+            //             }
+            //         }, function (err) {
+            //             dfd.reject(err);
+            //         });
+
+            //     return dfd.promise;
+            // },
+            // getUserHolidayCalendar: function (user) {
+            //     var dfd = $q.defer();
+            //     var specificUser = '';
+
+            //     if (angular.isDefined(user)) {
+            //         specificUser = '/' + user;
+            //     }
+
+            //     $http
+            //         .get(buildURL('holidays') + specificUser)
+            //         .then(function (response) {
+            //             if (response.data.success) {
+            //                 var holidays = response.data.holidays;
+            //                 var holidaysEvents = [];
+
+            //                 holidays.forEach(function (entry) {
+            //                     var status;
+            //                     var statusIcon;
+            //                     switch (entry.status) {
+            //                         case 'requested':
+            //                             statusIcon = 'fa-clock-o';
+            //                             status = '';
+            //                             break;
+            //                         case 'approved':
+            //                             statusIcon = 'fa-check';
+            //                             status = '';
+            //                             break;
+            //                         case 'rejected':
+            //                             statusIcon = 'fa-times';
+            //                             status = '';
+            //                             break;
+            //                     }
+
+            //                     holidaysEvents.push({
+            //                         id: entry._id,
+            //                         title: status,
+            //                         status: entry.status,
+            //                         icon: statusIcon,
+            //                         start: new Date(entry.date),
+            //                         end: new Date(entry.date),
+            //                         className: 'event_' + entry.status
+            //                     });
+            //                 });
+
+            //                 dfd.resolve(holidaysEvents);
+            //             } else {
+            //                 dfd.reject(response);
+            //             }
+            //         }, function (err) {
+            //             dfd.reject(err);
+            //         });
+
+            //     return dfd.promise;
+            // },
+            // requestHoliday: function (event) {
+            //     var dfd = $q.defer();
+
+            //     $http
+            //         .post(buildURL('holidaysRequest'), {days: [event.start]})
+            //         .then(function (response) {
+            //             if (response.data.success) {
+            //                 event.id = 'new';
+            //                 event.end = event.start;
+            //                 event.title = '';
+            //                 event.status = 'requested';
+            //                 event.className = 'event_requested';
+            //                 dfd.resolve(event);
+            //             } else {
+            //                 dfd.reject(response);
+            //             }
+            //         }, function (err) {
+            //             dfd.reject(err);
+            //         });
+
+            //     return dfd.promise;
+            // },
+            // removeHoliday: function (event) {
+            //     var dfd = $q.defer();
+
+            //     $http
+            //         .delete(buildURL('holidays') + '/' + event.id)
+            //         .then(function (response) {
+            //             if (response.data.success) {
+            //                 dfd.resolve(event);
+            //             } else {
+            //                 dfd.reject(response);
+            //             }
+            //         }, function (err) {
+            //             dfd.reject(err);
+            //         });
+
+            //     return dfd.promise;
+            // },
+            // updateHolidayStatus: function (type, event) {
+            //     var dfd = $q.defer();
+
+            //     $http
+            //         .put(buildURL('holidays') + '/' + type, {holidays: [event.id]})
+            //         .then(function (response) {
+            //             if (response.data.success) {
+            //                 dfd.resolve(event);
+            //             } else {
+            //                 dfd.reject(response);
+            //             }
+            //         }, function (err) {
+            //             dfd.reject(err);
+            //         });
+
+            //     return dfd.promise;
+            // },
+            // moderateImputedHours: function (dateLapse, userId, reject) {
+            //     var dfd = $q.defer();
+            //     var dateInterval = {
+            //         initDate: new Date(dateLapse[0]).toGMTString(),
+            //         endDate: new Date(dateLapse[1]).toGMTString(),
+            //         userId: userId
+            //     };
+
+            //     var destUrl = buildURL('dayValidate');
+            //     if (angular.isDefined(reject)) {
+            //         destUrl = buildURL('dayReject');
+            //     }
+
+            //     $http
+            //         .post(destUrl, dateInterval)
+            //         .then(function (response) {
+            //             if (response.data.success) {
+            //                 dfd.resolve(response.data);
+            //             } else {
+            //                 dfd.reject(response);
+            //             }
+            //         }, function (err) {
+            //             dfd.reject(err);
+            //         });
+
+            //     return dfd.promise;
+            // },
+            // sendImputedHours: function (dateLapse) {
+            //     var dfd = $q.defer();
+            //     var dateInterval = {
+            //         initDate: new Date(dateLapse[0]).toGMTString(),
+            //         endDate: new Date(dateLapse[1]).toGMTString()
+            //     };
+
+            //     $http
+            //         .post(buildURL('daySend'), dateInterval)
+            //         .then(function (response) {
+            //             if (response.data.success) {
+            //                 dfd.resolve(response.data);
+            //             } else {
+            //                 dfd.reject(response);
+            //             }
+            //         }, function (err) {
+            //             dfd.reject(err);
+            //         });
+
+            //     return dfd.promise;
+            // }
+
+
+
         };
     }
 }());
@@ -1577,99 +1631,6 @@ function toGMT0(date) {
 ( function () {
     'use strict';
     angular
-        .module( 'hours.calendar' )
-        .controller( 'CalendarsController', CalendarsController );
-
-    CalendarsController.$invoke = [ '$scope', '$filter', '$window' ];
-    function CalendarsController( $scope, $filter, $window ) {
-
-        $scope.calendars = [
-                {
-                    name : 'Coruña',
-                    description : 'Calendario de La Coruña'
-                },
-                {
-                    name : 'CCS',
-                    description : 'Calendario de Caracas'
-                }
-        ];
-
-        $scope.tableConfig = {
-            itemsPerPage: getItemsPerPage(),
-            maxPages: "2",
-            fillLastPage: false
-            // currentPage: $scope.tmpData( 'get', 'employeeManagerListPage' ) || 0
-        };
-
-        function getItemsPerPage() {
-            return Math.floor( window.innerHeight / 65 ).toString();
-        };
-
-        // $scope.search = {};
-        // $scope.employees = employees;
-        // $scope.var = false;
-        setUsersView();
-
-        $scope.toggleAdvancedSearch = function () {
-            $scope.showAdvancedSearch = !$scope.showAdvancedSearch;
-            // if ( !$scope.showAdvancedSearch ) {
-            //     $scope.employees = employees;
-            // } else {
-            //     $scope.avancedSearch();
-            // }
-        };
-
-        // $scope.avancedSearch = function () {
-        //     EmployeeManagerFactory.searchEmployee( $scope.search )
-        //         .then( function ( foundEmployees ) {
-        //             $scope.employees = foundEmployees;
-        //         });
-        // };
-
-        // $timeout( function () { // ???
-        //     $( '[ng-click="stepPage(-numberOfPages)"]' ).text( $filter( 'i18next' )( 'actions.nextPage' ) );
-        //     $( '[ng-click="stepPage(numberOfPages)"]'  ).text( $filter( 'i18next' )( 'actions.lastPage' ) );
-        // });
-
-        // $scope.pageGetUp = function() {
-        //     $( '#page-content-wrapper #section' ).animate( { scrollTop: 0 }, 'slow' );
-        // };
-
-        // $scope.$on( '$destroy', function () {
-        //     $scope.tmpData( 'add', 'employeeManagerListPage', $scope.tableConfig.currentPage );
-        // });
-
-        angular.element( $window ).bind( 'resize', function() {
-            $scope.$digest();
-            setUsersView();
-        });
-
-        function setUsersView() {
-            if( $window.innerWidth < 930 ) {
-                $scope.viewSet = false;
-            } else {
-                $scope.viewSet = true;            
-            }
-        }
-
-        // var wrapper = document.getElementById( 'section' );
-        // wrapper.onscroll = function ( event ) {
-        //     // if ( wrapper.scrollTop + window.innerHeight >= wrapper.scrollHeight ) {
-        //     if ( wrapper.scrollTop >= 400 ) {
-        //         $( '#toUpButton' ).fadeIn( 'slow' );
-        //     }
-        //         if ( wrapper.scrollTop < 400 ) {
-        //     $( '#toUpButton' ).fadeOut( 'slow' );
-        //     }
-        // };
-
-}
-
-}());
-
-( function () {
-    'use strict';
-    angular
         .module( 'hours.components' )
         .directive( 'zemSidebar', zemSidebar )
         .controller( 'SidebarComponentController', SidebarComponentController );
@@ -2079,6 +2040,198 @@ function toGMT0(date) {
     //         }
     //     };
     // }
+
+}());
+
+( function () {
+    'use strict';
+    angular
+        .module( 'hours.calendar' )
+        .controller( 'editCalendarsController', editCalendarsController );
+
+    editCalendarsController.$invoke = [ '$scope', '$filter', '$window', 'CalendarFactory', '$stateParams' ];
+    function editCalendarsController( $scope, $filter, $window, CalendarFactory, $stateParams ) {
+
+        var currentYear = new Date().getFullYear();
+        $scope.yearShowed = currentYear.toString();
+        var eventDates = {};
+        // var eventHours = {};
+        // eventHours[ 'holidays'    ] = [];
+        // eventHours[ 'working'     ] = [];
+        // eventHours[ 'friday'      ] = [];
+        // eventHours[ 'non_working' ] = [];
+        // eventHours[ 'intensive'   ] = [];
+        // eventHours[ 'special'     ] = [];
+
+        $scope.yearChanged = function() {
+            showCalendars();     
+        };
+
+        function createCalendarsHTML() {
+            $( '#months div' ).remove();
+            for ( var i = 1; i < 13; i++ ) {
+                $('<div/>', {
+                    id: 'calendar-' + i,
+                    class: 'calendar'
+                }).appendTo( '#months' ); 
+            }
+            $('<p/>', {}).appendTo( '#months div' ); 
+        };
+
+        CalendarFactory.getCalendarById( $stateParams.id )
+            .then( function( data ) {
+                var calendar = data;
+                // console.log(calendar);
+                $scope.calendar = calendar;
+                calendar.groupDays.forEach( function( element ) {
+                    element.days.days.forEach( function( day ) {
+                        eventDates[ new Date( day ) ] = { date : new Date( day ), type : element.type };
+                    });
+                    // element.days.hours.forEach( function( hours ) {
+                    //     eventHours[ element.type ].push( { initialHour : hours.initialHour, endHour : hours.endHour } );
+                    // });
+                });
+                showCalendars();
+                // showHours();
+            })
+            .catch( function( err ) {
+
+            });
+
+        function showCalendars() {
+            createCalendarsHTML();
+            var monthArray = [];
+            monthArray = getMonthArrayByYear( $scope.yearShowed );
+            var calendarNumber = 1;
+            for ( var i = 0; i < monthArray.length; i++ ) {
+                var calendar = '#calendar-' + calendarNumber++;
+                showCalendar( calendar , monthArray[ i ] );
+                // $( calendar + ' p' ).text( 'Total horas: xyz' );
+            };
+        }
+
+        function getMonthArrayByYear( year ) {
+            var monthArray = [];
+            for ( var i = 1; i < 13; i++ ) {
+                monthArray.push( i + '/01/' + year );
+            }
+            return monthArray;
+        }
+
+         function showCalendar( calendar, month ) {
+            jQuery( calendar ).datepicker( {
+                // showButtonPanel: true,
+                dateFormat: 'mm-dd-yy',
+                defaultDate: new Date( month ), // ( 2014, 2, 1 )
+                // onSelect: daySelected,
+                beforeShowDay: function( date ) {
+                    var highlight = eventDates[ date ];
+                    if ( highlight ) {
+                        if ( highlight.type == 'working' ) {
+                            return [ true, "showWorking", highlight ];
+                        } else if ( highlight.type == 'holidays' ) {
+                            return [ true, 'showHolidays', highlight ];
+                        } else if ( highlight.type == 'friday' ) {
+                            return [ true, 'showFriday', highlight ];
+                        } else if ( highlight.type == 'intensive' ) {
+                            return [ true, 'showIntensive', highlight ];
+                        } else if ( highlight.type == 'special' ) {
+                            return [ true, 'showSpecial', highlight ];
+                        } else if ( highlight.type == 'non_working' ) {
+                            return [ true, 'showNon_working', highlight ];
+                        }
+                    } else {
+                        return [ true, 'showDefault', highlight ];
+                    }
+                 } // beforeShowDay
+            });
+        }
+
+}
+
+}());
+
+( function () {
+    'use strict';
+    angular
+        .module( 'hours.calendar' )
+        .controller( 'CalendarsController', CalendarsController );
+
+    CalendarsController.$invoke = [ '$scope', '$filter', '$window', 'CalendarFactory', 'calendars' ];
+    function CalendarsController( $scope, $filter, $window, CalendarFactory, calendars ) {
+
+        $scope.calendars = calendars;
+
+        $scope.tableConfig = {
+            itemsPerPage: getItemsPerPage(),
+            maxPages: "2",
+            fillLastPage: false
+            // currentPage: $scope.tmpData( 'get', 'employeeManagerListPage' ) || 0
+        };
+
+        function getItemsPerPage() {
+            return Math.floor( window.innerHeight / 65 ).toString();
+        };
+
+        // $scope.search = {};
+        // $scope.employees = employees;
+        // $scope.var = false;
+        setUsersView();
+
+        $scope.toggleAdvancedSearch = function () {
+            $scope.showAdvancedSearch = !$scope.showAdvancedSearch;
+            // if ( !$scope.showAdvancedSearch ) {
+            //     $scope.employees = employees;
+            // } else {
+            //     $scope.avancedSearch();
+            // }
+        };
+
+        // $scope.avancedSearch = function () {
+        //     EmployeeManagerFactory.searchEmployee( $scope.search )
+        //         .then( function ( foundEmployees ) {
+        //             $scope.employees = foundEmployees;
+        //         });
+        // };
+
+        // $timeout( function () { // ???
+        //     $( '[ng-click="stepPage(-numberOfPages)"]' ).text( $filter( 'i18next' )( 'actions.nextPage' ) );
+        //     $( '[ng-click="stepPage(numberOfPages)"]'  ).text( $filter( 'i18next' )( 'actions.lastPage' ) );
+        // });
+
+        // $scope.pageGetUp = function() {
+        //     $( '#page-content-wrapper #section' ).animate( { scrollTop: 0 }, 'slow' );
+        // };
+
+        // $scope.$on( '$destroy', function () {
+        //     $scope.tmpData( 'add', 'employeeManagerListPage', $scope.tableConfig.currentPage );
+        // });
+
+        angular.element( $window ).bind( 'resize', function() {
+            $scope.$digest();
+            setUsersView();
+        });
+
+        function setUsersView() {
+            if( $window.innerWidth < 930 ) {
+                $scope.viewSet = false;
+            } else {
+                $scope.viewSet = true;            
+            }
+        }
+
+        // var wrapper = document.getElementById( 'section' );
+        // wrapper.onscroll = function ( event ) {
+        //     // if ( wrapper.scrollTop + window.innerHeight >= wrapper.scrollHeight ) {
+        //     if ( wrapper.scrollTop >= 400 ) {
+        //         $( '#toUpButton' ).fadeIn( 'slow' );
+        //     }
+        //         if ( wrapper.scrollTop < 400 ) {
+        //     $( '#toUpButton' ).fadeOut( 'slow' );
+        //     }
+        // };
+
+}
 
 }());
 

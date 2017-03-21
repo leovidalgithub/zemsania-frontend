@@ -7,9 +7,9 @@
     calendarsConfig.$invoke = [ '$stateProvider' ];
     function calendarsConfig( $stateProvider ) {
         $stateProvider
-            .state( 'calendars', {
+            .state( 'calendars', { // LEO WORKING HERE
                 url: '/calendars',
-                templateUrl: '/features/calendar/calendars/calendars.list.tpl.html',
+                templateUrl: '/features/calendar/calendars/list/calendars.list.tpl.html',
                 controller: 'CalendarsController',
                 data: {
                     template: 'complex',
@@ -19,10 +19,24 @@
                     }
                 },
                 resolve : {
-                    // dailyConcepts : function(CalendarFactory){
-                    //     return CalendarFactory.getDailyConcepts();
-                    // }
+                    calendars : function( CalendarFactory ) {
+                        return CalendarFactory.getCalendars();
+                    }
                 }
-            });
+            })
+
+            .state( 'calendarsEdit', { // LEO WORKING HERE
+                url: '/calendars/edit/:id',
+                templateUrl: '/features/calendar/calendars/edit/calendars.edit.tpl.html',
+                controller: 'editCalendarsController',
+                data: {
+                    // state: 'employeeManager',
+                    template: 'complex',
+                    permissions: {
+                        except: [ 'anonymous' ],
+                        redirectTo: 'login'
+                    }
+                }
+            })
     }
 }());

@@ -36,6 +36,9 @@ var API_paths = {
     holidaysApprove: 'holidays/approve',
     holidaysReject: 'holidays/reject',
 
+    getCalendars : 'calendar/getCalendars',
+    getCalendarById : 'calendar/getCalendarById/',
+
     getSpents: 'spents/get',
     getSpentById: 'spents/search',
     spentsImpute: 'spents/impute',

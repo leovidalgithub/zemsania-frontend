@@ -1,0 +1,118 @@
+#calendars #section {
+		#months {
+				width: 95%;
+				margin: auto;
+				border: solid 1px #6C6C6C;
+				border-radius: 5px;
+				background-color: #FBFBFB;
+				padding: 15px 5px;
+				text-align: center;
+			.calendar {
+						border: solid 1px #E0E0E0;
+						display: inline-block;
+						margin: 5px;
+						border-radius: 5px;
+			}
+		}
+
+		#options {
+				width: 95%;
+				margin: auto;
+				padding: 5px;
+				display: flex;
+				flex-flow: row wrap;
+				justify-content: space-between;
+				align-items: center;
+				border: solid 1px gray;
+				margin-bottom: 15px;
+				border-radius: 5px;
+
+				#yearSelect {
+		  			margin: auto;
+					margin-right: 20px;
+				}
+		}
+
+		/***** LEYEND *****/
+		#leyend { 
+				border: solid 3px #6C6C6C;
+				border-radius: 5px;
+				background-color: #FBFBFB;
+				width: 330px;
+				margin: 15px auto;
+				text-align: left;
+				padding: 0 10px;
+			.leyendBox {
+						height: 20px;
+						width: 80px;
+						border-radius: 2px;
+						border: solid 1px gray;
+						display: inline-block;
+			}
+			#workingLeyend div {
+				background-color: #9acc00;
+			 }
+			#fridayLeyend div {
+			 			background-color: #95b3d7;
+			 }
+			#intensiveLeyend div {
+			 			background-color: #ffcc00;
+			 }
+			#specialLeyend div {
+			 			background-color: #f79646;
+			 }
+			#holidaysLeyend div {
+			 			background-color: #ff0000;
+			 }
+			#non_workingLeyend div {
+			 			background-color: #808080;
+			 }
+		}
+
+		/*// **** DAYS CALENDAR COLORS *****/
+		.showHolidays a {
+				    background-color: #ff0000 !important;
+				    background-image :none !important;
+				    color: #ffffff !important;
+				}
+		.showWorking a {
+				    background-color: #9acc00 !important;
+				    background-image :none !important;
+				    color: #ffffff !important;
+				}
+		.showFriday a {
+				    background-color: #95b3d7 !important;
+				    background-image :none !important;
+				    color: #ffffff !important;
+				}
+		.showIntensive a {
+				    background-color: #ffcc00 !important;
+				    background-image :none !important;
+				    color: #ffffff !important;
+				}
+		.showSpecial a {
+				    background-color: #f79646 !important;
+				    background-image :none !important;
+				    color: #ffffff !important;
+				}
+		.showNon_working a {
+				    background-color: #808080 !important;
+				    background-image :none !important;
+				    color: #ffffff !important;
+				}
+/*		.showDefault a {
+				    background-color: #DFDFDF !important;
+				    background-image :none !important;
+				    color: #ffffff !important;
+				}
+*/		
+
+  @media( max-width: 850px ) {
+  	#options {
+  		#leyend {
+  			margin-bottom: 20px;
+  		}
+	} 
+  }
+
+}

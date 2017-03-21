@@ -6,10 +6,6 @@
                     <h3>{{'calendars.title' | i18next}}</h3>
                 </div>
                 <div class="rightMargin">
-<!--                     <button ui-sref="employeeManagerCreate" class="btn btn-primary no-margin">
-                        {{'employeeManager.list.createNew' | i18next}}
-                    </button>
- -->                    
                     <button class="btn btn-primary no-margin" ng-click="toggleAdvancedSearch()" ng-class="{'active' : showAdvancedSearch}">
                         {{'actions.search' | i18next}}
                     </button>
@@ -49,7 +45,7 @@
                     <td at-implicit at-sortable at-initial-sorting="asc" at-attribute="name" at-title="{{'calendar.calendars.name' | i18next}}"></td>
                     <td at-implicit at-sortable at-attribute="description" at-title="{{'calendar.calendars.description' | i18next}}"></td>
                     <td class="options-section">
-                        <a ui-sref="employeeManagerEdit({id: item._id})" class="btn btn-success">
+                        <a ui-sref="calendarsEdit({id: item._id})" class="btn btn-success">
                             <i class="fa fa-pencil"></i></a>
                     </td>
                 </tr>
@@ -64,7 +60,7 @@
                         <li><strong>{{value.name}}</strong></li>
                         <li>{{value.description}}</li>
                     </ul>
-                        <a ui-sref="employeeManagerEdit({id: value._id })" class="btn btn-success">
+                        <a ui-sref="calendarsEdit({id: value._id })" class="btn btn-success">
                                 <i class="fa fa-pencil"></i>
                         </a>
                 </div>

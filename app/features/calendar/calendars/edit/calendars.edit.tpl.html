@@ -1,0 +1,60 @@
+<div id="calendars">
+    <!-- HEADER TOOL-BAR -->
+    <header id="header">
+        <div id="headerContent">
+            <div class="flexDesign box-shadow p20 top-bar">
+                <div>
+                    <h4>{{calendar.name}}</h4>
+                </div>
+                <div class="rightMargin">
+                     <button ui-sref="calendars" class="btn btn-gray no-margin">
+                        {{'actions.cancel' | i18next}}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- SECTION MAIN CONTENT -->
+    <section id="section" class="box-shadow p20">
+
+<!-- <button class="btn btn-md btn-danger" ng-click="fn1()">Go1!</button> -->
+<!-- <button class="btn btn-md btn-danger" ng-click="fn2()">Go2!</button> -->
+
+        <div id="options">
+            <div id="leyend">
+                <h3>{{calendarName}}</h3>
+                <div id="holidaysLeyend"><div class="leyendBox"></div> Días festivos <span></span></div>
+                <div id="workingLeyend"><div class="leyendBox"></div> Días de trabajo <span></span></div>
+                <div id="fridayLeyend"><div class="leyendBox"></div> Días viernes <span></span></div>
+                <div id="intensiveLeyend"><div class="leyendBox"></div> Días intensivos <span></span></div>
+                <div id="specialLeyend"><div class="leyendBox"></div> Días especiales <span></span></div>
+                <div id="non_workingLeyend"><div class="leyendBox"></div> Días no laborables <span></span></div>
+            </div>
+
+            <div id="yearSelect">
+            <label>Año Mostrado
+                <select style="font-size: 24px;" ng-model="yearShowed" ng-change="yearChanged()">
+                    <option value="2013">2013</option>
+                    <option value="2014">2014</option>
+                    <option value="2015">2015</option>
+                    <option value="2016">2016</option>
+                    <option value="2017">2017</option>
+                </select>
+            </label>
+            </div>
+        </div>
+
+        <div id="months">
+            <!-- <div class="calendar" id="calendar-1"><p></p></div> -->
+        </div>
+
+    </section>
+
+    <footer id="footer">
+        <div id="footerContent">
+
+
+        </div>
+    </footer>
+</div>
