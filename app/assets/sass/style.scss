@@ -20,6 +20,15 @@ $green: #9CCC65;
 $yellow: #FFEE58;
 $orange: #FFA726;
 
+$holidaysColor: #ff0000;
+$workingColor: #85AC0C;
+$fridayColor: #286ABA;
+$intensiveColor: #EBC21C;
+$specialColor: #FF831C;
+$non_workingColor: #808080;
+
+// *************************************
+
 @import "../../layouts/complex";
 @import "../../layouts/login";
 @import "../../features/calendar/calendars/calendars";
@@ -35,7 +44,8 @@ $orange: #FFA726;
 
 html, body, body > div, div[ui-view] {
   height: 100%;
-  overflow: hidden;
+  overflow-y: hidden;
+  min-width: 420px;
 }
 
 * {

@@ -8,7 +8,6 @@
 				padding: 15px 5px;
 				text-align: center;
 			.calendar {
-						border: solid 1px #E0E0E0;
 						display: inline-block;
 						margin: 5px;
 						border-radius: 5px;
@@ -26,84 +25,133 @@
 				border: solid 1px gray;
 				margin-bottom: 15px;
 				border-radius: 5px;
+				color: #706F6F;
+				font-size: 17px;
 
-				#yearSelect {
-		  			margin: auto;
-					margin-right: 20px;
-				}
-		}
-
-		/***** LEYEND *****/
-		#leyend { 
-				border: solid 3px #6C6C6C;
-				border-radius: 5px;
-				background-color: #FBFBFB;
-				width: 330px;
-				margin: 15px auto;
-				text-align: left;
-				padding: 0 10px;
-			.leyendBox {
-						height: 20px;
-						width: 80px;
-						border-radius: 2px;
-						border: solid 1px gray;
-						display: inline-block;
+			/***** HOURS_BY_HOURS *****/
+			#hoursByMonth {
+					border: solid 2px #6C6C6C;
+					border-radius: 5px;
+					background-color: #FBFBFB;
+					width: 330px;
+					margin: 5px auto;
+					/*text-align: left;*/
+					padding: 10px;				
 			}
-			#workingLeyend div {
-				background-color: #9acc00;
-			 }
-			#fridayLeyend div {
-			 			background-color: #95b3d7;
-			 }
-			#intensiveLeyend div {
-			 			background-color: #ffcc00;
-			 }
-			#specialLeyend div {
-			 			background-color: #f79646;
-			 }
-			#holidaysLeyend div {
-			 			background-color: #ff0000;
-			 }
-			#non_workingLeyend div {
-			 			background-color: #808080;
-			 }
+			/***** LEYEND *****/
+			#leyend {
+					border: solid 2px #6C6C6C;
+					border-radius: 5px;
+					background-color: #FBFBFB;
+					width: 280px;
+					margin: 5px auto;
+					text-align: left;
+					padding: 10px;
+				.leyendBox {
+							height: 20px;
+							width: 80px;
+							border-radius: 2px;
+							border: solid 1px black;
+							display: inline-block;
+				}
+				#workingLeyend {
+				    @extend .ext_flex-start_;
+						 div:first-of-type {
+					 			background-color: $workingColor;
+					 			margin: 3px 10px 5px 3px;
+						 }
+				}
+				#fridayLeyend {
+				    @extend .ext_flex-start_;
+						 div {
+					 			background-color: $fridayColor;
+					 			margin: 5px 10px 7px 3px;
+						 }
+				}
+				#intensiveLeyend {
+				    @extend .ext_flex-start_;
+						 div {
+					 			background-color: $intensiveColor;
+					 			margin: 5px 10px 7px 3px;
+						 }
+				}
+				#specialLeyend {
+				    @extend .ext_flex-start_;
+						 div {
+					 			background-color: $specialColor;
+					 			margin: 5px 10px 7px 3px;
+						 }
+				}
+				#holidaysLeyend {
+				    @extend .ext_flex-start_;
+						 div {
+					 			background-color: $holidaysColor;
+					 			margin: 5px 10px 7px 3px;
+						 }					
+				}
+				#non_workingLeyend {
+				    @extend .ext_flex-start_;
+						 div:first-of-type {
+					 			background-color: $non_workingColor;
+					 			margin: 5px 10px 7px 3px;
+						 }
+				}
+					#workingRange, #fridayRange, 
+					#intensiveRange, #specialRange {
+								text-align: right;
+								font-size: 15px;
+								margin-top: -6px;
+					}
+			} // #leyend
+			#hoursByMonth {
+					width: 280px;
+					div {
+						border: solid 1px #EAEAEA;
+						margin-bottom: 2px;
+						display: flex;
+						flex-flow: row nowrap;
+						justify-content: space-between;
+						align-items: center;
+						padding: 1px 15px;
+						span:nth-of-type(2) {
+							font-size: 15px;
+						}
+					}
+			}
+		} // #options
+		#yearSelect {
+				width: 90%;
+	  			margin: auto;
 		}
 
 		/*// **** DAYS CALENDAR COLORS *****/
 		.showHolidays a {
-				    background-color: #ff0000 !important;
-				    background-image :none !important;
-				    color: #ffffff !important;
+				    background-color: $holidaysColor !important;
+				    @extend .ext_cellColor;
 				}
 		.showWorking a {
-				    background-color: #9acc00 !important;
-				    background-image :none !important;
-				    color: #ffffff !important;
+				    background-color: $workingColor !important;
+				    @extend .ext_cellColor;
 				}
 		.showFriday a {
-				    background-color: #95b3d7 !important;
-				    background-image :none !important;
-				    color: #ffffff !important;
+				    background-color: $fridayColor !important;
+				    @extend .ext_cellColor;
 				}
 		.showIntensive a {
-				    background-color: #ffcc00 !important;
-				    background-image :none !important;
-				    color: #ffffff !important;
+				    background-color: $intensiveColor !important;
+				    @extend .ext_cellColor;
 				}
 		.showSpecial a {
-				    background-color: #f79646 !important;
-				    background-image :none !important;
-				    color: #ffffff !important;
+				    background-color: $specialColor !important;
+				    @extend .ext_cellColor;
 				}
 		.showNon_working a {
-				    background-color: #808080 !important;
-				    background-image :none !important;
-				    color: #ffffff !important;
+				    background-color: $non_workingColor !important;
+				    @extend .ext_cellColor;
 				}
 /*		.showDefault a {
 				    background-color: #DFDFDF !important;
-				    background-image :none !important;
-				    color: #ffffff !important;
+				    @extend .ext_cellColor;
 				}
 */		
 
@@ -114,5 +162,17 @@
   		}
 	} 
   }
+} //#calendars #section
 
+// @extends clases
+.ext_flex-start_ {
+	margin-top: 5px;
+	display: flex;
+	flex-flow: row wrap;
+	justify-content: flex-start;
+	align-items: center;
+}
+.ext_cellColor {
+	background-image :none !important;
+	color: #ffffff !important;
 }

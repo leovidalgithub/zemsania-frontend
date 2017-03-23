@@ -30,6 +30,9 @@
   overflow: hidden;
   height: 80px;
 }
+#complex_layout #page-content-wrapper #header * {
+  margin-bottom: 5px;
+}
 #complex_layout #page-content-wrapper #header #headerContent {
   width: 95%;
   margin: auto;
@@ -73,6 +76,9 @@
   margin: 15px auto;
   padding: 15px;
   border: 1px solid #E0E0E0;
+}
+#complex_layout #page-content-wrapper #itemsList:hover {
+  background-color: #F6F6F6;
 }
 #complex_layout #page-content-wrapper #itemsList ul li {
   list-style: none;
@@ -695,12 +701,10 @@
 }
 
 #calendars #section {
-  /***** LEYEND *****/
   /*// **** DAYS CALENDAR COLORS *****/
   /*		.showDefault a {
   				    background-color: #DFDFDF !important;
-  				    background-image :none !important;
-  				    color: #ffffff !important;
+  				    @extend .ext_cellColor;
   				}
   */
 }
@@ -714,7 +718,6 @@
   text-align: center;
 }
 #calendars #section #months .calendar {
-  border: solid 1px #E0E0E0;
   display: inline-block;
   margin: 5px;
   border-radius: 5px;
@@ -730,79 +733,120 @@
   border: solid 1px gray;
   margin-bottom: 15px;
   border-radius: 5px;
+  color: #706F6F;
+  font-size: 17px;
+  /***** HOURS_BY_HOURS *****/
+  /***** LEYEND *****/
 }
-#calendars #section #options #yearSelect {
-  margin: auto;
-  margin-right: 20px;
-}
-#calendars #section #leyend {
-  border: solid 3px #6C6C6C;
+#calendars #section #options #hoursByMonth {
+  border: solid 2px #6C6C6C;
   border-radius: 5px;
   background-color: #FBFBFB;
   width: 330px;
-  margin: 15px auto;
-  text-align: left;
-  padding: 0 10px;
+  margin: 5px auto;
+  /*text-align: left;*/
+  padding: 10px;
 }
-#calendars #section #leyend .leyendBox {
+#calendars #section #options #leyend {
+  border: solid 2px #6C6C6C;
+  border-radius: 5px;
+  background-color: #FBFBFB;
+  width: 280px;
+  margin: 5px auto;
+  text-align: left;
+  padding: 10px;
+}
+#calendars #section #options #leyend .leyendBox {
   height: 20px;
   width: 80px;
   border-radius: 2px;
-  border: solid 1px gray;
+  border: solid 1px black;
   display: inline-block;
 }
-#calendars #section #leyend #workingLeyend div {
-  background-color: #9acc00;
+#calendars #section #options #leyend #workingLeyend div:first-of-type {
+  background-color: #85AC0C;
+  margin: 3px 10px 5px 3px;
 }
-#calendars #section #leyend #fridayLeyend div {
-  background-color: #95b3d7;
+#calendars #section #options #leyend #fridayLeyend div {
+  background-color: #286ABA;
+  margin: 5px 10px 7px 3px;
 }
-#calendars #section #leyend #intensiveLeyend div {
-  background-color: #ffcc00;
+#calendars #section #options #leyend #intensiveLeyend div {
+  background-color: #EBC21C;
+  margin: 5px 10px 7px 3px;
 }
-#calendars #section #leyend #specialLeyend div {
-  background-color: #f79646;
+#calendars #section #options #leyend #specialLeyend div {
+  background-color: #FF831C;
+  margin: 5px 10px 7px 3px;
 }
-#calendars #section #leyend #holidaysLeyend div {
+#calendars #section #options #leyend #holidaysLeyend div {
   background-color: #ff0000;
+  margin: 5px 10px 7px 3px;
 }
-#calendars #section #leyend #non_workingLeyend div {
+#calendars #section #options #leyend #non_workingLeyend div:first-of-type {
   background-color: #808080;
+  margin: 5px 10px 7px 3px;
+}
+#calendars #section #options #leyend #workingRange, #calendars #section #options #leyend #fridayRange,
+#calendars #section #options #leyend #intensiveRange, #calendars #section #options #leyend #specialRange {
+  text-align: right;
+  font-size: 15px;
+  margin-top: -6px;
+}
+#calendars #section #options #hoursByMonth {
+  width: 280px;
+}
+#calendars #section #options #hoursByMonth div {
+  border: solid 1px #EAEAEA;
+  margin-bottom: 2px;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1px 15px;
+}
+#calendars #section #options #hoursByMonth div span:nth-of-type(2) {
+  font-size: 15px;
+}
+#calendars #section #yearSelect {
+  width: 90%;
+  margin: auto;
 }
 #calendars #section .showHolidays a {
   background-color: #ff0000 !important;
-  background-image: none !important;
-  color: #ffffff !important;
 }
 #calendars #section .showWorking a {
-  background-color: #9acc00 !important;
-  background-image: none !important;
-  color: #ffffff !important;
+  background-color: #85AC0C !important;
 }
 #calendars #section .showFriday a {
-  background-color: #95b3d7 !important;
-  background-image: none !important;
-  color: #ffffff !important;
+  background-color: #286ABA !important;
 }
 #calendars #section .showIntensive a {
-  background-color: #ffcc00 !important;
-  background-image: none !important;
-  color: #ffffff !important;
+  background-color: #EBC21C !important;
 }
 #calendars #section .showSpecial a {
-  background-color: #f79646 !important;
-  background-image: none !important;
-  color: #ffffff !important;
+  background-color: #FF831C !important;
 }
 #calendars #section .showNon_working a {
   background-color: #808080 !important;
-  background-image: none !important;
-  color: #ffffff !important;
 }
 @media (max-width: 850px) {
   #calendars #section #options #leyend {
     margin-bottom: 20px;
   }
+}
+
+.ext_flex-start_, #calendars #section #options #leyend #workingLeyend, #calendars #section #options #leyend #fridayLeyend, #calendars #section #options #leyend #intensiveLeyend, #calendars #section #options #leyend #specialLeyend, #calendars #section #options #leyend #holidaysLeyend, #calendars #section #options #leyend #non_workingLeyend {
+  margin-top: 5px;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.ext_cellColor, #calendars #section .showHolidays a, #calendars #section .showWorking a, #calendars #section .showFriday a, #calendars #section .showIntensive a, #calendars #section .showSpecial a, #calendars #section .showNon_working a {
+  background-image: none !important;
+  color: #ffffff !important;
 }
 
 #home-view .notification-center {
@@ -869,7 +913,8 @@
 
 html, body, body > div, div[ui-view] {
   height: 100%;
-  overflow: hidden;
+  overflow-y: hidden;
+  min-width: 420px;
 }
 
 * {

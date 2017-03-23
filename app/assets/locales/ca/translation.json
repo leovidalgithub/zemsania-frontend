@@ -2,17 +2,17 @@
     "loaded": "true",
     "auth": {
         "login": {
-            "login": "Start here",
+            "login": "Inicio de sesión",
             "logout": "Salir",
             "username": "Nombre de empleado",
-            "password": "Password",
+            "password": "Contraseña",
             "errorAtLogin": "Usuario o contraseña no válidos",
-            "passwordRecovery": "Access recovery",
+            "passwordRecovery": "Recuperar acceso",
             "invalidEmail": "El usuario no es correcto",
             "invalidPassword": "Se requiere de contraseña"
         },
         "passwordRecovery": {
-            "title": "Password recovery",
+            "title": "Recuperar contraseña",
             "recovery": "Recuperar",
             "email": "Correo electrónico",
             "errorRecovery": "No se ha podido realizar la operación",
@@ -41,47 +41,46 @@
     },
     "sidebar": {
         "dashboard": "Página principal",
-        "userProfile": "Mi cuenta",
-        "employeeManager": "Employees Manager",
-        "userConfig": "Configuration",
-        "timeCalendar": "Allocate hours",
-        "calendars": "Calendars",
-        "vacationCalendar": "Holiday Calendar",
-        "timeManager": "Check hours",
-        "projectAssign": "Assign Projects",
-        "vacationManager": "Check Vacations",
-        "moderateSpents": "Expense Management",
-        "imputeSpents": "Expense list",
-        "holidaySchemes": "Calendars",
-        "workloadSchemes": "Schedules",
-        "employeeTimesheets": "Management Approval",
-        "projectTimesheets": "Project Approval",
-        "imputeAbsences": "Register Absence",
-        "moderateAbsences": "Absence Management",
-        "exportFiles": "Tables Export"
+        "userProfile": "Mi perfil",
+        "employeeManager": "Gestionar empleados",
+        "userConfig": "Configuración",
+        "timeCalendar": "Imputar horas",
+        "vacationCalendar": "Calendario Vacaciones",
+        "timeManager": "Revisar horas",
+        "projectAssign": "Asignar proyectos",
+        "vacationManager": "Revisar vacaciones",
+        "moderateSpents": "Gestión de gastos",
+        "imputeSpents": "Listado de gastos",
+        "calendars": "Calendaris",
+        "workloadSchemes": "Horarios",
+        "employeeTimesheets": "Aprobacion Gestor",
+        "projectTimesheets": "Aprobacion proyecto",
+        "imputeAbsences": "Registrar ausencia",
+        "moderateAbsences": "Gestión de ausencias",
+        "exportFiles": "Exportación de tablas "
     },
     "userProfile": {
         "user" : {
-            "name"            : "Name",
-            "surname"         : "Surname",
-            "lastname"        : "Last name",
-            "lastname_plural" : "Surnames",
+            "name"            : "Nombre",
+            "surname"         : "Apellidos",
+            "lastname"        : "Apellido",
+            "lastname_plural" : "Apellidos",
             "nif"             : "NIF",
-            "sex"             : "Genre",
-            "genre"           : "Genre",
-            "genre_male"      : "Male",
-            "genre_female"    : "Female",
-            "username"        : "Email",
-            "email"           : "Email",
-            "password"        : "Password",
-            "birthdate"       : "Date of birth",
-            "locale"          : "Panel language",
+            "sex"             : "Género",
+            "genre"           : "Género",
+            "genre_male"      : "Masculino",
+            "genre_female"    : "Femenino",
+            "username"        : "Correo electrónico",
+            "email"           : "Correo electrónico",
+            "password"        : "Contraseña",
+            "birthdate"       : "Fecha de nacimiento",
+            "locale"          : "Idioma del panel",
             "enabled"         : "Empleado habilitado",
             "notFound"        : "No se ha encontrado ningún empleado",
-            "roles"           : "Roles",
-            "userNotFound"    : "Employee not found",
+            "roles"           : "Roles del empleado",
+            "userNotFound"    : "Empleado no encontrado",
             "superior"        : "Supervisor",
-            "company"         : "Company"
+            "company"         : "Empresa"
         },
         "formValidations" : {
             "usernameValid"         : "Se requiere un correo electrónico válido",
@@ -110,7 +109,8 @@
         "done": "Finalizar",
         "remove": "Eliminar",
         "sure": "¿Seguro?",
-        "search": "Buscar",
+        "search": "Búsqueda",
+        "toSearch": "Buscar",
         "create": "Crear",
         "reset": "Borrar",
         "next": "Continuar",
@@ -137,17 +137,17 @@
             "title": "Gestionar empleados",
             "removeUserSuccess": "El empleado ha sido borrado con éxito",
             "removeUserError": "Ha ocurrido un problema borrando el empleado.",
-            "createNew": "Dar de alta un empleado",
-            "advancedSearch": "Búsqueda avanzada"
+            "createNew": "Dar de alta",
+            "advancedSearch": "Búsqueda"
         },
         "create": {
-            "title": "Dar de alta un empleado",
+            "title": "Dar de alta",
             "saveSuccess": "Empleado dado de alta con éxito",
             "userAlreadyExists": "Este usuario ya existe en la base de datos.",
-            "saveError": "Ha ocurrido un error al dar de alta el empleado. Inténtalo más tarde"
+            "saveError": "Ha ocurrido un error al dar de alta el empleado. Inténtalo más tarde."
         },
         "edit": {
-            "title": "Edición de empleados",
+            "title": "Editar empleado",
             "minRoles": "Mínimo tiene que existir un rol",
             "saveSuccess": "Los datos se han guardado con éxito",
             "saveError": "Ha ocurrido un error al guardar los datos. Inténtalo más tarde"
@@ -163,30 +163,30 @@
         "description": "La descripción de las páginas de los proyectos .."
     },
     "calendars": {
-        "title": "Calendar Schemes",
+        "title": "Esquemes de Calendaris",
         "description": "Esquema de Calendarios. Los nuevos usuarios se agregan automáticamente al esquema predeterminado.",
-        "error": "Error loading calendar!",
-        "holidays": "Holidays",
-        "workingDays": "Working days",
-        "fridays": "Fridays",
-        "intensiveDays": "Intensive days",
-        "specialDays": "Special days",
-        "non_workingDays": "Non-working days",
-        "yearShowed": "Year displayed"
+        "error": "Error cargando el calendario!",
+        "holidays": "Dies Festius",
+        "workingDays": "Días laborables",
+        "fridays": "Días viernes",
+        "intensiveDays": "Días intensivos",
+        "specialDays": "Días especiales",
+        "non_workingDays": "Días no laborables",
+        "yearShowed": "any mostrat"
     },
         "months": {
-            "january": "January",
-            "february": "February",        
-            "march": "March",
-            "april": "April",
-            "may": "May",
-            "june": "June",
-            "july": "July",
-            "august": "August",
-            "september": "September",
-            "october": "October",
-            "november": "November",
-            "december": "December"
+        "january": "Enero",
+        "february": "Febrero",        
+        "march": "Marzo",
+        "april": "Abril",
+        "may": "Mayo",
+        "june": "Junio",
+        "july": "Julio",
+        "august": "Agosto",
+        "september": "Septiembre",
+        "october": "Octubre",
+        "november": "Noviembre",
+        "december": "Diciembre"
     },
     "workloadSchemes": {
         "title": "Patrón Horario",
@@ -264,6 +264,10 @@
         },
         "calendarCreator": {
             "weekendsAreHolidays": "Fines de semana no laborables"
+        },
+        "calendars": {
+            "name": "Nombre del Calendario",
+            "description": "Descripción"
         }
     },
     "projects": {

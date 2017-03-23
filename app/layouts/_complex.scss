@@ -53,6 +53,9 @@
         right: 0;
         overflow: hidden;
         height: 80px;
+        * {
+          margin-bottom: 5px;
+        }
         #headerContent {
           width: 95%;
           margin: auto;
@@ -99,7 +102,10 @@
         margin: 15px auto;
         padding: 15px;
         border: 1px solid #E0E0E0;
-        ul li { 
+        &:hover {
+          background-color: #F6F6F6;
+        }
+        ul li {
           list-style: none;
         }
         .usersList {

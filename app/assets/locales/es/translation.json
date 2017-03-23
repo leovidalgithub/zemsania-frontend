@@ -164,7 +164,29 @@
     },
     "calendars": {
         "title": "Esquemas de Calendarios",
-        "description": "Esquema de Calendarios. Los nuevos usuarios se agregan automáticamente al esquema predeterminado."
+        "description": "Esquema de Calendarios. Los nuevos usuarios se agregan automáticamente al esquema predeterminado.",        
+        "error": "Error cargando el calendario!",
+        "holidays": "Días festivos",
+        "workingDays": "Días laborables",
+        "fridays": "Días viernes",
+        "intensiveDays": "Días intensivos",
+        "specialDays": "Días especiales",
+        "non_workingDays": "Días no laborables",
+        "yearShowed": "Año mostrado"
+    },
+    "months": {
+        "january": "Enero",
+        "february": "Febrero",        
+        "march": "Marzo",
+        "april": "Abril",
+        "may": "Mayo",
+        "june": "Junio",
+        "july": "Julio",
+        "august": "Agosto",
+        "september": "Septiembre",
+        "october": "Octubre",
+        "november": "Noviembre",
+        "december": "Diciembre"
     },
     "workloadSchemes": {
         "title": "Patrón Horario",

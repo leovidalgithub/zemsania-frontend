@@ -32,7 +32,7 @@
                 var dfd = $q.defer();
                 $http.get( buildURL( 'getCalendarById' ) + calendarID )
                     .then( function ( response ) {
-                        dfd.resolve( response.data.calendar );
+                        dfd.resolve( response.data );
                     })
                     .catch( function ( err ) {
                         dfd.reject( err );
