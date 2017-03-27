@@ -21,14 +21,14 @@
             'formly',
             'formlyBootstrap',
             'ngFileSaver',
-
             'hours.auth',
             // 'hours.projectWorkflow',
             // 'hours.errors',
             'hours.dashboard',
             'hours.components',
             'hours.employeeManager',
-            'hours.calendar'
+            'hours.calendar',
+            'hours.impute'
             // 'hours.reports',
             // 'hours.projects',
             // 'hours.excelExport'
