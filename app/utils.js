@@ -38,6 +38,7 @@ var API_paths = {
 
     getCalendars : 'calendar/getCalendars',
     getCalendarById : 'calendar/getCalendarById/',
+    getCalendarsNames : 'calendar/getCalendarNames/',
 
     getSpents: 'spents/get',
     getSpentById: 'spents/search',
@@ -71,16 +72,26 @@ function buildURL( path ) { // ***************** LEO WAS HERE *****************
     return API_base + API_paths[ path ];
 }
 
-function loadPermissions(Permission, UserFactory) { // Permission -> PermRoleStore
+function loadPermissions( Permission, UserFactory ) { // Permission -> PermRoleStore
     'use strict';
-    Permission.defineRole('anonymous', function () {
+    Permission.defineRole( 'anonymous', function () {
         return !UserFactory.getUser();
     });
 
-    Permission.defineRole('employee', function () {
+    Permission.defineRole( 'user', function () {
+        var isEmployee = false;
+        if (angular.isDefined( UserFactory.getUser() ) ) {
+            if (UserFactory.getUser().role === 'user') {
+                isEmployee = true;
+            }
+        }
+        return isEmployee;
+    });
+
+    Permission.defineRole('delivery', function () {
         var isEmployee = false;
         if (angular.isDefined(UserFactory.getUser())) {
-            if (UserFactory.getUser().role === 'employee') {
+            if (UserFactory.getUser().role === 'delivery') {
                 isEmployee = true;
             }
         }

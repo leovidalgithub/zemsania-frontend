@@ -21,8 +21,7 @@
             },
             doLogin: function ( credentials ) { // ***************** LEO WAS HERE *****************
                 var dfd = $q.defer();
-                $http
-                    .post( buildURL( 'login' ), credentials )
+                $http.post( buildURL( 'login' ), credentials )
                     .then( function ( response ) {
                         if ( response.data.success) {
                             var userModel = response.data.user;
@@ -30,11 +29,11 @@
                             if ( userModel.roles.indexOf( 'ROLE_USER' ) > -1) {
                                 userModel.role = 'user';
                             }
-                            if ( userModel.roles.indexOf( 'ROLE_MANAGER' ) > -1) {
-                                userModel.role = 'manager';
-                            }
                             if ( userModel.roles.indexOf( 'ROLE_DELIVERY' ) > -1) {
                                 userModel.role = 'delivery';
+                            }
+                            if ( userModel.roles.indexOf( 'ROLE_MANAGER' ) > -1) {
+                                userModel.role = 'manager';
                             }
                             if ( userModel.roles.indexOf( 'ROLE_BACKOFFICE' ) > -1) {
                                 userModel.role = 'administrator';

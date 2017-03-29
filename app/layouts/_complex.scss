@@ -52,7 +52,7 @@
         left: 0;
         right: 0;
         overflow: hidden;
-        height: 80px;
+        height: 90px;
         * {
           margin-bottom: 5px;
         }
@@ -63,8 +63,8 @@
     }
     #section {
         position: absolute;
-        top: 85px;
-        bottom: 65px;
+        top: 95px;
+        bottom: 45px;
         left: 0;
         right: 0;
         overflow: auto;
@@ -76,7 +76,7 @@
         left: 0;
         right: 0;
         overflow: hidden;
-        height: 60px;
+        height: 40px;
         display: flex;
         flex-flow: row nowrap;
         justify-content: flex-end;
@@ -84,6 +84,11 @@
         #footerContent {
           width: 80%;
           margin: 0 auto;
+          .copyRight {
+            font-size: 17px;
+            color: #1F1F1F;
+            text-shadow: 2px 2px 5px red;
+          }
         }
     }
     .flexDesign {

@@ -9,7 +9,7 @@
             'ui.router',
             'permission',
             'permission.ui',
-            'ngAnimate',
+            // 'ngAnimate', // ng-show/ng-hide/ng-if delay issue!!!
             'ngStorage',
             'angular-loading-bar',
             'ngSanitize',
@@ -217,6 +217,7 @@ var API_paths = {
 
     getCalendars : 'calendar/getCalendars',
     getCalendarById : 'calendar/getCalendarById/',
+    getCalendarsNames : 'calendar/getCalendarNames/',
 
     getSpents: 'spents/get',
     getSpentById: 'spents/search',
@@ -250,16 +251,26 @@ function buildURL( path ) { // ***************** LEO WAS HERE *****************
     return API_base + API_paths[ path ];
 }
 
-function loadPermissions(Permission, UserFactory) { // Permission -> PermRoleStore
+function loadPermissions( Permission, UserFactory ) { // Permission -> PermRoleStore
     'use strict';
-    Permission.defineRole('anonymous', function () {
+    Permission.defineRole( 'anonymous', function () {
         return !UserFactory.getUser();
     });
 
-    Permission.defineRole('employee', function () {
+    Permission.defineRole( 'user', function () {
+        var isEmployee = false;
+        if (angular.isDefined( UserFactory.getUser() ) ) {
+            if (UserFactory.getUser().role === 'user') {
+                isEmployee = true;
+            }
+        }
+        return isEmployee;
+    });
+
+    Permission.defineRole('delivery', function () {
         var isEmployee = false;
         if (angular.isDefined(UserFactory.getUser())) {
-            if (UserFactory.getUser().role === 'employee') {
+            if (UserFactory.getUser().role === 'delivery') {
                 isEmployee = true;
             }
         }
@@ -460,16 +471,16 @@ function toGMT0(date) {
     }
 }());
 
-(function () {
+;( function () {
     'use strict';
     angular
-        .module('hours.dashboard', [])
-        .config(dashboardConfig);
+        .module( 'hours.dashboard', [] )
+        .config( dashboardConfig );
 
     dashboardConfig.$invoke = ['$stateProvider'];
-    function dashboardConfig($stateProvider) {
+    function dashboardConfig( $stateProvider ) {
         $stateProvider
-            .state('dashboard', {
+            .state( 'dashboard', {
                 url: '/dashboard',
                 templateUrl: '/features/dashboard/home/home.tpl.html',
                 controller: 'HomeController',
@@ -481,7 +492,7 @@ function toGMT0(date) {
                     }
                 },
                 resolve: {
-                    notifications: function (DashboardFactory) {
+                    notifications: function ( DashboardFactory ) {
                         return DashboardFactory.getUnreadNotifications();
                     }
                 }
@@ -534,7 +545,8 @@ function toGMT0(date) {
                         var employee    = EmployeeManagerFactory.getEmployeeFromID( $stateParams.id );
                         var enterprises = EmployeeManagerFactory.getEnterprises();
                         var supervisors = EmployeeManagerFactory.supervisorsExceptID( $stateParams.id );
-                        return $q.all( { employee : employee, enterprises : enterprises, supervisors : supervisors } );
+                        var calendars   = EmployeeManagerFactory.getCalendarsNames();
+                        return $q.all( { employee : employee, enterprises : enterprises, supervisors : supervisors, calendars : calendars } );
                     }
                 }
             })
@@ -684,8 +696,7 @@ function toGMT0(date) {
             },
             doLogin: function ( credentials ) { // ***************** LEO WAS HERE *****************
                 var dfd = $q.defer();
-                $http
-                    .post( buildURL( 'login' ), credentials )
+                $http.post( buildURL( 'login' ), credentials )
                     .then( function ( response ) {
                         if ( response.data.success) {
                             var userModel = response.data.user;
@@ -693,11 +704,11 @@ function toGMT0(date) {
                             if ( userModel.roles.indexOf( 'ROLE_USER' ) > -1) {
                                 userModel.role = 'user';
                             }
-                            if ( userModel.roles.indexOf( 'ROLE_MANAGER' ) > -1) {
-                                userModel.role = 'manager';
-                            }
                             if ( userModel.roles.indexOf( 'ROLE_DELIVERY' ) > -1) {
                                 userModel.role = 'delivery';
+                            }
+                            if ( userModel.roles.indexOf( 'ROLE_MANAGER' ) > -1) {
+                                userModel.role = 'manager';
                             }
                             if ( userModel.roles.indexOf( 'ROLE_BACKOFFICE' ) > -1) {
                                 userModel.role = 'administrator';
@@ -1166,51 +1177,51 @@ function toGMT0(date) {
         };
     }
 }());
-(function () {
+;( function () {
     'use strict';
     angular
-        .module('hours.dashboard')
-        .factory('DashboardFactory', DashboardFactory);
+        .module( 'hours.dashboard' )
+        .factory( 'DashboardFactory', DashboardFactory );
 
-    DashboardFactory.$invoke = ['$http', '$q'];
-    function DashboardFactory($http, $q) {
+    DashboardFactory.$invoke = [ '$http', '$q' ];
+    function DashboardFactory( $http, $q ) {
         return {
             getUnreadNotifications: function () {
-                var dfd = $q.defer();
-                $http
-                    .get(buildURL('unreadNotifications'))
-                    .then(function (response) {
-                        if (response.data.success) {
-                            var notificationTypes, notificationResponse;
-                            var notifications = {};
-                            response.data.notifications.forEach(function (notification) {
-                                if (angular.isUndefined(notifications[notification.type])) {
-                                    notifications[notification.type] = [];
-                                }
 
-                                notifications[notification.type].push(notification);
-                            });
-                            notificationTypes = Object.keys(notifications);
-                            notificationResponse = {keys: notificationTypes, notifications: notifications};
+                // var dfd = $q.defer();
+                // $http.get( buildURL( 'unreadNotifications' ) )
+                //     .then( function ( response ) {
+                //         if ( response.data.success ) {
+                //             var notificationTypes, notificationResponse;
+                //             var notifications = {};
+                //             response.data.notifications.forEach( function ( notification ) {
+                //                 if ( angular.isUndefined( notifications[ notification.type ] )) {
+                //                     notifications[notification.type] = [];
+                //                 }
+                //                 notifications[ notification.type ].push( notification );
+                //             });
+                //             notificationTypes = Object.keys( notifications );
+                //             notificationResponse = { keys: notificationTypes, notifications: notifications };
 
-                            dfd.resolve(notificationResponse);
-                        } else {
-                            dfd.reject(response);
-                        }
-                    }, function (err) {
-                        dfd.reject(err);
-                    });
+                //             dfd.resolve( notificationResponse );
+                //         } else {
+                //             dfd.reject( response );
+                //         }
+                //     }, function ( err ) {
+                //         dfd.reject( err );
+                //     });
 
-                return dfd.promise;
+                // return dfd.promise;
+            
+
             },
-            markNotificationAsRead: function (id) {
+            markNotificationAsRead: function ( id ) {
                 var dfd = $q.defer();
-                $http
-                    .post(buildURL('markReadNotifications'), id)
+                $http.post( buildURL( 'markReadNotifications' ), id )
                     .then(function () {
-                        dfd.resolve(true);
-                    }, function (err) {
-                        dfd.resolve(err);
+                        dfd.resolve( true );
+                    }, function ( err ) {
+                        dfd.resolve( err );
                     });
 
                 return dfd.promise;
@@ -1377,6 +1388,18 @@ function toGMT0(date) {
                 return dfd.promise;
             },
 
+            getCalendarsNames: function() { // LEO WORKING HERE
+                var dfd = $q.defer();
+                $http.get( buildURL( 'getCalendarsNames' ) )
+                    .then( function ( data ) {
+                        dfd.resolve( data.data.calendars );
+                    })
+                    .catch( function ( err ) {
+                        dfd.reject( err );
+                    });
+                return dfd.promise;
+            },
+
             getDefaultPassword: function() { // LEO WAS HERE
                 var dfd = $q.defer();
                 $http.get( buildURL( 'getDefaultPassword' ) )
@@ -1458,6 +1481,7 @@ function toGMT0(date) {
             $scope.loginForm.disabled = true;
             UserFactory.doLogin( $scope.loginForm )
                 .then( function ( data ) {
+                    console.log(data);
                     if ( data.defaultPassword ) {
                         $state.go( 'changePassword' );
                     } else {
@@ -1747,14 +1771,14 @@ function toGMT0(date) {
     }
 }());
 
-(function () {
+;( function () {
     'use strict';
     angular
-        .module('hours.dashboard')
-        .controller('HomeController', HomeController);
+        .module( 'hours.dashboard' )
+        .controller( 'HomeController', HomeController );
 
-    HomeController.$invoke = ['$scope', 'UserFactory', '$state', 'notifications', 'DashboardFactory', '$i18next'];
-    function HomeController($scope, UserFactory, $state, notifications, DashboardFactory, $i18next) {
+    HomeController.$invoke = [ '$scope', 'UserFactory', '$state', 'notifications', 'DashboardFactory', '$i18next' ];
+    function HomeController( $scope, UserFactory, $state, notifications, DashboardFactory, $i18next ) {
 
 // $scope.fn1 = function() {
 //     $i18next.changeLanguage('es');
@@ -1763,44 +1787,45 @@ function toGMT0(date) {
 //     $i18next.changeLanguage('en');
 // };
 
-        $scope.notifications = notifications;
-        $scope.user = UserFactory.getUser();
+        // $scope.notifications = notifications;
+        // $scope.user = UserFactory.getUser();
 
-        $scope.activeNotifications = notifications.keys[0];
+        // $scope.activeNotifications = notifications.keys[0];
 
-        $scope.openType = function (type) {
-            $scope.activeNotifications = type;
-        };
+        // $scope.openType = function ( type ) {
+        //     $scope.activeNotifications = type;
+        // };
 
-        $scope.isActive = function (type) {
-            return $scope.activeNotifications === type && 'active';
-        };
+        // $scope.isActive = function ( type ) {
+        //     return $scope.activeNotifications === type && 'active';
+        // };
 
-        $scope.openNotification = function (notification) {
-            switch (notification.type) {
-                case 'holiday_request' :
-                    $state.go('moderateHolidayCalendar', {
-                        userId: notification.senderId,
-                        filterBy: 'pending'
-                    });
-                    break;
-                case 'hours_sent' :
-                    $state.go('calendarImputeHoursValidator-user', {
-                        userId: notification.senderId,
-                        timestamp: new Date(notification.initDate).getTime()
-                    });
-                    break;
-            }
-        };
+        // $scope.openNotification = function ( notification ) {
+        //     switch ( notification.type ) {
+        //         case 'holiday_request' :
+        //             $state.go('moderateHolidayCalendar', {
+        //                 userId: notification.senderId,
+        //                 filterBy: 'pending'
+        //             });
+        //             break;
+        //         case 'hours_sent' :
+        //             $state.go( 'calendarImputeHoursValidator-user', {
+        //                 userId: notification.senderId,
+        //                 timestamp: new Date( notification.initDate ).getTime()
+        //             });
+        //             break;
+        //     }
+        // };
 
-        $scope.markRead = function (notification, type, index) {
-            DashboardFactory.markNotificationAsRead({notificationId: notification._id})
-                .then(function () {
-                    $scope.notifications.notifications[type].splice(index, 1);
-                }, function () {
+        // $scope.markRead = function ( notification, type, index ) {
+        //     DashboardFactory.markNotificationAsRead( { notificationId: notification._id } )
+        //         .then( function () {
+        //             $scope.notifications.notifications[ type ].splice( index, 1 );
+        //         }, function () {
 
-                });
-        };
+        //         });
+        // };
+        
     }
 }());
 ( function () {
@@ -1925,7 +1950,7 @@ function toGMT0(date) {
         };
     }
 }());
-( function () {
+;( function () {
     'use strict';
     angular
         .module( 'hours.employeeManager' )
@@ -1934,8 +1959,9 @@ function toGMT0(date) {
     editEmployeeController.$invoke = [ '$scope', '$state', 'data', '$filter', '$timeout', 'EmployeeManagerFactory' ];
     function editEmployeeController( $scope, $state, data, $filter, $timeout, EmployeeManagerFactory ) {
         
-        $scope.companies = data.enterprises;
+        $scope.companies   = data.enterprises;
         $scope.supervisors = data.supervisors;
+        $scope.calendars   = data.calendars;
 
         data.employee.birthdate = new Date( data.employee.birthdate );
         $scope.employee = data.employee;
@@ -2149,6 +2175,40 @@ function toGMT0(date) {
 
     imputeHoursController.$invoke = [ '$scope', 'UserFactory' ];
     function imputeHoursController( $scope, UserFactory ) {
+
+        $scope.imputeTypes = [ 'Horas', 'Guardias', 'Variables' ];
+        $scope.imputeTypes[ 'Horas'     ]     = [ 'Hora' ];
+        $scope.imputeTypes[ 'Guardias'  ]  = [ 'Turnicidad', 'Guardia', 'Varios' ];
+        $scope.imputeTypes[ 'Variables' ] = [ 'Hora extra', 'Hora extra festivo', 'Horas nocturnas', 'Formación', 'Intervenciones', 'Varios' ];
+        $scope.typesModel = $scope.imputeTypes[0];
+        $scope.subtypes = $scope.imputeTypes[$scope.typesModel][0];
+    	$scope.currentType = 'text';
+    	$scope.imputeType = 'Horas';
+    	$scope.days = [];
+
+    	var possibleValues = [ 6, 6.5, 7, 7.5, 8 ];
+    	for( var i = 1; i < 32; i++ ) {
+    		var random = Math.floor( ( Math.random() * 5 ) + 0 );
+    		$scope.days.push( { day : i, value : possibleValues[ random ] } );
+    	};
+
+    	$scope.imputeTypeChanged = function() {
+	        $scope.subtypes = $scope.imputeTypes[$scope.typesModel][0];
+	    	switch( $scope.typesModel ) {
+			    case 'Horas':
+	    			$scope.currentType = 'text';
+			        break;
+			    case 'Guardias':
+	    			$scope.currentType = 'checkbox';
+			        break;
+			    case 'Variables':
+	    			$scope.currentType = 'text';
+			        break;
+			}
+		};
+
+    	$scope.imputeSubTypeChanged = function() {
+		};
 
 }
 

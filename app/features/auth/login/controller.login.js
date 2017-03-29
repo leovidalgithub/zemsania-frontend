@@ -17,6 +17,7 @@
             $scope.loginForm.disabled = true;
             UserFactory.doLogin( $scope.loginForm )
                 .then( function ( data ) {
+                    console.log(data);
                     if ( data.defaultPassword ) {
                         $state.go( 'changePassword' );
                     } else {

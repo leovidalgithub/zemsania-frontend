@@ -1,4 +1,4 @@
-( function () {
+;( function () {
     'use strict';
     angular
         .module( 'hours.employeeManager' )
@@ -7,8 +7,9 @@
     editEmployeeController.$invoke = [ '$scope', '$state', 'data', '$filter', '$timeout', 'EmployeeManagerFactory' ];
     function editEmployeeController( $scope, $state, data, $filter, $timeout, EmployeeManagerFactory ) {
         
-        $scope.companies = data.enterprises;
+        $scope.companies   = data.enterprises;
         $scope.supervisors = data.supervisors;
+        $scope.calendars   = data.calendars;
 
         data.employee.birthdate = new Date( data.employee.birthdate );
         $scope.employee = data.employee;

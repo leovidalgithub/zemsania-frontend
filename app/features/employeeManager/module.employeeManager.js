@@ -42,7 +42,8 @@
                         var employee    = EmployeeManagerFactory.getEmployeeFromID( $stateParams.id );
                         var enterprises = EmployeeManagerFactory.getEnterprises();
                         var supervisors = EmployeeManagerFactory.supervisorsExceptID( $stateParams.id );
-                        return $q.all( { employee : employee, enterprises : enterprises, supervisors : supervisors } );
+                        var calendars   = EmployeeManagerFactory.getCalendarsNames();
+                        return $q.all( { employee : employee, enterprises : enterprises, supervisors : supervisors, calendars : calendars } );
                     }
                 }
             })

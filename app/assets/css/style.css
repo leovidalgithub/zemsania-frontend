@@ -28,7 +28,7 @@
   left: 0;
   right: 0;
   overflow: hidden;
-  height: 80px;
+  height: 90px;
 }
 #complex_layout #page-content-wrapper #header * {
   margin-bottom: 5px;
@@ -39,8 +39,8 @@
 }
 #complex_layout #page-content-wrapper #section {
   position: absolute;
-  top: 85px;
-  bottom: 65px;
+  top: 95px;
+  bottom: 45px;
   left: 0;
   right: 0;
   overflow: auto;
@@ -52,7 +52,7 @@
   left: 0;
   right: 0;
   overflow: hidden;
-  height: 60px;
+  height: 40px;
   display: flex;
   flex-flow: row nowrap;
   justify-content: flex-end;
@@ -61,6 +61,11 @@
 #complex_layout #page-content-wrapper #footer #footerContent {
   width: 80%;
   margin: 0 auto;
+}
+#complex_layout #page-content-wrapper #footer #footerContent .copyRight {
+  font-size: 17px;
+  color: #1F1F1F;
+  text-shadow: 2px 2px 5px red;
 }
 #complex_layout #page-content-wrapper .flexDesign {
   display: flex;
@@ -847,6 +852,81 @@
 .ext_cellColor, #calendars #section .showHolidays a, #calendars #section .showWorking a, #calendars #section .showFriday a, #calendars #section .showIntensive a, #calendars #section .showSpecial a, #calendars #section .showNon_working a {
   background-image: none !important;
   color: #ffffff !important;
+}
+
+#imputeHours #daysDiv {
+  border: solid 1px gray;
+  border-radius: 3px;
+  width: 90%;
+  margin: auto;
+  padding: 10px;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  align-items: center;
+}
+#imputeHours #daysDiv .myDay {
+  border: solid 1px gray;
+  background-color: #EAEAEA;
+  border-radius: 5px;
+  height: 95px;
+  width: 85px;
+  margin: 7px;
+  display: inline-block;
+  transition: all 2s ease;
+}
+#imputeHours #daysDiv .myDay:hover {
+  border: solid 1px #CAB023;
+  background-color: #B7B7B7;
+}
+#imputeHours #daysDiv .myHeader {
+  height: 20px;
+  border-bottom: solid 1px gray;
+  text-align: center;
+  font-size: 16px;
+  font-weight: bold;
+}
+#imputeHours #daysDiv .myInput {
+  padding: 5px 8px;
+}
+#imputeHours #daysDiv .myInput input {
+  text-align: center;
+  font-size: 19px;
+  color: red;
+  transition: all .8s ease;
+}
+#imputeHours #daysDiv .myInput input:focus {
+  font-size: 20px;
+  color: #D70303;
+}
+#imputeHours #daysDiv .myFooter {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-around;
+  align-items: center;
+  margin-top: 5px;
+}
+#imputeHours #daysDiv .myFooter i {
+  font-size: 10px;
+}
+#imputeHours #daysDiv .myFooter a:nth-of-type(1) {
+  background-color: #4A7ADC;
+}
+#imputeHours #daysDiv .myFooter a:nth-of-type(2) {
+  background-color: #CAB023;
+}
+#imputeHours #section #options #selects div {
+  display: inline-block;
+  margin-left: 10px;
+}
+#imputeHours #section #options #selects div select {
+  margin-left: 10px;
+  font-size: 21px;
+  padding: 8px;
+  border-radius: 8px;
+  background-color: #606060;
+  color: white;
+  font-family: monospace;
 }
 
 #home-view .notification-center {

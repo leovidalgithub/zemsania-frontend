@@ -27,20 +27,20 @@
                     {{'sidebar.imputeSpents' | i18next}}</a>
             </li>
             
-            <li role-auth="{'only' : ['administrator', 'manager', 'backoffice']}"> <!-- LEO WORKING HERE - CALENDARS -->
+            <li role-auth="{'only' : ['administrator', 'manager']}"> <!-- LEO WORKING HERE - CALENDARS -->
                 <a ui-sref="calendars" ng-class="{'active' : activeState === 'calendars'}"><i class="fa fa-list-alt"></i>
                     {{'sidebar.calendars' | i18next}}</a>
             </li>
             
-            <li role-auth="{'only' : ['administrator', 'manager', 'backoffice']}">
+            <li role-auth="{'only' : ['administrator', 'manager']}">
                 <a class="not-active"  ui-sref="workloadSchemes" ng-class="{'active' : activeState === 'workloadSchemes'}"><i class="fa fa-hourglass-start"></i>
                     {{'sidebar.workloadSchemes' | i18next}}</a>
             </li>
-            <li role-auth="{'only' : ['administrator', 'manager', 'backoffice']}">
+            <li role-auth="{'only' : ['administrator', 'manager']}">
                 <a class="not-active"  ui-sref="employeeTimesheets" ng-class="{'active' : activeState === 'employeeTimesheets'}"><i class="fa fa-calendar-check-o"></i>
                     {{'sidebar.employeeTimesheets' | i18next}}</a>
             </li>
-            <li role-auth="{'only' : ['administrator', 'manager', 'backoffice']}">
+            <li role-auth="{'only' : ['administrator', 'manager']}">
                 <a class="not-active"  ui-sref="projectTimesheets" ng-class="{'active' : activeState === 'projectTimesheets'}"><i class="fa fa-calendar-check-o"></i>
                     {{'sidebar.projectTimesheets' | i18next}}</a>
             </li>

@@ -1,4 +1,4 @@
-<div id="calendars">
+<div id="imputeHours">
     <!-- HEADER TOOL-BAR -->
     <header id="header">
         <div id="headerContent">
@@ -23,7 +23,47 @@
         <!-- <div class="alert alert-danger" ng-show="loadingError">{{'calendars.error' | i18next}}</div> -->
 
         <div id="options">
-        	<h3>This is your impute hours content</h3>
+
+            <div id="selects">                
+                    <!-- IMPUTE HOURS TYPES -->
+                    <div>
+                        <label>Tipo de Imputación
+                            <select ng-options="type for type in imputeTypes" ng-model="typesModel" ng-change="imputeTypeChanged()"></select>
+                        </label>
+                    </div>
+
+                    <!-- IMPUTE HOURS SUBTYPES -->
+                    <div>
+                        <label>
+                            <select ng-options="subType for subType in imputeTypes[typesModel]" ng-disabled="!typesModel" ng-model="subtypes" ng-change="imputeSubTypeChanged()"></select>
+                        </label>
+                    </div>
+            </div>
+
+        <button class="btn btn-danger" ng-click="fn()">Go!</button>
+
+            <div id="daysDiv">
+                <div class="myDay" ng-repeat="(key, value) in days">
+
+                    <div class="myHeader">
+                        {{value.day}}
+                    </div>
+
+                    <div class="myInput" >
+                        <input ng-show="currentType === 'text'" class="form-control input-sm" type="text" value="{{value.value}}" maxlength="3">
+                        <input ng-show="currentType === 'checkbox'" class="form-control input-sm" type="checkbox" value="{{value.value}}" maxlength="3">
+                        <!-- <input type="number" step="0.5" min="0" size="1" /> -->
+                    </div>
+
+                    <div class="myFooter" >
+                        <a class="btn btn-xs btn-warning" title="Gastos"> <!-- ui-sref="" -->
+                            <i class="fa fa-anchor"></i></a>
+                        <a class="btn btn-xs btn-danger" title="Misceláneos">
+                            <i class="fa fa-key"></i></a>
+                    </div>
+
+                </div>
+            </div>
         </div>
 
     </section>
@@ -31,7 +71,25 @@
     <!-- FOOTER -->
     <footer id="footer">
         <div id="footerContent">
-        <code>Zemsania Time Manager&copy;</code>
+        <div class="copyRight">Zemsania Time Manager&copy;</div>
         </div>
     </footer>
 </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

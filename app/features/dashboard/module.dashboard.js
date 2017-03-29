@@ -1,13 +1,13 @@
-(function () {
+;( function () {
     'use strict';
     angular
-        .module('hours.dashboard', [])
-        .config(dashboardConfig);
+        .module( 'hours.dashboard', [] )
+        .config( dashboardConfig );
 
     dashboardConfig.$invoke = ['$stateProvider'];
-    function dashboardConfig($stateProvider) {
+    function dashboardConfig( $stateProvider ) {
         $stateProvider
-            .state('dashboard', {
+            .state( 'dashboard', {
                 url: '/dashboard',
                 templateUrl: '/features/dashboard/home/home.tpl.html',
                 controller: 'HomeController',
@@ -19,7 +19,7 @@
                     }
                 },
                 resolve: {
-                    notifications: function (DashboardFactory) {
+                    notifications: function ( DashboardFactory ) {
                         return DashboardFactory.getUnreadNotifications();
                     }
                 }
