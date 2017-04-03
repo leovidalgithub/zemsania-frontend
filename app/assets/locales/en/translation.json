@@ -94,6 +94,7 @@
     },
     "actions": {
         "generate": "Generar",
+        "findingString" : "String to find",
         "save": "Guardar",
         "uploading": "Subiendo archivo",
         "addNew": "Añadir",

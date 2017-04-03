@@ -41,12 +41,18 @@
             </div>
 
         <button class="btn btn-danger" ng-click="fn()">Go!</button>
+        <button class="btn btn-success" ng-click="moveDate(-1)"><---</button>
+        <button class="btn btn-success" ng-click="moveDate(1)">---></button>
+        <button class="btn btn-success" ng-click="monthWeekSwap()">Vista {{(monthView ? 'Mes' : 'Semanal')}}</button>
+        <p>Mes : {{currentMonth}} / Año : {{currentYear}}</p>
+        <p>Del: {{dataDate.weeks[puntero][0] | amDateFormat:'DD-MM-YY'}} al: {{dataDate.weeks[puntero][6] | amDateFormat:'DD-MM-YY'}}</p>
+
 
             <div id="daysDiv">
-                <div class="myDay" ng-repeat="(key, value) in days">
+                <div ng-show="value.showMe" class="myDay" ng-repeat="(key, value) in days">
 
                     <div class="myHeader">
-                        {{value.day}}
+                        {{value.day | amDateFormat:'DD'}}
                     </div>
 
                     <div class="myInput" >

@@ -37,6 +37,8 @@
     "ng-i18next": "^1.0.4",
     "ngstorage": "^0.3.11",
     "jquery": "1.7.0",
-    "jquery-ui": "jqueryui#1.9.2"
+    "jquery-ui": "jqueryui#1.9.2",
+    "moment": "^2.18.1",
+    "angular-moment": "^1.0.1"
   }
 }

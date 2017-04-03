@@ -9,6 +9,7 @@
             'ui.router',
             'permission',
             'permission.ui',
+            'angularMoment',
             // 'ngAnimate', // ng-show/ng-hide/ng-if delay issue!!!
             'ngStorage',
             'angular-loading-bar',

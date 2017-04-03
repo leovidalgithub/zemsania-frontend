@@ -4,8 +4,8 @@
         .module( 'hours.calendar' )
         .controller( 'editCalendarsController', editCalendarsController );
 
-    editCalendarsController.$invoke = [ '$scope', 'CalendarFactory', '$stateParams', 'UserFactory', '$timeout', '$state' ];
-    function editCalendarsController( $scope, CalendarFactory, $stateParams, UserFactory, $timeout, $state ) {
+    editCalendarsController.$invoke = [ '$scope', 'CalendarFactory', '$stateParams', 'UserFactory', '$timeout', '$state', '$http' ];
+    function editCalendarsController( $scope, CalendarFactory, $stateParams, UserFactory, $timeout, $state, $http ) {
 
         var eventDates;
         var eventHours;
@@ -18,6 +18,8 @@
 
         CalendarFactory.getCalendarById( $stateParams.id )
             .then( function( data ) {
+                console.log(data);
+
                 $scope.loadingError = false;
                 $scope.calendar = data.calendar;
                 eventHours = data.eventHours;
@@ -84,7 +86,7 @@
                 changeYear: false,
                 stepMonths: 0,
                 defaultDate: new Date( month ), // ( 2014, 2, 1 )
-                // onSelect: daySelected,
+                onSelect: selectedDay,
                 beforeShowDay: function( date ) {
                     var highlight = eventDates[ date ];
                     if ( highlight ) {
@@ -133,46 +135,48 @@
 
         function resetCellsTitles() {
             $timeout( function () {
-                $( '.ui-datepicker td > *' ).each( function ( idx, elem ) {
+                $( '.ui-datepicker td > *' ).each( function ( index, elem ) {
                     $( this ).attr( 'title', 'Zemsania' );
                 });
             }, 100 );
         }
 //***************************************************************************************
+        function selectedDay( date, inst ) {
+            // inst.dpDiv.find('.ui-state-default').css('background-color', 'red');
+            // eventDates[ new Date( date ) ] = { date : new Date( date ), type : $scope.dayTypes };
+            var destinyType = 'working';
+            var selectedDay = new Date( date );
+            $scope.calendar.groupDays.forEach( function( groupDay ) {
+                if ( groupDay.type == destinyType ) { // find day in the same type in order to push it (if does'not exist)
+                    var index = getDayIndex( groupDay.days.days );
+                    if ( index == -1 ) { // if not exists to add
+                        groupDay.days.days.push( selectedDay );
+                    }
+                } else { // find day in others types in order to remove it (if exists)
+                    var index = getDayIndex( groupDay.days.days );
+                    if ( index != -1 ) { // if exists to remove
+                        groupDay.days.days.splice( index, 1 );
+                    }                    
+                }
+            });
+            function getDayIndex( array ) {
+                return array.findIndex( function( day ) {
+                    return new Date( day ).getTime() == selectedDay.getTime();
+                });                    
+            }
+            // send calendar to backend to refresh object data
+            $http.post( buildURL( 'getRefreshCalendarData' ), $scope.calendar )
+                .then( function ( response ) {
+                    var data = response.data;
+                    $scope.calendar = data.calendar;
+                    eventHours = data.eventHours;
+                    eventDates = data.eventHours.eventDates;
+                    $timeout( function () {
+                        showCalendars();
+                    }, 300 );
+                });
+        }
 //***************************************************************************************
-//***************************************************************************************
-
-        // var aa = [10,20,30].map(function(elem) {
-        //     return elem * 33;
-        // });
-        // console.log(aa);
-
-        // var bb = [1,2,3].some(function(item) {
-        //     return item > 2;
-        // });
-        // console.log(bb);
-
-        // var cc = [1,2,3].reduce( function( pre, curr, index, array) {
-        //     console.log('***********')
-        //     console.log(pre);
-        //     console.log(curr);
-        //     console.log(index);
-        //     console.log(array);
-        //     return pre + curr;
-        // }, 2);
-        // console.log(cc);
-
-        // $.map(array, function(item, index) {
-        //     return something;
-        // });
-
-        // $( [1,2,3] ).each(function(index, el) {
-        //     console.log(el);            
-        // });
-        // console.log('*************');
-        // [1,2,3].forEach( function(element, index) {
-        //     console.log(element);
-        // });
 }
 
 })();

@@ -38,6 +38,7 @@ var API_paths = {
 
     getCalendars : 'calendar/getCalendars',
     getCalendarById : 'calendar/getCalendarById/',
+    getRefreshCalendarData : 'calendar/getRefreshCalendarData',
     getCalendarsNames : 'calendar/getCalendarNames/',
 
     getSpents: 'spents/get',

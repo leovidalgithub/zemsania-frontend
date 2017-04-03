@@ -31,22 +31,12 @@
         <!-- ADVANCED SEARCH -->
         <form class="form-inline simple-input" ng-submit="avancedSearch()">
             <div class="col-md-12 form-elements">
-                <div class="form-group col-md-3">
-                    <input type="email" class="form-control"
-                           placeholder="{{'userProfile.user.email' | i18next}}" ng-model="search.username">
-                </div>
-                <div class="form-group col-md-3">
+
+                <div class="form-group col-xs-12 col-md-7">
                     <input type="text" class="form-control"
-                           placeholder="{{'userProfile.user.name' | i18next}}" ng-model="search.name">
+                           placeholder="{{'actions.findingString' | i18next}}" ng-model="search.textToFind">
                 </div>
-                <div class="form-group col-md-3">
-                    <input type="text" class="form-control"
-                           placeholder="{{'userProfile.user.lastname' | i18next}}" ng-model="search.surname">
-                </div>
-                <div class="form-group col-md-3">
-                    <input type="text" class="form-control"
-                           placeholder="{{'userProfile.user.nif' | i18next}}" ng-model="search.nif">
-                </div>
+
             </div>
             <div class="form-actions">
                 <button type="reset" class="btn btn-warning">{{'actions.reset' | i18next}}</button>

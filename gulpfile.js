@@ -100,6 +100,7 @@ gulp.task( 'vendors:js', function () {
             './bower_components/ngstorage/ngStorage.min.js',
             './bower_components/angular-animate/angular-animate.min.js',
             './bower_components/moment/min/moment.min.js',
+            './bower_components/angular-moment/angular-moment.min.js',
             './bower_components/angular-ui-calendar/src/calendar.js',
             './bower_components/fullcalendar/dist/fullcalendar.min.js',
             './bower_components/fullcalendar/dist/gcal.js',

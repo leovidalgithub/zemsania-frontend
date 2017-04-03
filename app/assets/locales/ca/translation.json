@@ -93,6 +93,7 @@
     },
     "actions": {
         "generate": "Generar",
+        "findingString" : "Cadena a cercar",
         "save": "Guardar",
         "uploading": "Subiendo archivo",
         "addNew": "Añadir",
