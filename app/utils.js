@@ -36,10 +36,11 @@ var API_paths = {
     holidaysApprove: 'holidays/approve',
     holidaysReject: 'holidays/reject',
 
-    getCalendars : 'calendar/getCalendars',
+    // getCalendars : 'calendar/getCalendars',
     getCalendarById : 'calendar/getCalendarById/',
     getRefreshCalendarData : 'calendar/getRefreshCalendarData',
     getCalendarsNames : 'calendar/getCalendarNames/',
+    // getCalendarByIdByMonth : 'calendar/getCalendarByIdByMonth/',
 
     getSpents: 'spents/get',
     getSpentById: 'spents/search',

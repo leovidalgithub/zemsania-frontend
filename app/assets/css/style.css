@@ -879,6 +879,11 @@
   border: solid 1px #CAB023;
   background-color: #B7B7B7;
 }
+#imputeHours #daysDiv .myDay.desactive {
+  pointer-events: none;
+  cursor: default;
+  background-color: #666;
+}
 #imputeHours #daysDiv .myHeader {
   height: 20px;
   border-bottom: solid 1px gray;

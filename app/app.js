@@ -88,7 +88,7 @@
 
         loadPermissions(PermRoleStore, UserFactory);
         tmpData($rootScope);
-        setFormlyConfig(formlyConfig);        
+        setFormlyConfig(formlyConfig);
 
     }
 }());

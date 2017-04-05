@@ -9,7 +9,7 @@
         return {
 
             getMonthWeeksObj : function ( month, year ) {
-                var months       = [ 'Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic' ];   
+                var months     = [ 'january' ,'february' ,'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december' ];
                 var dataDate     =  {},
                     firstDay     = new Date( year, month, 1 ),
                     lastDay      = new Date( year, month + 1, 0 ),
@@ -84,3 +84,22 @@
         };
     }
 }());
+
+
+
+
+    // function getMonthWeeks( month, year ) {
+    //     var weeks = [],
+    //         firstDate = new Date( year, month, 1 ),
+    //         lastDay  = new Date( year, month + 1, 0 ),
+    //         numDays   = lastDay.getDate(),
+    //         start     = 1,
+    //         end       = 8 - firstDate.getDay();
+    //    while( start <= numDays ){
+    //        weeks.push( { start : start, end : end } );
+    //        start = end + 1;
+    //        end = end + 7;
+    //        if( end > numDays ) end = numDays;
+    //    }
+    //     return weeks;
+    // }

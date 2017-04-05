@@ -38,11 +38,11 @@
                     }
                 },
                 resolve: {
-                    data: function ( EmployeeManagerFactory, $stateParams, $q ) {
+                    data: function ( CalendarFactory, EmployeeManagerFactory, $stateParams, $q ) {
                         var employee    = EmployeeManagerFactory.getEmployeeFromID( $stateParams.id );
                         var enterprises = EmployeeManagerFactory.getEnterprises();
                         var supervisors = EmployeeManagerFactory.supervisorsExceptID( $stateParams.id );
-                        var calendars   = EmployeeManagerFactory.getCalendarsNames();
+                        var calendars   = CalendarFactory.getCalendarsNames();
                         return $q.all( { employee : employee, enterprises : enterprises, supervisors : supervisors, calendars : calendars } );
                     }
                 }

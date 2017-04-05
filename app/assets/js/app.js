@@ -88,7 +88,7 @@
 
         loadPermissions(PermRoleStore, UserFactory);
         tmpData($rootScope);
-        setFormlyConfig(formlyConfig);        
+        setFormlyConfig(formlyConfig);
 
     }
 }());
@@ -216,10 +216,11 @@ var API_paths = {
     holidaysApprove: 'holidays/approve',
     holidaysReject: 'holidays/reject',
 
-    getCalendars : 'calendar/getCalendars',
+    // getCalendars : 'calendar/getCalendars',
     getCalendarById : 'calendar/getCalendarById/',
     getRefreshCalendarData : 'calendar/getRefreshCalendarData',
     getCalendarsNames : 'calendar/getCalendarNames/',
+    // getCalendarByIdByMonth : 'calendar/getCalendarByIdByMonth/',
 
     getSpents: 'spents/get',
     getSpentById: 'spents/search',
@@ -330,49 +331,6 @@ function toGMT0(date) {
 
     return new Date(date.valueOf() + now.getTimezoneOffset() * 60000);
 }
-( function () {
-    'use strict';
-    angular
-        .module( 'hours.calendar', [] )
-        .config( calendarsConfig );
-
-    calendarsConfig.$invoke = [ '$stateProvider' ];
-    function calendarsConfig( $stateProvider ) {
-        $stateProvider
-            .state( 'calendars', { // LEO WORKING HERE
-                url: '/calendars',
-                templateUrl: '/features/calendar/calendars/list/calendars.list.tpl.html',
-                controller: 'CalendarsController',
-                data: {
-                    template: 'complex',
-                    permissions: {
-                        except: [ 'anonymous' ],
-                        redirectTo: 'login'
-                    }
-                },
-                resolve : {
-                    calendars : function( CalendarFactory ) {
-                        return CalendarFactory.getCalendars();
-                    }
-                }
-            })
-
-            .state( 'calendarsEdit', { // LEO WORKING HERE
-                url: '/calendars/edit/:id',
-                templateUrl: '/features/calendar/calendars/edit/calendars.edit.tpl.html',
-                controller: 'editCalendarsController',
-                data: {
-                    // state: 'employeeManager',
-                    template: 'complex',
-                    permissions: {
-                        except: [ 'anonymous' ],
-                        redirectTo: 'login'
-                    }
-                }
-            })
-    }
-}());
-
 (function () {
     'use strict';
     angular
@@ -446,6 +404,49 @@ function toGMT0(date) {
             });
     }
 }());
+( function () {
+    'use strict';
+    angular
+        .module( 'hours.calendar', [] )
+        .config( calendarsConfig );
+
+    calendarsConfig.$invoke = [ '$stateProvider' ];
+    function calendarsConfig( $stateProvider ) {
+        $stateProvider
+            .state( 'calendars', { // LEO WORKING HERE
+                url: '/calendars',
+                templateUrl: '/features/calendar/calendars/list/calendars.list.tpl.html',
+                controller: 'CalendarsController',
+                data: {
+                    template: 'complex',
+                    permissions: {
+                        except: [ 'anonymous' ],
+                        redirectTo: 'login'
+                    }
+                },
+                resolve : {
+                    calendars : function( CalendarFactory ) {
+                        return CalendarFactory.getCalendarsNames();
+                    }
+                }
+            })
+
+            .state( 'calendarsEdit', { // LEO WORKING HERE
+                url: '/calendars/edit/:id',
+                templateUrl: '/features/calendar/calendars/edit/calendars.edit.tpl.html',
+                controller: 'editCalendarsController',
+                data: {
+                    // state: 'employeeManager',
+                    template: 'complex',
+                    permissions: {
+                        except: [ 'anonymous' ],
+                        redirectTo: 'login'
+                    }
+                }
+            })
+    }
+}());
+
 ( function () {
     'use strict';
     angular
@@ -543,11 +544,11 @@ function toGMT0(date) {
                     }
                 },
                 resolve: {
-                    data: function ( EmployeeManagerFactory, $stateParams, $q ) {
+                    data: function ( CalendarFactory, EmployeeManagerFactory, $stateParams, $q ) {
                         var employee    = EmployeeManagerFactory.getEmployeeFromID( $stateParams.id );
                         var enterprises = EmployeeManagerFactory.getEnterprises();
                         var supervisors = EmployeeManagerFactory.supervisorsExceptID( $stateParams.id );
-                        var calendars   = EmployeeManagerFactory.getCalendarsNames();
+                        var calendars   = CalendarFactory.getCalendarsNames();
                         return $q.all( { employee : employee, enterprises : enterprises, supervisors : supervisors, calendars : calendars } );
                     }
                 }
@@ -678,25 +679,53 @@ function toGMT0(date) {
 ( function () {
     'use strict';
     angular
-        .module( 'hours.calendar' )
-        .factory( 'CalendarFactory', CalendarFactory );
+        .module( 'hours.auth' )
+        .factory( 'UserFactory', UserFactory );
 
-    CalendarFactory.$invoke = [ '$http', '$q', '$filter' ];
-    function CalendarFactory( $http, $q, $filter ) {
+    UserFactory.$invoke = [ '$http', '$q', '$localStorage' ];
+    function UserFactory( $http, $q, $localStorage ) {
         return {
-
-            getCalendars: function () { // LEO WORKING HERE
+            getUser: function () {
+                return $localStorage.User;
+            },
+            getUserID: function () {
+                return $localStorage.User._id;
+            },
+            getUserToken: function () {
+                return $localStorage.User.token;
+            },
+            getcalendarID: function () {
+                return $localStorage.User.calendarID;
+            },
+            doLogout: function () {
+                delete $localStorage.User;
+            },
+            doLogin: function ( credentials ) { // ***************** LEO WAS HERE *****************
                 var dfd = $q.defer();
-                $http.get( buildURL( 'getCalendars' ) )
+                $http.post( buildURL( 'login' ), credentials )
                     .then( function ( response ) {
+                        if ( response.data.success) {
+                            var userModel = response.data.user;
 
-                        dfd.resolve( response.data.calendars );
-                        // if ( response.data ) {
-                        //     dfd.resolve( response.data );
-                        // } else {
-                        //     dfd.reject( response.data );
-                        // }
+                            if ( userModel.roles.indexOf( 'ROLE_USER' ) > -1) {
+                                userModel.role = 'user';
+                            }
+                            if ( userModel.roles.indexOf( 'ROLE_DELIVERY' ) > -1) {
+                                userModel.role = 'delivery';
+                            }
+                            if ( userModel.roles.indexOf( 'ROLE_MANAGER' ) > -1) {
+                                userModel.role = 'manager';
+                            }
+                            if ( userModel.roles.indexOf( 'ROLE_BACKOFFICE' ) > -1) {
+                                userModel.role = 'administrator';
+                            }
 
+                            userModel.token    = response.data.token;
+                            $localStorage.User = userModel;
+                            dfd.resolve( userModel );
+                        } else {
+                            dfd.reject( response );
+                        }
                     })
                     .catch( function ( err ) {
                         dfd.reject( err );
@@ -704,19 +733,141 @@ function toGMT0(date) {
 
                 return dfd.promise;
             },
-
-            getCalendarById: function ( calendarID ) { // LEO WORKING HERE
+            doPasswordRecovery: function ( credentials ) { // ***************** LEO WAS HERE *****************
                 var dfd = $q.defer();
-                $http.get( buildURL( 'getCalendarById' ) + calendarID )
+
+                $http.post( buildURL( 'passwordRecovery' ), credentials )
+                    .then( function ( response ) {
+                        if (response.data.success) {
+                            dfd.resolve(true);
+                        } else {
+                            dfd.reject(response);
+                        }
+                    }, function (err) {
+                        dfd.reject(err);
+                    });
+
+                return dfd.promise;
+            },
+            doChangePassword: function ( credentials ) { // ***************** LEO WAS HERE *****************
+                var dfd           = $q.defer();
+                var passwordReset = {
+                        currentPassword : credentials.current,
+                        newPassword     : credentials.new
+                };
+                $http.post( buildURL( 'passwordReset' ), passwordReset )
+                    .then( function ( data ) {
+                            // delete $localStorage.User;
+                        dfd.resolve( data );
+                    })
+                    .catch( function ( err ) {
+                        dfd.reject( err );
+                    });
+                return dfd.promise;
+            },            
+            saveProfile: function ( credentials ) { // ***************** LEO WAS HERE *****************
+                var dfd = $q.defer();
+                $http.put( buildURL( 'saveUser' ), credentials )
+                    .then( function ( response ) {                            
+                        $localStorage.User = credentials;
+                        dfd.resolve( response );
+                    })
+                    .catch( function( err ) {
+                        dfd.reject( err );
+                    });
+                return dfd.promise;
+            },
+
+            verifyUniqueUserEmail: function ( emailToVerify ) { // ***************** LEO WAS HERE *****************
+                var dfd = $q.defer();
+                $http.get( buildURL( 'verifyUniqueUserEmail' ) + emailToVerify )
+                    .then( function ( response ) {                            
+                        dfd.resolve( response );
+                    })
+                    .catch( function( err ) {
+                        dfd.reject( err );
+                    });
+                return dfd.promise;
+            },
+
+            getUsersBySupervisor: function () {
+                var dfd = $q.defer();
+                var email = UserFactory.getUser().username;
+
+                $http
+                    .post(buildURL('getUsersBySupervisor'), {"email": email})
+                    .then(function (response) {
+                        if (response.data.success) {
+                            dfd.resolve(response.data.users);
+                        } else {
+                            dfd.reject(response.data.errors);
+                        }
+                    }, function (err) {
+                        dfd.reject(err);
+                    });
+
+                return dfd.promise;
+            }
+        };
+    }
+}());
+( function () {
+    'use strict';
+    angular
+        .module( 'hours.calendar' )
+        .factory( 'CalendarFactory', CalendarFactory );
+
+    CalendarFactory.$invoke = [ '$http', '$q' ];
+    function CalendarFactory( $http, $q ) {
+        return {
+
+            getCalendarById: function ( calendarID, year, month ) { // LEO WAS HERE
+                var dfd = $q.defer();
+                $http.get( buildURL( 'getCalendarById' ) + calendarID + '?year=' + year + '&month=' + month )
                     .then( function ( response ) {
                         dfd.resolve( response.data );
                     })
                     .catch( function ( err ) {
                         dfd.reject( err );
                     });
-
                 return dfd.promise;
-            }
+            },
+
+            getCalendarsNames: function() { // LEO WAS HERE
+                var dfd = $q.defer();
+                $http.get( buildURL( 'getCalendarsNames' ) )
+                    .then( function ( data ) {
+                        dfd.resolve( data.data.calendars );
+                    })
+                    .catch( function ( err ) {
+                        dfd.reject( err );
+                    });
+                return dfd.promise;
+            },
+
+            // getCalendars: function () { // LEO WAS HERE
+            //     var dfd = $q.defer();
+            //     $http.get( buildURL( 'getCalendars' ) )
+            //         .then( function ( response ) {
+            //             dfd.resolve( response.data.calendars );
+            //         })
+            //         .catch( function ( err ) {
+            //             dfd.reject( err );
+            //         });
+            //     return dfd.promise;
+            // },
+
+            // getCalendarByIdByMonth: function ( calendarID, month, year ) { // LEO WAS HERE
+            //     var dfd = $q.defer();
+            //     $http.get( buildURL( 'getCalendarByIdByMonth' ) + calendarID + '?month=' + month + '&year=' + year )
+            //         .then( function ( response ) {
+            //             dfd.resolve( response.data );
+            //         })
+            //         .catch( function ( err ) {
+            //             dfd.reject( err );
+            //         });
+            //     return dfd.promise;
+            // },
 
             // getCalendarByDates: function (initDate, endDate, user) {
             //     var dfd = $q.defer();
@@ -1042,140 +1193,6 @@ function toGMT0(date) {
             //     return dfd.promise;
             // }
 
-
-
-        };
-    }
-}());
-( function () {
-    'use strict';
-    angular
-        .module( 'hours.auth' )
-        .factory( 'UserFactory', UserFactory );
-
-    UserFactory.$invoke = [ '$http', '$q', '$localStorage' ];
-    function UserFactory( $http, $q, $localStorage ) {
-        return {
-            getUser: function () {
-                return $localStorage.User;
-            },
-            getUserID: function () {
-                return $localStorage.User._id;
-            },
-            getUserToken: function () {
-                return $localStorage.User.token;
-            },
-            doLogout: function () {
-                delete $localStorage.User;
-            },
-            doLogin: function ( credentials ) { // ***************** LEO WAS HERE *****************
-                var dfd = $q.defer();
-                $http.post( buildURL( 'login' ), credentials )
-                    .then( function ( response ) {
-                        if ( response.data.success) {
-                            var userModel = response.data.user;
-
-                            if ( userModel.roles.indexOf( 'ROLE_USER' ) > -1) {
-                                userModel.role = 'user';
-                            }
-                            if ( userModel.roles.indexOf( 'ROLE_DELIVERY' ) > -1) {
-                                userModel.role = 'delivery';
-                            }
-                            if ( userModel.roles.indexOf( 'ROLE_MANAGER' ) > -1) {
-                                userModel.role = 'manager';
-                            }
-                            if ( userModel.roles.indexOf( 'ROLE_BACKOFFICE' ) > -1) {
-                                userModel.role = 'administrator';
-                            }
-
-                            userModel.token    = response.data.token;
-                            $localStorage.User = userModel;
-                            dfd.resolve( userModel );
-                        } else {
-                            dfd.reject( response );
-                        }
-                    })
-                    .catch( function ( err ) {
-                        dfd.reject( err );
-                    });
-
-                return dfd.promise;
-            },
-            doPasswordRecovery: function ( credentials ) { // ***************** LEO WAS HERE *****************
-                var dfd = $q.defer();
-
-                $http.post( buildURL( 'passwordRecovery' ), credentials )
-                    .then( function ( response ) {
-                        if (response.data.success) {
-                            dfd.resolve(true);
-                        } else {
-                            dfd.reject(response);
-                        }
-                    }, function (err) {
-                        dfd.reject(err);
-                    });
-
-                return dfd.promise;
-            },
-            doChangePassword: function ( credentials ) { // ***************** LEO WAS HERE *****************
-                var dfd           = $q.defer();
-                var passwordReset = {
-                        currentPassword : credentials.current,
-                        newPassword     : credentials.new
-                };
-                $http.post( buildURL( 'passwordReset' ), passwordReset )
-                    .then( function ( data ) {
-                            // delete $localStorage.User;
-                        dfd.resolve( data );
-                    })
-                    .catch( function ( err ) {
-                        dfd.reject( err );
-                    });
-                return dfd.promise;
-            },            
-            saveProfile: function ( credentials ) { // ***************** LEO WAS HERE *****************
-                var dfd = $q.defer();
-                $http.put( buildURL( 'saveUser' ), credentials )
-                    .then( function ( response ) {                            
-                        $localStorage.User = credentials;
-                        dfd.resolve( response );
-                    })
-                    .catch( function( err ) {
-                        dfd.reject( err );
-                    });
-                return dfd.promise;
-            },
-
-            verifyUniqueUserEmail: function ( emailToVerify ) { // ***************** LEO WAS HERE *****************
-                var dfd = $q.defer();
-                $http.get( buildURL( 'verifyUniqueUserEmail' ) + emailToVerify )
-                    .then( function ( response ) {                            
-                        dfd.resolve( response );
-                    })
-                    .catch( function( err ) {
-                        dfd.reject( err );
-                    });
-                return dfd.promise;
-            },
-
-            getUsersBySupervisor: function () {
-                var dfd = $q.defer();
-                var email = UserFactory.getUser().username;
-
-                $http
-                    .post(buildURL('getUsersBySupervisor'), {"email": email})
-                    .then(function (response) {
-                        if (response.data.success) {
-                            dfd.resolve(response.data.users);
-                        } else {
-                            dfd.reject(response.data.errors);
-                        }
-                    }, function (err) {
-                        dfd.reject(err);
-                    });
-
-                return dfd.promise;
-            }
         };
     }
 }());
@@ -1390,18 +1407,6 @@ function toGMT0(date) {
                 return dfd.promise;
             },
 
-            getCalendarsNames: function() { // LEO WORKING HERE
-                var dfd = $q.defer();
-                $http.get( buildURL( 'getCalendarsNames' ) )
-                    .then( function ( data ) {
-                        dfd.resolve( data.data.calendars );
-                    })
-                    .catch( function ( err ) {
-                        dfd.reject( err );
-                    });
-                return dfd.promise;
-            },
-
             getDefaultPassword: function() { // LEO WAS HERE
                 var dfd = $q.defer();
                 $http.get( buildURL( 'getDefaultPassword' ) )
@@ -1425,7 +1430,7 @@ function toGMT0(date) {
         return {
 
             getMonthWeeksObj : function ( month, year ) {
-                var months       = [ 'Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic' ];   
+                var months     = [ 'january' ,'february' ,'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december' ];
                 var dataDate     =  {},
                     firstDay     = new Date( year, month, 1 ),
                     lastDay      = new Date( year, month + 1, 0 ),
@@ -1500,6 +1505,25 @@ function toGMT0(date) {
         };
     }
 }());
+
+
+
+
+    // function getMonthWeeks( month, year ) {
+    //     var weeks = [],
+    //         firstDate = new Date( year, month, 1 ),
+    //         lastDay  = new Date( year, month + 1, 0 ),
+    //         numDays   = lastDay.getDate(),
+    //         start     = 1,
+    //         end       = 8 - firstDate.getDay();
+    //    while( start <= numDays ){
+    //        weeks.push( { start : start, end : end } );
+    //        start = end + 1;
+    //        end = end + 7;
+    //        if( end > numDays ) end = numDays;
+    //    }
+    //     return weeks;
+    // }
 
 ( function () {
     'use strict';
@@ -2262,13 +2286,13 @@ function toGMT0(date) {
         .module( 'hours.impute' )
         .controller( 'imputeHoursController', imputeHoursController );
 
-    imputeHoursController.$invoke = [ '$scope', 'UserFactory', 'imputeHoursFactory' ];
-    function imputeHoursController( $scope, UserFactory, imputeHoursFactory ) {
+    imputeHoursController.$invoke = [ '$scope', 'UserFactory', 'imputeHoursFactory', 'CalendarFactory', '$q' ];
+    function imputeHoursController( $scope, UserFactory, imputeHoursFactory, CalendarFactory, $q ) {
 
         // var months         = [ 'Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic' ];
         var currentDate;
-        $scope.monthView   = false; // week view mode 
-        $scope.imputeTypes = [ 'Horas', 'Guardias', 'Variables' ];
+        $scope.weekViewMode = true; // week view mode 
+        $scope.imputeTypes  = [ 'Horas', 'Guardias', 'Variables' ];
         $scope.imputeTypes[ 'Horas'     ] = [ 'Hora' ];
         $scope.imputeTypes[ 'Guardias'  ] = [ 'Turnicidad', 'Guardia', 'Varios' ];
         $scope.imputeTypes[ 'Variables' ] = [ 'Hora extra', 'Hora extra festivo', 'Horas nocturnas', 'Formación', 'Intervenciones', 'Varios' ];
@@ -2277,29 +2301,73 @@ function toGMT0(date) {
     	$scope.currentType = 'text';
     	$scope.imputeType = 'Horas';
     	$scope.days = [];
-        $scope.puntero = 0;
+        $scope.currentWeek = 0;
+        var calendarID = UserFactory.getcalendarID();
+        var calendarScheme;
 
         var possibleValues = [ 6, 6.5, 7, 7.5, 8 ];
         for( var i = 1; i < 31; i++ ) {
             var random = Math.floor( ( Math.random() * 5 ) + 0 );
             // var random2 = Math.floor( ( Math.random() * 2 ) + 0 );
             // var showMe = ( random2 == 0 ) ? false : true;
-            // $scope.days.push( { day : i, value : possibleValues[ random ], showMe : showMe } );
-            $scope.days.push( { day : new Date( 2017, 3, i ), value : possibleValues[ random ], showMe : false } );
-            Init();
+            $scope.days.push( { day : new Date( 2017, 3, i ), value : possibleValues[ random ], showMe : false , desactive : false, calendarType : 'working' } );
         };
+        Init();
+
+        function completeDayWeeks() { // add days from previous and next month to view a complete 7-days-week
+            var currentMonth = $scope.currentMonthData.currentMonth;
+            var tempArray = [];
+            $scope.currentMonthData.weeks[0].forEach( function( day ) { // days belong to previous month
+                day = new Date( day );
+                if( day.getMonth() != currentMonth ) {
+                    var newDay = {
+                            desactive : true,
+                            day       : new Date( day ),
+                            showMe    : false,
+                            value     : 0
+                    };
+                    tempArray.push( newDay );
+                }
+            });
+            $scope.days = tempArray.concat( $scope.days );
+            $scope.currentMonthData.weeks[$scope.currentMonthData.weeks.length - 1].forEach( function( day ) {  // days belong to next month
+                day = new Date( day );
+                if( day.getMonth() != currentMonth ) {
+                    var newDay = {
+                            desactive : true,
+                            day    : new Date( day ),
+                            showMe : false,
+                            value  : 0
+                    };
+                    $scope.days.push( newDay );
+                }
+            });
+        }
 
         function Init( currentMonth, currentYear ) {
-            // var currentMonth;
-            // var currentYear;
             if( !currentYear ) {
-                var currentDate = new Date();
-                currentMonth = currentDate.getMonth();
-                currentYear  = currentDate.getFullYear();
+                var currentDate  = new Date();
+                    currentMonth = currentDate.getMonth();
+                    currentYear  = currentDate.getFullYear();
             }
-            $scope.dataDate = imputeHoursFactory.getMonthWeeksObj( currentMonth, currentYear );
-            // console.log( $scope.dataDate );
-            // refreshDays();
+            $scope.currentMonthData = imputeHoursFactory.getMonthWeeksObj( currentMonth, currentYear );
+
+            var p1 = CalendarFactory.getCalendarByIdByMonth( calendarID, currentMonth, currentYear );
+            // var p2 = CalendarFactory.getCalendarByIdByMonth( calendarID, 0, 2017 );
+
+            $q.all( [ p1 ] )
+                .then( function( data ) {
+                    calendarScheme = data[0];
+                    console.log( calendarScheme );
+                    console.log( $scope.days );
+                    completeDayWeeks();
+                    refreshDays();
+
+                })
+                .catch( function( err ) {
+                });
+
+            // console.log( $scope.currentMonthData );
         }
 
     	$scope.imputeTypeChanged = function() {
@@ -2317,93 +2385,73 @@ function toGMT0(date) {
 			}
 		};
         $scope.monthWeekSwap = function() {
-            $scope.monthView = !$scope.monthView;
+            $scope.weekViewMode = !$scope.weekViewMode;
         };
     	$scope.imputeSubTypeChanged = function() {
 		};
 
         $scope.moveDate = function( moveTo ) {
-            if( moveTo > 0 ) {
-                $scope.puntero++;
-                if( $scope.puntero == $scope.dataDate.weeks.length  ) {
-                    var currentMonth = $scope.dataDate.currentMonth;
-                    var currentYear  = $scope.dataDate.currentYear;
-                    currentMonth++;
-                    Init( currentMonth, currentYear );
-                    $scope.puntero = 0;
+            if( $scope.weekViewMode ) { // if week-mode
+                if( moveTo > 0 ) {
+                    $scope.currentWeek++;
+                    if( $scope.currentWeek == $scope.currentMonthData.weeks.length  ) {
+                        monthChange( +1 );
+                        $scope.currentWeek = 0;
+                    }
+                } else {
+                    $scope.currentWeek--;
+                    if( $scope.currentWeek < 0 ) {
+                        monthChange( -1 );
+                        $scope.currentWeek = $scope.currentMonthData.weeks.length - 1;
+                    }
                 }
-            } else {
-                $scope.puntero--;
-                if( $scope.puntero < 0 ) {
-                    var currentMonth = $scope.dataDate.currentMonth;
-                    var currentYear  = $scope.dataDate.currentYear;
-                    currentMonth--;
-                    Init( currentMonth, currentYear );
-                    $scope.puntero = $scope.dataDate.weeks.length - 1;
-                }
-            }
+            } else { // if month-mode
+                monthChange( moveTo );
+            }            
             refreshDays();
-            // if( $scope.monthView ) {
-            //     selectMonth( moveTo );
-            // }
+            function monthChange( moveTo ) {
+                var currentMonth = $scope.currentMonthData.currentMonth;
+                var currentYear  = $scope.currentMonthData.currentYear;
+                currentMonth += moveTo;
+                Init( currentMonth, currentYear );
+            }
         };
 
         function refreshDays() {
             $scope.days.forEach( function( day ) {
                 day.showMe = false;
             });
-
-            $scope.dataDate.weeks[ $scope.puntero ].forEach( function( e ) {
-                var ee = new Date( e );
-                $scope.days.forEach( function( day ) {
-                    // day.showMe = false;
-                    var dd = new Date( day.day );
-                    if( ee.getTime() == dd.getTime() ) {
-                        day.showMe = true;
-                    }
+            if( $scope.weekViewMode ) { // if week-mode
+                $scope.currentMonthData.weeks[ $scope.currentWeek ].forEach( function( dayToShow ) {
+                    dayToShow = new Date( dayToShow ).getTime();
+                    activeDayToShow( dayToShow );
+                });            
+            } else { // if month-mode
+                $scope.currentMonthData.weeks.forEach( function( week ) {
+                    week.forEach( function( dayToShow ) {
+                        dayToShow = new Date( dayToShow ).getTime();
+                        activeDayToShow( dayToShow );
+                    });
                 });
-            });
+            }
+            function activeDayToShow( dayToShow ) {
+                $scope.days.forEach( function( dayObj ) {
+                    var day = new Date( dayObj.day ).getTime();
+                    if( dayToShow == day ) {
+                        dayObj.showMe = true;
+                    }
+                });   
+            }
         }
 
-        // function selectMonth( moveTo ) {
-        //     if( currentDate ) {
-        //         currentDate.setMonth( currentDate.getMonth() + moveTo ); 
-        //     } else {
-        //         currentDate = new Date();
-        //         currentDate = new Date( currentDate.getFullYear(), currentDate.getMonth(), 1 );
-        //     }
-        //     $scope.currentMonth = currentDate.getMonth();
-        //     $scope.currentYear  = currentDate.getFullYear();
-        //     // var weeks = getMonthWeeks( $scope.currentMonth, $scope.currentYear );
-        //     // console.log( weeks );
-        //     // console.log( obj );
-        // }
-        // selectMonth();
-
     $scope.fn = function() {
-        // console.log( $scope.days );
-        refreshDays();
+        console.log( $scope.days );
+        // refreshDays();
     }
 
 }
 
 })();
-
-    // function getMonthWeeks( month, year ) {
-    //     var weeks = [],
-    //         firstDate = new Date( year, month, 1 ),
-    //         lastDay  = new Date( year, month + 1, 0 ),
-    //         numDays   = lastDay.getDate(),
-    //         start     = 1,
-    //         end       = 8 - firstDate.getDay();
-    //    while( start <= numDays ){
-    //        weeks.push( { start : start, end : end } );
-    //        start = end + 1;
-    //        end = end + 7;
-    //        if( end > numDays ) end = numDays;
-    //    }
-    //     return weeks;
-    // }
 
 
 
@@ -2443,7 +2491,9 @@ var obj = [
     subType : "Hora",
     date : '12-mar-2016',
     value : 8,
-    status : 'Draft'
+    status : 'Draft',
+    desactive : false,
+    calendarType : 'working'
 },
 {
     employee : '58dd07eecbcb6303e41ef404',
@@ -2452,7 +2502,9 @@ var obj = [
     subType : "Hora",
     date : '15-mar-2016',
     value : 6,
-    status : 'Draft'
+    status : 'Draft',
+    desactive : false,
+    calendarType : 'working'
 },
 {
     employee : '58dd07eecbcb6303e41ef404',
@@ -2461,7 +2513,9 @@ var obj = [
     subType : "Hora",
     date : '21-mar-2016',
     value : 8,
-    status : 'Draft'
+    status : 'Draft',
+    desactive : false,
+    calendarType : 'working'
 },
 {
     employee : '58dd07eecbcb6303e41ef404',
@@ -2470,7 +2524,9 @@ var obj = [
     subType : "Hora",
     date : '30-mar-2016',
     value : 5,
-    status : 'Draft'
+    status : 'Draft',
+    desactive : false,
+    calendarType : 'working'
 },
 {
     employee : '58dd07eecbcb6303e41ef404',
@@ -2479,7 +2535,9 @@ var obj = [
     subType : "Hora",
     date : '04-jun-2016',
     value : 8,
-    status : 'Draft'
+    status : 'Draft',
+    desactive : false,
+    calendarType : 'working'
 },
 {
     employee : '58dd07eecbcb6303e41ef404',
@@ -2488,7 +2546,9 @@ var obj = [
     subType : "Hora",
     date : '05-jun-2016',
     value : 8,
-    status : 'Draft'
+    status : 'Draft',
+    desactive : false,
+    calendarType : 'working'
 },
 {
     employee : '58dd07eecbcb6303e41ef404',
@@ -2497,7 +2557,9 @@ var obj = [
     subType : "Hora",
     date : '17-jun-2016',
     value : 8,
-    status : 'Draft'
+    status : 'Draft',
+    desactive : false,
+    calendarType : 'working'
 },
 {
     employee : '58dd07eecbcb6303e41ef404',
@@ -2506,7 +2568,9 @@ var obj = [
     subType : "Hora",
     date : '22-jun-2016',
     value : 7,
-    status : 'Draft'
+    status : 'Draft',
+    desactive : false,
+    calendarType : 'working'
 },
 //*******
 {
@@ -2516,7 +2580,9 @@ var obj = [
     subType : "Turnicidad",
     date : '23-jun-2016',
     value : 1,
-    status : 'Draft'
+    status : 'Draft',
+    desactive : false,
+    calendarType : 'working'
 },
 {
     employee : '58dd07eecbcb6303e41ef404',
@@ -2525,7 +2591,9 @@ var obj = [
     subType : "Turnicidad",
     date : '24-jun-2016',
     value : 1,
-    status : 'Draft'
+    status : 'Draft',
+    desactive : false,
+    calendarType : 'working'
 },
 {
     employee : '58dd07eecbcb6303e41ef404',
@@ -2534,7 +2602,9 @@ var obj = [
     subType : "Turnicidad",
     date : '25-jun-2016',
     value : 1,
-    status : 'Draft'
+    status : 'Draft',
+    desactive : false,
+    calendarType : 'working'
 },
 {
     employee : '58dd07eecbcb6303e41ef404',
@@ -2543,7 +2613,9 @@ var obj = [
     subType : "Turnicidad",
     date : '26-jun-2016',
     value : 0,
-    status : 'Draft'
+    status : 'Draft',
+    desactive : false,
+    calendarType : 'working'
 },
 {
     employee : '58dd07eecbcb6303e41ef404',
@@ -2552,7 +2624,9 @@ var obj = [
     subType : "Guardia",
     date : '27-jun-2016',
     value : 1,
-    status : 'Draft'
+    status : 'Draft',
+    desactive : false,
+    calendarType : 'working'
 },
 {
     employee : '58dd07eecbcb6303e41ef404',
@@ -2561,7 +2635,9 @@ var obj = [
     subType : "Guardia",
     date : '28-jun-2016',
     value : 1,
-    status : 'Draft'
+    status : 'Draft',
+    desactive : false,
+    calendarType : 'working'
 },
 {
     employee : '58dd07eecbcb6303e41ef404',
@@ -2570,7 +2646,9 @@ var obj = [
     subType : "Guardia",
     date : '29-jun-2016',
     value : 0,
-    status : 'Draft'
+    status : 'Draft',
+    desactive : false,
+    calendarType : 'working'
 },
 {
     employee : '58dd07eecbcb6303e41ef404',
@@ -2579,7 +2657,9 @@ var obj = [
     subType : "Turnicidad",
     date : '30-jun-2016',
     value : 1,
-    status : 'Draft'
+    status : 'Draft',
+    desactive : false,
+    calendarType : 'working'
 },
 {
     employee : '58dd07eecbcb6303e41ef404',
@@ -2588,7 +2668,9 @@ var obj = [
     subType : "Turnicidad",
     date : '01-jul-2016',
     value : 1,
-    status : 'Draft'
+    status : 'Draft',
+    desactive : false,
+    calendarType : 'working'
 },
 {
     employee : '58dd07eecbcb6303e41ef404',
@@ -2597,7 +2679,9 @@ var obj = [
     subType : "Turnicidad",
     date : '02-jul-2016',
     value : 1,
-    status : 'Draft'
+    status : 'Draft',
+    desactive : false,
+    calendarType : 'working'
 }
 ];
 
@@ -2619,24 +2703,25 @@ var obj = [
         var monthsArray = [ 'january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december' ];
         var types       = { working : 'L-J', special : '', intensive : 'L-V', friday : 'V' };
 
-        CalendarFactory.getCalendarById( $stateParams.id )
-            .then( function( data ) {
-                console.log(data);
-
-                $scope.loadingError = false;
-                $scope.calendar = data.calendar;
-                eventHours = data.eventHours;
-                eventDates = data.eventHours.eventDates;
-                $timeout( function () {
-                    showCalendars();
-                }, 300 );
-            })
-            .catch( function( err ) {
-                $scope.loadingError = true;
-                $timeout( function () {
-                    $state.go( 'calendars' );
-                }, 2500 );
-            });
+        getCalendar( currentYear );
+        function getCalendar( year ) {
+                CalendarFactory.getCalendarById( $stateParams.id, year )
+                    .then( function( data ) {
+                        $scope.loadingError = false;
+                        $scope.calendar = data.calendar;
+                        eventHours = data.eventHours[0];
+                        eventDates = data.eventHours[0].eventDates;
+                        $timeout( function () {
+                            showCalendars();
+                        }, 300 );
+                    })
+                    .catch( function( err ) {
+                        $scope.loadingError = true;
+                        $timeout( function () {
+                            $state.go( 'calendars' );
+                        }, 2500 );
+                    });
+        }
 
         function showCalendars() {
             $.datepicker.setDefaults( // Initializing calendar language
@@ -2658,25 +2743,24 @@ var obj = [
 
         function displayMonthsHours() {
             $scope.monthsHours = [];
-            var thisYear =  eventHours.totalPerYear[ $scope.yearShowed ];
-            if ( thisYear ) {
-                for ( var month in thisYear ) {
-                    $scope.monthsHours.push( { month : monthsArray[ month ], hours : thisYear[ month ].hours, minutes : thisYear[ month ].minutes } );
-                }
-            } else {
-                for ( var month = 0; month < 12; month++ ) {
-                    $scope.monthsHours.push( { month : monthsArray[ month ], hours :  0, minutes :  0 } );
-                }
+            for ( var month in eventHours.totalWorkingHours ) {
+                if( month != 'year' ) {
+                    $scope.monthsHours.push( { month : monthsArray[ month ], hours : eventHours.totalWorkingHours[ month ].hours, minutes : eventHours.totalWorkingHours[ month ].minutes } );
+                } else {
+                    $scope.monthsHours.push( { month : 'year', hours : eventHours.totalWorkingHours[ month ].hours, minutes : eventHours.totalWorkingHours[ month ].minutes } );
+                }                
             }
         }
 
         function displayRangeHours() {
             for ( var type in types ) {
-                var text = types[ type ] + ' ';                
-                eventHours[ type ].forEach( function( element ) {
-                    text += element.initialHour + '-' + element.endHour + ' ';
-                });
-                $( '#' + type + 'Range' ).html( '<code>' + text + '</code>' );
+                if( eventHours.types[ type ] ) { // when no data comes (not year available)
+                    var text = types[ type ] + ' ';                
+                    eventHours.types[ type ].forEach( function( element ) {
+                        text += element.initialHour + '-' + element.endHour + ' ';
+                    });
+                    $( '#' + type + 'Range' ).html( '<code>' + text + '</code>' );
+                }
             }
         }
 
@@ -2689,7 +2773,7 @@ var obj = [
                 changeYear: false,
                 stepMonths: 0,
                 defaultDate: new Date( month ), // ( 2014, 2, 1 )
-                onSelect: selectedDay,
+                // onSelect: selectedDay,
                 beforeShowDay: function( date ) {
                     var highlight = eventDates[ date ];
                     if ( highlight ) {
@@ -2714,7 +2798,8 @@ var obj = [
         }
 
         $scope.yearChanged = function() {
-            showCalendars();
+            // showCalendars();
+            getCalendar( $scope.yearShowed );
         };
 
         function createCalendarsHTML() {
@@ -2743,6 +2828,9 @@ var obj = [
                 });
             }, 100 );
         }
+
+
+//***************************************************************************************
 //***************************************************************************************
         function selectedDay( date, inst ) {
             // inst.dpDiv.find('.ui-state-default').css('background-color', 'red');
@@ -2780,6 +2868,8 @@ var obj = [
                 });
         }
 //***************************************************************************************
+//***************************************************************************************
+
 }
 
 })();
@@ -2794,7 +2884,6 @@ var obj = [
     function CalendarsController( $scope, $filter, $window, CalendarFactory, calendars ) {
 
         $scope.calendars = calendars;
-
         $scope.tableConfig = {
             itemsPerPage: getItemsPerPage(),
             maxPages: "2",

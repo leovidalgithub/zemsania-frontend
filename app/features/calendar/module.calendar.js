@@ -20,7 +20,7 @@
                 },
                 resolve : {
                     calendars : function( CalendarFactory ) {
-                        return CalendarFactory.getCalendars();
+                        return CalendarFactory.getCalendarsNames();
                     }
                 }
             })

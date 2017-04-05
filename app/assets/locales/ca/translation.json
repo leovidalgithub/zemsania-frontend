@@ -187,7 +187,8 @@
         "september": "Septiembre",
         "october": "Octubre",
         "november": "Noviembre",
-        "december": "Diciembre"
+        "december": "Diciembre",
+        "year": "Any",
     },
     "workloadSchemes": {
         "title": "Patrón Horario",

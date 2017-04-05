@@ -156,18 +156,6 @@
                 return dfd.promise;
             },
 
-            getCalendarsNames: function() { // LEO WORKING HERE
-                var dfd = $q.defer();
-                $http.get( buildURL( 'getCalendarsNames' ) )
-                    .then( function ( data ) {
-                        dfd.resolve( data.data.calendars );
-                    })
-                    .catch( function ( err ) {
-                        dfd.reject( err );
-                    });
-                return dfd.promise;
-            },
-
             getDefaultPassword: function() { // LEO WAS HERE
                 var dfd = $q.defer();
                 $http.get( buildURL( 'getDefaultPassword' ) )

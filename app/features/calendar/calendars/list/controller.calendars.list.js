@@ -8,7 +8,6 @@
     function CalendarsController( $scope, $filter, $window, CalendarFactory, calendars ) {
 
         $scope.calendars = calendars;
-
         $scope.tableConfig = {
             itemsPerPage: getItemsPerPage(),
             maxPages: "2",

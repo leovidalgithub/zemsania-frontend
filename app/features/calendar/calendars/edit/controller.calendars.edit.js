@@ -16,24 +16,25 @@
         var monthsArray = [ 'january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december' ];
         var types       = { working : 'L-J', special : '', intensive : 'L-V', friday : 'V' };
 
-        CalendarFactory.getCalendarById( $stateParams.id )
-            .then( function( data ) {
-                console.log(data);
-
-                $scope.loadingError = false;
-                $scope.calendar = data.calendar;
-                eventHours = data.eventHours;
-                eventDates = data.eventHours.eventDates;
-                $timeout( function () {
-                    showCalendars();
-                }, 300 );
-            })
-            .catch( function( err ) {
-                $scope.loadingError = true;
-                $timeout( function () {
-                    $state.go( 'calendars' );
-                }, 2500 );
-            });
+        getCalendar( currentYear );
+        function getCalendar( year ) {
+                CalendarFactory.getCalendarById( $stateParams.id, year )
+                    .then( function( data ) {
+                        $scope.loadingError = false;
+                        $scope.calendar = data.calendar;
+                        eventHours = data.eventHours[0];
+                        eventDates = data.eventHours[0].eventDates;
+                        $timeout( function () {
+                            showCalendars();
+                        }, 300 );
+                    })
+                    .catch( function( err ) {
+                        $scope.loadingError = true;
+                        $timeout( function () {
+                            $state.go( 'calendars' );
+                        }, 2500 );
+                    });
+        }
 
         function showCalendars() {
             $.datepicker.setDefaults( // Initializing calendar language
@@ -55,25 +56,24 @@
 
         function displayMonthsHours() {
             $scope.monthsHours = [];
-            var thisYear =  eventHours.totalPerYear[ $scope.yearShowed ];
-            if ( thisYear ) {
-                for ( var month in thisYear ) {
-                    $scope.monthsHours.push( { month : monthsArray[ month ], hours : thisYear[ month ].hours, minutes : thisYear[ month ].minutes } );
-                }
-            } else {
-                for ( var month = 0; month < 12; month++ ) {
-                    $scope.monthsHours.push( { month : monthsArray[ month ], hours :  0, minutes :  0 } );
-                }
+            for ( var month in eventHours.totalWorkingHours ) {
+                if( month != 'year' ) {
+                    $scope.monthsHours.push( { month : monthsArray[ month ], hours : eventHours.totalWorkingHours[ month ].hours, minutes : eventHours.totalWorkingHours[ month ].minutes } );
+                } else {
+                    $scope.monthsHours.push( { month : 'year', hours : eventHours.totalWorkingHours[ month ].hours, minutes : eventHours.totalWorkingHours[ month ].minutes } );
+                }                
             }
         }
 
         function displayRangeHours() {
             for ( var type in types ) {
-                var text = types[ type ] + ' ';                
-                eventHours[ type ].forEach( function( element ) {
-                    text += element.initialHour + '-' + element.endHour + ' ';
-                });
-                $( '#' + type + 'Range' ).html( '<code>' + text + '</code>' );
+                if( eventHours.types[ type ] ) { // when no data comes (not year available)
+                    var text = types[ type ] + ' ';                
+                    eventHours.types[ type ].forEach( function( element ) {
+                        text += element.initialHour + '-' + element.endHour + ' ';
+                    });
+                    $( '#' + type + 'Range' ).html( '<code>' + text + '</code>' );
+                }
             }
         }
 
@@ -86,7 +86,7 @@
                 changeYear: false,
                 stepMonths: 0,
                 defaultDate: new Date( month ), // ( 2014, 2, 1 )
-                onSelect: selectedDay,
+                // onSelect: selectedDay,
                 beforeShowDay: function( date ) {
                     var highlight = eventDates[ date ];
                     if ( highlight ) {
@@ -111,7 +111,8 @@
         }
 
         $scope.yearChanged = function() {
-            showCalendars();
+            // showCalendars();
+            getCalendar( $scope.yearShowed );
         };
 
         function createCalendarsHTML() {
@@ -140,6 +141,9 @@
                 });
             }, 100 );
         }
+
+
+//***************************************************************************************
 //***************************************************************************************
         function selectedDay( date, inst ) {
             // inst.dpDiv.find('.ui-state-default').css('background-color', 'red');
@@ -177,6 +181,8 @@
                 });
         }
 //***************************************************************************************
+//***************************************************************************************
+
 }
 
 })();

@@ -42,14 +42,17 @@
 
         <button class="btn btn-danger" ng-click="fn()">Go!</button>
         <button class="btn btn-success" ng-click="moveDate(-1)"><---</button>
-        <button class="btn btn-success" ng-click="moveDate(1)">---></button>
-        <button class="btn btn-success" ng-click="monthWeekSwap()">Vista {{(monthView ? 'Mes' : 'Semanal')}}</button>
-        <p>Mes : {{currentMonth}} / Año : {{currentYear}}</p>
-        <p>Del: {{dataDate.weeks[puntero][0] | amDateFormat:'DD-MM-YY'}} al: {{dataDate.weeks[puntero][6] | amDateFormat:'DD-MM-YY'}}</p>
+        <button class="btn btn-success" ng-click="moveDate(+1)">---></button>
+        <button class="btn btn-success" ng-click="monthWeekSwap()">Vista {{(weekViewMode ? 'Mes' : 'Semanal')}}</button>
+        <p>Mes : {{currentMonthData.monthInName}} / Año : {{currentMonthData.currentYear}}</p>
+        <!-- WEEK VIEW MODE -->
+        <div ng-show="weekViewMode">Vista Semanal - Del: {{currentMonthData.weeks[currentWeek][0] | amDateFormat:'DD-MM-YY'}} al: {{currentMonthData.weeks[currentWeek][6] | amDateFormat:'DD-MM-YY'}}</div>
+        <!-- MONTH VIEW MODE -->
+        <div ng-hide="weekViewMode">Vista Mensual - Del: {{currentMonthData.weeks[0][0] | amDateFormat:'DD-MM-YY'}} al: {{currentMonthData.weeks[currentMonthData.weeks.length-1][6] | amDateFormat:'DD-MM-YY'}}</div>
 
 
             <div id="daysDiv">
-                <div ng-show="value.showMe" class="myDay" ng-repeat="(key, value) in days">
+                <div ng-show="value.showMe" class="myDay" ng-class="{'desactive':value.desactive}" ng-repeat="(key, value) in days">
 
                     <div class="myHeader">
                         {{value.day | amDateFormat:'DD'}}

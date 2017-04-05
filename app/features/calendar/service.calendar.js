@@ -4,42 +4,57 @@
         .module( 'hours.calendar' )
         .factory( 'CalendarFactory', CalendarFactory );
 
-    CalendarFactory.$invoke = [ '$http', '$q', '$filter' ];
-    function CalendarFactory( $http, $q, $filter ) {
+    CalendarFactory.$invoke = [ '$http', '$q' ];
+    function CalendarFactory( $http, $q ) {
         return {
 
-            getCalendars: function () { // LEO WORKING HERE
+            getCalendarById: function ( calendarID, year, month ) { // LEO WAS HERE
                 var dfd = $q.defer();
-                $http.get( buildURL( 'getCalendars' ) )
-                    .then( function ( response ) {
-
-                        dfd.resolve( response.data.calendars );
-                        // if ( response.data ) {
-                        //     dfd.resolve( response.data );
-                        // } else {
-                        //     dfd.reject( response.data );
-                        // }
-
-                    })
-                    .catch( function ( err ) {
-                        dfd.reject( err );
-                    });
-
-                return dfd.promise;
-            },
-
-            getCalendarById: function ( calendarID ) { // LEO WORKING HERE
-                var dfd = $q.defer();
-                $http.get( buildURL( 'getCalendarById' ) + calendarID )
+                $http.get( buildURL( 'getCalendarById' ) + calendarID + '?year=' + year + '&month=' + month )
                     .then( function ( response ) {
                         dfd.resolve( response.data );
                     })
                     .catch( function ( err ) {
                         dfd.reject( err );
                     });
-
                 return dfd.promise;
-            }
+            },
+
+            getCalendarsNames: function() { // LEO WAS HERE
+                var dfd = $q.defer();
+                $http.get( buildURL( 'getCalendarsNames' ) )
+                    .then( function ( data ) {
+                        dfd.resolve( data.data.calendars );
+                    })
+                    .catch( function ( err ) {
+                        dfd.reject( err );
+                    });
+                return dfd.promise;
+            },
+
+            // getCalendars: function () { // LEO WAS HERE
+            //     var dfd = $q.defer();
+            //     $http.get( buildURL( 'getCalendars' ) )
+            //         .then( function ( response ) {
+            //             dfd.resolve( response.data.calendars );
+            //         })
+            //         .catch( function ( err ) {
+            //             dfd.reject( err );
+            //         });
+            //     return dfd.promise;
+            // },
+
+            // getCalendarByIdByMonth: function ( calendarID, month, year ) { // LEO WAS HERE
+            //     var dfd = $q.defer();
+            //     $http.get( buildURL( 'getCalendarByIdByMonth' ) + calendarID + '?month=' + month + '&year=' + year )
+            //         .then( function ( response ) {
+            //             dfd.resolve( response.data );
+            //         })
+            //         .catch( function ( err ) {
+            //             dfd.reject( err );
+            //         });
+            //     return dfd.promise;
+            // },
 
             // getCalendarByDates: function (initDate, endDate, user) {
             //     var dfd = $q.defer();
@@ -364,8 +379,6 @@
 
             //     return dfd.promise;
             // }
-
-
 
         };
     }
