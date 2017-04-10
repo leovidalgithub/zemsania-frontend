@@ -142,44 +142,43 @@
             }, 100 );
         }
 
-
 //***************************************************************************************
-//***************************************************************************************
-        function selectedDay( date, inst ) {
-            // inst.dpDiv.find('.ui-state-default').css('background-color', 'red');
-            // eventDates[ new Date( date ) ] = { date : new Date( date ), type : $scope.dayTypes };
-            var destinyType = 'working';
-            var selectedDay = new Date( date );
-            $scope.calendar.groupDays.forEach( function( groupDay ) {
-                if ( groupDay.type == destinyType ) { // find day in the same type in order to push it (if does'not exist)
-                    var index = getDayIndex( groupDay.days.days );
-                    if ( index == -1 ) { // if not exists to add
-                        groupDay.days.days.push( selectedDay );
-                    }
-                } else { // find day in others types in order to remove it (if exists)
-                    var index = getDayIndex( groupDay.days.days );
-                    if ( index != -1 ) { // if exists to remove
-                        groupDay.days.days.splice( index, 1 );
-                    }                    
-                }
-            });
-            function getDayIndex( array ) {
-                return array.findIndex( function( day ) {
-                    return new Date( day ).getTime() == selectedDay.getTime();
-                });                    
-            }
-            // send calendar to backend to refresh object data
-            $http.post( buildURL( 'getRefreshCalendarData' ), $scope.calendar )
-                .then( function ( response ) {
-                    var data = response.data;
-                    $scope.calendar = data.calendar;
-                    eventHours = data.eventHours;
-                    eventDates = data.eventHours.eventDates;
-                    $timeout( function () {
-                        showCalendars();
-                    }, 300 );
-                });
-        }
+//******************************************** selectedDay ******************************
+        // function selectedDay( date, inst ) {
+        //     // inst.dpDiv.find('.ui-state-default').css('background-color', 'red');
+        //     // eventDates[ new Date( date ) ] = { date : new Date( date ), type : $scope.dayTypes };
+        //     var destinyType = 'working';
+        //     var selectedDay = new Date( date );
+        //     $scope.calendar.groupDays.forEach( function( groupDay ) {
+        //         if ( groupDay.type == destinyType ) { // find day in the same type in order to push it (if does'not exist)
+        //             var index = getDayIndex( groupDay.days.days );
+        //             if ( index == -1 ) { // if not exists to add
+        //                 groupDay.days.days.push( selectedDay );
+        //             }
+        //         } else { // find day in others types in order to remove it (if exists)
+        //             var index = getDayIndex( groupDay.days.days );
+        //             if ( index != -1 ) { // if exists to remove
+        //                 groupDay.days.days.splice( index, 1 );
+        //             }                    
+        //         }
+        //     });
+        //     function getDayIndex( array ) {
+        //         return array.findIndex( function( day ) {
+        //             return new Date( day ).getTime() == selectedDay.getTime();
+        //         });                    
+        //     }
+        //     // send calendar to backend to refresh object data
+        //     $http.post( buildURL( 'getRefreshCalendarData' ), $scope.calendar )
+        //         .then( function ( response ) {
+        //             var data = response.data;
+        //             $scope.calendar = data.calendar;
+        //             eventHours = data.eventHours;
+        //             eventDates = data.eventHours.eventDates;
+        //             $timeout( function () {
+        //                 showCalendars();
+        //             }, 300 );
+        //         });
+        // }
 //***************************************************************************************
 //***************************************************************************************
 

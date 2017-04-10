@@ -17,13 +17,21 @@
                         except: ['anonymous'],
                         redirectTo: 'login'
                     }
+                },
+                resolve : {
+                    userProjects : function( imputeHoursFactory ){
+                        return imputeHoursFactory.getProjectsByUserId();
+                    }
                 }
-                // resolve : {
-                //     dailyConcepts : function(CalendarFactory){
-                //         return CalendarFactory.getDailyConcepts();
-                //     }
-                // }
+
+
             });
+
+
+    }
+}());
+
+// ************************************************** **************************************************
             // .state('calendarImputeHoursValidator', {
             //     url: '/impute-hours-validator',
             //     templateUrl: '/features/calendar/imputeHoursValidator/imputeHoursValidator.tpl.html',
@@ -93,5 +101,3 @@
             //         }
             //     }
             // });
-    }
-}());

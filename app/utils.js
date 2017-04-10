@@ -12,6 +12,10 @@ var API_paths = {
     searchUser: 'user/search',
     newSearchUser: 'user/newSearch',
     removeUser: 'user/delete',
+    
+
+    getTimesheets: 'timesheets/getTimesheets/',
+
 
     dayGet: 'dailyReport/get',
     dayGetByUser: 'dailyReport/getByUserID',
@@ -21,8 +25,9 @@ var API_paths = {
     daySend: 'dailyReport/send',
     getDailyConcepts: 'dailyReport/getDailyConcepts',
 
-    projectSearch: 'project/search',
+    getProjectsByUserId: 'projectUsers/getProjectsByUserID/',
     projectGetUsers: 'projectUsers/getUsersByProjectID',
+    projectSearch: 'project/search',
     projectUserSave: 'projectUsers/save',
     // getUsersBySupervisor: 'projectUsers/getUsersBySupervisor',
     projectUserUpdate: 'projectUsers/update',
