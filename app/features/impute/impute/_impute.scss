@@ -24,10 +24,28 @@
                     border: solid 1px #CAB023;
                     background-color: #B7B7B7;
                 }
+                &.friday {
+                   background-color: $fridayColor;
+                }
+                &.working {
+                   background-color: $workingColor;
+                }
+                &.intensive {
+                   background-color: $intensiveColor;
+                }
+                &.special {
+                   background-color: $specialColor;
+                }
+                &.holidays {
+                   background-color: $holidaysColor;
+                }
+                &.non_working {
+                   background-color: $non_workingColor;
+                }
                 &.desactive {
                    pointer-events: none;
                    cursor: default;
-                   background-color: #666;
+                   background-color: #000000;
                 }
             }
 
@@ -35,8 +53,8 @@
                 height: 20px;
                 border-bottom: solid 1px gray;
                 text-align: center;
-                font-size: 16px;
-                font-weight: bold;
+                font-size: 15px;
+                color: white;
             }
             .myInput {
                 padding: 5px 8px;

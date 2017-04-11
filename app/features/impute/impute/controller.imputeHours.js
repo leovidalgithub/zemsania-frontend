@@ -7,140 +7,80 @@
     imputeHoursController.$invoke = [ '$scope', 'UserFactory', 'imputeHoursFactory', 'CalendarFactory', '$q', 'userProjects' ];
     function imputeHoursController( $scope, UserFactory, imputeHoursFactory, CalendarFactory, $q, userProjects ) {
 
-
-// show user projects
-$scope.userProjects = angular.copy( userProjects );
-$scope.projectModel = $scope.userProjects[0];
-
-        var currentDate  = new Date();
-        var currentMonth = currentDate.getMonth();
-        var currentYear  = currentDate.getFullYear();
-        $scope.imputeTypes  = [ 'Horas', 'Guardias', 'Variables' ];
+        var currentFirstDay  = new Date();
+        var currentMonth = currentFirstDay.getMonth();
+        var currentYear  = currentFirstDay.getFullYear();
+        var calendarID   = UserFactory.getcalendarID();
+        var generalDataModel = {};
+        $scope.weekViewMode  = true;
+        // IMPUTE TYPES AND SUBTYPES
+        $scope.imputeTypes                = [ 'Horas', 'Guardias', 'Variables' ];
         $scope.imputeTypes[ 'Horas'     ] = [ 'Hora' ];
         $scope.imputeTypes[ 'Guardias'  ] = [ 'Turnicidad', 'Guardia', 'Varios' ];
         $scope.imputeTypes[ 'Variables' ] = [ 'Hora extra', 'Hora extra festivo', 'Horas nocturnas', 'Formación', 'Intervenciones', 'Varios' ];
         $scope.typesModel    = $scope.imputeTypes[0];
         $scope.subtypesModel = $scope.imputeTypes[$scope.typesModel][0];
-        $scope.weekViewMode  = true;
-
-        // $scope.imputeType = 'Horas'; // ???????????????????????
-
-        var calendarID = UserFactory.getcalendarID();
-        var calendarScheme;
+        // USER PROJECTS
+        $scope.userProjects = angular.copy( userProjects );
+        $scope.projectModel = $scope.userProjects[0];
 
         Init();
-        // getTimesheets();
 
-        // function completeDayWeeks() { // add days from previous and next month to complete a 7-days-week view
-        //     var currentMonth = $scope.currentMonthData.currentMonth;
-        //     var tempArray = [];
-        //     $scope.currentMonthData.weeks[0].forEach( function( day ) { // days belong to previous month
-        //         day = new Date( day );
-        //         if( day.getMonth() != currentMonth ) {
-        //             var newDay = {
-        //                     desactive : true,
-        //                     day       : new Date( day ),
-        //                     showMe    : false,
-        //                     value     : 0
-        //             };
-        //             tempArray.push( newDay );
-        //         }
-        //     });
-        //     $scope.days = tempArray.concat( $scope.days );
-        //     $scope.currentMonthData.weeks[$scope.currentMonthData.weeks.length - 1].forEach( function( day ) {  // days belong to next month
-        //         day = new Date( day );
-        //         if( day.getMonth() != currentMonth ) {
-        //             var newDay = {
-        //                     desactive : true,
-        //                     day    : new Date( day ),
-        //                     showMe : false,
-        //                     value  : 0
-        //             };
-        //             $scope.days.push( newDay );
-        //         }
-        //     });
-        // }
-
-        function getTimesheets() {
-            // var projectId = $scope.projectModel._id;
-            imputeHoursFactory.getTimesheets( currentYear, currentMonth )
+        function Init() {
+            $scope.showDaysObj  = imputeHoursFactory.getShowDaysObj( currentMonth, currentYear );
+            var currentFirstDay = $scope.showDaysObj.currentFirstDay;
+            if( generalDataModel[ currentFirstDay ] ) { // if that month and year already exists in 'generalDataModel', do not find anything
+                refreshShowDaysObj();
+                return;
+            }
+            var calendarPromise   = CalendarFactory.getCalendarById( calendarID, currentYear, currentMonth );
+            var timeSheetsPromise = imputeHoursFactory.getTimesheets( currentYear, currentMonth );
+            $q.all( [ calendarPromise, timeSheetsPromise ] )
                 .then( function( data ) {
-                    console.log( data.data );
-                    // calendarScheme = data[0];
-                    // completeDayWeeks();
-                    // refreshShowDaysObj();
-
+                    var calendar = data[0];
+                    var timesheetDataModel = data[1].data.timesheetDataModel;
+                    if( !generalDataModel[ currentFirstDay ] ) generalDataModel[ currentFirstDay ] = {};
+                    generalDataModel[ currentFirstDay ] = {
+                                                        date               : currentFirstDay,
+                                                        calendar           : calendar,
+                                                        timesheetDataModel : timesheetDataModel
+                                                      };
                 })
                 .catch( function( err ) {
+                })
+                .finally( function() {
+                    refreshShowDaysObj();
                 });
         }
 
-        function Init() {
-            getShowDaysObj();
-            getTimesheets();
-
-            // var p1 = CalendarFactory.getCalendarById( calendarID, currentYear, currentMonth );
-            // var p2 = CalendarFactory.getCalendarById( calendarID, 2016 );
-            // $q.all( [ p1, p2 ] )
-            //     .then( function( data ) {
-            //         // calendarScheme = data[0];
-            //         // completeDayWeeks();
-            //         // refreshShowDaysObj();
-
-            //     })
-            //     .catch( function( err ) {
-            //     });
-        }
-
-        function getShowDaysObj() {
-            $scope.showDaysObj = imputeHoursFactory.getShowDaysObj( currentMonth, currentYear );
-            // console.log( $scope.showDaysObj );
-        }
-
         $scope.projectChanged = function() {            
-            getTimesheets();
+            refreshShowDaysObj();
         };
-    	$scope.imputeTypeChanged = function() {
-	        $scope.subtypesModel = $scope.imputeTypes[$scope.typesModel][0];
-	  //   	switch( $scope.typesModel ) {
-			//     case 'Horas':
-	  //   			$scope.currentType = 'text';
-			//         break;
-			//     case 'Guardias':
-	  //   			$scope.currentType = 'checkbox';
-			//         break;
-			//     case 'Variables':
-	  //   			$scope.currentType = 'text';
-			//         break;
-			// }
+        $scope.imputeTypeChanged = function() {
+            $scope.subtypesModel = $scope.imputeTypes[$scope.typesModel][0];
+            refreshShowDaysObj();
+        };
+        $scope.imputeSubTypeChanged = function() {
+            refreshShowDaysObj();
 		};
         $scope.monthWeekViewSwap = function() {
             $scope.weekViewMode = !$scope.weekViewMode;
         };
-    	$scope.imputeSubTypeChanged = function() {
-		};
 
         $scope.moveDate = function( moveTo ) {
-            // var currentWeekAtFirst;
             if( $scope.weekViewMode ) { // if week-mode
-                if( moveTo > 0 ) {
-                    $scope.showDaysObj.currentWeek++;
-                    if( $scope.showDaysObj.currentWeek > $scope.showDaysObj.totalMonthWeeks ) {
-                        monthChange( +1 );
-                        $scope.showDaysObj.currentWeek = 0;
-                    }
-                } else {
-                    $scope.showDaysObj.currentWeek--;
-                    if( $scope.showDaysObj.currentWeek < 0 ) {
-                        monthChange( -1 );
-                        $scope.showDaysObj.currentWeek = $scope.showDaysObj.totalMonthWeeks;
-                    }
+                $scope.showDaysObj.currentWeek += moveTo;
+                if( $scope.showDaysObj.currentWeek > $scope.showDaysObj.totalMonthWeeks ) {
+                    monthChange( moveTo );
+                    $scope.showDaysObj.currentWeek = 0;
+                }
+                if( $scope.showDaysObj.currentWeek < 0 ) {
+                    monthChange( moveTo );
+                    $scope.showDaysObj.currentWeek = $scope.showDaysObj.totalMonthWeeks;
                 }
             } else { // if month-mode
                 monthChange( moveTo );
             }
-
-            // refreshShowDaysObj();
             function monthChange( moveTo ) {
                 currentMonth += moveTo;
                 if( currentMonth > 11 ) {
@@ -152,46 +92,77 @@ $scope.projectModel = $scope.userProjects[0];
                     currentYear  += moveTo;
                 }
                 Init();
-                refreshShowDaysObj();
             }
-
-
         };
 
         function refreshShowDaysObj() {
-            // console.log( '*********** refreshShowDaysObj ***********' );
-            // console.log( 'typesModel ' + $scope.typesModel );
-            // console.log( 'subtypesModel ' + $scope.subtypesModel );
-            // console.log( 'projectModel ' + $scope.projectModel._id );
+            var currentType     = $scope.typesModel;
+            var currentSubType  = $scope.subtypesModel;
+            var currentProject  = $scope.projectModel._id; 
+            var currentFirstDay = $scope.showDaysObj.currentFirstDay;          
+            var currentLastDay  = $scope.showDaysObj.currentLastDay;
+            var ts              = generalDataModel[ currentFirstDay ].timesheetDataModel;
+
+            for( var day = 1; day < currentLastDay.getDate() + 1; day++ ) {
+                var thisDate = new Date( currentYear, currentMonth, day );
+// console.log('day ' + thisDate.getDate());
+
+                // CALENDAR DAY TYPE (working, holidays, etc.)
+                var dayType = '';
+                if( generalDataModel[ currentFirstDay ].calendar.eventHours[0].eventDates[ thisDate ] ) {
+                    dayType = generalDataModel[ currentFirstDay ].calendar.eventHours[0].eventDates[ thisDate ].type;
+                };
+
+                // TIMESHEET VALUE
+                var value = 0;
+                if( ts[ currentProject ] ) {
+                    if( ts[ currentProject ][ thisDate ] ) {
+                        if( ts[ currentProject ][ thisDate ][ currentType ] ) {
+                            if( ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ] ) {
+                                value = ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ].value;
+                            }
+                        }
+                    }
+                }
+                if( $scope.showDaysObj.days[ thisDate ] ) {
+                    $scope.showDaysObj.days[ thisDate ].dayType = dayType;
+                    $scope.showDaysObj.days[ thisDate ].value   = value;
+                }
+
+                // INPUT TYPE
+                if( currentType == 'Guardias' ) {
+                    $scope.showDaysObj.days[ thisDate ].inputType = 'checkbox';
+                } else {
+                    $scope.showDaysObj.days[ thisDate ].inputType = 'text';
+                }
 
 
+            }
+        }
 
-            // $scope.days.forEach( function( day ) {
-            //     day.showMe = false;
-            // });
-            // if( $scope.weekViewMode ) { // if week-mode
-            //     $scope.currentMonthData.weeks[ $scope.currentWeek ].forEach( function( dayToShow ) {
-            //         dayToShow = new Date( dayToShow ).getTime();
-            //         activeDayToShow( dayToShow );
-            //     });            
-            // } else { // if month-mode
-            //     $scope.currentMonthData.weeks.forEach( function( week ) {
-            //         week.forEach( function( dayToShow ) {
-            //             dayToShow = new Date( dayToShow ).getTime();
-            //             activeDayToShow( dayToShow );
-            //         });
-            //     });
-            // }
-            // function activeDayToShow( dayToShow ) {
-            //     $scope.days.forEach( function( dayObj ) {
-            //         var day = new Date( dayObj.day ).getTime();
-            //         if( dayToShow == day ) {
-            //             dayObj.showMe = true;
-            //         }
-            //     });   
-            // }
-        } // refreshShowDaysObj()
+    $scope.fn = function() {
+        console.log( generalDataModel );
+        // for( var day in $scope.showDaysObj.days ) {
+        //     // console.log('day ' + $scope.showDaysObj.days[day].day.getDate() + ' input ' + $scope.showDaysObj.days[day].inputType + ' value ' + $scope.showDaysObj.days[day].value );
+        //     $scope.showDaysObj.days[day].value = 1;
+        // };
+    };
+    $scope.fn2 = function() {
+        for( var day in $scope.showDaysObj.days ) {
+            // console.log('day ' + $scope.showDaysObj.days[day].day.getDate() + ' input ' + $scope.showDaysObj.days[day].inputType + ' value ' + $scope.showDaysObj.days[day].value );
+            $scope.showDaysObj.days[day].value = 0;
+        };
+    };
 
+    $scope.checkedFunction = function(xx){
+        if( xx ) {
+            // console.log('true');
+            return true;
+        } else {
+            // console.log('false');
+            return false;
+        }
+    };
 
 }
 

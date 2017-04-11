@@ -24,10 +24,10 @@
 
             getTimesheets: function ( year, month ) { // LEO WORKING HERE
                 var userID     = UserFactory.getUserID();
-                var calendarID = UserFactory.getcalendarID();
+                // var calendarID = UserFactory.getcalendarID();
                     
                 var dfd = $q.defer();
-                $http.get( buildURL( 'getTimesheets' ) + userID + '?calendarID=' + calendarID + '&year=' + year + '&month=' + month )
+                $http.get( buildURL( 'getTimesheets' ) + userID + '?year=' + year + '&month=' + month )
                     .then( function ( response ) {
                         dfd.resolve( response );
                     })
@@ -39,25 +39,25 @@
 
             getShowDaysObj : function ( month, year, currentWeekAtFirst ) { // LEO WORKING HERE
 
-                var months         = [ 'january' ,'february' ,'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december' ];
-                var firstDay       = new Date( year, month, 1 ),
-                    lastDay        = new Date( year, month + 1, 0 ),
-                    totalMonthDays = lastDay.getDate(),
-                    currentDay     = angular.copy( firstDay ),
-                    currentMonth   = firstDay.getMonth(),
-                    monthName      = months[ currentMonth ],
-                    currentYear    = firstDay.getFullYear(),
-                    week           = 0; // number of the week inside month
+                var months          = [ 'january' ,'february' ,'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december' ];
+                var currentFirstDay = new Date( year, month, 1 ),
+                    currentLastDay  = new Date( year, month + 1, 0 ),
+                    totalMonthDays  = currentLastDay.getDate(),
+                    currentDay      = angular.copy( currentFirstDay ),
+                    currentMonth    = currentFirstDay.getMonth(),
+                    monthName       = months[ currentMonth ],
+                    currentYear     = currentFirstDay.getFullYear(),
+                    week            = 0; // number of the week inside month
 
-                var showDaysObj            = {};
-                showDaysObj.currentWeek    = 0;
-                showDaysObj.firstDay       = firstDay;
-                showDaysObj.lastDay        = lastDay;
-                showDaysObj.totalMonthDays = totalMonthDays;
-                showDaysObj.currentMonth   = currentMonth;
-                showDaysObj.currentYear    = currentYear;
-                showDaysObj.monthName      = monthName;
-                showDaysObj.days           = {};
+                var showDaysObj             = {};
+                showDaysObj.currentWeek     = 0;
+                showDaysObj.currentFirstDay = currentFirstDay;
+                showDaysObj.currentLastDay  = currentLastDay;
+                showDaysObj.totalMonthDays  = totalMonthDays;
+                showDaysObj.currentMonth    = currentMonth;
+                showDaysObj.currentYear     = currentYear;
+                showDaysObj.monthName       = monthName;
+                showDaysObj.days            = {};
 
                 while( true ) {
                     if( currentDay.getDate() == 1 && currentDay.getDay() != 1 ) { // just in case of last-month-final-days (to complete the week view)
@@ -103,7 +103,6 @@
                 }
 
                 showDaysObj.totalMonthWeeks = week;
-                // showDaysObj.currentWeek = 0;
 
                 function addNewDay( day, week ) {
                     showDaysObj.days[ day ] = {
@@ -111,7 +110,7 @@
                                                 value       : 0,
                                                 week        : week,
                                                 thisMonth   : day.getMonth(),
-                                                currentType : 'text' // or checkbox for 'Guardias'
+                                                inputType   : 'text' // 'text' for 'Horas' and 'Variables', and 'checkbox' for 'Guardias'
                                             };
                 }
                 return showDaysObj;
@@ -141,8 +140,8 @@
     // function getMonthWeeks( month, year ) {
     //     var weeks = [],
     //         firstDate = new Date( year, month, 1 ),
-    //         lastDay  = new Date( year, month + 1, 0 ),
-    //         totalMonthDays   = lastDay.getDate(),
+    //         currentLastDay  = new Date( year, month + 1, 0 ),
+    //         totalMonthDays   = currentLastDay.getDate(),
     //         start     = 1,
     //         end       = 8 - firstDate.getDay();
     //    while( start <= totalMonthDays ){
@@ -158,16 +157,16 @@
             // getMonthWeeksObj : function ( month, year ) { // LEO WAS HERE
             //     var months     = [ 'january' ,'february' ,'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december' ];
             //     var dataDate     =  {},
-            //         firstDay     = new Date( year, month, 1 ),
-            //         lastDay      = new Date( year, month + 1, 0 ),
-            //         totalMonthDays      = lastDay.getDate(),
-            //         currentDay   = angular.copy( firstDay ),
-            //         currentMonth = firstDay.getMonth(),
+            //         currentFirstDay     = new Date( year, month, 1 ),
+            //         currentLastDay      = new Date( year, month + 1, 0 ),
+            //         totalMonthDays      = currentLastDay.getDate(),
+            //         currentDay   = angular.copy( currentFirstDay ),
+            //         currentMonth = currentFirstDay.getMonth(),
             //         monthName  = months[ currentMonth ],
-            //         currentYear  = firstDay.getFullYear(),
+            //         currentYear  = currentFirstDay.getFullYear(),
             //         week         = [];
             //         dataDate     = {
-            //                 firstDay : firstDay,
+            //                 currentFirstDay : currentFirstDay,
             //                 currentMonth : currentMonth,
             //                 currentYear : currentYear,
             //                 monthName : monthName,

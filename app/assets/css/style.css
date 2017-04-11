@@ -879,17 +879,35 @@
   border: solid 1px #CAB023;
   background-color: #B7B7B7;
 }
+#imputeHours #daysDiv .myDay.friday {
+  background-color: #286ABA;
+}
+#imputeHours #daysDiv .myDay.working {
+  background-color: #85AC0C;
+}
+#imputeHours #daysDiv .myDay.intensive {
+  background-color: #EBC21C;
+}
+#imputeHours #daysDiv .myDay.special {
+  background-color: #FF831C;
+}
+#imputeHours #daysDiv .myDay.holidays {
+  background-color: #ff0000;
+}
+#imputeHours #daysDiv .myDay.non_working {
+  background-color: #808080;
+}
 #imputeHours #daysDiv .myDay.desactive {
   pointer-events: none;
   cursor: default;
-  background-color: #666;
+  background-color: #000000;
 }
 #imputeHours #daysDiv .myHeader {
   height: 20px;
   border-bottom: solid 1px gray;
   text-align: center;
-  font-size: 16px;
-  font-weight: bold;
+  font-size: 15px;
+  color: white;
 }
 #imputeHours #daysDiv .myInput {
   padding: 5px 8px;
