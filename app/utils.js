@@ -11,11 +11,10 @@ var API_paths = {
     saveUser: 'user/profile',
     searchUser: 'user/search',
     newSearchUser: 'user/newSearch',
-    removeUser: 'user/delete',
-    
+    removeUser: 'user/delete',    
 
     getTimesheets: 'timesheets/getTimesheets/',
-
+    setAllTimesheets: 'timesheets/setAllTimesheets/',
 
     dayGet: 'dailyReport/get',
     dayGetByUser: 'dailyReport/getByUserID',

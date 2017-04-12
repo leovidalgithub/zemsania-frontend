@@ -8,7 +8,7 @@
     function imputeHoursFactory( $http, $q, UserFactory ) {
         return {
 
-            getProjectsByUserId: function () { // LEO WORKING HERE
+            getProjectsByUserId: function () { // LEO WAS HERE
                 var userID = UserFactory.getUserID();
                 var dfd = $q.defer();
                 $http.get( buildURL( 'getProjectsByUserId' ) + userID )
@@ -21,12 +21,9 @@
                 return dfd.promise;
             },
 
-
-            getTimesheets: function ( year, month ) { // LEO WORKING HERE
-                var userID     = UserFactory.getUserID();
-                // var calendarID = UserFactory.getcalendarID();
-                    
-                var dfd = $q.defer();
+            getTimesheets: function ( year, month ) { // LEO WAS HERE
+                var userID = UserFactory.getUserID();
+                var dfd    = $q.defer();
                 $http.get( buildURL( 'getTimesheets' ) + userID + '?year=' + year + '&month=' + month )
                     .then( function ( response ) {
                         dfd.resolve( response );
@@ -37,8 +34,20 @@
                 return dfd.promise;
             },
 
-            getShowDaysObj : function ( month, year, currentWeekAtFirst ) { // LEO WORKING HERE
+            setAllTimesheets: function( data ) { // LEO WORKING HERE
+                var userID = UserFactory.getUserID();
+                var dfd = $q.defer();
+                $http.post( buildURL( 'setAllTimesheets' ) + userID, data )
+                    .then( function ( response ) {
+                        dfd.resolve( response );
+                    })
+                    .catch( function ( err ) {
+                        dfd.reject( err );
+                    });
+                return dfd.promise;
+            },
 
+            getShowDaysObj : function ( month, year, currentWeekAtFirst ) { // LEO WAS HERE
                 var months          = [ 'january' ,'february' ,'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december' ];
                 var currentFirstDay = new Date( year, month, 1 ),
                     currentLastDay  = new Date( year, month + 1, 0 ),
@@ -107,10 +116,11 @@
                 function addNewDay( day, week ) {
                     showDaysObj.days[ day ] = {
                                                 day         : day,
-                                                value       : 0,
+                                                value       : 0, // it stores 'Horas/Variables' text value
                                                 week        : week,
                                                 thisMonth   : day.getMonth(),
-                                                inputType   : 'text' // 'text' for 'Horas' and 'Variables', and 'checkbox' for 'Guardias'
+                                                inputType   : 'text', // 'text' for 'Horas' and 'Variables', and 'checkbox' for 'Guardias'
+                                                checkValue  : false // it stores 'Guardias' checkbox value
                                             };
                 }
                 return showDaysObj;

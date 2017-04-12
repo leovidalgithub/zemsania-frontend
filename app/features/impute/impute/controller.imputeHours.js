@@ -4,8 +4,17 @@
         .module( 'hours.impute' )
         .controller( 'imputeHoursController', imputeHoursController );
 
-    imputeHoursController.$invoke = [ '$scope', 'UserFactory', 'imputeHoursFactory', 'CalendarFactory', '$q', 'userProjects' ];
-    function imputeHoursController( $scope, UserFactory, imputeHoursFactory, CalendarFactory, $q, userProjects ) {
+    imputeHoursController.$invoke = [ '$scope', 'UserFactory', 'imputeHoursFactory', 'CalendarFactory', '$q', 'userProjects', '$uibModal', '$rootScope' ];
+    function imputeHoursController( $scope, UserFactory, imputeHoursFactory, CalendarFactory, $q, userProjects, $uibModal, $rootScope ) {
+
+        // $scope.myJSON = [
+        //                     {name : 'yyy',age: 1},
+        //                     {name : 'xxx',age: 2},
+        //                     {name : 'ddd',age: 3},
+        //                     {name : 'zzz',age: 4},
+        //                     {name : 'ttt',age: 5},
+        //                     {name : 'uuu',age: 6}
+        // ];
 
         var currentFirstDay  = new Date();
         var currentMonth = currentFirstDay.getMonth();
@@ -13,6 +22,11 @@
         var calendarID   = UserFactory.getcalendarID();
         var generalDataModel = {};
         $scope.weekViewMode  = true;
+
+// FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE 
+        $scope.pendingChanges = true;
+
+
         // IMPUTE TYPES AND SUBTYPES
         $scope.imputeTypes                = [ 'Horas', 'Guardias', 'Variables' ];
         $scope.imputeTypes[ 'Horas'     ] = [ 'Hora' ];
@@ -105,14 +119,11 @@
 
             for( var day = 1; day < currentLastDay.getDate() + 1; day++ ) {
                 var thisDate = new Date( currentYear, currentMonth, day );
-// console.log('day ' + thisDate.getDate());
-
-                // CALENDAR DAY TYPE (working, holidays, etc.)
+                // CALENDAR DAYTYPE (working, holidays, etc.)
                 var dayType = '';
                 if( generalDataModel[ currentFirstDay ].calendar.eventHours[0].eventDates[ thisDate ] ) {
                     dayType = generalDataModel[ currentFirstDay ].calendar.eventHours[0].eventDates[ thisDate ].type;
                 };
-
                 // TIMESHEET VALUE
                 var value = 0;
                 if( ts[ currentProject ] ) {
@@ -128,42 +139,130 @@
                     $scope.showDaysObj.days[ thisDate ].dayType = dayType;
                     $scope.showDaysObj.days[ thisDate ].value   = value;
                 }
-
                 // INPUT TYPE
                 if( currentType == 'Guardias' ) {
                     $scope.showDaysObj.days[ thisDate ].inputType = 'checkbox';
+                    $scope.showDaysObj.days[ thisDate ].checkValue = $scope.showDaysObj.days[ thisDate ].value == 0 ? false : true;
                 } else {
                     $scope.showDaysObj.days[ thisDate ].inputType = 'text';
                 }
-
-
             }
         }
 
-    $scope.fn = function() {
-        console.log( generalDataModel );
-        // for( var day in $scope.showDaysObj.days ) {
-        //     // console.log('day ' + $scope.showDaysObj.days[day].day.getDate() + ' input ' + $scope.showDaysObj.days[day].inputType + ' value ' + $scope.showDaysObj.days[day].value );
-        //     $scope.showDaysObj.days[day].value = 1;
-        // };
-    };
-    $scope.fn2 = function() {
-        for( var day in $scope.showDaysObj.days ) {
-            // console.log('day ' + $scope.showDaysObj.days[day].day.getDate() + ' input ' + $scope.showDaysObj.days[day].inputType + ' value ' + $scope.showDaysObj.days[day].value );
-            $scope.showDaysObj.days[day].value = 0;
+        $scope.inputChanged = function( value ) {
+            // console.log('****************--');
+            // console.log( 'd ' + value.day.getDate() + ' v ' + value.value + ' check ' + value.checkValue );
+            $scope.pendingChanges = true;
+            var currentType     = $scope.typesModel;
+            var currentSubType  = $scope.subtypesModel;
+            var currentProject  = $scope.projectModel._id; 
+            var currentFirstDay = $scope.showDaysObj.currentFirstDay;          
+            var ts              = generalDataModel[ currentFirstDay ].timesheetDataModel;
+            var thisDate        = value.day;
+
+            // creating associative data if it not exists
+            if( !ts[ currentProject ] ) ts[ currentProject ] = {};
+            if( !ts[ currentProject ][ thisDate ] ) ts[ currentProject ][ thisDate ] = {};
+            if( !ts[ currentProject ][ thisDate ][ currentType ] ) ts[ currentProject ][ thisDate ][ currentType ] = {};
+            if( !ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ] ) ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ] = {};
+
+            //storing values
+            if( currentType == 'Guardias' ) {
+                var newValue = value.checkValue ? 1 : 0;
+                ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ].value = newValue;    
+            } else {
+                ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ].value = value.value;    
+            }
+            ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ].status   = 'draft';
+            ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ].modified = true;
+
+            // console.log(ts[ currentProject ]);
+
         };
-    };
 
-    $scope.checkedFunction = function(xx){
-        if( xx ) {
-            // console.log('true');
-            return true;
-        } else {
-            // console.log('false');
-            return false;
+        $scope.save= function() {
+            var data = []; // to send an array of just 'timesheetDataModel' objects
+            for( var date in generalDataModel ) {
+                data.push( generalDataModel[ date ].timesheetDataModel );
+            }            
+            imputeHoursFactory.setAllTimesheets( data )
+                .then( function( data ) {
+                    console.log('saved!');
+                    console.log( data );
+                })
+                .catch( function( err ) {
+                });
+        };
+
+        // $scope.fn = function() {
+        //     $('#pepe').modal({
+        //           keyboard: false
+        //     });
+
+        // $( '#quantityModal' ).modal( 'show' );
+        // var currentFirstDay = $scope.showDaysObj.currentFirstDay;          
+        // var ts = generalDataModel[ currentFirstDay ].timesheetDataModel;
+        // for( var proId in ts ) {
+        //     for ( var day in ts[ proId ] ) {
+        //         for ( var type in ts[ proId ][day] ) {
+        //             for ( var subType in ts[ proId ][day][type] ) {
+        //                 if( ts[ proId ][day][type][subType].modified ) {
+        //                     console.log( '----------------' );
+        //                     console.log( proId );
+        //                     console.log( day );
+        //                     console.log( type );                    
+        //                     console.log( subType );
+        //                     console.log( 'value    = ' + ts[ proId ][day][type][subType].value);
+        //                     console.log( 'status   = ' + ts[ proId ][day][type][subType].status);
+        //                     // console.log( 'modified = ' + ts[ proId ][day][type][subType].modified);
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
+
+    // };
+
+    // $scope.checkedFunction = function( value ) { // it is necessary in order to checked or unchecked inputs dynamically
+    //     return value ? true : false;
+    // };
+
+        // $scope.$watch( 'generalDataModel' , function ( newVal, oldVal ) { // watch for $scope.products set and properties changes
+        //     console.log('changed!');
+        // }, true );
+// **************************************************** *****************************************************
+// **************************************************** *****************************************************
+
+$scope.fn = function() {
+    openPendingChangesModal();
+};
+
+$rootScope.$on('modalClosed', function (event, data) {
+    $scope.save();
+});
+
+        function openPendingChangesModal() {
+            var modalPendingChangesInstance = $uibModal.open({
+            animation: true,
+            ariaLabelledBy: 'modal-title',
+            ariaDescribedBy: 'modal-body',
+            templateUrl: '/features/impute/modals/pendingChangesModal.tpl.html',
+            controller: function($scope, $uibModalInstance,$rootScope) {
+                $scope.cancel = function() {
+                    $uibModalInstance.close();
+                };
+                $scope.save = function() {
+                    $uibModalInstance.close();
+                    $rootScope.$emit( 'modalClosed', 'Modal has been closed to saved data');
+                };
+            },
+            backdrop: 'static',
+            size: 'md'
+            }); //*****************
         }
-    };
 
+// **************************************************** *****************************************************
+// **************************************************** *****************************************************
 }
 
 })();
@@ -173,6 +272,30 @@
 
 
 
+// $scope.$watch( 'products' , function ( newVal, oldVal ) { // watch for $scope.products set and properties changes
+//         if ( !newVal ) return;
+//         $scope.pendingChanges = $scope.products.some( function( element, index ) {
+//             return ( element.action !== '' ); // ( element.action && element.action != '' )
+//         });
+//         $scope.productsSelected = $scope.products.filter( function ( element ) {
+//             return element.selected;
+//         }).length;
+//     }, true );
+
+
+
+
+
+
+// $scope.$watch( function( $scope ) { // just watch for $scope.products.action
+//      if ( !$scope.products ) return;
+//      return $scope.products.map( function( obj ) { return obj.action } );
+//      }, function ( newVal, oldVal ) {
+//          if ( !newVal ) return;
+//          $scope.pendingChanges = $scope.products.some( function( element, index ) {
+//              return ( element.action && element.action != '' );
+//          });
+//     }, true);
 
 
 
@@ -184,218 +307,3 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// var testingObj = [
-// {
-//     employee : '58dd07eecbcb6303e41ef404',
-//     project : 'PRO-1',
-//     type : 'Horas',
-//     subType : "Hora",
-//     date : '12-mar-2016',
-//     value : 8,
-//     status : 'Draft',
-//     desactive : false,
-//     calendarType : 'working'
-// },
-// {
-//     employee : '58dd07eecbcb6303e41ef404',
-//     project : 'PRO-2',
-//     type : 'Horas',
-//     subType : "Hora",
-//     date : '15-mar-2016',
-//     value : 6,
-//     status : 'Draft',
-//     desactive : false,
-//     calendarType : 'working'
-// },
-// {
-//     employee : '58dd07eecbcb6303e41ef404',
-//     project : 'PRO-1',
-//     type : 'Horas',
-//     subType : "Hora",
-//     date : '21-mar-2016',
-//     value : 8,
-//     status : 'Draft',
-//     desactive : false,
-//     calendarType : 'working'
-// },
-// {
-//     employee : '58dd07eecbcb6303e41ef404',
-//     project : 'PRO-2',
-//     type : 'Horas',
-//     subType : "Hora",
-//     date : '30-mar-2016',
-//     value : 5,
-//     status : 'Draft',
-//     desactive : false,
-//     calendarType : 'working'
-// },
-// {
-//     employee : '58dd07eecbcb6303e41ef404',
-//     project : 'PRO-1',
-//     type : 'Horas',
-//     subType : "Hora",
-//     date : '04-jun-2016',
-//     value : 8,
-//     status : 'Draft',
-//     desactive : false,
-//     calendarType : 'working'
-// },
-// {
-//     employee : '58dd07eecbcb6303e41ef404',
-//     project : 'PRO-2',
-//     type : 'Horas',
-//     subType : "Hora",
-//     date : '05-jun-2016',
-//     value : 8,
-//     status : 'Draft',
-//     desactive : false,
-//     calendarType : 'working'
-// },
-// {
-//     employee : '58dd07eecbcb6303e41ef404',
-//     project : 'PRO-2',
-//     type : 'Horas',
-//     subType : "Hora",
-//     date : '17-jun-2016',
-//     value : 8,
-//     status : 'Draft',
-//     desactive : false,
-//     calendarType : 'working'
-// },
-// {
-//     employee : '58dd07eecbcb6303e41ef404',
-//     project : 'PRO-2',
-//     type : 'Horas',
-//     subType : "Hora",
-//     date : '22-jun-2016',
-//     value : 7,
-//     status : 'Draft',
-//     desactive : false,
-//     calendarType : 'working'
-// },
-// //*******
-// {
-//     employee : '58dd07eecbcb6303e41ef404',
-//     project : 'PRO-2',
-//     type : 'Guardias',
-//     subType : "Turnicidad",
-//     date : '23-jun-2016',
-//     value : 1,
-//     status : 'Draft',
-//     desactive : false,
-//     calendarType : 'working'
-// },
-// {
-//     employee : '58dd07eecbcb6303e41ef404',
-//     project : 'PRO-1',
-//     type : 'Guardias',
-//     subType : "Turnicidad",
-//     date : '24-jun-2016',
-//     value : 1,
-//     status : 'Draft',
-//     desactive : false,
-//     calendarType : 'working'
-// },
-// {
-//     employee : '58dd07eecbcb6303e41ef404',
-//     project : 'PRO-2',
-//     type : 'Guardias',
-//     subType : "Turnicidad",
-//     date : '25-jun-2016',
-//     value : 1,
-//     status : 'Draft',
-//     desactive : false,
-//     calendarType : 'working'
-// },
-// {
-//     employee : '58dd07eecbcb6303e41ef404',
-//     project : 'PRO-2',
-//     type : 'Guardias',
-//     subType : "Turnicidad",
-//     date : '26-jun-2016',
-//     value : 0,
-//     status : 'Draft',
-//     desactive : false,
-//     calendarType : 'working'
-// },
-// {
-//     employee : '58dd07eecbcb6303e41ef404',
-//     project : 'PRO-2',
-//     type : 'Guardias',
-//     subType : "Guardia",
-//     date : '27-jun-2016',
-//     value : 1,
-//     status : 'Draft',
-//     desactive : false,
-//     calendarType : 'working'
-// },
-// {
-//     employee : '58dd07eecbcb6303e41ef404',
-//     project : 'PRO-2',
-//     type : 'Guardias',
-//     subType : "Guardia",
-//     date : '28-jun-2016',
-//     value : 1,
-//     status : 'Draft',
-//     desactive : false,
-//     calendarType : 'working'
-// },
-// {
-//     employee : '58dd07eecbcb6303e41ef404',
-//     project : 'PRO-2',
-//     type : 'Guardias',
-//     subType : "Guardia",
-//     date : '29-jun-2016',
-//     value : 0,
-//     status : 'Draft',
-//     desactive : false,
-//     calendarType : 'working'
-// },
-// {
-//     employee : '58dd07eecbcb6303e41ef404',
-//     project : 'PRO-1',
-//     type : 'Guardias',
-//     subType : "Turnicidad",
-//     date : '30-jun-2016',
-//     value : 1,
-//     status : 'Draft',
-//     desactive : false,
-//     calendarType : 'working'
-// },
-// {
-//     employee : '58dd07eecbcb6303e41ef404',
-//     project : 'PRO-2',
-//     type : 'Guardias',
-//     subType : "Turnicidad",
-//     date : '01-jul-2016',
-//     value : 1,
-//     status : 'Draft',
-//     desactive : false,
-//     calendarType : 'working'
-// },
-// {
-//     employee : '58dd07eecbcb6303e41ef404',
-//     project : 'PRO-2',
-//     type : 'Guardias',
-//     subType : "Turnicidad",
-//     date : '02-jul-2016',
-//     value : 1,
-//     status : 'Draft',
-//     desactive : false,
-//     calendarType : 'working'
-// }
-// ];

@@ -131,7 +131,8 @@
         "days": "días",
         "journey": "jornadas",
         "absences": "ausencias",
-        "holidays": "vacaciones"
+        "holidays": "vacaciones",
+        "week": "Semana"
     },
     "employeeManager": {
         "list": {

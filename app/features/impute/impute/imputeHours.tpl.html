@@ -4,22 +4,58 @@
         <div id="headerContent">
             <div class="flexDesign box-shadow p20 top-bar">
                 <div>
-                <h3>Imputar Horas</h3>
+                    <h3>Imputar Horas</h3>
                 </div>
-                <div class="rightMargin">
 
-<!--                      <button ui-sref="calendars" class="btn btn-gray no-margin">
+                 <div class="rightMargin">
+                     <button ng-disabled="!pendingChanges" ui-sref="dashboard" class="btn btn-gray no-margin">
                         {{'actions.cancel' | i18next}}
                     </button>
- -->                    
+
+                    <button ng-disabled="!pendingChanges" class="btn no-margin" ng-click="save()"
+                            ng-class="{ 'btn-gray': !pendingChanges, 'btn-primary': pendingChanges}">{{'actions.save' | i18next}}
+                    </button>
                 </div>
-            </div>
+
+
+
+
+            </div>  
         </div>
     </header>
     <!-- SECTION MAIN CONTENT -->
     <section id="section" class="box-shadow p20">
+
+
+
+
+<!-- Large modal -->
+<!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bs-example-modal-lg">Large modal</button>
+<div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+        proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+    </div>
+  </div>
+</div>
+ -->
+
+
         <!-- <div class="alert alert-danger" ng-show="loadingError">{{'calendars.error' | i18next}}</div> -->
 
+<!-- <div class="myContainer">
+        <div ng-class="{'jump':{{value.age == 4}}}" ng-repeat="(key, value) in myJSON">
+            {{value.name}}
+        </div>
+</div>
+<style>
+    .myContainer {background-color: orange;}
+    .myContainer > div {display: inline-block;margin-left: 10px;border:solid 1px green;}
+    .myContainer .jump {display: block; background-color: red;}
+</style>
+ -->
         <div id="options">
             <div id="selects">                
                     <!-- PROJECTS SELECT -->
@@ -48,15 +84,18 @@
         <button class="btn btn-primary" ng-click="moveDate(-1)"><i class="fa fa-arrow-left"></i></button>
         <button class="btn btn-primary" ng-click="moveDate(+1)"><i class="fa fa-arrow-right"></i></button>
         <button class="btn btn-primary" ng-click="monthWeekViewSwap()">Vista {{(weekViewMode ? 'Mes' : 'Semanal')}}</button>
-        <p>Mes : {{showDaysObj.monthName}} / Año : {{showDaysObj.currentYear}}</p>
+        <p>{{'months.' + showDaysObj.monthName | i18next}}  {{showDaysObj.currentYear}}
+        <span ng-show="weekViewMode">{{'words.week' | i18next}} Nº {{showDaysObj.currentWeek + 1}}  </span></p>
+
         <!-- WEEK VIEW MODE -->
-        <div ng-show="weekViewMode">Vista Semanal - Del: {{currentMonthData.weeks[currentWeek][0] | amDateFormat:'DD-MM-YY'}} al: {{currentMonthData.weeks[currentWeek][6] | amDateFormat:'DD-MM-YY'}}</div>
+        <!-- <div ng-show="weekViewMode">Vista Semanal - Del: {{currentMonthData.weeks[currentWeek][0] | amDateFormat:'DD-MM-YY'}} al: {{currentMonthData.weeks[currentWeek][6] | amDateFormat:'DD-MM-YY'}}</div> -->
         <!-- MONTH VIEW MODE -->
-        <div ng-hide="weekViewMode">Vista Mensual - Del: {{currentMonthData.weeks[0][0] | amDateFormat:'DD-MM-YY'}} al: {{currentMonthData.weeks[currentMonthData.weeks.length-1][6] | amDateFormat:'DD-MM-YY'}}</div>
+        <!-- <div ng-hide="weekViewMode">Vista Mensual - Del: {{currentMonthData.weeks[0][0] | amDateFormat:'DD-MM-YY'}} al: {{currentMonthData.weeks[currentMonthData.weeks.length-1][6] | amDateFormat:'DD-MM-YY'}}</div> -->
 
             <div id="daysDiv">
-            <!-- || ((weekViewMode == false) && (showDaysObj.currentMonth != value.thisMonth)) -->
-                <div ng-hide="((weekViewMode == true) && (showDaysObj.currentWeek != value.week))" class="myDay {{value.dayType}}"
+ 
+                <div ng-hide="((weekViewMode == true) && (showDaysObj.currentWeek != value.week)) ||
+                     ((weekViewMode == false) && (showDaysObj.currentMonth != value.thisMonth))" class="myDay {{value.dayType}}"
                                 ng-class="{'desactive': showDaysObj.currentMonth!=value.thisMonth}" ng-repeat="(key, value) in showDaysObj.days">
 
                     <div class="myHeader">
@@ -64,10 +103,13 @@
                     </div>
 
                     <div class="myInput" >
-                    <!-- ng-change -->
-                    <!-- ng-checked="{{value.value}}" -->
-                        <input class="form-control input-sm" type="{{value.inputType}}" value="{{value.value}}" maxlength="3"
-                         ng-checked="checkedFunction(value.value)">
+
+                        <input ng-show="value.inputType == 'text'" class="form-control input-sm" type="text" value="{{value.value}}"
+                                 maxlength="3" ng-model="value.value" ng-change="inputChanged(value)">
+
+                        <input ng-show="value.inputType == 'checkbox'" class="form-control input-sm" type="checkbox"
+                                 value="{{value.checkValue}}" ng-model="value.checkValue" ng-change="inputChanged(value)">
+
                         <!-- <input type="number" step="0.5" min="0" size="1" /> -->
                     </div>
 
@@ -77,8 +119,6 @@
                         <a class="btn btn-xs btn-danger" title="Misceláneos">
                             <i class="fa fa-key"></i></a>
                     </div>
-
-                    <span ng-if="($index==3)"> <br/><span>
 
                 </div>
             </div>
@@ -92,6 +132,28 @@
         <div class="copyRight">Zemsania Time Manager&copy;</div>
         </div>
     </footer>
+
+
+    <!-- QUANTITY CHANGE MODAL -->
+    <div class="modal fade" id="quantityModal" role="dialog">
+        <div class="modal-dialog modal-sm">
+                    <!-- Modal content-->
+                    <div class="dialogo modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Cambiar cantidad</h4>
+                            <h3 class="modal-title"><strong>{{ product.product }}</strong></h3>
+                        </div>
+                        <div class="modal-body">
+                                <button ng-click="product.quantity = product.quantity - 1" class="changeQantity btn btn-danger" type="button">-</button>
+                                <span class="changeQantity">{{ product.quantity }}</span>
+                                <button ng-click="product.quantity = product.quantity + 1" class="changeQantity btn btn-success" type="button">+</button>
+                        </div>
+                        <!-- <div class="modal-footer"></div> -->
+            </div>
+        </div>
+    </div>
+
 </div>
 
 
