@@ -26,12 +26,10 @@
                 <a class="not-active" ui-sref="userSpents" ng-class="{'active' : activeState === 'userSpents'}"><i class="fa fa-euro"></i>
                     {{'sidebar.imputeSpents' | i18next}}</a>
             </li>
-            
             <li role-auth="{'only' : ['administrator', 'manager']}"> <!-- LEO WORKING HERE - CALENDARS -->
-                <a ui-sref="calendars" ng-class="{'active' : activeState === 'calendars'}"><i class="fa fa-list-alt"></i>
+                <a ng-click="myFunction('calendars')" ng-class="{'active' : activeState === 'calendars'}"><i class="fa fa-list-alt"></i>
                     {{'sidebar.calendars' | i18next}}</a>
             </li>
-            
             <li role-auth="{'only' : ['administrator', 'manager']}">
                 <a class="not-active"  ui-sref="workloadSchemes" ng-class="{'active' : activeState === 'workloadSchemes'}"><i class="fa fa-hourglass-start"></i>
                     {{'sidebar.workloadSchemes' | i18next}}</a>
@@ -50,7 +48,7 @@
                     {{'sidebar.imputeAbsences' | i18next}}</a>
             </li>
             <li role-auth="{'only' : ['administrator']}"> <!-- LEO WORKING HERE -->
-                <a ui-sref="employeeManager" ng-class="{'active' : activeState === 'employeeManager'}">
+                <a ng-click="myFunction('employeeManager')" ng-class="{'active' : activeState === 'employeeManager'}">
                     <i class="fa fa-dashboard"></i> {{'sidebar.employeeManager' | i18next}}</a>
             </li>
             <li>
@@ -82,7 +80,7 @@
                 <a href="http://jira.zemsania.com:8080/secure/RapidBoard.jspa?projectKey=ZTIME&rapidView=4&view=planning.nodetail" target="_blank"><i class="fa fa-bug"></i>Reportar Bug</a>
             </li>
             <li class="bottom">
-                <a ui-sref="logout"><i class="fa fa-power-off"></i>{{'actions.logout' | i18next}}</a>
+                <a ng-click="myFunction('logout')"><i class="fa fa-power-off"></i>{{'actions.logout' | i18next}}</a>
             </li>
             <br>
         </div>

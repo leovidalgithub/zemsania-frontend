@@ -3,17 +3,16 @@
 </div>
 
     <div class="modal-body set-padding-t-lg">
-
-
-        <section class="modal-body">
+        <!-- <section class="modal-body"> -->
             <h4 class="text-primary modal-header border-b no-padding-l">Existen cambios pendientes de guardar</h4>
-        </section>
-
+            <h5 class="text-primary modal-header border-b no-padding-l">¿Desea guardar los cambios?</h5>
+        <!-- </section> -->
     </div>
 
     <div class="modal-footer">
         <div class="text-right form-buttons">
-            <button type="button" ng-click="save()" class="btn btn-primary no-margin">{{'actions.save' | i18next}}</button>
+            <button type="button" ng-click="save()" class="btn btn-primary no-margin">{{'words.yes' | i18next}}</button>
+            <button type="button" ng-click="notSave()" class="btn btn-primary no-margin">{{'words.no' | i18next}}</button>
             <button type="button" ng-click="cancel()" class="btn btn-warning no-margin">{{'actions.cancel' | i18next}}</button>
         </div>
     </div>

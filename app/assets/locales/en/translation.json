@@ -122,7 +122,8 @@
     },
     "words": {
         "employee": "empleado",
-        "project": "proyecto",
+        "project": "Project",
+        "projects": "Projects",     
         "type": "tipo",
         "hour": "hora",
         "hours": "horas",
@@ -132,7 +133,9 @@
         "journey": "jornadas",
         "absences": "ausencias",
         "holidays": "vacaciones",
-        "week": "Week"
+        "week": "Week",
+        "yes": "Sí",
+        "no": "No"
     },
     "employeeManager": {
         "list": {

@@ -4,8 +4,8 @@
         .module( 'hours.impute' )
         .controller( 'imputeHoursController', imputeHoursController );
 
-    imputeHoursController.$invoke = [ '$scope', 'UserFactory', 'imputeHoursFactory', 'CalendarFactory', '$q', 'userProjects', '$uibModal', '$rootScope' ];
-    function imputeHoursController( $scope, UserFactory, imputeHoursFactory, CalendarFactory, $q, userProjects, $uibModal, $rootScope ) {
+    imputeHoursController.$invoke = [ '$scope', 'UserFactory', 'imputeHoursFactory', 'CalendarFactory', '$q', 'userProjects', '$uibModal', '$rootScope', '$state' ];
+    function imputeHoursController( $scope, UserFactory, imputeHoursFactory, CalendarFactory, $q, userProjects, $uibModal, $rootScope, $state ) {
 
         // $scope.myJSON = [
         //                     {name : 'yyy',age: 1},
@@ -20,12 +20,12 @@
         var currentMonth = currentFirstDay.getMonth();
         var currentYear  = currentFirstDay.getFullYear();
         var calendarID   = UserFactory.getcalendarID();
+        var goToState = null;
         var generalDataModel = {};
+        $scope.changes = {};
+        $scope.changes.pendingChanges = false;
+        $scope.changes.originalGeneralDataModel = {}; // to get back pending changes
         $scope.weekViewMode  = true;
-
-// FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE 
-        $scope.pendingChanges = true;
-
 
         // IMPUTE TYPES AND SUBTYPES
         $scope.imputeTypes                = [ 'Horas', 'Guardias', 'Variables' ];
@@ -35,7 +35,7 @@
         $scope.typesModel    = $scope.imputeTypes[0];
         $scope.subtypesModel = $scope.imputeTypes[$scope.typesModel][0];
         // USER PROJECTS
-        $scope.userProjects = angular.copy( userProjects );
+        $scope.userProjects = userProjects;
         $scope.projectModel = $scope.userProjects[0];
 
         Init();
@@ -47,18 +47,21 @@
                 refreshShowDaysObj();
                 return;
             }
-            var calendarPromise   = CalendarFactory.getCalendarById( calendarID, currentYear, currentMonth );
-            var timeSheetsPromise = imputeHoursFactory.getTimesheets( currentYear, currentMonth );
-            $q.all( [ calendarPromise, timeSheetsPromise ] )
+            var getCalendarPromise   = CalendarFactory.getCalendarById( calendarID, currentYear, currentMonth );
+            var getTimeSheetsPromise = imputeHoursFactory.getTimesheets( currentYear, currentMonth );
+            $q.all( [ getCalendarPromise, getTimeSheetsPromise ] )
                 .then( function( data ) {
                     var calendar = data[0];
                     var timesheetDataModel = data[1].data.timesheetDataModel;
                     if( !generalDataModel[ currentFirstDay ] ) generalDataModel[ currentFirstDay ] = {};
-                    generalDataModel[ currentFirstDay ] = {
-                                                        date               : currentFirstDay,
-                                                        calendar           : calendar,
-                                                        timesheetDataModel : timesheetDataModel
-                                                      };
+                    if( !$scope.changes.originalGeneralDataModel[ currentFirstDay ] ) $scope.changes.originalGeneralDataModel[ currentFirstDay ] = {};
+                    var obj = {
+                                date               : currentFirstDay,
+                                calendar           : calendar,
+                                timesheetDataModel : timesheetDataModel
+                              };
+                    generalDataModel[ currentFirstDay ] = angular.copy( obj );
+                    $scope.changes.originalGeneralDataModel[ currentFirstDay ] = angular.copy( obj );
                 })
                 .catch( function( err ) {
                 })
@@ -112,7 +115,7 @@
         function refreshShowDaysObj() {
             var currentType     = $scope.typesModel;
             var currentSubType  = $scope.subtypesModel;
-            var currentProject  = $scope.projectModel._id; 
+            var currentProject  = $scope.projectModel._id;
             var currentFirstDay = $scope.showDaysObj.currentFirstDay;          
             var currentLastDay  = $scope.showDaysObj.currentLastDay;
             var ts              = generalDataModel[ currentFirstDay ].timesheetDataModel;
@@ -135,6 +138,7 @@
                         }
                     }
                 }
+                // STORES VALUES INSIDE 'showDaysObj'
                 if( $scope.showDaysObj.days[ thisDate ] ) {
                     $scope.showDaysObj.days[ thisDate ].dayType = dayType;
                     $scope.showDaysObj.days[ thisDate ].value   = value;
@@ -150,9 +154,11 @@
         }
 
         $scope.inputChanged = function( value ) {
-            // console.log('****************--');
-            // console.log( 'd ' + value.day.getDate() + ' v ' + value.value + ' check ' + value.checkValue );
-            $scope.pendingChanges = true;
+            $scope.changes.pendingChanges = true;
+
+            $rootScope.pendingChanges = true;
+
+
             var currentType     = $scope.typesModel;
             var currentSubType  = $scope.subtypesModel;
             var currentProject  = $scope.projectModel._id; 
@@ -166,7 +172,7 @@
             if( !ts[ currentProject ][ thisDate ][ currentType ] ) ts[ currentProject ][ thisDate ][ currentType ] = {};
             if( !ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ] ) ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ] = {};
 
-            //storing values
+            // stores values
             if( currentType == 'Guardias' ) {
                 var newValue = value.checkValue ? 1 : 0;
                 ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ].value = newValue;    
@@ -175,135 +181,71 @@
             }
             ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ].status   = 'draft';
             ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ].modified = true;
-
-            // console.log(ts[ currentProject ]);
-
         };
 
-        $scope.save= function() {
+        $scope.save = function() {
             var data = []; // to send an array of just 'timesheetDataModel' objects
             for( var date in generalDataModel ) {
                 data.push( generalDataModel[ date ].timesheetDataModel );
             }            
             imputeHoursFactory.setAllTimesheets( data )
                 .then( function( data ) {
-                    console.log('saved!');
-                    console.log( data );
+                    $scope.changes.pendingChanges = false;
+                    $rootScope.pendingChanges = false;
                 })
                 .catch( function( err ) {
+                })
+                .finally( function() {
+                    if( goToState ) {
+                        $state.go( goToState );
+                        goToState = null;
+                    }
                 });
+
+        };
+        $scope.notSave = function() {
+            generalDataModel = angular.copy( $scope.changes.originalGeneralDataModel );
+            $scope.changes.pendingChanges = false;
+            refreshShowDaysObj();
+            if( goToState ) {
+                $state.go( goToState );
+                goToState = null;
+            }
         };
 
-        // $scope.fn = function() {
-        //     $('#pepe').modal({
-        //           keyboard: false
-        //     });
-
-        // $( '#quantityModal' ).modal( 'show' );
-        // var currentFirstDay = $scope.showDaysObj.currentFirstDay;          
-        // var ts = generalDataModel[ currentFirstDay ].timesheetDataModel;
-        // for( var proId in ts ) {
-        //     for ( var day in ts[ proId ] ) {
-        //         for ( var type in ts[ proId ][day] ) {
-        //             for ( var subType in ts[ proId ][day][type] ) {
-        //                 if( ts[ proId ][day][type][subType].modified ) {
-        //                     console.log( '----------------' );
-        //                     console.log( proId );
-        //                     console.log( day );
-        //                     console.log( type );                    
-        //                     console.log( subType );
-        //                     console.log( 'value    = ' + ts[ proId ][day][type][subType].value);
-        //                     console.log( 'status   = ' + ts[ proId ][day][type][subType].status);
-        //                     // console.log( 'modified = ' + ts[ proId ][day][type][subType].modified);
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
-
-    // };
-
-    // $scope.checkedFunction = function( value ) { // it is necessary in order to checked or unchecked inputs dynamically
-    //     return value ? true : false;
-    // };
-
-        // $scope.$watch( 'generalDataModel' , function ( newVal, oldVal ) { // watch for $scope.products set and properties changes
-        //     console.log('changed!');
-        // }, true );
-// **************************************************** *****************************************************
-// **************************************************** *****************************************************
-
-$scope.fn = function() {
-    openPendingChangesModal();
-};
-
-$rootScope.$on('modalClosed', function (event, data) {
-    $scope.save();
-});
-
-        function openPendingChangesModal() {
+        // MODAL - WARNING PENDING CHANGES MODAL
+        $scope.openPendingChangesModal = function() {
             var modalPendingChangesInstance = $uibModal.open({
-            animation: true,
-            ariaLabelledBy: 'modal-title',
-            ariaDescribedBy: 'modal-body',
-            templateUrl: '/features/impute/modals/pendingChangesModal.tpl.html',
-            controller: function($scope, $uibModalInstance,$rootScope) {
+            animation : true,
+            ariaLabelledBy : 'modal-title',
+            ariaDescribedBy : 'modal-body',
+            templateUrl : '/features/impute/modals/pendingChangesModal.tpl.html',
+            controller : function( $scope, $uibModalInstance, $rootScope ) {
                 $scope.cancel = function() {
                     $uibModalInstance.close();
                 };
                 $scope.save = function() {
                     $uibModalInstance.close();
-                    $rootScope.$emit( 'modalClosed', 'Modal has been closed to saved data');
+                    $rootScope.$emit( 'modalToSave', 'Modal has been closed to save data');
+                };
+                $scope.notSave = function() {
+                    $uibModalInstance.close();
+                    $rootScope.$emit( 'modalNotToSave', 'Modal has been closed to NOT save data');
                 };
             },
             backdrop: 'static',
             size: 'md'
-            }); //*****************
+            });
         }
+        $rootScope.$on( 'modalToSave', function ( event, data ) { $scope.save() } );
+        $rootScope.$on( 'modalNotToSave', function ( event, data ) { $scope.notSave() } );
 
-// **************************************************** *****************************************************
-// **************************************************** *****************************************************
+        // when pendingChanges this comes from 'sidebar' to prevent URL change without save changes 
+        $scope.$on( 'urlChangeRequest', function ( event, data ) {
+            event.preventDefault();
+            $scope.openPendingChangesModal();
+            goToState = data.nextURL;
+        });
 }
 
 })();
-
-
-
-
-
-
-// $scope.$watch( 'products' , function ( newVal, oldVal ) { // watch for $scope.products set and properties changes
-//         if ( !newVal ) return;
-//         $scope.pendingChanges = $scope.products.some( function( element, index ) {
-//             return ( element.action !== '' ); // ( element.action && element.action != '' )
-//         });
-//         $scope.productsSelected = $scope.products.filter( function ( element ) {
-//             return element.selected;
-//         }).length;
-//     }, true );
-
-
-
-
-
-
-// $scope.$watch( function( $scope ) { // just watch for $scope.products.action
-//      if ( !$scope.products ) return;
-//      return $scope.products.map( function( obj ) { return obj.action } );
-//      }, function ( newVal, oldVal ) {
-//          if ( !newVal ) return;
-//          $scope.pendingChanges = $scope.products.some( function( element, index ) {
-//              return ( element.action && element.action != '' );
-//          });
-//     }, true);
-
-
-
-
-
-
-
-
-
-
-

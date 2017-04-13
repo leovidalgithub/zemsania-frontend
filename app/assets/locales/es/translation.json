@@ -123,7 +123,8 @@
     "words": {
         "employee": "empleado",
         "project": "proyecto",
-        "type": "tipo",
+        "projects": "Proyectos",     
+        "type": "Tipo",
         "hour": "hora",
         "hours": "horas",
         "input": "entrada",
@@ -132,7 +133,9 @@
         "journey": "jornadas",
         "absences": "ausencias",
         "holidays": "vacaciones",
-        "week": "Semana"
+        "week": "Semana",
+        "yes": "Sí",
+        "no": "No"
     },
     "employeeManager": {
         "list": {
@@ -405,6 +408,7 @@
         "labels": {
             "name": "Email del empleado",
             "project": "Proyecto",
+            "projects": "Proyectos",
             "spentType": "Tipo de gasto",
             "startAmount": "Importe mínimo",
             "endAmount": "Importe máximo",
