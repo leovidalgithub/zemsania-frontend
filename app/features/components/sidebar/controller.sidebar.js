@@ -9,7 +9,7 @@
     function SidebarComponentController( $scope, $rootScope, UserFactory, $state ) {
         $scope.username = UserFactory.getUser();
 
-        $scope.myFunction = function( state ) {
+        $scope.changeState = function( state ) {
             if( $rootScope.pendingChanges ) {
                 $scope.$broadcast( 'urlChangeRequest', { msg : 'From sidebar URL change request', nextURL : state } );
             } else {

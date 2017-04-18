@@ -11,50 +11,61 @@
             justify-content: center;
             align-items: center;
 
-            .myDay {
-                border: solid 1px gray;
-                background-color: #EAEAEA;
-                border-radius: 3px;
-                height: 95px;
-                width: 85px;
-                margin: 7px;
-                display: inline-block;
-                transition: all 2s ease;
-                &:hover {
-                    border: solid 1px #CAB023;
-                    background-color: #B7B7B7;
-                }
-                &.friday {
-                   background-color: $fridayColor;
-                }
-                &.working {
-                   background-color: $workingColor;
-                }
-                &.intensive {
-                   background-color: $intensiveColor;
-                }
-                &.special {
-                   background-color: $specialColor;
-                }
-                &.holidays {
-                   background-color: $holidaysColor;
-                }
-                &.non_working {
-                   background-color: $non_workingColor;
-                }
-                &.desactive {
-                   pointer-events: none;
-                   cursor: default;
-                   background-color: #000000;
-                }
-            }
+            .myWeek {
+                width: 100%;
+                display: flex;
+                flex-flow: row wrap;
+                justify-content: center;
+                align-items: center;
+                .myDay {
+                    border: solid 1px gray;
+                    background-color: #EAEAEA;
+                    border-radius: 3px;
+                    height: 95px;
+                    width: 85px;
+                    margin: 7px;
+                    // display: inline-block;
+                    // transition: all 2s ease;
+                    &:hover {
+                        border: solid 1px #CAB023;
+                        background-color: #B7B7B7;
+                    }
+                    &.friday {
+                       background-color: $fridayColor;
+                    }
+                    &.working {
+                       background-color: $workingColor;
+                    }
+                    &.intensive {
+                       background-color: $intensiveColor;
+                    }
+                    &.special {
+                       background-color: $specialColor;
+                    }
+                    &.holidays {
+                       background-color: $holidaysColor;
+                    }
+                    &.non_working {
+                       background-color: $non_workingColor;
+                    }
+                    &.desactive {
+                       pointer-events: none;
+                       cursor: default;
+                       background-color: #484747;
+                    }
+                } // myDay
+            } // myWeek
 
             .myHeader {
-                height: 20px;
+                height: 25px;
                 border-bottom: solid 1px gray;
-                text-align: center;
-                font-size: 15px;
+                font-family: monospace;
+                font-size: 14.5px;
                 color: white;
+                display: flex;
+                flex-flow: row nowrap;
+                justify-content: center;
+                align-items: center;
             }
             .myInput {
                 padding: 5px 8px;
@@ -79,27 +90,32 @@
                     font-size: 10px;
                 }
                 a:nth-of-type(1) {
-                    background-color: #4A7ADC;             
+                    background-color: $zemsania;             
                 }
                 a:nth-of-type(2) {
-                    background-color: #CAB023;
+                    background-color: #D6D6D6;
+                    color: black;
                 }
             }
 
         } // #daysDiv
 
-        #section #options #selects div {
-            display: inline-block;
-            margin-left: 10px;
+        #section #imputeOptions {
+            padding: 10px 10px 0 10px;
             select {
-                margin-left: 10px;
-                font-size: 21px;
-                padding: 8px;
-                border-radius: 3px;
-                background-color: #606060;
-                color: white;
+                font-size: 17px;
                 font-family: monospace;
             }
+            button {
+                margin-right: 4px;
+            }
+        }
+        #section #monthInfo {
+            text-align: center;
+            font-size: 17px;
+            font-weight: bold;
+            font-family: monospace;
+            margin-top: -15px;
         }
 
     } // #imputeHours

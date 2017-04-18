@@ -66,7 +66,7 @@
                 showDaysObj.currentMonth    = currentMonth;
                 showDaysObj.currentYear     = currentYear;
                 showDaysObj.monthName       = monthName;
-                showDaysObj.days            = {};
+                showDaysObj.weeks           = {};
 
                 while( true ) {
                     if( currentDay.getDate() == 1 && currentDay.getDay() != 1 ) { // just in case of last-month-final-days (to complete the week view)
@@ -111,10 +111,12 @@
                     }
                 }
 
-                showDaysObj.totalMonthWeeks = week;
+                showDaysObj.totalMonthWeeks = week + 1;
 
                 function addNewDay( day, week ) {
-                    showDaysObj.days[ day ] = {
+                    if ( !showDaysObj.weeks[ week ] ) showDaysObj.weeks[ week ] = {};
+                    if ( !showDaysObj.weeks[ week ][ day ] ) showDaysObj.weeks[ week ][ day ] = {};
+                    showDaysObj.weeks[ week ][ day ] = {
                                                 day         : day,
                                                 value       : 0, // it stores 'Horas/Variables' text value
                                                 week        : week,
@@ -128,95 +130,3 @@
         };
     }
 }());
-
-
-            // getEmployeeList: function () { // LEO WAS HERE
-            //     var dfd = $q.defer();
-            //     $http.get( buildURL( 'getAllUsers' ) )
-            //         .then( function ( response ) {
-            //             if ( response.data.suweekess ) {
-            //                     dfd.resolve( response.data.users );
-            //             } else {
-            //                 dfd.reject( response );
-            //             }
-            //         }, function ( err ) {
-            //             dfd.reject( err );
-            //         });
-            //     return dfd.promise;
-            // }
-
-
-
-    // function getMonthWeeks( month, year ) {
-    //     var weeks = [],
-    //         firstDate = new Date( year, month, 1 ),
-    //         currentLastDay  = new Date( year, month + 1, 0 ),
-    //         totalMonthDays   = currentLastDay.getDate(),
-    //         start     = 1,
-    //         end       = 8 - firstDate.getDay();
-    //    while( start <= totalMonthDays ){
-    //        weeks.push( { start : start, end : end } );
-    //        start = end + 1;
-    //        end = end + 7;
-    //        if( end > totalMonthDays ) end = totalMonthDays;
-    //    }
-    //     return weeks;
-    // }
-
-
-            // getMonthWeeksObj : function ( month, year ) { // LEO WAS HERE
-            //     var months     = [ 'january' ,'february' ,'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december' ];
-            //     var dataDate     =  {},
-            //         currentFirstDay     = new Date( year, month, 1 ),
-            //         currentLastDay      = new Date( year, month + 1, 0 ),
-            //         totalMonthDays      = currentLastDay.getDate(),
-            //         currentDay   = angular.copy( currentFirstDay ),
-            //         currentMonth = currentFirstDay.getMonth(),
-            //         monthName  = months[ currentMonth ],
-            //         currentYear  = currentFirstDay.getFullYear(),
-            //         week         = [];
-            //         dataDate     = {
-            //                 currentFirstDay : currentFirstDay,
-            //                 currentMonth : currentMonth,
-            //                 currentYear : currentYear,
-            //                 monthName : monthName,
-            //                 weeks : []
-            //         };
-
-            //         while( true ) {
-            //             if( currentDay.getDate() == 1 && currentDay.getDay() != 1 ) { // just in case of last-month-final-days (to complete the week view)
-            //                 var lastMonthFinalsDays = angular.copy( currentDay );
-            //                 var tempArray = [];
-            //                 while( true ) {
-            //                     lastMonthFinalsDays.setDate( lastMonthFinalsDays.getDate() - 1 );
-            //                     tempArray.push( new Date( lastMonthFinalsDays.getFullYear(), lastMonthFinalsDays.getMonth(), lastMonthFinalsDays.getDate() ) );
-            //                     if( lastMonthFinalsDays.getDay() == 1 ) {
-            //                         week = tempArray.reverse().slice();
-            //                         break;
-            //                     }
-            //                 }
-            //             }
-            //             week.push( new Date( year, month, currentDay.getDate() ) );
-            //             if( currentDay.getDate() == totalMonthDays ) { // when gets at last day
-            //                 if( currentDay.getDay() != 0 ) { // just in case of next-month-inital-days (to complete the week view)
-            //                     while( true ) {
-            //                         currentDay.setDate( currentDay.getDate() + 1 );
-            //                         week.push( new Date( currentDay.getFullYear(), currentDay.getMonth(), currentDay.getDate() ) );
-            //                         if( currentDay.getDay() == 0 ) {
-            //                             break;
-            //                         }
-            //                     }
-            //                 }
-            //                 if ( week.length ) {
-            //                     dataDate.weeks.push( week );
-            //                 }
-            //                 break;
-            //             }
-            //             currentDay = new Date( year, month, currentDay.getDate() + 1 );
-            //             if( currentDay.getDay() == 1 ) {
-            //                 dataDate.weeks.push( week );
-            //                 week = [];
-            //             }
-            //         }
-            //         return dataDate;
-            // }

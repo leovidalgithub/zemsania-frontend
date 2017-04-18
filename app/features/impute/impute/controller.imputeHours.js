@@ -4,43 +4,45 @@
         .module( 'hours.impute' )
         .controller( 'imputeHoursController', imputeHoursController );
 
-    imputeHoursController.$invoke = [ '$scope', 'UserFactory', 'imputeHoursFactory', 'CalendarFactory', '$q', 'userProjects', '$uibModal', '$rootScope', '$state' ];
-    function imputeHoursController( $scope, UserFactory, imputeHoursFactory, CalendarFactory, $q, userProjects, $uibModal, $rootScope, $state ) {
-
-        // $scope.myJSON = [
-        //                     {name : 'yyy',age: 1},
-        //                     {name : 'xxx',age: 2},
-        //                     {name : 'ddd',age: 3},
-        //                     {name : 'zzz',age: 4},
-        //                     {name : 'ttt',age: 5},
-        //                     {name : 'uuu',age: 6}
-        // ];
+    imputeHoursController.$invoke = [ '$scope', 'UserFactory', 'imputeHoursFactory', 'CalendarFactory', '$q', 'userProjects', '$uibModal', '$rootScope', '$state', '$timeout', '$filter' ];
+    function imputeHoursController( $scope, UserFactory, imputeHoursFactory, CalendarFactory, $q, userProjects, $uibModal, $rootScope, $state, $timeout, $filter ) {
 
         var currentFirstDay  = new Date();
-        var currentMonth = currentFirstDay.getMonth();
-        var currentYear  = currentFirstDay.getFullYear();
-        var calendarID   = UserFactory.getcalendarID();
-        var goToState = null;
-        var generalDataModel = {};
+        var currentMonth     = currentFirstDay.getMonth();
+        var currentYear      = currentFirstDay.getFullYear();
+        var calendarID       = UserFactory.getcalendarID();
+        var goToState        = null; // when sidebar option is required by user and there are pending-changes
+        var generalDataModel = {}; // object with all calendars and timesheet classified by month
         $scope.changes = {};
         $scope.changes.pendingChanges = false;
         $scope.changes.originalGeneralDataModel = {}; // to get back pending changes
-        $scope.weekViewMode  = true;
-
-        // IMPUTE TYPES AND SUBTYPES
+        $rootScope.pendingChanges = false; // pending-changes for sidebar options
+        $scope.weekViewMode       = true; // week/month view switch flag
+        // ALERT MESSAGES
+        $scope.alerts = {};
+        // IMPUTE TYPES AND SUBTYPES INFO
         $scope.imputeTypes                = [ 'Horas', 'Guardias', 'Variables' ];
         $scope.imputeTypes[ 'Horas'     ] = [ 'Hora' ];
         $scope.imputeTypes[ 'Guardias'  ] = [ 'Turnicidad', 'Guardia', 'Varios' ];
         $scope.imputeTypes[ 'Variables' ] = [ 'Hora extra', 'Hora extra festivo', 'Horas nocturnas', 'Formación', 'Intervenciones', 'Varios' ];
         $scope.typesModel    = $scope.imputeTypes[0];
         $scope.subtypesModel = $scope.imputeTypes[$scope.typesModel][0];
-        // USER PROJECTS
-        $scope.userProjects = userProjects;
-        $scope.projectModel = $scope.userProjects[0];
 
-        Init();
+        (function Init() {
+            // USER PROJECTS
+            if( !userProjects.length ) { // no userProjects available
+                // error NO userProjects available message alert    
+                $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorNoProjects' );
+                alertMsgOpen( false );
+            } else {
+                $scope.userProjects = userProjects;
+                $scope.projectModel = $scope.userProjects[0];
+                getData();
+            }
+        })();
 
-        function Init() {
+        function getData() {
+            slideContent( true );
             $scope.showDaysObj  = imputeHoursFactory.getShowDaysObj( currentMonth, currentYear );
             var currentFirstDay = $scope.showDaysObj.currentFirstDay;
             if( generalDataModel[ currentFirstDay ] ) { // if that month and year already exists in 'generalDataModel', do not find anything
@@ -64,6 +66,9 @@
                     $scope.changes.originalGeneralDataModel[ currentFirstDay ] = angular.copy( obj );
                 })
                 .catch( function( err ) {
+                    // error loading data message alert
+                    $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorLoading' );
+                    alertMsgOpen( false );
                 })
                 .finally( function() {
                     refreshShowDaysObj();
@@ -87,13 +92,13 @@
         $scope.moveDate = function( moveTo ) {
             if( $scope.weekViewMode ) { // if week-mode
                 $scope.showDaysObj.currentWeek += moveTo;
-                if( $scope.showDaysObj.currentWeek > $scope.showDaysObj.totalMonthWeeks ) {
+                if( $scope.showDaysObj.currentWeek > ( $scope.showDaysObj.totalMonthWeeks - 1 ) ) {
                     monthChange( moveTo );
                     $scope.showDaysObj.currentWeek = 0;
                 }
                 if( $scope.showDaysObj.currentWeek < 0 ) {
                     monthChange( moveTo );
-                    $scope.showDaysObj.currentWeek = $scope.showDaysObj.totalMonthWeeks;
+                    $scope.showDaysObj.currentWeek = ( $scope.showDaysObj.totalMonthWeeks - 1 );
                 }
             } else { // if month-mode
                 monthChange( moveTo );
@@ -108,7 +113,7 @@
                     currentMonth = 11;
                     currentYear  += moveTo;
                 }
-                Init();
+                getData();
             }
         };
 
@@ -122,12 +127,12 @@
 
             for( var day = 1; day < currentLastDay.getDate() + 1; day++ ) {
                 var thisDate = new Date( currentYear, currentMonth, day );
-                // CALENDAR DAYTYPE (working, holidays, etc.)
+                // GET CALENDAR DAYTYPE (working, holidays, etc.)
                 var dayType = '';
                 if( generalDataModel[ currentFirstDay ].calendar.eventHours[0].eventDates[ thisDate ] ) {
                     dayType = generalDataModel[ currentFirstDay ].calendar.eventHours[0].eventDates[ thisDate ].type;
                 };
-                // TIMESHEET VALUE
+                // GET TIMESHEET VALUE
                 var value = 0;
                 if( ts[ currentProject ] ) {
                     if( ts[ currentProject ][ thisDate ] ) {
@@ -138,26 +143,28 @@
                         }
                     }
                 }
-                // STORES VALUES INSIDE 'showDaysObj'
-                if( $scope.showDaysObj.days[ thisDate ] ) {
-                    $scope.showDaysObj.days[ thisDate ].dayType = dayType;
-                    $scope.showDaysObj.days[ thisDate ].value   = value;
-                }
-                // INPUT TYPE
-                if( currentType == 'Guardias' ) {
-                    $scope.showDaysObj.days[ thisDate ].inputType = 'checkbox';
-                    $scope.showDaysObj.days[ thisDate ].checkValue = $scope.showDaysObj.days[ thisDate ].value == 0 ? false : true;
-                } else {
-                    $scope.showDaysObj.days[ thisDate ].inputType = 'text';
+                // STORES DAYTYPE, VALUE, INPUTTYPE AND CHECKVALUE INSIDE 'showDaysObj'
+                for( var week in $scope.showDaysObj.weeks ) {                     
+                    if( $scope.showDaysObj.weeks[ week ][ thisDate ] ) {
+                        // VALUE AND DAYTYPE
+                        $scope.showDaysObj.weeks[ week ][ thisDate ].dayType = dayType;
+                        $scope.showDaysObj.weeks[ week ][ thisDate ].value   = value;
+                        // INPUTTYPE AND CHECKVALUE
+                        if( currentType == 'Guardias' ) {
+                            $scope.showDaysObj.weeks[ week ][ thisDate ].inputType = 'checkbox';
+                            $scope.showDaysObj.weeks[ week ][ thisDate ].checkValue = $scope.showDaysObj.weeks[ week ][ thisDate ].value == 0 ? false : true;
+                        } else {
+                            $scope.showDaysObj.weeks[ week ][ thisDate ].inputType = 'text';
+                        }
+                    }
                 }
             }
+            slideContent( false );
         }
 
         $scope.inputChanged = function( value ) {
             $scope.changes.pendingChanges = true;
-
             $rootScope.pendingChanges = true;
-
 
             var currentType     = $scope.typesModel;
             var currentSubType  = $scope.subtypesModel;
@@ -187,13 +194,19 @@
             var data = []; // to send an array of just 'timesheetDataModel' objects
             for( var date in generalDataModel ) {
                 data.push( generalDataModel[ date ].timesheetDataModel );
-            }            
+            }
             imputeHoursFactory.setAllTimesheets( data )
                 .then( function( data ) {
                     $scope.changes.pendingChanges = false;
                     $rootScope.pendingChanges = false;
+                    // success saving message alert
+                    $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.savingSuccess' );
+                    alertMsgOpen( true );
                 })
                 .catch( function( err ) {
+                    // error saving message alert
+                    $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorSaving' );
+                    alertMsgOpen( false );
                 })
                 .finally( function() {
                     if( goToState ) {
@@ -223,6 +236,7 @@
             controller : function( $scope, $uibModalInstance, $rootScope ) {
                 $scope.cancel = function() {
                     $uibModalInstance.close();
+                    goToState = null;
                 };
                 $scope.save = function() {
                     $uibModalInstance.close();
@@ -246,6 +260,26 @@
             $scope.openPendingChangesModal();
             goToState = data.nextURL;
         });
+
+        function slideContent( up ) {
+            if( up ) {
+                $( '#daysDiv' ).slideUp( 0 );
+            } else {
+                $( '#daysDiv' ).slideDown( 850 );
+            }
+        };
+
+        function alertMsgOpen( success ) {
+            $( '#imputeHours #section' ).animate( { scrollTop: 0 }, 'slow' );
+            var $alertWall = $( '#imputeHours #alertMessage .msgAlert' );
+            $scope.alerts.success = success;
+            $alertWall.collapse( 'show' );
+            if( success ) {
+                $timeout( function() {
+                    $alertWall.collapse( 'hide' );
+                }, 3500 );
+            }
+        }
 }
 
 })();

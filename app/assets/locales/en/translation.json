@@ -125,6 +125,7 @@
         "project": "Project",
         "projects": "Projects",     
         "type": "tipo",
+        "subType": "Sub-type",
         "hour": "hora",
         "hours": "horas",
         "input": "entrada",
@@ -135,7 +136,10 @@
         "holidays": "vacaciones",
         "week": "Week",
         "yes": "Sí",
-        "no": "No"
+        "no": "No",
+        "comments": "Comments",
+        "next": "Siguiente",
+        "previous": "Anterior"
     },
     "employeeManager": {
         "list": {
@@ -194,6 +198,15 @@
             "december": "December",
             "year": "Year"
     },
+        "days": {
+        "Mon": "Mon",
+        "Tue": "Tue",        
+        "Wed": "Wed",
+        "Thu": "Thu",
+        "Fri": "Fri",
+        "Sat": "Sat",
+        "Sun": "Sun"
+    },
     "workloadSchemes": {
         "title": "Patrón Horario",
         "description": "Creación de esquemas de carga de trabajo para gestionar diferentes tipos de carga de trabajo del usuario. El cálculo de las horas requeridas por día se basa en el esquema de carga de trabajo de un usuario. Los nuevos usuarios se agregan automáticamente al esquema de carga de trabajo predeterminado."
@@ -205,16 +218,20 @@
             "total": "Sumatorio de horas: ",
             "reportPlaceholder": "Escribe aquí el contenido de tu reporte.",
             "loadingCalendar": "Cargando contenido del calendario...",
-            "errorLoadingCalendar": "Ha ocurrido un error al cargar el calendario solicitado.",
+            "errorLoading": "Ha ocurrido un error al cargar los datos!",
+            "errorSaving": "Ha ocurrido un error al guardar la información. Inténtalo más tarde.",
+            "errorNoProjects": "No tiene ningún proyecto asignado. Necesita al menos un proyecto para poder imputar.",
             "savingCalendar": "Guardando horas imputadas en el calendario...",
-            "savingCalendarError": "Ha ocurrido un error al guardar la información. Inténtalo más tarde.",
-            "savingCalendarSuccess": "Las horas se han imputado correctamente.",
+            "savingSuccess": "Las horas se han imputado correctamente.",
             "approveCalendarSuccess": "Semana aprobada correctamente.",
             "approveCalendarError": "Ha ocurrido un problema al aprobar la semana",
             "rejectCalendarSuccess": "Semana rechazada correctamente",
             "rejectCalendarError": "Ha ocurrido un problema al rechazar la semana",
             "hours_exceeded": "Total de horas excedidas",
-            "imputed_in_holidays": "Horas imputadas en un día festivo"
+            "imputed_in_holidays": "Horas imputadas en un día festivo",
+            "expenses": "Expenses",
+            "monthView": "Month View",
+            "weekView": "Week View"
         },
         "imputeHoursValidator": {
             "title": "Validación calendarios de imputación laborales",

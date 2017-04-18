@@ -7,9 +7,9 @@ var API_paths = {
     verifyUniqueUserEmail : 'user/profile/',
 
     passwordReset: 'user/password',
-    getAllUsers: 'user/all',
+    getAllUsers: 'user/getAllUsers',
     saveUser: 'user/profile',
-    searchUser: 'user/search',
+    advancedUserSearch: 'user/advancedUserSearch',
     newSearchUser: 'user/newSearch',
     removeUser: 'user/delete',    
 

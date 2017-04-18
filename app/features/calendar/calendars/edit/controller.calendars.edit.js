@@ -22,6 +22,9 @@
                     .then( function( data ) {
                         $scope.loadingError = false;
                         $scope.calendar = data.calendar;
+                        
+                        console.log( data );
+
                         eventHours = data.eventHours[0];
                         eventDates = data.eventHours[0].eventDates;
                         $timeout( function () {

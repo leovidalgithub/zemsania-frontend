@@ -865,49 +865,58 @@
   justify-content: center;
   align-items: center;
 }
-#imputeHours #daysDiv .myDay {
+#imputeHours #daysDiv .myWeek {
+  width: 100%;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  align-items: center;
+}
+#imputeHours #daysDiv .myWeek .myDay {
   border: solid 1px gray;
   background-color: #EAEAEA;
   border-radius: 3px;
   height: 95px;
   width: 85px;
   margin: 7px;
-  display: inline-block;
-  transition: all 2s ease;
 }
-#imputeHours #daysDiv .myDay:hover {
+#imputeHours #daysDiv .myWeek .myDay:hover {
   border: solid 1px #CAB023;
   background-color: #B7B7B7;
 }
-#imputeHours #daysDiv .myDay.friday {
+#imputeHours #daysDiv .myWeek .myDay.friday {
   background-color: #286ABA;
 }
-#imputeHours #daysDiv .myDay.working {
+#imputeHours #daysDiv .myWeek .myDay.working {
   background-color: #85AC0C;
 }
-#imputeHours #daysDiv .myDay.intensive {
+#imputeHours #daysDiv .myWeek .myDay.intensive {
   background-color: #EBC21C;
 }
-#imputeHours #daysDiv .myDay.special {
+#imputeHours #daysDiv .myWeek .myDay.special {
   background-color: #FF831C;
 }
-#imputeHours #daysDiv .myDay.holidays {
+#imputeHours #daysDiv .myWeek .myDay.holidays {
   background-color: #ff0000;
 }
-#imputeHours #daysDiv .myDay.non_working {
+#imputeHours #daysDiv .myWeek .myDay.non_working {
   background-color: #808080;
 }
-#imputeHours #daysDiv .myDay.desactive {
+#imputeHours #daysDiv .myWeek .myDay.desactive {
   pointer-events: none;
   cursor: default;
-  background-color: #000000;
+  background-color: #484747;
 }
 #imputeHours #daysDiv .myHeader {
-  height: 20px;
+  height: 25px;
   border-bottom: solid 1px gray;
-  text-align: center;
-  font-size: 15px;
+  font-family: monospace;
+  font-size: 14.5px;
   color: white;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
 }
 #imputeHours #daysDiv .myInput {
   padding: 5px 8px;
@@ -933,23 +942,28 @@
   font-size: 10px;
 }
 #imputeHours #daysDiv .myFooter a:nth-of-type(1) {
-  background-color: #4A7ADC;
+  background-color: #F15A29;
 }
 #imputeHours #daysDiv .myFooter a:nth-of-type(2) {
-  background-color: #CAB023;
+  background-color: #D6D6D6;
+  color: black;
 }
-#imputeHours #section #options #selects div {
-  display: inline-block;
-  margin-left: 10px;
+#imputeHours #section #imputeOptions {
+  padding: 10px 10px 0 10px;
 }
-#imputeHours #section #options #selects div select {
-  margin-left: 10px;
-  font-size: 21px;
-  padding: 8px;
-  border-radius: 3px;
-  background-color: #606060;
-  color: white;
+#imputeHours #section #imputeOptions select {
+  font-size: 17px;
   font-family: monospace;
+}
+#imputeHours #section #imputeOptions button {
+  margin-right: 4px;
+}
+#imputeHours #section #monthInfo {
+  text-align: center;
+  font-size: 17px;
+  font-weight: bold;
+  font-family: monospace;
+  margin-top: -15px;
 }
 
 #home-view .notification-center {
@@ -1069,7 +1083,6 @@ html.blockView {
 }
 .btn.btn-primary, #complex_layout .advanced-search .form-actions .btn.btn-warning {
   outline: none;
-  margin-top: 20px;
   border: none;
   padding: 7px 20px;
   text-transform: uppercase;
@@ -1146,6 +1159,9 @@ hr.mini {
 .simple-input input:focus {
   border-color: #F15A29;
 }
+.simple-input input:hover {
+  border-color: #F15A29;
+}
 @media (max-width: 767px) {
   .simple-input input {
     margin-bottom: 20px;
@@ -1186,6 +1202,9 @@ hr.mini {
   background: transparent;
 }
 .simple-input select:focus {
+  border-color: #F15A29;
+}
+.simple-input select:hover {
   border-color: #F15A29;
 }
 @media (max-width: 767px) {

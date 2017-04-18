@@ -22,9 +22,9 @@
                 return dfd.promise;
             },
 
-            searchEmployee: function( query ) { // LEO WAS HERE
+            advancedUserSearch: function( query ) { // LEO WAS HERE
                 var dfd = $q.defer();
-                $http.post( buildURL( 'searchUser' ), query)
+                $http.post( buildURL( 'advancedUserSearch' ), query)
                     .then( function ( response ) {
                         if ( response.data.success ) {
                             var employees = response.data.users;
@@ -87,39 +87,6 @@
                 return dfd.promise;
             },
 
-            // removeEmployee: function (query) {
-            //     var dfd = $q.defer();
-            //     $http
-            //         .delete(buildURL('removeUser'), {data: query})
-            //         .then(function (response) {
-            //             if (response.data.success) {
-            //                 dfd.resolve(true);
-            //             } else {
-            //                 dfd.reject(response);
-            //             }
-            //         }, function (err) {
-            //             dfd.reject(err);
-            //         });
-            //     return dfd.promise;
-            // },
-
-            // getUsersBySupervisor: function () {
-            //     var dfd = $q.defer();
-            //     var email = UserFactory.getUser().username;
-            //     $http
-            //         .post(buildURL('getUsersBySupervisor'), {"email": email})
-            //         .then(function (response) {
-            //             if (response.data.success) {
-            //                 dfd.resolve(response.data.users);
-            //             } else {
-            //                 dfd.reject(response.data.errors);
-            //             }
-            //         }, function (err) {
-            //             dfd.reject(err);
-            //         });
-            //     return dfd.promise;
-            // },
-
             getEnterprises: function() { // LEO WAS HERE
                 var dfd = $q.defer();
                 $http.get( buildURL( 'getEnterprisesCollection' ) )
@@ -167,3 +134,38 @@
         };
     }
 }());
+
+
+
+            // removeEmployee: function (query) {
+            //     var dfd = $q.defer();
+            //     $http
+            //         .delete(buildURL('removeUser'), {data: query})
+            //         .then(function (response) {
+            //             if (response.data.success) {
+            //                 dfd.resolve(true);
+            //             } else {
+            //                 dfd.reject(response);
+            //             }
+            //         }, function (err) {
+            //             dfd.reject(err);
+            //         });
+            //     return dfd.promise;
+            // },
+
+            // getUsersBySupervisor: function () {
+            //     var dfd = $q.defer();
+            //     var email = UserFactory.getUser().username;
+            //     $http
+            //         .post(buildURL('getUsersBySupervisor'), {"email": email})
+            //         .then(function (response) {
+            //             if (response.data.success) {
+            //                 dfd.resolve(response.data.users);
+            //             } else {
+            //                 dfd.reject(response.data.errors);
+            //             }
+            //         }, function (err) {
+            //             dfd.reject(err);
+            //         });
+            //     return dfd.promise;
+            // },

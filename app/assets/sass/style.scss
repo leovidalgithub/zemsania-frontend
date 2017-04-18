@@ -100,7 +100,7 @@ html {
   // @include transition(all .3s);
   &.btn-primary {
     outline: none;
-    margin-top: 20px;
+    // margin-top: 20px;
     border: none;
     padding: 7px 20px;
     text-transform: uppercase;
@@ -185,6 +185,9 @@ hr {
     &:focus {
       border-color: $zemsania;
     }
+    &:hover {
+      border-color: $zemsania;
+    }
     @media #{$mobile} {
       margin-bottom: 20px;
     }
@@ -229,6 +232,9 @@ hr {
     padding: 5px 0;
     background: transparent;
     &:focus {
+      border-color: $zemsania;
+    }
+    &:hover {
       border-color: $zemsania;
     }
     @media #{$mobile} {

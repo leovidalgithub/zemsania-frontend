@@ -8,7 +8,6 @@
     function DashboardFactory( $http, $q ) {
         return {
             getUnreadNotifications: function () {
-
                 // var dfd = $q.defer();
                 // $http.get( buildURL( 'unreadNotifications' ) )
                 //     .then( function ( response ) {
@@ -31,21 +30,18 @@
                 //     }, function ( err ) {
                 //         dfd.reject( err );
                 //     });
-
                 // return dfd.promise;
-            
 
             },
             markNotificationAsRead: function ( id ) {
-                var dfd = $q.defer();
-                $http.post( buildURL( 'markReadNotifications' ), id )
-                    .then(function () {
-                        dfd.resolve( true );
-                    }, function ( err ) {
-                        dfd.resolve( err );
-                    });
-
-                return dfd.promise;
+                // var dfd = $q.defer();
+                // $http.post( buildURL( 'markReadNotifications' ), id )
+                //     .then(function () {
+                //         dfd.resolve( true );
+                //     }, function ( err ) {
+                //         dfd.resolve( err );
+                //     });
+                // return dfd.promise;
             }
         };
     }

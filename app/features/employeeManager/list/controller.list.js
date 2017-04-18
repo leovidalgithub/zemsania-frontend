@@ -35,7 +35,7 @@
         };
 
         $scope.avancedSearch = function () {
-            EmployeeManagerFactory.searchEmployee( $scope.search )
+            EmployeeManagerFactory.advancedUserSearch( $scope.search )
                 .then( function ( foundEmployees ) {
                     $scope.employees = foundEmployees;
                 });
