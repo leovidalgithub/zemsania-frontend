@@ -4,27 +4,27 @@
         .module( 'hours.calendar' )
         .controller( 'editCalendarsController', editCalendarsController );
 
-    editCalendarsController.$invoke = [ '$scope', 'CalendarFactory', '$stateParams', 'UserFactory', '$timeout', '$state', '$http' ];
-    function editCalendarsController( $scope, CalendarFactory, $stateParams, UserFactory, $timeout, $state, $http ) {
+    editCalendarsController.$invoke = [ '$scope', 'CalendarFactory', '$stateParams', 'UserFactory', '$timeout', '$state' ];
+    function editCalendarsController( $scope, CalendarFactory, $stateParams, UserFactory, $timeout, $state ) {
 
         var eventDates;
         var eventHours;
-        $scope.loadingError = false;
         var currentYear     = new Date().getFullYear();
+        $scope.loadingError = false;
         $scope.yearShowed   = currentYear.toString();
         var locale      = UserFactory.getUser().locale;
         var monthsArray = [ 'january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december' ];
         var types       = { working : 'L-J', special : '', intensive : 'L-V', friday : 'V' };
 
-        getCalendar( currentYear );
+        (function Init() {
+            getCalendar( currentYear );
+        })();
+
         function getCalendar( year ) {
                 CalendarFactory.getCalendarById( $stateParams.id, year )
                     .then( function( data ) {
                         $scope.loadingError = false;
                         $scope.calendar = data.calendar;
-                        
-                        console.log( data );
-
                         eventHours = data.eventHours[0];
                         eventDates = data.eventHours[0].eventDates;
                         $timeout( function () {
@@ -91,6 +91,7 @@
                 defaultDate: new Date( month ), // ( 2014, 2, 1 )
                 // onSelect: selectedDay,
                 beforeShowDay: function( date ) {
+                    date = new Date( date ).getTime(); // from date to timestamp
                     var highlight = eventDates[ date ];
                     if ( highlight ) {
                         if ( highlight.type == 'working' ) {
@@ -114,7 +115,6 @@
         }
 
         $scope.yearChanged = function() {
-            // showCalendars();
             getCalendar( $scope.yearShowed );
         };
 
@@ -145,8 +145,8 @@
             }, 100 );
         }
 
-//***************************************************************************************
-//******************************************** selectedDay ******************************
+// ********************************************** **********************************************
+// *****************************************selectedDay ****************************************
         // function selectedDay( date, inst ) {
         //     // inst.dpDiv.find('.ui-state-default').css('background-color', 'red');
         //     // eventDates[ new Date( date ) ] = { date : new Date( date ), type : $scope.dayTypes };
@@ -182,8 +182,8 @@
         //             }, 300 );
         //         });
         // }
-//***************************************************************************************
-//***************************************************************************************
+// ********************************************** **********************************************
+// ********************************************** **********************************************
 
 }
 

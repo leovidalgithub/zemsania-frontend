@@ -86,9 +86,9 @@ gulp.task( 'vendors:css', function () {
 
 gulp.task( 'vendors:js', function () {
     return gulp.src([
-            './bower_components/angular/angular.js',
             './bower_components/jquery/jquery.js',
             './bower_components/jquery-ui/ui/jquery-ui.js',
+            './bower_components/angular/angular.js',
             './bower_components/bootstrap/dist/js/bootstrap.js',
             './bower_components/angular-ui-router/release/angular-ui-router.min.js',
             './bower_components/angular-permission/dist/angular-permission.js',

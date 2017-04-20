@@ -1488,8 +1488,8 @@ function toGMT0(date) {
 
                 var showDaysObj             = {};
                 showDaysObj.currentWeek     = 0;
-                showDaysObj.currentFirstDay = currentFirstDay;
-                showDaysObj.currentLastDay  = currentLastDay;
+                showDaysObj.currentFirstDay = currentFirstDay.getTime();
+                showDaysObj.currentLastDay  = currentLastDay.getTime();
                 showDaysObj.totalMonthDays  = totalMonthDays;
                 showDaysObj.currentMonth    = currentMonth;
                 showDaysObj.currentYear     = currentYear;
@@ -1542,15 +1542,18 @@ function toGMT0(date) {
                 showDaysObj.totalMonthWeeks = week + 1;
 
                 function addNewDay( day, week ) {
+                    var timeStamp = new Date( day ).getTime(); // stores in timestamp format
                     if ( !showDaysObj.weeks[ week ] ) showDaysObj.weeks[ week ] = {};
-                    if ( !showDaysObj.weeks[ week ][ day ] ) showDaysObj.weeks[ week ][ day ] = {};
-                    showDaysObj.weeks[ week ][ day ] = {
-                                                day         : day,
-                                                value       : 0, // it stores 'Horas/Variables' text value
-                                                week        : week,
-                                                thisMonth   : day.getMonth(),
-                                                inputType   : 'text', // 'text' for 'Horas' and 'Variables', and 'checkbox' for 'Guardias'
-                                                checkValue  : false // it stores 'Guardias' checkbox value
+                    if ( !showDaysObj.weeks[ week ][ timeStamp ] ) showDaysObj.weeks[ week ][ timeStamp ] = {};
+                    showDaysObj.weeks[ week ][ timeStamp ] = {
+                                                day        : day,
+                                                timeStamp  : timeStamp,
+                                                value      : 0, // it stores 'Horas/Variables' text value
+                                                week       : week,
+                                                thisMonth  : day.getMonth(),
+                                                inputType  : 'text', // 'text' for 'Horas' and 'Variables', and 'checkbox' for 'Guardias'
+                                                checkValue : false, // it stores 'Guardias' checkbox value
+                                                projectId  : '' // to know this day belongs to what project (for showStatsObj)
                                             };
                 }
                 return showDaysObj;
@@ -2335,7 +2338,7 @@ function toGMT0(date) {
         var currentFirstDay  = new Date();
         var currentMonth     = currentFirstDay.getMonth();
         var currentYear      = currentFirstDay.getFullYear();
-        var calendarID       = UserFactory.getcalendarID();
+        var calendarID       = UserFactory.getcalendarID(); // get user calendar
         var goToState        = null; // when sidebar option is required by user and there are pending-changes
         var generalDataModel = {}; // object with all calendars and timesheet classified by month
         $scope.changes = {};
@@ -2370,6 +2373,7 @@ function toGMT0(date) {
             slideContent( true );
             $scope.showDaysObj  = imputeHoursFactory.getShowDaysObj( currentMonth, currentYear );
             var currentFirstDay = $scope.showDaysObj.currentFirstDay;
+
             if( generalDataModel[ currentFirstDay ] ) { // if that month and year already exists in 'generalDataModel', do not find anything
                 refreshShowDaysObj();
                 return;
@@ -2383,7 +2387,8 @@ function toGMT0(date) {
                     if( !generalDataModel[ currentFirstDay ] ) generalDataModel[ currentFirstDay ] = {};
                     if( !$scope.changes.originalGeneralDataModel[ currentFirstDay ] ) $scope.changes.originalGeneralDataModel[ currentFirstDay ] = {};
                     var obj = {
-                                date               : currentFirstDay,
+                                timeStamp          : currentFirstDay,
+                                date               : new Date( currentFirstDay ),
                                 calendar           : calendar,
                                 timesheetDataModel : timesheetDataModel
                               };
@@ -2446,17 +2451,19 @@ function toGMT0(date) {
             var currentType     = $scope.typesModel;
             var currentSubType  = $scope.subtypesModel;
             var currentProject  = $scope.projectModel._id;
-            var currentFirstDay = $scope.showDaysObj.currentFirstDay;          
-            var currentLastDay  = $scope.showDaysObj.currentLastDay;
+            var currentFirstDay = $scope.showDaysObj.currentFirstDay;
+            // var currentLastDay  = $scope.showDaysObj.currentLastDay;
+            var totalMonthDays  = $scope.showDaysObj.totalMonthDays;
             var ts              = generalDataModel[ currentFirstDay ].timesheetDataModel;
 
-            for( var day = 1; day < currentLastDay.getDate() + 1; day++ ) {
-                var thisDate = new Date( currentYear, currentMonth, day );
+            for( var day = 1; day < totalMonthDays + 1; day++ ) {
+                var thisDate = new Date( currentYear, currentMonth, day, 0, 0, 0, 0 ).getTime(); // to timestamp format
+
                 // GET CALENDAR DAYTYPE (working, holidays, etc.)
                 var dayType = '';
                 if( generalDataModel[ currentFirstDay ].calendar.eventHours[0].eventDates[ thisDate ] ) {
                     dayType = generalDataModel[ currentFirstDay ].calendar.eventHours[0].eventDates[ thisDate ].type;
-                };
+                }
                 // GET TIMESHEET VALUE
                 var value = 0;
                 if( ts[ currentProject ] ) {
@@ -2469,7 +2476,7 @@ function toGMT0(date) {
                     }
                 }
                 // STORES DAYTYPE, VALUE, INPUTTYPE AND CHECKVALUE INSIDE 'showDaysObj'
-                for( var week in $scope.showDaysObj.weeks ) {                     
+                for( var week in $scope.showDaysObj.weeks ) {
                     if( $scope.showDaysObj.weeks[ week ][ thisDate ] ) {
                         // VALUE AND DAYTYPE
                         $scope.showDaysObj.weeks[ week ][ thisDate ].dayType = dayType;
@@ -2485,18 +2492,21 @@ function toGMT0(date) {
                 }
             }
             slideContent( false );
+            $scope.$broadcast( 'refreshStats', { generalDataModel : generalDataModel } );
         }
 
         $scope.inputChanged = function( value ) {
             $scope.changes.pendingChanges = true;
-            $rootScope.pendingChanges = true;
+            $rootScope.pendingChanges     = true;
 
             var currentType     = $scope.typesModel;
             var currentSubType  = $scope.subtypesModel;
             var currentProject  = $scope.projectModel._id; 
             var currentFirstDay = $scope.showDaysObj.currentFirstDay;          
             var ts              = generalDataModel[ currentFirstDay ].timesheetDataModel;
-            var thisDate        = value.day;
+            var thisDate        = value.day.getTime();
+
+            console.log(thisDate);
 
             // creating associative data if it not exists
             if( !ts[ currentProject ] ) ts[ currentProject ] = {};
@@ -2605,8 +2615,96 @@ function toGMT0(date) {
                 }, 3500 );
             }
         }
+
+        $scope.fn = function() {
+            // $scope.$broadcast( 'refreshStats', { generalDataModel : generalDataModel } );
+        };
+
 }
 
+})();
+
+;( function () {
+    'use strict';
+    angular
+        .module( 'hours.impute' )
+        .controller( 'imputeHoursStatsController', imputeHoursStatsController );
+    imputeHoursStatsController.$invoke = [ '$scope' ];
+    function imputeHoursStatsController( $scope ) {
+
+        var generalDataModel;
+        $scope.$on( 'refreshStats', function( event, data ) {
+            generalDataModel = data.generalDataModel;
+            // $( '#imputeHours #section' ).animate( { scrollTop: 300 }, 'slow' );
+            buildStatsObj();
+            // console.log(generalDataModel);
+            // console.log($scope.showStatsObj);
+        });
+
+        function buildStatsObj() {
+            $scope.showStatsObj = {};
+            var currentFirstDay = $scope.showDaysObj.currentFirstDay;
+            var ts              = generalDataModel[ currentFirstDay ].timesheetDataModel;
+            // getting total of hours and guards in the current month by project
+            var jornadas = 0;
+            for( var projectId in ts ) {
+                var totalGuards = 0;
+                var totalHours  = 0;
+                if( !$scope.showStatsObj[projectId] ) $scope.showStatsObj[projectId] = {};
+                for( var day in ts[projectId] ) {
+
+                    var dailyWorkHours = getDailyWorkHours( day ); // in milliseconds
+
+
+                    for( var type in ts[projectId][day] ) {
+                        for( var subType in ts[projectId][day][type] ) {
+                            var value = ts[projectId][day][type][subType].value;
+
+                            if( type == 'Guardias' ) {
+                                totalGuards += value;
+                                jornadas += dailyWorkCalculate( dailyWorkHours, value );
+                            } else {
+                                totalHours  += value;
+                                jornadas += dailyWorkCalculate( dailyWorkHours, value );
+                            }
+
+                        }
+                    }                
+                }
+                $scope.showStatsObj[projectId].totalGuards = totalGuards;
+                $scope.showStatsObj[projectId].totalHours  = totalHours;
+            }
+            // getting project name
+            $scope.userProjects.forEach( function( project ) {
+                if( $scope.showStatsObj[project._id] ) {
+                    $scope.showStatsObj[project._id].name  = project.name;
+                }
+            });
+            // console.log($scope.showStatsObj);
+            // getDailyWorkHours( new Date(2017,3,5,0,0,0,0).getTime() );
+
+        }
+
+        function getDailyWorkHours( day ) { // returns daily work hours (in milliseconds) by day received
+            var currentFirstDay = $scope.showDaysObj.currentFirstDay;
+            var calendar        = generalDataModel[ currentFirstDay ].calendar;
+            var dayType = '';
+            var milliseconds = 0;
+            if( calendar.eventHours[0].eventDates[ day ] ) {
+                dayType = calendar.eventHours[0].eventDates[ day ].type;
+                if( calendar.eventHours[0].totalPerType[ dayType ] ) {
+                    milliseconds = calendar.eventHours[0].totalPerType[ dayType ].milliseconds;
+                }
+            }
+            return milliseconds;
+        }
+
+
+        function dailyWorkCalculate( dailyWorkHours, value ) {
+            // console.log(dailyWorkHours + ' ' + value);
+        }
+
+}
 })();
 
 ;( function () {
@@ -2615,27 +2713,27 @@ function toGMT0(date) {
         .module( 'hours.calendar' )
         .controller( 'editCalendarsController', editCalendarsController );
 
-    editCalendarsController.$invoke = [ '$scope', 'CalendarFactory', '$stateParams', 'UserFactory', '$timeout', '$state', '$http' ];
-    function editCalendarsController( $scope, CalendarFactory, $stateParams, UserFactory, $timeout, $state, $http ) {
+    editCalendarsController.$invoke = [ '$scope', 'CalendarFactory', '$stateParams', 'UserFactory', '$timeout', '$state' ];
+    function editCalendarsController( $scope, CalendarFactory, $stateParams, UserFactory, $timeout, $state ) {
 
         var eventDates;
         var eventHours;
-        $scope.loadingError = false;
         var currentYear     = new Date().getFullYear();
+        $scope.loadingError = false;
         $scope.yearShowed   = currentYear.toString();
         var locale      = UserFactory.getUser().locale;
         var monthsArray = [ 'january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december' ];
         var types       = { working : 'L-J', special : '', intensive : 'L-V', friday : 'V' };
 
-        getCalendar( currentYear );
+        (function Init() {
+            getCalendar( currentYear );
+        })();
+
         function getCalendar( year ) {
                 CalendarFactory.getCalendarById( $stateParams.id, year )
                     .then( function( data ) {
                         $scope.loadingError = false;
                         $scope.calendar = data.calendar;
-                        
-                        console.log( data );
-
                         eventHours = data.eventHours[0];
                         eventDates = data.eventHours[0].eventDates;
                         $timeout( function () {
@@ -2702,6 +2800,7 @@ function toGMT0(date) {
                 defaultDate: new Date( month ), // ( 2014, 2, 1 )
                 // onSelect: selectedDay,
                 beforeShowDay: function( date ) {
+                    date = new Date( date ).getTime(); // from date to timestamp
                     var highlight = eventDates[ date ];
                     if ( highlight ) {
                         if ( highlight.type == 'working' ) {
@@ -2725,7 +2824,6 @@ function toGMT0(date) {
         }
 
         $scope.yearChanged = function() {
-            // showCalendars();
             getCalendar( $scope.yearShowed );
         };
 
@@ -2756,8 +2854,8 @@ function toGMT0(date) {
             }, 100 );
         }
 
-//***************************************************************************************
-//******************************************** selectedDay ******************************
+// ********************************************** **********************************************
+// *****************************************selectedDay ****************************************
         // function selectedDay( date, inst ) {
         //     // inst.dpDiv.find('.ui-state-default').css('background-color', 'red');
         //     // eventDates[ new Date( date ) ] = { date : new Date( date ), type : $scope.dayTypes };
@@ -2793,8 +2891,8 @@ function toGMT0(date) {
         //             }, 300 );
         //         });
         // }
-//***************************************************************************************
-//***************************************************************************************
+// ********************************************** **********************************************
+// ********************************************** **********************************************
 
 }
 

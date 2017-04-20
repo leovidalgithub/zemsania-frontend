@@ -21,6 +21,7 @@
 
     <!-- SECTION MAIN CONTENT -->
     <section id="section" class="box-shadow p20">
+<!-- <button class="btn btn-lg" style="background-color: #05AE88; color: white;font-size: 17px;" ng-click="fn()">Go!!</button> -->
 
         <!-- ALERTS MESSAGES -->
         <div id="alertMessage">
@@ -74,8 +75,6 @@
             </div>
         </div>
 
-<!-- <button class="btn btn-lg" style="background-color: #05AE88; color: white;font-size: 17px;" ng-click="fn()">Go!!</button> -->
-
         <!-- MONTH INFO -->
         <div id="monthInfo">
             <p>{{'months.' + showDaysObj.monthName | i18next}}  {{showDaysObj.currentYear}}
@@ -109,6 +108,51 @@
                     </div>                    
                 </div>
             </div>
+        </div>
+
+<hr><!-- STATISTICS CONTROLLER **************************************************************************************************** -->
+        <div id="statistics" ng-controller="imputeHoursStatsController">
+
+<!-- <div ng-repeat="(key1, value1) in showDaysObj.weeks">
+<div ng-repeat="(key2, value2) in value1">
+    {{value2.value}}
+</div>    
+</div>
+ -->
+<div style="overflow-x:auto;">
+    <table>
+        <tr>
+            <th>Proyecto</th>
+            <th>Horas</th>
+            <th>Guardias</th>
+            <th>Jornadas</th>
+        </tr>
+        <tr ng-repeat="(key, project) in showStatsObj">
+            <td ng-class="{'odd':$odd}">{{project.name}}</td>
+            <td ng-class="{'odd':$odd}">{{project.totalHours}}</td>
+            <td ng-class="{'odd':$odd}">{{project.totalGuards}}</td>
+            <td ng-class="{'odd':$odd}">Jornadas</td>
+        </tr>
+    </table>
+</div>
+<style>
+    .odd { background-color:#999999; color: white; }
+    table, th , td  {
+                  border: 1px solid #AAAAAA;
+                  border-collapse: collapse;
+                  padding: 5px 10px;
+                  text-align: center;
+                  vertical-align: center;
+    }
+    th, td {
+    /*border-bottom: 1px solid orange;*/
+    width: 50px; }
+    th {
+    background-color: #333;
+    color: white;}
+    tr:hover {background-color: #B0BAEE;}
+</style>
+
         </div>
 
     </section>

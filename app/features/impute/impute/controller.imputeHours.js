@@ -10,7 +10,7 @@
         var currentFirstDay  = new Date();
         var currentMonth     = currentFirstDay.getMonth();
         var currentYear      = currentFirstDay.getFullYear();
-        var calendarID       = UserFactory.getcalendarID();
+        var calendarID       = UserFactory.getcalendarID(); // get user calendar
         var goToState        = null; // when sidebar option is required by user and there are pending-changes
         var generalDataModel = {}; // object with all calendars and timesheet classified by month
         $scope.changes = {};
@@ -45,6 +45,7 @@
             slideContent( true );
             $scope.showDaysObj  = imputeHoursFactory.getShowDaysObj( currentMonth, currentYear );
             var currentFirstDay = $scope.showDaysObj.currentFirstDay;
+
             if( generalDataModel[ currentFirstDay ] ) { // if that month and year already exists in 'generalDataModel', do not find anything
                 refreshShowDaysObj();
                 return;
@@ -58,7 +59,8 @@
                     if( !generalDataModel[ currentFirstDay ] ) generalDataModel[ currentFirstDay ] = {};
                     if( !$scope.changes.originalGeneralDataModel[ currentFirstDay ] ) $scope.changes.originalGeneralDataModel[ currentFirstDay ] = {};
                     var obj = {
-                                date               : currentFirstDay,
+                                timeStamp          : currentFirstDay,
+                                date               : new Date( currentFirstDay ),
                                 calendar           : calendar,
                                 timesheetDataModel : timesheetDataModel
                               };
@@ -121,17 +123,19 @@
             var currentType     = $scope.typesModel;
             var currentSubType  = $scope.subtypesModel;
             var currentProject  = $scope.projectModel._id;
-            var currentFirstDay = $scope.showDaysObj.currentFirstDay;          
-            var currentLastDay  = $scope.showDaysObj.currentLastDay;
+            var currentFirstDay = $scope.showDaysObj.currentFirstDay;
+            // var currentLastDay  = $scope.showDaysObj.currentLastDay;
+            var totalMonthDays  = $scope.showDaysObj.totalMonthDays;
             var ts              = generalDataModel[ currentFirstDay ].timesheetDataModel;
 
-            for( var day = 1; day < currentLastDay.getDate() + 1; day++ ) {
-                var thisDate = new Date( currentYear, currentMonth, day );
+            for( var day = 1; day < totalMonthDays + 1; day++ ) {
+                var thisDate = new Date( currentYear, currentMonth, day, 0, 0, 0, 0 ).getTime(); // to timestamp format
+
                 // GET CALENDAR DAYTYPE (working, holidays, etc.)
                 var dayType = '';
                 if( generalDataModel[ currentFirstDay ].calendar.eventHours[0].eventDates[ thisDate ] ) {
                     dayType = generalDataModel[ currentFirstDay ].calendar.eventHours[0].eventDates[ thisDate ].type;
-                };
+                }
                 // GET TIMESHEET VALUE
                 var value = 0;
                 if( ts[ currentProject ] ) {
@@ -144,7 +148,7 @@
                     }
                 }
                 // STORES DAYTYPE, VALUE, INPUTTYPE AND CHECKVALUE INSIDE 'showDaysObj'
-                for( var week in $scope.showDaysObj.weeks ) {                     
+                for( var week in $scope.showDaysObj.weeks ) {
                     if( $scope.showDaysObj.weeks[ week ][ thisDate ] ) {
                         // VALUE AND DAYTYPE
                         $scope.showDaysObj.weeks[ week ][ thisDate ].dayType = dayType;
@@ -160,18 +164,21 @@
                 }
             }
             slideContent( false );
+            $scope.$broadcast( 'refreshStats', { generalDataModel : generalDataModel } );
         }
 
         $scope.inputChanged = function( value ) {
             $scope.changes.pendingChanges = true;
-            $rootScope.pendingChanges = true;
+            $rootScope.pendingChanges     = true;
 
             var currentType     = $scope.typesModel;
             var currentSubType  = $scope.subtypesModel;
             var currentProject  = $scope.projectModel._id; 
             var currentFirstDay = $scope.showDaysObj.currentFirstDay;          
             var ts              = generalDataModel[ currentFirstDay ].timesheetDataModel;
-            var thisDate        = value.day;
+            var thisDate        = value.day.getTime();
+
+            console.log(thisDate);
 
             // creating associative data if it not exists
             if( !ts[ currentProject ] ) ts[ currentProject ] = {};
@@ -280,6 +287,11 @@
                 }, 3500 );
             }
         }
+
+        $scope.fn = function() {
+            // $scope.$broadcast( 'refreshStats', { generalDataModel : generalDataModel } );
+        };
+
 }
 
 })();

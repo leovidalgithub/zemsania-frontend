@@ -60,8 +60,8 @@
 
                 var showDaysObj             = {};
                 showDaysObj.currentWeek     = 0;
-                showDaysObj.currentFirstDay = currentFirstDay;
-                showDaysObj.currentLastDay  = currentLastDay;
+                showDaysObj.currentFirstDay = currentFirstDay.getTime();
+                showDaysObj.currentLastDay  = currentLastDay.getTime();
                 showDaysObj.totalMonthDays  = totalMonthDays;
                 showDaysObj.currentMonth    = currentMonth;
                 showDaysObj.currentYear     = currentYear;
@@ -114,15 +114,18 @@
                 showDaysObj.totalMonthWeeks = week + 1;
 
                 function addNewDay( day, week ) {
+                    var timeStamp = new Date( day ).getTime(); // stores in timestamp format
                     if ( !showDaysObj.weeks[ week ] ) showDaysObj.weeks[ week ] = {};
-                    if ( !showDaysObj.weeks[ week ][ day ] ) showDaysObj.weeks[ week ][ day ] = {};
-                    showDaysObj.weeks[ week ][ day ] = {
-                                                day         : day,
-                                                value       : 0, // it stores 'Horas/Variables' text value
-                                                week        : week,
-                                                thisMonth   : day.getMonth(),
-                                                inputType   : 'text', // 'text' for 'Horas' and 'Variables', and 'checkbox' for 'Guardias'
-                                                checkValue  : false // it stores 'Guardias' checkbox value
+                    if ( !showDaysObj.weeks[ week ][ timeStamp ] ) showDaysObj.weeks[ week ][ timeStamp ] = {};
+                    showDaysObj.weeks[ week ][ timeStamp ] = {
+                                                day        : day,
+                                                timeStamp  : timeStamp,
+                                                value      : 0, // it stores 'Horas/Variables' text value
+                                                week       : week,
+                                                thisMonth  : day.getMonth(),
+                                                inputType  : 'text', // 'text' for 'Horas' and 'Variables', and 'checkbox' for 'Guardias'
+                                                checkValue : false, // it stores 'Guardias' checkbox value
+                                                projectId  : '' // to know this day belongs to what project (for showStatsObj)
                                             };
                 }
                 return showDaysObj;
