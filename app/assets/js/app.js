@@ -1454,7 +1454,7 @@ function toGMT0(date) {
                 var dfd    = $q.defer();
                 $http.get( buildURL( 'getTimesheets' ) + userID + '?year=' + year + '&month=' + month )
                     .then( function ( response ) {
-                        dfd.resolve( response );
+                        dfd.resolve( response.data );
                     })
                     .catch( function ( err ) {
                         dfd.reject( err );
@@ -1462,7 +1462,7 @@ function toGMT0(date) {
                 return dfd.promise;
             },
 
-            setAllTimesheets: function( data ) { // LEO WORKING HERE
+            setAllTimesheets: function( data ) { // LEO WAS HERE
                 var userID = UserFactory.getUserID();
                 var dfd = $q.defer();
                 $http.post( buildURL( 'setAllTimesheets' ) + userID, data )
@@ -1551,7 +1551,7 @@ function toGMT0(date) {
                                                 value      : 0, // it stores 'Horas/Variables' text value
                                                 week       : week,
                                                 thisMonth  : day.getMonth(),
-                                                inputType  : 'text', // 'text' for 'Horas' and 'Variables', and 'checkbox' for 'Guardias'
+                                                inputType  : 'number', // 'text' for 'Horas' and 'Variables', and 'checkbox' for 'Guardias'
                                                 checkValue : false, // it stores 'Guardias' checkbox value
                                                 projectId  : '' // to know this day belongs to what project (for showStatsObj)
                                             };
@@ -1930,63 +1930,6 @@ function toGMT0(date) {
     }
 }());
 
-;( function () {
-    'use strict';
-    angular
-        .module( 'hours.dashboard' )
-        .controller( 'HomeController', HomeController );
-
-    HomeController.$invoke = [ '$scope', 'UserFactory', '$state', 'notifications', 'DashboardFactory', '$i18next' ];
-    function HomeController( $scope, UserFactory, $state, notifications, DashboardFactory, $i18next ) {
-
-// $scope.fn1 = function() {
-//     $i18next.changeLanguage('es');
-// };
-// $scope.fn2 = function() {
-//     $i18next.changeLanguage('en');
-// };
-
-        // $scope.notifications = notifications;
-        // $scope.user = UserFactory.getUser();
-
-        // $scope.activeNotifications = notifications.keys[0];
-
-        // $scope.openType = function ( type ) {
-        //     $scope.activeNotifications = type;
-        // };
-
-        // $scope.isActive = function ( type ) {
-        //     return $scope.activeNotifications === type && 'active';
-        // };
-
-        // $scope.openNotification = function ( notification ) {
-        //     switch ( notification.type ) {
-        //         case 'holiday_request' :
-        //             $state.go('moderateHolidayCalendar', {
-        //                 userId: notification.senderId,
-        //                 filterBy: 'pending'
-        //             });
-        //             break;
-        //         case 'hours_sent' :
-        //             $state.go( 'calendarImputeHoursValidator-user', {
-        //                 userId: notification.senderId,
-        //                 timestamp: new Date( notification.initDate ).getTime()
-        //             });
-        //             break;
-        //     }
-        // };
-
-        // $scope.markRead = function ( notification, type, index ) {
-        //     DashboardFactory.markNotificationAsRead( { notificationId: notification._id } )
-        //         .then( function () {
-        //             $scope.notifications.notifications[ type ].splice( index, 1 );
-        //         }, function () {
-
-        //         });
-        // };
-        
-    }
-}());
 ( function () {
     'use strict';
     angular
@@ -2107,6 +2050,63 @@ function toGMT0(date) {
                     $scope.employee.error = true;
                 });
         };
+    }
+}());
+;( function () {
+    'use strict';
+    angular
+        .module( 'hours.dashboard' )
+        .controller( 'HomeController', HomeController );
+
+    HomeController.$invoke = [ '$scope', 'UserFactory', '$state', 'notifications', 'DashboardFactory', '$i18next' ];
+    function HomeController( $scope, UserFactory, $state, notifications, DashboardFactory, $i18next ) {
+
+// $scope.fn1 = function() {
+//     $i18next.changeLanguage('es');
+// };
+// $scope.fn2 = function() {
+//     $i18next.changeLanguage('en');
+// };
+
+        // $scope.notifications = notifications;
+        // $scope.user = UserFactory.getUser();
+
+        // $scope.activeNotifications = notifications.keys[0];
+
+        // $scope.openType = function ( type ) {
+        //     $scope.activeNotifications = type;
+        // };
+
+        // $scope.isActive = function ( type ) {
+        //     return $scope.activeNotifications === type && 'active';
+        // };
+
+        // $scope.openNotification = function ( notification ) {
+        //     switch ( notification.type ) {
+        //         case 'holiday_request' :
+        //             $state.go('moderateHolidayCalendar', {
+        //                 userId: notification.senderId,
+        //                 filterBy: 'pending'
+        //             });
+        //             break;
+        //         case 'hours_sent' :
+        //             $state.go( 'calendarImputeHoursValidator-user', {
+        //                 userId: notification.senderId,
+        //                 timestamp: new Date( notification.initDate ).getTime()
+        //             });
+        //             break;
+        //     }
+        // };
+
+        // $scope.markRead = function ( notification, type, index ) {
+        //     DashboardFactory.markNotificationAsRead( { notificationId: notification._id } )
+        //         .then( function () {
+        //             $scope.notifications.notifications[ type ].splice( index, 1 );
+        //         }, function () {
+
+        //         });
+        // };
+        
     }
 }());
 ;( function () {
@@ -2332,8 +2332,8 @@ function toGMT0(date) {
         .module( 'hours.impute' )
         .controller( 'imputeHoursController', imputeHoursController );
 
-    imputeHoursController.$invoke = [ '$scope', 'UserFactory', 'imputeHoursFactory', 'CalendarFactory', '$q', 'userProjects', '$uibModal', '$rootScope', '$state', '$timeout', '$filter' ];
-    function imputeHoursController( $scope, UserFactory, imputeHoursFactory, CalendarFactory, $q, userProjects, $uibModal, $rootScope, $state, $timeout, $filter ) {
+    imputeHoursController.$invoke = [ '$scope', 'UserFactory', 'imputeHoursFactory', 'CalendarFactory', '$q', 'userProjects', '$uibModal', '$rootScope', '$state', '$timeout', '$filter', '$interval' ];
+    function imputeHoursController( $scope, UserFactory, imputeHoursFactory, CalendarFactory, $q, userProjects, $uibModal, $rootScope, $state, $timeout, $filter, $interval ) {
 
         var currentFirstDay  = new Date();
         var currentMonth     = currentFirstDay.getMonth();
@@ -2383,7 +2383,13 @@ function toGMT0(date) {
             $q.all( [ getCalendarPromise, getTimeSheetsPromise ] )
                 .then( function( data ) {
                     var calendar = data[0];
-                    var timesheetDataModel = data[1].data.timesheetDataModel;
+                    var timesheetDataModel = data[1].timesheetDataModel;
+
+                    if ( calendar.success == false ) { // error: calendar not found
+                        $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorNoCalendar' );
+                        alertMsgOpen( false );
+                        return;
+                    }
                     if( !generalDataModel[ currentFirstDay ] ) generalDataModel[ currentFirstDay ] = {};
                     if( !$scope.changes.originalGeneralDataModel[ currentFirstDay ] ) $scope.changes.originalGeneralDataModel[ currentFirstDay ] = {};
                     var obj = {
@@ -2394,14 +2400,13 @@ function toGMT0(date) {
                               };
                     generalDataModel[ currentFirstDay ] = angular.copy( obj );
                     $scope.changes.originalGeneralDataModel[ currentFirstDay ] = angular.copy( obj );
+                    refreshShowDaysObj();
                 })
                 .catch( function( err ) {
+                    console.log(err);
                     // error loading data message alert
                     $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorLoading' );
                     alertMsgOpen( false );
-                })
-                .finally( function() {
-                    refreshShowDaysObj();
                 });
         }
 
@@ -2470,7 +2475,7 @@ function toGMT0(date) {
                     if( ts[ currentProject ][ thisDate ] ) {
                         if( ts[ currentProject ][ thisDate ][ currentType ] ) {
                             if( ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ] ) {
-                                value = ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ].value;
+                                value = parseFloat( ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ].value );
                             }
                         }
                     }
@@ -2486,7 +2491,7 @@ function toGMT0(date) {
                             $scope.showDaysObj.weeks[ week ][ thisDate ].inputType = 'checkbox';
                             $scope.showDaysObj.weeks[ week ][ thisDate ].checkValue = $scope.showDaysObj.weeks[ week ][ thisDate ].value == 0 ? false : true;
                         } else {
-                            $scope.showDaysObj.weeks[ week ][ thisDate ].inputType = 'text';
+                            $scope.showDaysObj.weeks[ week ][ thisDate ].inputType = 'number';
                         }
                     }
                 }
@@ -2496,6 +2501,13 @@ function toGMT0(date) {
         }
 
         $scope.inputChanged = function( value ) {
+            // verifies if entered value is null or NaN
+            if( value.value === null || isNaN( value.value ) ) {
+                value.value = 0;
+            } else {
+                value.value = parseFloat( value.value );             
+            }
+
             $scope.changes.pendingChanges = true;
             $rootScope.pendingChanges     = true;
 
@@ -2505,8 +2517,6 @@ function toGMT0(date) {
             var currentFirstDay = $scope.showDaysObj.currentFirstDay;          
             var ts              = generalDataModel[ currentFirstDay ].timesheetDataModel;
             var thisDate        = value.day.getTime();
-
-            console.log(thisDate);
 
             // creating associative data if it not exists
             if( !ts[ currentProject ] ) ts[ currentProject ] = {};
@@ -2523,6 +2533,8 @@ function toGMT0(date) {
             }
             ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ].status   = 'draft';
             ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ].modified = true;
+            
+            $scope.$broadcast( 'refreshStats', { generalDataModel : generalDataModel } );
         };
 
         $scope.save = function() {
@@ -2616,10 +2628,6 @@ function toGMT0(date) {
             }
         }
 
-        $scope.fn = function() {
-            // $scope.$broadcast( 'refreshStats', { generalDataModel : generalDataModel } );
-        };
-
 }
 
 })();
@@ -2633,75 +2641,142 @@ function toGMT0(date) {
     function imputeHoursStatsController( $scope ) {
 
         var generalDataModel;
+        var millisecondsByType;
+        $scope.showStatsObj = {};
+
         $scope.$on( 'refreshStats', function( event, data ) {
             generalDataModel = data.generalDataModel;
+            if( !millisecondsByType ) getMillisecondsByType();
             // $( '#imputeHours #section' ).animate( { scrollTop: 300 }, 'slow' );
             buildStatsObj();
-            // console.log(generalDataModel);
-            // console.log($scope.showStatsObj);
         });
 
         function buildStatsObj() {
-            $scope.showStatsObj = {};
+            var temp          = {};
+            temp.projectsInfo = {};
+            temp.summary      = {};
+            temp.calendarInfo = {};
+            temp.projectsInfo = getProjectsInfo();
+            temp.summary      = getsummary( temp.projectsInfo );
+            temp.calendarInfo.totalHoursByMonth = getcalendarInfo();
+            $scope.showStatsObj = angular.copy( temp );
+        }
+
+        function getProjectsInfo() {
             var currentFirstDay = $scope.showDaysObj.currentFirstDay;
             var ts              = generalDataModel[ currentFirstDay ].timesheetDataModel;
+            var projectsInfoTemp = {};
+
             // getting total of hours and guards in the current month by project
-            var jornadas = 0;
             for( var projectId in ts ) {
+                var projectName = '';
                 var totalGuards = 0;
                 var totalHours  = 0;
-                if( !$scope.showStatsObj[projectId] ) $scope.showStatsObj[projectId] = {};
-                for( var day in ts[projectId] ) {
-
-                    var dailyWorkHours = getDailyWorkHours( day ); // in milliseconds
-
-
-                    for( var type in ts[projectId][day] ) {
-                        for( var subType in ts[projectId][day][type] ) {
-                            var value = ts[projectId][day][type][subType].value;
-
-                            if( type == 'Guardias' ) {
-                                totalGuards += value;
-                                jornadas += dailyWorkCalculate( dailyWorkHours, value );
+                var dailyWork   = 0;
+                if( !projectsInfoTemp[ projectId ] ) projectsInfoTemp[ projectId ] = {};
+                for( var day in ts[ projectId ] ) {
+                    for( var imputeType in ts[ projectId ][ day ] ) {
+                        for( var imputeSubType in ts[ projectId ][ day ][ imputeType ] ) {
+                            // accumulating totalGuards, totalHours and dailyWork
+                            var imputeValue = ts[ projectId ][ day ][ imputeType ][ imputeSubType ].value; // getting value
+                            dailyWork += dailyWorkCalculate( day, imputeType, imputeValue ); // calculating dailyWork
+                            if( imputeType == 'Guardias' ) {
+                                totalGuards += imputeValue;
                             } else {
-                                totalHours  += value;
-                                jornadas += dailyWorkCalculate( dailyWorkHours, value );
+                                totalHours  += imputeValue;
                             }
-
                         }
-                    }                
+                    }
                 }
-                $scope.showStatsObj[projectId].totalGuards = totalGuards;
-                $scope.showStatsObj[projectId].totalHours  = totalHours;
+                // getting project name
+                projectName = getProjectName( projectId );
+                dailyWork = Number( dailyWork.toFixed( 1 ) ); // round 'dailyWork' to one decimal
+                // stores values into 'projectsInfoTemp'
+                projectsInfoTemp[ projectId ].totalGuards = totalGuards;
+                projectsInfoTemp[ projectId ].totalHours  = totalHours;
+                projectsInfoTemp[ projectId ].dailyWork   = dailyWork;
+                projectsInfoTemp[ projectId ].projectName = projectName;
             }
-            // getting project name
-            $scope.userProjects.forEach( function( project ) {
-                if( $scope.showStatsObj[project._id] ) {
-                    $scope.showStatsObj[project._id].name  = project.name;
-                }
-            });
-            // console.log($scope.showStatsObj);
-            // getDailyWorkHours( new Date(2017,3,5,0,0,0,0).getTime() );
 
+            function getProjectName( projectId ) {
+                console.log('**********************');
+                console.log($scope.userProjects.length);
+                if( $scope.userProjects.length == 2 ) debugger;
+                // console.log('ts');
+                // console.log(ts);
+                // console.log('projectId');
+                // console.log(projectId);
+                // console.log('$scope.userProjects');
+                // console.log($scope.userProjects);
+
+
+                return $scope.userProjects.find( function( project ) {
+                    return project._id == projectId;
+                }).name;
+            }
+
+            // calculates dailyWork according to dayType milliseconds and imputed-hours
+            function dailyWorkCalculate( day, imputeType, imputeValue ) {
+                var currentFirstDay = $scope.showDaysObj.currentFirstDay;
+                var calendar        = generalDataModel[ currentFirstDay ].calendar;
+                var dailyWork = 0;
+                var dayType = '';
+                var dayTypeMilliseconds = 0;
+                // getting dayType acoording to day            
+                if( calendar.eventHours[0].eventDates[ day ] ) {
+                    dayType = calendar.eventHours[0].eventDates[ day ].type;
+                }
+                // getting dayType milliseconds
+                if( millisecondsByType[ dayType ] ) dayTypeMilliseconds = millisecondsByType[ dayType ].milliseconds;
+                // calculating dailyWork
+                if( dayTypeMilliseconds != 0 ) { // if no milliseconds (holiday or non-working), no dailyWork is computed
+                    if( imputeType == 'Guardias' ) {
+                        dailyWork = imputeValue; 
+                    } else {
+                        var imputedMilliseconds = ( imputeValue * 3600000 );
+                        dailyWork = ( imputedMilliseconds / dayTypeMilliseconds );
+                    }
+                }
+                return dailyWork;
+            }
+            
+            return projectsInfoTemp;
         }
 
-        function getDailyWorkHours( day ) { // returns daily work hours (in milliseconds) by day received
+        // RETURNS SUMMARY INFO. TOTAL IMPUTED HOURS, GUARDS AND DAILYWORK
+        function getsummary( projectsInfo ) {
+            var totalImputeHours  = 0;
+            var totalImputeGuards = 0;
+            var totalDailyWork    = 0;
+            for( var project in projectsInfo ) {
+                totalImputeHours  += projectsInfo[project].totalHours;
+                totalImputeGuards += projectsInfo[project].totalGuards;
+                totalDailyWork    += projectsInfo[project].dailyWork;
+            }
+            return {
+                totalImputeHours  : totalImputeHours,
+                totalImputeGuards : totalImputeGuards,
+                totalDailyWork    : Number( totalDailyWork.toFixed( 1 ) )
+            };
+        }
+
+        // RETURNS TOTAL OF HOURS OF CURRENT MONTH
+        function getcalendarInfo() {
+            var currentFirstDay   = $scope.showDaysObj.currentFirstDay;
+            var currentMonth      = new Date( parseInt( currentFirstDay ) ).getMonth();
+            var calendar          = generalDataModel[ currentFirstDay ].calendar;
+            var totalHoursByMonth = 0;
+            totalHoursByMonth     = calendar.eventHours[0].totalWorkingHours[ currentMonth ].milliseconds;
+            totalHoursByMonth    /= 3600000;
+            totalHoursByMonth     = Number( totalHoursByMonth.toFixed( 1 ) );
+            return totalHoursByMonth;
+        }
+
+        // stores dailywork dayType milliseconds
+        function getMillisecondsByType() {
             var currentFirstDay = $scope.showDaysObj.currentFirstDay;
             var calendar        = generalDataModel[ currentFirstDay ].calendar;
-            var dayType = '';
-            var milliseconds = 0;
-            if( calendar.eventHours[0].eventDates[ day ] ) {
-                dayType = calendar.eventHours[0].eventDates[ day ].type;
-                if( calendar.eventHours[0].totalPerType[ dayType ] ) {
-                    milliseconds = calendar.eventHours[0].totalPerType[ dayType ].milliseconds;
-                }
-            }
-            return milliseconds;
-        }
-
-
-        function dailyWorkCalculate( dailyWorkHours, value ) {
-            // console.log(dailyWorkHours + ' ' + value);
+            millisecondsByType  = calendar.eventHours[0].totalPerType;
         }
 
 }

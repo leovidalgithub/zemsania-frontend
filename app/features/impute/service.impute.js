@@ -26,7 +26,7 @@
                 var dfd    = $q.defer();
                 $http.get( buildURL( 'getTimesheets' ) + userID + '?year=' + year + '&month=' + month )
                     .then( function ( response ) {
-                        dfd.resolve( response );
+                        dfd.resolve( response.data );
                     })
                     .catch( function ( err ) {
                         dfd.reject( err );
@@ -34,7 +34,7 @@
                 return dfd.promise;
             },
 
-            setAllTimesheets: function( data ) { // LEO WORKING HERE
+            setAllTimesheets: function( data ) { // LEO WAS HERE
                 var userID = UserFactory.getUserID();
                 var dfd = $q.defer();
                 $http.post( buildURL( 'setAllTimesheets' ) + userID, data )
@@ -123,7 +123,7 @@
                                                 value      : 0, // it stores 'Horas/Variables' text value
                                                 week       : week,
                                                 thisMonth  : day.getMonth(),
-                                                inputType  : 'text', // 'text' for 'Horas' and 'Variables', and 'checkbox' for 'Guardias'
+                                                inputType  : 'number', // 'text' for 'Horas' and 'Variables', and 'checkbox' for 'Guardias'
                                                 checkValue : false, // it stores 'Guardias' checkbox value
                                                 projectId  : '' // to know this day belongs to what project (for showStatsObj)
                                             };

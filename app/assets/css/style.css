@@ -966,6 +966,39 @@
   margin-top: -15px;
 }
 
+#imputeHours #statistics {
+  width: 95%;
+  margin: auto;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-around;
+  align-items: flex-start;
+}
+#imputeHours #statistics .tableContainer {
+  overflow-x: auto;
+  margin: 10px;
+}
+#imputeHours #statistics .tableContainer table, #imputeHours #statistics .tableContainer th, #imputeHours #statistics .tableContainer td {
+  border: 1px solid #AAAAAA;
+  border-collapse: collapse;
+  padding: 5px 10px;
+  text-align: center;
+  vertical-align: center;
+  width: 150px;
+}
+#imputeHours #statistics .tableContainer th {
+  background-color: #333;
+  color: white;
+}
+#imputeHours #statistics .tableContainer tr.odd {
+  background-color: #999999;
+  color: white;
+}
+#imputeHours #statistics .tableContainer tr:hover:not(.notHoverPlease) * {
+  border-bottom: 1px solid #F15A29;
+  border-left: 1px solid #F15A29;
+}
+
 #home-view .notification-center {
   margin-bottom: 20px;
 }

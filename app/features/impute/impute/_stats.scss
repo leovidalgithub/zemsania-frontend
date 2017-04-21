@@ -1,0 +1,36 @@
+    #imputeHours #statistics {
+
+        width: 95%;
+        margin: auto;
+        display: flex;
+        flex-flow: row wrap;
+        justify-content: space-around;
+        align-items: flex-start;
+
+        .tableContainer {
+            overflow-x:auto;
+            margin: 10px;
+
+            table, th , td {
+                border: 1px solid #AAAAAA;
+                border-collapse: collapse;
+                padding: 5px 10px;
+                text-align: center;
+                vertical-align: center;
+                width: 150px;
+            }
+            th {
+                background-color: #333;
+                color: white;
+            }
+            tr.odd {
+                background-color:#999999;
+                color: white;
+            }
+            tr:hover:not(.notHoverPlease) * {
+                border-bottom: 1px solid $zemsania;
+                border-left: 1px solid $zemsania;
+            }
+        }
+
+    } // #imputeHours

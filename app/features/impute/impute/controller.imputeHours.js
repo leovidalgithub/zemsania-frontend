@@ -4,8 +4,8 @@
         .module( 'hours.impute' )
         .controller( 'imputeHoursController', imputeHoursController );
 
-    imputeHoursController.$invoke = [ '$scope', 'UserFactory', 'imputeHoursFactory', 'CalendarFactory', '$q', 'userProjects', '$uibModal', '$rootScope', '$state', '$timeout', '$filter' ];
-    function imputeHoursController( $scope, UserFactory, imputeHoursFactory, CalendarFactory, $q, userProjects, $uibModal, $rootScope, $state, $timeout, $filter ) {
+    imputeHoursController.$invoke = [ '$scope', 'UserFactory', 'imputeHoursFactory', 'CalendarFactory', '$q', 'userProjects', '$uibModal', '$rootScope', '$state', '$timeout', '$filter', '$interval' ];
+    function imputeHoursController( $scope, UserFactory, imputeHoursFactory, CalendarFactory, $q, userProjects, $uibModal, $rootScope, $state, $timeout, $filter, $interval ) {
 
         var currentFirstDay  = new Date();
         var currentMonth     = currentFirstDay.getMonth();
@@ -55,7 +55,13 @@
             $q.all( [ getCalendarPromise, getTimeSheetsPromise ] )
                 .then( function( data ) {
                     var calendar = data[0];
-                    var timesheetDataModel = data[1].data.timesheetDataModel;
+                    var timesheetDataModel = data[1].timesheetDataModel;
+
+                    if ( calendar.success == false ) { // error: calendar not found
+                        $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorNoCalendar' );
+                        alertMsgOpen( false );
+                        return;
+                    }
                     if( !generalDataModel[ currentFirstDay ] ) generalDataModel[ currentFirstDay ] = {};
                     if( !$scope.changes.originalGeneralDataModel[ currentFirstDay ] ) $scope.changes.originalGeneralDataModel[ currentFirstDay ] = {};
                     var obj = {
@@ -66,14 +72,13 @@
                               };
                     generalDataModel[ currentFirstDay ] = angular.copy( obj );
                     $scope.changes.originalGeneralDataModel[ currentFirstDay ] = angular.copy( obj );
+                    refreshShowDaysObj();
                 })
                 .catch( function( err ) {
+                    console.log(err);
                     // error loading data message alert
                     $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorLoading' );
                     alertMsgOpen( false );
-                })
-                .finally( function() {
-                    refreshShowDaysObj();
                 });
         }
 
@@ -142,7 +147,7 @@
                     if( ts[ currentProject ][ thisDate ] ) {
                         if( ts[ currentProject ][ thisDate ][ currentType ] ) {
                             if( ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ] ) {
-                                value = ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ].value;
+                                value = parseFloat( ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ].value );
                             }
                         }
                     }
@@ -158,7 +163,7 @@
                             $scope.showDaysObj.weeks[ week ][ thisDate ].inputType = 'checkbox';
                             $scope.showDaysObj.weeks[ week ][ thisDate ].checkValue = $scope.showDaysObj.weeks[ week ][ thisDate ].value == 0 ? false : true;
                         } else {
-                            $scope.showDaysObj.weeks[ week ][ thisDate ].inputType = 'text';
+                            $scope.showDaysObj.weeks[ week ][ thisDate ].inputType = 'number';
                         }
                     }
                 }
@@ -168,6 +173,13 @@
         }
 
         $scope.inputChanged = function( value ) {
+            // verifies if entered value is null or NaN
+            if( value.value === null || isNaN( value.value ) ) {
+                value.value = 0;
+            } else {
+                value.value = parseFloat( value.value );             
+            }
+
             $scope.changes.pendingChanges = true;
             $rootScope.pendingChanges     = true;
 
@@ -177,8 +189,6 @@
             var currentFirstDay = $scope.showDaysObj.currentFirstDay;          
             var ts              = generalDataModel[ currentFirstDay ].timesheetDataModel;
             var thisDate        = value.day.getTime();
-
-            console.log(thisDate);
 
             // creating associative data if it not exists
             if( !ts[ currentProject ] ) ts[ currentProject ] = {};
@@ -195,6 +205,8 @@
             }
             ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ].status   = 'draft';
             ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ].modified = true;
+            
+            $scope.$broadcast( 'refreshStats', { generalDataModel : generalDataModel } );
         };
 
         $scope.save = function() {
@@ -287,10 +299,6 @@
                 }, 3500 );
             }
         }
-
-        $scope.fn = function() {
-            // $scope.$broadcast( 'refreshStats', { generalDataModel : generalDataModel } );
-        };
 
 }
 

@@ -91,13 +91,14 @@
                         {{'days.' + (day.day | amDateFormat:'ddd') | i18next}}
                         {{day.day | amDateFormat:'DD'}}
                     </div>
-                    <div class="myInput"> <!-- <input type="number" step="0.5" min="0" size="1" /> -->
-                        <input ng-show="(day.inputType == 'text') && 
-                                (showDaysObj.currentMonth==day.thisMonth)" class="form-control input-sm" type="text" value="{{day.value}}" maxlength="3"
-                                ng-model="day.value" ng-change="inputChanged(day)">
-                        <input ng-show="(day.inputType == 'checkbox') &&
-                                (showDaysObj.currentMonth==day.thisMonth)" class="form-control 
-                                input-sm" type="checkbox" value="{{day.checkValue}}"
+                    <div class="myInput">
+
+                        <input ng-show="(day.inputType == 'number') && (showDaysObj.currentMonth==day.thisMonth)" 
+                                class="form-control input-sm" type="number" step="0.5" min="0" max="24" 
+                                ng-change="inputChanged(day)" ng-model="day.value" />
+
+                        <input ng-show="(day.inputType == 'checkbox') && (showDaysObj.currentMonth==day.thisMonth)" 
+                                class="form-control input-sm" type="checkbox" value="{{day.checkValue}}"
                                 ng-model="day.checkValue" ng-change="inputChanged(day)">
                      </div>
                     <div class="myFooter" ng-show="showDaysObj.currentMonth==day.thisMonth">
@@ -105,56 +106,64 @@
                             <i class="fa fa-eur"></i></a>
                         <a class="btn btn-xs btn-danger" title="{{'words.comments' | i18next}}">
                             <i class="fa fa-comment"></i></a>
-                    </div>                    
+                    </div>
                 </div>
             </div>
         </div>
 
 <hr><!-- STATISTICS CONTROLLER **************************************************************************************************** -->
-        <div id="statistics" ng-controller="imputeHoursStatsController">
+        <div ng-controller="imputeHoursStatsController">
+<!-- <button class="btn btn-md btn-success" ng-click="fn()">Go!</button> -->
+            <div id="statistics">
 
-<!-- <div ng-repeat="(key1, value1) in showDaysObj.weeks">
-<div ng-repeat="(key2, value2) in value1">
-    {{value2.value}}
-</div>    
-</div>
- -->
-<div style="overflow-x:auto;">
-    <table>
-        <tr>
-            <th>Proyecto</th>
-            <th>Horas</th>
-            <th>Guardias</th>
-            <th>Jornadas</th>
-        </tr>
-        <tr ng-repeat="(key, project) in showStatsObj">
-            <td ng-class="{'odd':$odd}">{{project.name}}</td>
-            <td ng-class="{'odd':$odd}">{{project.totalHours}}</td>
-            <td ng-class="{'odd':$odd}">{{project.totalGuards}}</td>
-            <td ng-class="{'odd':$odd}">Jornadas</td>
-        </tr>
-    </table>
-</div>
-<style>
-    .odd { background-color:#999999; color: white; }
-    table, th , td  {
-                  border: 1px solid #AAAAAA;
-                  border-collapse: collapse;
-                  padding: 5px 10px;
-                  text-align: center;
-                  vertical-align: center;
-    }
-    th, td {
-    /*border-bottom: 1px solid orange;*/
-    width: 50px; }
-    th {
-    background-color: #333;
-    color: white;}
-    tr:hover {background-color: #B0BAEE;}
-</style>
+                <!-- PROJECTS TABLE -->
+                <div id="projectsTable" class="tableContainer">
+                    <table>
+                        <tr class="notHoverPlease">
+                            <th>Proyecto</th>
+                            <th>Horas</th>
+                            <th>Guardias</th>
+                            <th>Jornadas</th>
+                        </tr>
+                        <tr ng-class="{'odd':$odd}" ng-repeat="(key, project) in showStatsObj.projectsInfo">
+                            <td>{{project.projectName}}</td>
+                            <td>{{project.totalHours}}</td>
+                            <td>{{project.totalGuards}}</td>
+                            <td>{{project.dailyWork}}</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- SUMMARY TABLE -->
+                <div class="tableContainer">
+                    <table>
+                        <tr class="notHoverPlease">
+                            <th>Resumen</th>
+                            <th></th>
+                            <th>Media</th>
+                        </tr>
+                        <tr>
+                            <td>Total Horas Imputadas</td>
+                            <td>{{showStatsObj.summary.totalImputeHours}}</td>
+                            <td>{{showStatsObj.calendarInfo.totalHoursByMonth}}</td>
+                        </tr>
+                        <tr class="odd">
+                            <td>Total Guardias Imputadas</td>
+                            <td>{{showStatsObj.summary.totalImputeGuards}}</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td>Total Jornadas trabajadas</td>
+                            <td>{{showStatsObj.summary.totalDailyWork}}</td>
+                            <td>0</td>
+                        </tr>
+
+                    </table>
+                </div>
+
+            </div>
 
         </div>
-
     </section>
 
     <!-- FOOTER -->
