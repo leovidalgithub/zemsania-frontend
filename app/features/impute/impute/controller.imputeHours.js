@@ -4,8 +4,8 @@
         .module( 'hours.impute' )
         .controller( 'imputeHoursController', imputeHoursController );
 
-    imputeHoursController.$invoke = [ '$scope', 'UserFactory', 'imputeHoursFactory', 'CalendarFactory', '$q', 'userProjects', '$uibModal', '$rootScope', '$state', '$timeout', '$filter', '$interval' ];
-    function imputeHoursController( $scope, UserFactory, imputeHoursFactory, CalendarFactory, $q, userProjects, $uibModal, $rootScope, $state, $timeout, $filter, $interval ) {
+    imputeHoursController.$invoke = [ '$scope', 'UserFactory', 'imputeHoursFactory', 'CalendarFactory', '$q', 'userProjects', '$uibModal', '$rootScope', '$state', '$timeout', '$filter' ];
+    function imputeHoursController( $scope, UserFactory, imputeHoursFactory, CalendarFactory, $q, userProjects, $uibModal, $rootScope, $state, $timeout, $filter ) {
 
         var currentFirstDay  = new Date();
         var currentMonth     = currentFirstDay.getMonth();
@@ -51,11 +51,11 @@
                 return;
             }
             var getCalendarPromise   = CalendarFactory.getCalendarById( calendarID, currentYear, currentMonth );
-            var getTimeSheetsPromise = imputeHoursFactory.getTimesheets( currentYear, currentMonth );
+            var getTimeSheetsPromise = imputeHoursFactory.getTimesheets( currentYear, currentMonth, $scope.userProjects );
             $q.all( [ getCalendarPromise, getTimeSheetsPromise ] )
                 .then( function( data ) {
                     var calendar = data[0];
-                    var timesheetDataModel = data[1].timesheetDataModel;
+                    var timesheetDataModel = data[1];
 
                     if ( calendar.success == false ) { // error: calendar not found
                         $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorNoCalendar' );
@@ -75,7 +75,6 @@
                     refreshShowDaysObj();
                 })
                 .catch( function( err ) {
-                    console.log(err);
                     // error loading data message alert
                     $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorLoading' );
                     alertMsgOpen( false );

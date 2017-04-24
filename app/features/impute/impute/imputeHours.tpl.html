@@ -89,7 +89,7 @@
                      ng-hide="((weekViewMode == true) && (showDaysObj.currentWeek != day.week))">
                     <div class="myHeader">
                         {{'days.' + (day.day | amDateFormat:'ddd') | i18next}}
-                        {{day.day | amDateFormat:'DD'}}
+                        {{day.day | amDateFormat:'DD'}} <!-- {{day.day | date : 'dd/MMM/yyyy'}} -->
                     </div>
                     <div class="myInput">
 
@@ -144,7 +144,8 @@
                         </tr>
                         <tr>
                             <td>Total Horas Imputadas</td>
-                            <td>{{showStatsObj.summary.totalImputeHours}}</td>
+                            <td ng-class="{'imputeHoursOnRed':showStatsObj.summary.totalImputeHours > 
+                            showStatsObj.calendarInfo.totalHoursByMonth}">{{showStatsObj.summary.totalImputeHours}}</td>
                             <td>{{showStatsObj.calendarInfo.totalHoursByMonth}}</td>
                         </tr>
                         <tr class="odd">
@@ -160,6 +161,29 @@
 
                     </table>
                 </div>
+
+                <!-- DAILYWORK TABLE -->
+                <div class="tableContainer">
+                    <table>
+                        <tr class="notHoverPlease">
+                            <th>Guardias</th>
+                            <th>Jornadas</th>
+                        </tr>
+                        <tr>
+                            <td>Turnicidad</td>
+                            <td>{{showStatsObj.guardsInfo.totalTurns}}</td>
+                        </tr>
+                        <tr class="odd">
+                            <td>Guardia</td>
+                            <td>{{showStatsObj.guardsInfo.totalGuards}}</td>
+                        </tr>
+                        <tr>
+                            <td>Varios</td>
+                            <td>{{showStatsObj.guardsInfo.totalVarious}}</td>
+                        </tr>
+                    </table>
+                </div>
+
 
             </div>
 

@@ -18,13 +18,11 @@
         });
 
         function buildStatsObj() {
-            var temp          = {};
-            temp.projectsInfo = {};
-            temp.summary      = {};
-            temp.calendarInfo = {};
-            temp.projectsInfo = getProjectsInfo();
-            temp.summary      = getsummary( temp.projectsInfo );
-            temp.calendarInfo.totalHoursByMonth = getcalendarInfo();
+            var temp            = {};
+            temp.projectsInfo   = getProjectsInfo();
+            temp.guardsInfo     = getguardsInfo();
+            temp.summary        = getsummary( temp.projectsInfo );
+            temp.calendarInfo   = getcalendarInfo();
             $scope.showStatsObj = angular.copy( temp );
         }
 
@@ -65,17 +63,6 @@
             }
 
             function getProjectName( projectId ) {
-                console.log('**********************');
-                console.log($scope.userProjects.length);
-                if( $scope.userProjects.length == 2 ) debugger;
-                // console.log('ts');
-                // console.log(ts);
-                // console.log('projectId');
-                // console.log(projectId);
-                // console.log('$scope.userProjects');
-                // console.log($scope.userProjects);
-
-
                 return $scope.userProjects.find( function( project ) {
                     return project._id == projectId;
                 }).name;
@@ -135,7 +122,41 @@
             totalHoursByMonth     = calendar.eventHours[0].totalWorkingHours[ currentMonth ].milliseconds;
             totalHoursByMonth    /= 3600000;
             totalHoursByMonth     = Number( totalHoursByMonth.toFixed( 1 ) );
-            return totalHoursByMonth;
+            return { totalHoursByMonth : totalHoursByMonth };
+        }
+
+        // RETURNS TOTAL OF GUARDS ACCORDING TO EACH TYPE
+        function getguardsInfo() {
+            var currentFirstDay = $scope.showDaysObj.currentFirstDay;
+            var ts              = generalDataModel[ currentFirstDay ].timesheetDataModel;
+            var totalTurns   = 0;
+            var totalGuards  = 0;
+            var totalVarious = 0;
+            // getting total of guards accoding of its subType by project
+            for( var projectId in ts ) {
+                for( var day in ts[ projectId ] ) {
+                    for( var imputeType in ts[ projectId ][ day ] ) {
+                        for( var imputeSubType in ts[ projectId ][ day ][ imputeType ] ) {
+                            var imputeValue = ts[ projectId ][ day ][ imputeType ][ imputeSubType ].value; // getting value
+                            if( imputeType == 'Guardias' ) {
+                                if( imputeSubType == 'Turnicidad' ) {
+                                    totalTurns   += imputeValue;
+                                } else if ( imputeSubType == 'Guardia' ) {
+                                    totalGuards  += imputeValue;
+                                } else if ( imputeSubType == 'Varios' ) {
+                                    totalVarious += imputeValue;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return {
+                    totalTurns   : totalTurns,
+                    totalGuards  : totalGuards,
+                    totalVarious : totalVarious
+            };
+
         }
 
         // stores dailywork dayType milliseconds

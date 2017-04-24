@@ -489,7 +489,7 @@ function toGMT0(date) {
         $stateProvider
             .state( 'dashboard', {
                 url: '/dashboard',
-                templateUrl: '/features/dashboard/home/home.tpl.html',
+                templateUrl: '/features/dashboard/home/notifications.tpl.html',
                 controller: 'HomeController',
                 data: {
                     template: 'complex',
@@ -1215,29 +1215,32 @@ function toGMT0(date) {
     function DashboardFactory( $http, $q ) {
         return {
             getUnreadNotifications: function () {
-                // var dfd = $q.defer();
-                // $http.get( buildURL( 'unreadNotifications' ) )
-                //     .then( function ( response ) {
-                //         if ( response.data.success ) {
-                //             var notificationTypes, notificationResponse;
-                //             var notifications = {};
-                //             response.data.notifications.forEach( function ( notification ) {
-                //                 if ( angular.isUndefined( notifications[ notification.type ] )) {
-                //                     notifications[notification.type] = [];
-                //                 }
-                //                 notifications[ notification.type ].push( notification );
-                //             });
-                //             notificationTypes = Object.keys( notifications );
-                //             notificationResponse = { keys: notificationTypes, notifications: notifications };
+                var dfd = $q.defer();
+                $http.get( buildURL( 'unreadNotifications' ) )
+                    .then( function ( response ) {
+                        dfd.resolve( response.data );
+                        })
+                        .catch( function ( err ) {
+                            dfd.reject( err );
+                        });
+                return dfd.promise;
 
-                //             dfd.resolve( notificationResponse );
-                //         } else {
-                //             dfd.reject( response );
-                //         }
-                //     }, function ( err ) {
-                //         dfd.reject( err );
-                //     });
-                // return dfd.promise;
+                    //     if ( response.data.success ) {
+                    //         var notificationTypes, notificationResponse;
+                    //         var notifications = {};
+                    //         response.data.notifications.forEach( function ( notification ) {
+                    //             if ( angular.isUndefined( notifications[ notification.type ] )) {
+                    //                 notifications[notification.type] = [];
+                    //             }
+                    //             notifications[ notification.type ].push( notification );
+                    //         });
+                    //         notificationTypes = Object.keys( notifications );
+                    //         notificationResponse = { keys: notificationTypes, notifications: notifications };
+
+                    //         dfd.resolve( notificationResponse );
+                    //     } else {
+                    //         dfd.reject( response );
+                    //     }
 
             },
             markNotificationAsRead: function ( id ) {
@@ -1449,13 +1452,11 @@ function toGMT0(date) {
                 return dfd.promise;
             },
 
-            getTimesheets: function ( year, month ) { // LEO WAS HERE
+            getTimesheets: function ( year, month, userProjects ) { // LEO WAS HERE
                 var userID = UserFactory.getUserID();
                 var dfd    = $q.defer();
                 $http.get( buildURL( 'getTimesheets' ) + userID + '?year=' + year + '&month=' + month )
-                    .then( function ( response ) {
-                        dfd.resolve( response.data );
-                    })
+                    .then( prepareTimesheetsData.bind( null, userProjects, dfd ) )
                     .catch( function ( err ) {
                         dfd.reject( err );
                     });
@@ -1558,7 +1559,24 @@ function toGMT0(date) {
                 }
                 return showDaysObj;
             }
-        };
+        } // main return
+
+        // INTERNAL FUNCTION ( getTimesheets() )
+        // THIS FUNCTION REMOVES ALL PROJECTS INSIDE 'TIMESHEETMODEL' THAT DOES NOT EXIST IN 'USERPROJECTS'
+        // USER ONLY CAN BE ABLE TO IMPUTE IN PROJECTS THAT EXISTS IN PROJECT_USERS COLLECTION (many to many relationchip between users and projects)
+        function prepareTimesheetsData( userProjects, dfd, data ) {
+            var timesheetDataModel = data.data.timesheetDataModel;
+            for( var projectId in timesheetDataModel ) {
+                var exists = userProjects.some( function( project ) {
+                    return project._id == projectId;
+                });
+                if ( !exists ) {
+                    delete timesheetDataModel[ projectId ];
+                }
+            }
+            return dfd.resolve( timesheetDataModel );
+        }
+
     }
 }());
 
@@ -1930,6 +1948,80 @@ function toGMT0(date) {
     }
 }());
 
+;( function () {
+    'use strict';
+    angular
+        .module( 'hours.dashboard' )
+        .controller( 'HomeController', HomeController );
+
+    HomeController.$invoke = [ '$scope', 'UserFactory', '$state', 'notifications', 'DashboardFactory', '$i18next' ];
+    function HomeController( $scope, UserFactory, $state, notifications, DashboardFactory, $i18next ) {
+
+$scope.initDate = new Date();
+$scope.endDate = new Date();
+
+$scope.fn1 = function() {
+    $('.collapse1').collapse('toggle');
+};
+$scope.fn2 = function() {
+    $('.collapse2').collapse('toggle');
+};
+
+$scope.notifications = notifications.notifications;
+console.log( $scope.notifications );
+
+$scope.xxx = function(xx) {
+    alert(xx);
+};
+
+// $scope.fn1 = function() {
+//     $i18next.changeLanguage('es');
+// };
+// $scope.fn2 = function() {
+//     $i18next.changeLanguage('en');
+// };
+
+        // $scope.notifications = notifications;
+        // $scope.user = UserFactory.getUser();
+
+        // $scope.activeNotifications = notifications.keys[0];
+
+        // $scope.openType = function ( type ) {
+        //     $scope.activeNotifications = type;
+        // };
+
+        // $scope.isActive = function ( type ) {
+        //     return $scope.activeNotifications === type && 'active';
+        // };
+
+        // $scope.openNotification = function ( notification ) {
+        //     switch ( notification.type ) {
+        //         case 'holiday_request' :
+        //             $state.go('moderateHolidayCalendar', {
+        //                 userId: notification.senderId,
+        //                 filterBy: 'pending'
+        //             });
+        //             break;
+        //         case 'hours_sent' :
+        //             $state.go( 'calendarImputeHoursValidator-user', {
+        //                 userId: notification.senderId,
+        //                 timestamp: new Date( notification.initDate ).getTime()
+        //             });
+        //             break;
+        //     }
+        // };
+
+        // $scope.markRead = function ( notification, type, index ) {
+        //     DashboardFactory.markNotificationAsRead( { notificationId: notification._id } )
+        //         .then( function () {
+        //             $scope.notifications.notifications[ type ].splice( index, 1 );
+        //         }, function () {
+
+        //         });
+        // };
+        
+    }
+}());
 ( function () {
     'use strict';
     angular
@@ -2050,63 +2142,6 @@ function toGMT0(date) {
                     $scope.employee.error = true;
                 });
         };
-    }
-}());
-;( function () {
-    'use strict';
-    angular
-        .module( 'hours.dashboard' )
-        .controller( 'HomeController', HomeController );
-
-    HomeController.$invoke = [ '$scope', 'UserFactory', '$state', 'notifications', 'DashboardFactory', '$i18next' ];
-    function HomeController( $scope, UserFactory, $state, notifications, DashboardFactory, $i18next ) {
-
-// $scope.fn1 = function() {
-//     $i18next.changeLanguage('es');
-// };
-// $scope.fn2 = function() {
-//     $i18next.changeLanguage('en');
-// };
-
-        // $scope.notifications = notifications;
-        // $scope.user = UserFactory.getUser();
-
-        // $scope.activeNotifications = notifications.keys[0];
-
-        // $scope.openType = function ( type ) {
-        //     $scope.activeNotifications = type;
-        // };
-
-        // $scope.isActive = function ( type ) {
-        //     return $scope.activeNotifications === type && 'active';
-        // };
-
-        // $scope.openNotification = function ( notification ) {
-        //     switch ( notification.type ) {
-        //         case 'holiday_request' :
-        //             $state.go('moderateHolidayCalendar', {
-        //                 userId: notification.senderId,
-        //                 filterBy: 'pending'
-        //             });
-        //             break;
-        //         case 'hours_sent' :
-        //             $state.go( 'calendarImputeHoursValidator-user', {
-        //                 userId: notification.senderId,
-        //                 timestamp: new Date( notification.initDate ).getTime()
-        //             });
-        //             break;
-        //     }
-        // };
-
-        // $scope.markRead = function ( notification, type, index ) {
-        //     DashboardFactory.markNotificationAsRead( { notificationId: notification._id } )
-        //         .then( function () {
-        //             $scope.notifications.notifications[ type ].splice( index, 1 );
-        //         }, function () {
-
-        //         });
-        // };
-        
     }
 }());
 ;( function () {
@@ -2332,8 +2367,8 @@ function toGMT0(date) {
         .module( 'hours.impute' )
         .controller( 'imputeHoursController', imputeHoursController );
 
-    imputeHoursController.$invoke = [ '$scope', 'UserFactory', 'imputeHoursFactory', 'CalendarFactory', '$q', 'userProjects', '$uibModal', '$rootScope', '$state', '$timeout', '$filter', '$interval' ];
-    function imputeHoursController( $scope, UserFactory, imputeHoursFactory, CalendarFactory, $q, userProjects, $uibModal, $rootScope, $state, $timeout, $filter, $interval ) {
+    imputeHoursController.$invoke = [ '$scope', 'UserFactory', 'imputeHoursFactory', 'CalendarFactory', '$q', 'userProjects', '$uibModal', '$rootScope', '$state', '$timeout', '$filter' ];
+    function imputeHoursController( $scope, UserFactory, imputeHoursFactory, CalendarFactory, $q, userProjects, $uibModal, $rootScope, $state, $timeout, $filter ) {
 
         var currentFirstDay  = new Date();
         var currentMonth     = currentFirstDay.getMonth();
@@ -2379,11 +2414,11 @@ function toGMT0(date) {
                 return;
             }
             var getCalendarPromise   = CalendarFactory.getCalendarById( calendarID, currentYear, currentMonth );
-            var getTimeSheetsPromise = imputeHoursFactory.getTimesheets( currentYear, currentMonth );
+            var getTimeSheetsPromise = imputeHoursFactory.getTimesheets( currentYear, currentMonth, $scope.userProjects );
             $q.all( [ getCalendarPromise, getTimeSheetsPromise ] )
                 .then( function( data ) {
                     var calendar = data[0];
-                    var timesheetDataModel = data[1].timesheetDataModel;
+                    var timesheetDataModel = data[1];
 
                     if ( calendar.success == false ) { // error: calendar not found
                         $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorNoCalendar' );
@@ -2403,7 +2438,6 @@ function toGMT0(date) {
                     refreshShowDaysObj();
                 })
                 .catch( function( err ) {
-                    console.log(err);
                     // error loading data message alert
                     $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorLoading' );
                     alertMsgOpen( false );
@@ -2652,13 +2686,11 @@ function toGMT0(date) {
         });
 
         function buildStatsObj() {
-            var temp          = {};
-            temp.projectsInfo = {};
-            temp.summary      = {};
-            temp.calendarInfo = {};
-            temp.projectsInfo = getProjectsInfo();
-            temp.summary      = getsummary( temp.projectsInfo );
-            temp.calendarInfo.totalHoursByMonth = getcalendarInfo();
+            var temp            = {};
+            temp.projectsInfo   = getProjectsInfo();
+            temp.guardsInfo     = getguardsInfo();
+            temp.summary        = getsummary( temp.projectsInfo );
+            temp.calendarInfo   = getcalendarInfo();
             $scope.showStatsObj = angular.copy( temp );
         }
 
@@ -2699,17 +2731,6 @@ function toGMT0(date) {
             }
 
             function getProjectName( projectId ) {
-                console.log('**********************');
-                console.log($scope.userProjects.length);
-                if( $scope.userProjects.length == 2 ) debugger;
-                // console.log('ts');
-                // console.log(ts);
-                // console.log('projectId');
-                // console.log(projectId);
-                // console.log('$scope.userProjects');
-                // console.log($scope.userProjects);
-
-
                 return $scope.userProjects.find( function( project ) {
                     return project._id == projectId;
                 }).name;
@@ -2769,7 +2790,41 @@ function toGMT0(date) {
             totalHoursByMonth     = calendar.eventHours[0].totalWorkingHours[ currentMonth ].milliseconds;
             totalHoursByMonth    /= 3600000;
             totalHoursByMonth     = Number( totalHoursByMonth.toFixed( 1 ) );
-            return totalHoursByMonth;
+            return { totalHoursByMonth : totalHoursByMonth };
+        }
+
+        // RETURNS TOTAL OF GUARDS ACCORDING TO EACH TYPE
+        function getguardsInfo() {
+            var currentFirstDay = $scope.showDaysObj.currentFirstDay;
+            var ts              = generalDataModel[ currentFirstDay ].timesheetDataModel;
+            var totalTurns   = 0;
+            var totalGuards  = 0;
+            var totalVarious = 0;
+            // getting total of guards accoding of its subType by project
+            for( var projectId in ts ) {
+                for( var day in ts[ projectId ] ) {
+                    for( var imputeType in ts[ projectId ][ day ] ) {
+                        for( var imputeSubType in ts[ projectId ][ day ][ imputeType ] ) {
+                            var imputeValue = ts[ projectId ][ day ][ imputeType ][ imputeSubType ].value; // getting value
+                            if( imputeType == 'Guardias' ) {
+                                if( imputeSubType == 'Turnicidad' ) {
+                                    totalTurns   += imputeValue;
+                                } else if ( imputeSubType == 'Guardia' ) {
+                                    totalGuards  += imputeValue;
+                                } else if ( imputeSubType == 'Varios' ) {
+                                    totalVarious += imputeValue;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return {
+                    totalTurns   : totalTurns,
+                    totalGuards  : totalGuards,
+                    totalVarious : totalVarious
+            };
+
         }
 
         // stores dailywork dayType milliseconds

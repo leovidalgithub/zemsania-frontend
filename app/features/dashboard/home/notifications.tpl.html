@@ -1,0 +1,114 @@
+<!-- https://www.w3schools.com/bootstrap/bootstrap_ref_js_collapse.asp -->
+<div id="imputeHours">
+    <!-- HEADER TOOL-BAR -->
+    <header id="header">
+        <div id="headerContent">
+            <div class="flexDesign box-shadow p20 top-bar">
+
+                <div>
+                    <h1>{{'notifications.title' | i18next}}</h1>
+                </div>
+
+                 <div class="rightMargin">
+
+<!--                      <button ng-disabled="!changes.pendingChanges" class="btn btn-gray no-margin" ng-click="openPendingChangesModal()">
+                        {{'actions.cancel' | i18next}}
+                    </button>
+                    <button ng-disabled="!changes.pendingChanges" class="btn no-margin" ng-click="save()"
+                            ng-class="{ 'btn-gray': !changes.pendingChanges, 'btn-primary': changes.pendingChanges}">
+                            {{'actions.save' | i18next}}
+                    </button>
+ -->                    
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- SECTION MAIN CONTENT -->
+    <section id="section" class="box-shadow p20">
+            <div class="col-md-12 notification-center">                        
+                        <i class="fa fa-calendar-plus-o"></i>
+                        <i class="fa fa-calendar-check-o"></i>
+                        <i class="fa fa-calendar-times-o"></i>
+
+    <div>
+        <div> <!-- ng-show -->
+            <table at-table at-config="tableConfig" at-paginated at-list="notifications" class="table table-striped">
+                <div class="table-thead">
+                    <thead></thead>
+                </div>
+                <tbody>
+                    <tr ng-click="xxx(item.type)"> <!-- ng-class="{'userDisabled':!item.enabled}" -->
+                        <td at-implicit at-sortable at-initial-sorting="asc" at-attribute="senderId" at-title="Remite"></td>
+                        <td at-implicit at-sortable at-attribute="type" at-title="Tipo"></td>
+                        <td at-implicit at-sortable at-attribute="status" at-title="Status"></td>
+                        <td at-implicit at-attribute="text" at-title="Texto" width="25"></td>
+                        <td class="options-section">
+                            <a ui-sref="employeeManagerEdit({id: item._id})" class="btn btn-success">
+                                <i class="fa fa-pencil"></i></a>
+                            <a ui-sref="employeeManagerEdit({id: item._id})" class="btn btn-primary">
+                                <i class="fa fa-calendar-times-o"></i></a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+
+    <!-- *********************************************************************************************************** -->
+                <div ng-repeat="key in notifications.keys" class="notification" ng-class="isActive(key)">
+                    <div ng-switch="key" class="notification-icon" ng-click="openType(key)">
+                        <i ng-switch-when="hours_sent" class="fa fa-calendar-o">
+                            <i class="inside-calendar fa fa-paper-plane"></i>
+                        </i>
+                        <i ng-switch-when="holiday_request" class="fa fa-calendar-plus-o"></i>
+                        <i ng-switch-when="hours_validated" class="fa fa-calendar-check-o"></i>
+                        <i ng-switch-when="hours_rejected" class="fa fa-calendar-times-o"></i>
+
+                    </div>
+                </div>
+                        <div class="notification-total">
+                            {{notifications.notifications[key].length}}
+                            You have 23 unreads notifications
+                        </div>            
+            </div>
+
+            <div class="col-md-12 notification-canvas row">
+                    <div class="col-md-9" ng-click="openNotification(notification)">
+                        <p><small class="show time-zone">{{initDate | date : 'dd/MMM/yyyy'}} - {{endDate | date :
+                            'dd/MMM/yyyy'}}</small>
+                            ofnerkfjnerkj fnrk fjnrdkj vnfd
+                            </p>
+                    </div>
+                    <div class="col-md-3 text-right">
+                        <button ng-click="openNotification(notification)"
+                                class="btn btn-primary no-margin">{{'actions.attend' | i18next}}
+                        </button>
+                        <button ng-click="markRead(notification, activeNotifications, $index)"
+                                class="btn btn-gray no-margin"><i class="fa fa-times"></i> </button>
+                    </div>
+                <!-- </div> -->
+
+
+                <div class="col-md-12 notification-alert"
+                     ng-hide="notifications.notifications[activeNotifications].length">
+                    <div class="col-md-12">
+                        <p>{{'notifications.noNotifications' | i18next}}</p>
+                    </div>
+                </div>
+            </div>
+
+
+
+    </section>
+
+    <!-- FOOTER -->
+    <footer id="footer">
+        <div id="footerContent">
+            <div class="copyRight">Zemsania Time Manager&copy;</div>
+        </div>
+    </footer>
+
+</div>

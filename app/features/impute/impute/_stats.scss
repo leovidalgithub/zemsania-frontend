@@ -6,6 +6,7 @@
         flex-flow: row wrap;
         justify-content: space-around;
         align-items: flex-start;
+        // font-size: 16px;
 
         .tableContainer {
             overflow-x:auto;
@@ -30,6 +31,10 @@
             tr:hover:not(.notHoverPlease) * {
                 border-bottom: 1px solid $zemsania;
                 border-left: 1px solid $zemsania;
+            }
+            .imputeHoursOnRed {
+                background-color: #E54343;
+                color: white;
             }
         }
 

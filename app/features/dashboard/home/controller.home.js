@@ -7,6 +7,23 @@
     HomeController.$invoke = [ '$scope', 'UserFactory', '$state', 'notifications', 'DashboardFactory', '$i18next' ];
     function HomeController( $scope, UserFactory, $state, notifications, DashboardFactory, $i18next ) {
 
+$scope.initDate = new Date();
+$scope.endDate = new Date();
+
+$scope.fn1 = function() {
+    $('.collapse1').collapse('toggle');
+};
+$scope.fn2 = function() {
+    $('.collapse2').collapse('toggle');
+};
+
+$scope.notifications = notifications.notifications;
+console.log( $scope.notifications );
+
+$scope.xxx = function(xx) {
+    alert(xx);
+};
+
 // $scope.fn1 = function() {
 //     $i18next.changeLanguage('es');
 // };

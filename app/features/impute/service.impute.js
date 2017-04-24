@@ -21,13 +21,11 @@
                 return dfd.promise;
             },
 
-            getTimesheets: function ( year, month ) { // LEO WAS HERE
+            getTimesheets: function ( year, month, userProjects ) { // LEO WAS HERE
                 var userID = UserFactory.getUserID();
                 var dfd    = $q.defer();
                 $http.get( buildURL( 'getTimesheets' ) + userID + '?year=' + year + '&month=' + month )
-                    .then( function ( response ) {
-                        dfd.resolve( response.data );
-                    })
+                    .then( prepareTimesheetsData.bind( null, userProjects, dfd ) )
                     .catch( function ( err ) {
                         dfd.reject( err );
                     });
@@ -130,6 +128,23 @@
                 }
                 return showDaysObj;
             }
-        };
+        } // main return
+
+        // INTERNAL FUNCTION ( getTimesheets() )
+        // THIS FUNCTION REMOVES ALL PROJECTS INSIDE 'TIMESHEETMODEL' THAT DOES NOT EXIST IN 'USERPROJECTS'
+        // USER ONLY CAN BE ABLE TO IMPUTE IN PROJECTS THAT EXISTS IN PROJECT_USERS COLLECTION (many to many relationchip between users and projects)
+        function prepareTimesheetsData( userProjects, dfd, data ) {
+            var timesheetDataModel = data.data.timesheetDataModel;
+            for( var projectId in timesheetDataModel ) {
+                var exists = userProjects.some( function( project ) {
+                    return project._id == projectId;
+                });
+                if ( !exists ) {
+                    delete timesheetDataModel[ projectId ];
+                }
+            }
+            return dfd.resolve( timesheetDataModel );
+        }
+
     }
 }());

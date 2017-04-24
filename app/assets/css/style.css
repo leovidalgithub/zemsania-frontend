@@ -998,6 +998,10 @@
   border-bottom: 1px solid #F15A29;
   border-left: 1px solid #F15A29;
 }
+#imputeHours #statistics .tableContainer .imputeHoursOnRed {
+  background-color: #E54343;
+  color: white;
+}
 
 #home-view .notification-center {
   margin-bottom: 20px;
