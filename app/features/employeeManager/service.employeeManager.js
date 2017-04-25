@@ -7,12 +7,17 @@
     EmployeeManagerFactory.$invoke = [ '$http', 'UserFactory', '$q' ];
     function EmployeeManagerFactory( $http, $q, UserFactory ) {
         return {
+
             getEmployeeList: function () { // LEO WAS HERE
                 var dfd = $q.defer();
                 $http.get( buildURL( 'getAllUsers' ) )
                     .then( function ( response ) {
                         if ( response.data.success ) {
-                                dfd.resolve( response.data.users );
+                            var employees = response.data.users;
+                            employees.forEach( function( employee ) { // create fullName field
+                                employee.fullName = employee.name + ' ' + employee.surname;
+                            });
+                                dfd.resolve( employees );
                         } else {
                             dfd.reject( response );
                         }

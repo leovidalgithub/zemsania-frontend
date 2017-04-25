@@ -4,33 +4,43 @@
         .module( 'hours.dashboard' )
         .controller( 'HomeController', HomeController );
 
-    HomeController.$invoke = [ '$scope', 'UserFactory', '$state', 'notifications', 'DashboardFactory', '$i18next' ];
-    function HomeController( $scope, UserFactory, $state, notifications, DashboardFactory, $i18next ) {
+    HomeController.$invoke = [ '$scope', 'notifications', '$window' ];
+    function HomeController( $scope, notifications, $window ) {
 
-$scope.initDate = new Date();
-$scope.endDate = new Date();
+        setUsersView();
+        $scope.notifications = notifications;
 
-$scope.fn1 = function() {
-    $('.collapse1').collapse('toggle');
-};
-$scope.fn2 = function() {
-    $('.collapse2').collapse('toggle');
-};
+        for( var i = 1; i < 20; i++ ) {
+            var aa = angular.copy( notifications[0] );
+            aa._id = '32r32r324r433_' + ( i + 34573 );
+            notifications.push( aa );
+        }
 
-$scope.notifications = notifications.notifications;
-console.log( $scope.notifications );
+        angular.element( $window ).bind( 'resize', function() {
+            $scope.$digest();
+            setUsersView();
+        });
 
-$scope.xxx = function(xx) {
-    alert(xx);
-};
+        function setUsersView() {
+            if( $window.innerWidth < 1210 ) {
+                $scope.viewSet = false;
+            } else {
+                $scope.viewSet = true;            
+            }
+        }
 
-// $scope.fn1 = function() {
-//     $i18next.changeLanguage('es');
-// };
-// $scope.fn2 = function() {
-//     $i18next.changeLanguage('en');
-// };
+        // SECTION SCROLL MOVE EVENT TO MAKE BUTTON 'toUpButton' APPEAR
+        var scrollWrapper = document.getElementById( 'section' );
+        scrollWrapper.onscroll = function ( event ) {
+            var currentScroll = scrollWrapper.scrollTop;
+            var upButton = $( '#toUpButton' );
+            showUpButton( upButton, currentScroll );
+        };
 
+        // BUTTON TO TAKE SECTION SCROLL TO TOP
+        $scope.pageGetUp = function() { takeMeUp() };
+
+// ******************************************************* *******************************************************
         // $scope.notifications = notifications;
         // $scope.user = UserFactory.getUser();
 

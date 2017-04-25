@@ -44,7 +44,7 @@
         "userProfile": "Mi cuenta",
         "employeeManager": "Employees Manager",
         "userConfig": "Configuration",
-        "timeCalendar": "Allocate hours",
+        "timeCalendar": "Impute hours",
         "calendars": "Calendars",
         "vacationCalendar": "Holiday Calendar",
         "timeManager": "Check hours",
@@ -80,8 +80,10 @@
             "notFound"        : "No se ha encontrado ningún empleado",
             "roles"           : "Roles",
             "userNotFound"    : "Employee not found",
-            "superior"        : "Supervisor",
-            "company"         : "Company"
+            "superior"        : "Gestor Personal",
+            "company"         : "Company",
+            "candidateId"     : "CandidateId",
+            "cp"              : "Employee Code"
         },
         "formValidations" : {
             "usernameValid"         : "Se requiere un correo electrónico válido",
@@ -138,8 +140,8 @@
         "yes": "Sí",
         "no": "No",
         "comments": "Comments",
-        "next": "Siguiente",
-        "previous": "Anterior"
+        "next": "Next",
+        "previous": "Previous"
     },
     "employeeManager": {
         "list": {
@@ -215,7 +217,6 @@
         "imputeHours": {
             "title": "Calendario de imputación laboral",
             "reportTitle": "Reporte sobre el proyecto",
-            "total": "Sumatorio de horas: ",
             "reportPlaceholder": "Escribe aquí el contenido de tu reporte.",
             "loadingCalendar": "Cargando contenido del calendario...",
             "errorLoading": "Ha ocurrido un error al cargar los datos!",
@@ -232,7 +233,21 @@
             "imputed_in_holidays": "Horas imputadas en un día festivo",
             "expenses": "Expenses",
             "monthView": "Month View",
-            "weekView": "Week View"
+            "weekView": "Week View",
+            "changeToWeekView": "Change to Week view",
+            "changeToMonthView": "Change to Month view",
+            "totalHours": "Total Horas Imputadas",
+            "totalGuards": "Total Guardias Imputadas",
+            "totalDailywork": "Total Jornadas trabajadas",
+            "project": "Proyecto",
+            "hours": "Horas",
+            "guards": "Guardias",
+            "dailywork": "Jornadas",
+            "summary": "Resumen",
+            "media": "Media",
+            "turns": "Turnicidad",
+            "guard": "Guardia",
+            "various": "Varios"
         },
         "imputeHoursValidator": {
             "title": "Validación calendarios de imputación laborales",
@@ -323,7 +338,10 @@
         "zeroIsUnlimited": "0h para ilimitado"
     },
     "notifications": {
-        "title": "Notificaciones",
+        "title": "Notifications",
+        "unread": "No leído",
+        "read": "Leído",
+        "unreadNotifications": "notificaciones no leídas",
         "type": {
             "hours_validated": "ha validado las horas.",
             "hours_rejected": "ha rechazado las horas.",

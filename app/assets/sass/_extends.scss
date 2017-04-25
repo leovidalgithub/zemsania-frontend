@@ -1,0 +1,36 @@
+// DAYTYPES-LEYEND FOR 'IMPUTE' AND 'CALENDAR'
+	@mixin myLeyend( $boxWidth, $borderWidth ) {
+	        border: solid $borderWidth #6C6C6C;
+	        border-radius: 5px;
+	        background-color: #FBFBFB;
+	        width: $boxWidth;
+	        margin: 5px auto;
+	        text-align: left;
+	        padding: 10px;
+	}
+	@mixin myLeyendBox( $boxHeight, $boxWidth ) {
+            height: $boxHeight;
+            width: $boxWidth;
+            border-radius: 2px;
+            border: solid 1px black;
+            display: inline-block;
+    }
+	.ext_flex-start_ {
+		margin-top: 5px;
+		display: flex;
+		flex-flow: row wrap;
+		justify-content: flex-start;
+		align-items: center;
+	}
+	.ext_cellColor {
+		background-image :none !important;
+		color: #ffffff !important;
+	}
+//************************************************************
+	@mixin vertical-align( $position: relative ) {
+	  position: $position;
+	  top: 50%;
+	  -webkit-transform: translateY( -50% );
+	  -ms-transform: translateY( -50% );
+	  transform: translateY( -50% );
+	}

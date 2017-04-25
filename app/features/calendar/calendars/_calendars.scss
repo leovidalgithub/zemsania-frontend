@@ -35,24 +35,13 @@
 					background-color: #FBFBFB;
 					width: 330px;
 					margin: 5px auto;
-					/*text-align: left;*/
 					padding: 10px;				
 			}
 			/***** LEYEND *****/
 			#leyend {
-					border: solid 2px #6C6C6C;
-					border-radius: 5px;
-					background-color: #FBFBFB;
-					width: 280px;
-					margin: 5px auto;
-					text-align: left;
-					padding: 10px;
+				@include myLeyend( 280px, 2px );
 				.leyendBox {
-							height: 20px;
-							width: 80px;
-							border-radius: 2px;
-							border: solid 1px black;
-							display: inline-block;
+					@include myLeyendBox( 20px, 80px );
 				}
 				#workingLeyend {
 				    @extend .ext_flex-start_;
@@ -163,16 +152,3 @@
 	} 
   }
 } //#calendars #section
-
-// @extends clases
-.ext_flex-start_ {
-	margin-top: 5px;
-	display: flex;
-	flex-flow: row wrap;
-	justify-content: flex-start;
-	align-items: center;
-}
-.ext_cellColor {
-	background-image :none !important;
-	color: #ffffff !important;
-}

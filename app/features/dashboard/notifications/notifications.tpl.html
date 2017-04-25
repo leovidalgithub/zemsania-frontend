@@ -1,0 +1,107 @@
+<!-- https://www.w3schools.com/bootstrap/bootstrap_ref_js_collapse.asp -->
+<div id="notifications">
+    <!-- HEADER TOOL-BAR -->
+    <header id="header">
+        <div id="headerContent">
+            <div class="flexDesign box-shadow p20 top-bar">
+
+                <div>
+                    <h1>{{'notifications.title' | i18next}}</h1>
+                </div>
+
+                 <div class="rightMargin">
+                     <h4><span>{{notifications.length}}</span> {{'notifications.unreadNotifications' | i18next}}</h4>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <!-- SECTION MAIN CONTENT -->
+    <section id="section" class="box-shadow p20">
+
+        <div>
+            <div ng-show="viewSet">
+                <table at-table at-config="tableConfig" at-paginated at-list="notifications" class="table table-striped">
+                    <div class="table-thead">
+                        <thead><h4>Notificaciones NO leídas</h4></thead>
+                    </div>
+                    <tbody>
+                        <tr ng-show="item.status=='unread'" ng-click="xxx({id: item._id})" 
+                            title="{{item.initDate | date : 'dd/MMM/yyyy'}} - {{item.endDate | date : 'dd/MMM/yyyy'}}">
+                            <td at-implicit at-sortable at-initial-sorting="asc" at-attribute="senderId.fullName" at-title="Remite"></td>
+                            <td at-implicit at-sortable at-attribute="null" at-title="Tipo">
+                                <div class="notiTypes" ng-switch on="item.type">
+                                    <i ng-switch-when="hours_validated" class="fa fa-calendar-plus-o hours_validated"
+                                        title="Horas validadas"></i>
+                                    <i ng-switch-when="hours_pending_req" class="fa fa-calendar-check-o hours_pending_req"
+                                        title="Pendiente de Imputar"></i>
+                                    <i ng-switch-when="hours_req" class="fa fa-calendar-times-o hours_req" title="Horas por validar"></i>
+                                </div>
+                            </td>
+                            <td at-implicit at-sortable at-attribute="null" at-title="Status">
+                                <strong style="color: #333;">{{'notifications.unread' | i18next}}</strong>
+                            </td>
+                            <td at-implicit at-attribute="text" at-title="Mensaje" width="40%"></td>
+                            <td class="options-section">
+                                <a ui-sref="employeeManagerEdit({id: item._id})" class="btn btn-primary" title="Ir a ello">
+                                    <i class="fa fa-check"></i>
+                                </a>
+                                <a ng-click="markRead({id: item._id})" class="btn btn-gray" title="Marcar como leído">
+                                    <i class="fa fa-times"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div ng-hide="viewSet">
+                <div id="itemsList" ng-repeat="(key, notification) in notifications"
+                    title="{{notification.initDate | date : 'dd/MMM/yyyy'}} - {{notification.endDate | date : 'dd/MMM/yyyy'}}">
+                    <div class="usersList">
+                        <div>
+                            <ul>
+                                <li>
+                                    <div class="notiTypes" ng-switch on="notification.type">
+                                        <i ng-switch-when="hours_validated" class="fa fa-calendar-plus-o hours_validated"
+                                            title="Horas validadas"></i>
+                                        <i ng-switch-when="hours_pending_req" class="fa fa-calendar-check-o hours_pending_req"
+                                            title="Pendiente de Imputar"></i>
+                                        <i ng-switch-when="hours_req" class="fa fa-calendar-times-o hours_req" title="Horas por validar"></i>
+                                    </div>
+                                </li>
+                                <li><strong>{{notification.senderId.fullName}}</strong></li>
+                                <li>{{'notifications.unread' | i18next}}</li>
+                                <li>{{notification.text}}</li>
+                            </ul>
+                        </div>
+                        <div class="buttons">
+                            <a ui-sref="employeeManagerEdit({id: item._id})" class="btn btn-primary" title="Ir a ello">
+                                <i class="fa fa-check"></i>
+                            </a>
+                            <a ng-click="markRead({id: item._id})" class="btn btn-gray" title="Marcar como leído">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- FOOTER -->
+    <footer id="footer">
+        <div id="footerContent">
+            <!-- <div class="copyRight">Zemsania Time Manager&copy;</div> -->
+            <a id="toUpButton" class="pull-right" ng-click="pageGetUp()">
+                <i style="font-size: 44px;" class="fa fa-arrow-circle-o-up"></i>
+            </a>
+        </div>
+    </footer>
+
+</div>

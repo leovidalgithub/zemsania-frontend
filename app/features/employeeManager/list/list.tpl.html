@@ -52,17 +52,16 @@
                     <thead></thead>
                 </div>
                 <tbody>
-                <tr ng-class="{'userDisabled':!item.enabled}">
-                    <td at-implicit at-sortable at-initial-sorting="asc" at-attribute="name" at-title="{{'userProfile.user.name' | i18next}}"></td>
-                    <td at-implicit at-sortable at-attribute="surname" at-title="{{'userProfile.user.lastname_plural' | i18next}}"></td>
-                    <td at-implicit at-sortable at-attribute="nif" at-title="{{'userProfile.user.nif' | i18next}}"></td>
-                    <!-- <td at-implicit at-sortable at-attribute="sex" at-title="{{'userProfile.user.genre' | i18next}}"></td> -->
-                    <td at-implicit at-sortable at-attribute="username" at-title="{{'userProfile.user.email' | i18next}}"></td>
-                    <td class="options-section">
-                        <a ui-sref="employeeManagerEdit({id: item._id})" class="btn btn-success">
-                            <i class="fa fa-pencil"></i></a>
-                    </td>
-                </tr>
+                    <tr ng-class="{'userDisabled':!item.enabled}">
+                        <td at-implicit at-sortable at-initial-sorting="asc" at-attribute="fullName" at-title="{{'userProfile.user.name' | i18next}}"></td>
+                        <td at-implicit at-sortable at-attribute="cp" at-title="CP"></td>
+                        <td at-implicit at-sortable at-attribute="nif" at-title="{{'userProfile.user.nif' | i18next}}"></td>
+                        <td at-implicit at-sortable at-attribute="username" at-title="{{'userProfile.user.email' | i18next}}"></td>
+                        <td class="options-section">
+                            <a ui-sref="employeeManagerEdit({id: item._id})" class="btn btn-success">
+                                <i class="fa fa-pencil"></i></a>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -72,7 +71,8 @@
                 <div class="usersList">
                     <ul>
                         <li><strong>{{value.name}} {{value.surname}}</strong></li>
-                        <li>{{value.nif}}</li>
+                        <li>CP {{value.cp}}</li>
+                        <li>NIF {{value.nif}}</li>
                         <li>{{value.username}}</li>
                     </ul>
                         <a ui-sref="employeeManagerEdit({id: value._id })" class="btn btn-success">
@@ -92,5 +92,3 @@
             </a>
         </div>
     </footer>
-
-

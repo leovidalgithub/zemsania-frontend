@@ -1,0 +1,64 @@
+	#notifications {
+		#header {
+			#headerContent {
+				.rightMargin {
+					span {
+						font-size: 22px;
+						color: blue;
+					}
+				}
+			}
+		}
+		#section {
+			table {
+				.options-section {
+					text-align: center;
+					a {
+					}
+				}
+			}
+
+			.notiTypes i {
+				font-size: 30px;
+				margin-bottom: 5px;
+				&.hours_validated {
+					color: red;
+				}
+				&.hours_pending_req {
+					color: blue;
+				}
+				&.hours_req {
+					color: green;
+				}
+			}
+
+		    #itemsList {
+		        width: 80%;
+		        margin: 15px auto;
+		        padding: 15px;
+		        border: 1px solid #E0E0E0;
+		        &:hover {
+		          background-color: #F6F6F6;
+		        }
+		        ul li {
+		          list-style: none;
+		        }
+		        .usersList {
+		          display: flex;
+		          flex-flow: row nowrap;
+		          justify-content: space-between;
+		          align-items: center;
+		          .buttons {
+		        	margin-left: 40px;
+					display: flex;
+					flex-flow: column nowrap;
+					justify-content: space-between;
+					align-items: center;
+		          }
+		        }
+		        li {
+		        	margin-bottom: 5px;
+		        }
+		    }
+		}
+	}

@@ -1,3 +1,16 @@
+.ext_flex-start_, #calendars #section #options #leyend #workingLeyend, #calendars #section #options #leyend #fridayLeyend, #calendars #section #options #leyend #intensiveLeyend, #calendars #section #options #leyend #specialLeyend, #calendars #section #options #leyend #holidaysLeyend, #calendars #section #options #leyend #non_workingLeyend, #imputeHours #section #statistics #leyend #workingLeyend, #imputeHours #section #statistics #leyend #fridayLeyend, #imputeHours #section #statistics #leyend #intensiveLeyend, #imputeHours #section #statistics #leyend #specialLeyend, #imputeHours #section #statistics #leyend #holidaysLeyend, #imputeHours #section #statistics #leyend #non_workingLeyend {
+  margin-top: 5px;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.ext_cellColor, #calendars #section .showHolidays a, #calendars #section .showWorking a, #calendars #section .showFriday a, #calendars #section .showIntensive a, #calendars #section .showSpecial a, #calendars #section .showNon_working a {
+  background-image: none !important;
+  color: #ffffff !important;
+}
+
 #complex_layout {
   height: 100%;
   /* Sidebar Styles */
@@ -749,7 +762,6 @@
   background-color: #FBFBFB;
   width: 330px;
   margin: 5px auto;
-  /*text-align: left;*/
   padding: 10px;
 }
 #calendars #section #options #leyend {
@@ -841,20 +853,7 @@
   }
 }
 
-.ext_flex-start_, #calendars #section #options #leyend #workingLeyend, #calendars #section #options #leyend #fridayLeyend, #calendars #section #options #leyend #intensiveLeyend, #calendars #section #options #leyend #specialLeyend, #calendars #section #options #leyend #holidaysLeyend, #calendars #section #options #leyend #non_workingLeyend {
-  margin-top: 5px;
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: flex-start;
-  align-items: center;
-}
-
-.ext_cellColor, #calendars #section .showHolidays a, #calendars #section .showWorking a, #calendars #section .showFriday a, #calendars #section .showIntensive a, #calendars #section .showSpecial a, #calendars #section .showNon_working a {
-  background-image: none !important;
-  color: #ffffff !important;
-}
-
-#imputeHours #daysDiv {
+#imputeHours #section #daysDiv {
   border: solid 1px gray;
   border-radius: 3px;
   width: 90%;
@@ -865,14 +864,14 @@
   justify-content: center;
   align-items: center;
 }
-#imputeHours #daysDiv .myWeek {
+#imputeHours #section #daysDiv .myWeek {
   width: 100%;
   display: flex;
   flex-flow: row wrap;
   justify-content: center;
   align-items: center;
 }
-#imputeHours #daysDiv .myWeek .myDay {
+#imputeHours #section #daysDiv .myWeek .myDay {
   border: solid 1px gray;
   background-color: #EAEAEA;
   border-radius: 3px;
@@ -880,34 +879,34 @@
   width: 85px;
   margin: 7px;
 }
-#imputeHours #daysDiv .myWeek .myDay:hover {
+#imputeHours #section #daysDiv .myWeek .myDay:hover {
   border: solid 1px #CAB023;
   background-color: #B7B7B7;
 }
-#imputeHours #daysDiv .myWeek .myDay.friday {
+#imputeHours #section #daysDiv .myWeek .myDay.friday {
   background-color: #286ABA;
 }
-#imputeHours #daysDiv .myWeek .myDay.working {
+#imputeHours #section #daysDiv .myWeek .myDay.working {
   background-color: #85AC0C;
 }
-#imputeHours #daysDiv .myWeek .myDay.intensive {
+#imputeHours #section #daysDiv .myWeek .myDay.intensive {
   background-color: #EBC21C;
 }
-#imputeHours #daysDiv .myWeek .myDay.special {
+#imputeHours #section #daysDiv .myWeek .myDay.special {
   background-color: #FF831C;
 }
-#imputeHours #daysDiv .myWeek .myDay.holidays {
+#imputeHours #section #daysDiv .myWeek .myDay.holidays {
   background-color: #ff0000;
 }
-#imputeHours #daysDiv .myWeek .myDay.non_working {
+#imputeHours #section #daysDiv .myWeek .myDay.non_working {
   background-color: #808080;
 }
-#imputeHours #daysDiv .myWeek .myDay.desactive {
+#imputeHours #section #daysDiv .myWeek .myDay.desactive {
   pointer-events: none;
   cursor: default;
   background-color: #484747;
 }
-#imputeHours #daysDiv .myHeader {
+#imputeHours #section #daysDiv .myHeader {
   height: 25px;
   border-bottom: solid 1px gray;
   font-family: monospace;
@@ -918,33 +917,33 @@
   justify-content: center;
   align-items: center;
 }
-#imputeHours #daysDiv .myInput {
+#imputeHours #section #daysDiv .myInput {
   padding: 5px 8px;
 }
-#imputeHours #daysDiv .myInput input {
+#imputeHours #section #daysDiv .myInput input {
   text-align: center;
   font-size: 19px;
   color: red;
   transition: all .8s ease;
 }
-#imputeHours #daysDiv .myInput input:focus {
+#imputeHours #section #daysDiv .myInput input:focus {
   font-size: 20px;
   color: #D70303;
 }
-#imputeHours #daysDiv .myFooter {
+#imputeHours #section #daysDiv .myFooter {
   display: flex;
   flex-flow: row wrap;
   justify-content: space-around;
   align-items: center;
   margin-top: 5px;
 }
-#imputeHours #daysDiv .myFooter i {
+#imputeHours #section #daysDiv .myFooter i {
   font-size: 10px;
 }
-#imputeHours #daysDiv .myFooter a:nth-of-type(1) {
+#imputeHours #section #daysDiv .myFooter a:nth-of-type(1) {
   background-color: #F15A29;
 }
-#imputeHours #daysDiv .myFooter a:nth-of-type(2) {
+#imputeHours #section #daysDiv .myFooter a:nth-of-type(2) {
   background-color: #D6D6D6;
   color: black;
 }
@@ -966,103 +965,136 @@
   margin-top: -15px;
 }
 
-#imputeHours #statistics {
+#imputeHours #section #statistics {
   width: 95%;
   margin: auto;
   display: flex;
   flex-flow: row wrap;
   justify-content: space-around;
   align-items: flex-start;
+  /***** LEYEND *****/
 }
-#imputeHours #statistics .tableContainer {
+#imputeHours #section #statistics .tableContainer {
   overflow-x: auto;
   margin: 10px;
 }
-#imputeHours #statistics .tableContainer table, #imputeHours #statistics .tableContainer th, #imputeHours #statistics .tableContainer td {
+#imputeHours #section #statistics .tableContainer table, #imputeHours #section #statistics .tableContainer th, #imputeHours #section #statistics .tableContainer td {
   border: 1px solid #AAAAAA;
   border-collapse: collapse;
   padding: 5px 10px;
   text-align: center;
   vertical-align: center;
-  width: 150px;
 }
-#imputeHours #statistics .tableContainer th {
+#imputeHours #section #statistics .tableContainer th {
   background-color: #333;
   color: white;
 }
-#imputeHours #statistics .tableContainer tr.odd {
+#imputeHours #section #statistics .tableContainer tr.odd {
   background-color: #999999;
   color: white;
 }
-#imputeHours #statistics .tableContainer tr:hover:not(.notHoverPlease) * {
+#imputeHours #section #statistics .tableContainer tr:hover:not(.notHoverPlease) * {
   border-bottom: 1px solid #F15A29;
   border-left: 1px solid #F15A29;
 }
-#imputeHours #statistics .tableContainer .imputeHoursOnRed {
+#imputeHours #section #statistics .tableContainer .imputeHoursOnRed {
   background-color: #E54343;
   color: white;
 }
-
-#home-view .notification-center {
-  margin-bottom: 20px;
+#imputeHours #section #statistics #leyend {
+  border: solid 1px #6C6C6C;
+  border-radius: 5px;
+  background-color: #FBFBFB;
+  width: 220px;
+  margin: 5px auto;
+  text-align: left;
+  padding: 10px;
 }
-#home-view .notification-center h1 {
-  display: inline-block;
-  margin: 0 10px 0 0;
-}
-#home-view .notification-center .notification {
-  display: inline-block;
-  font-size: 30px;
-  margin: 0 10px 0 10px;
-  color: rgba(0, 0, 0, 0.6);
-  cursor: pointer;
-}
-#home-view .notification-center .notification.active, #home-view .notification-center .notification:hover {
-  color: #F15A29;
-}
-#home-view .notification-center .notification .notification-icon {
-  position: relative;
-}
-#home-view .notification-center .notification .notification-icon .notification-total {
-  position: absolute;
-  z-index: 99;
-  font-size: 10px;
-  background: #F15A29;
-  width: 20px;
+#imputeHours #section #statistics #leyend .leyendBox {
   height: 20px;
+  width: 60px;
+  border-radius: 2px;
+  border: solid 1px black;
+  display: inline-block;
+}
+#imputeHours #section #statistics #leyend #workingLeyend div:first-of-type {
+  background-color: #85AC0C;
+  margin: 3px 10px 5px 3px;
+}
+#imputeHours #section #statistics #leyend #fridayLeyend div {
+  background-color: #286ABA;
+  margin: 5px 10px 7px 3px;
+}
+#imputeHours #section #statistics #leyend #intensiveLeyend div {
+  background-color: #EBC21C;
+  margin: 5px 10px 7px 3px;
+}
+#imputeHours #section #statistics #leyend #specialLeyend div {
+  background-color: #FF831C;
+  margin: 5px 10px 7px 3px;
+}
+#imputeHours #section #statistics #leyend #holidaysLeyend div {
+  background-color: #ff0000;
+  margin: 5px 10px 7px 3px;
+}
+#imputeHours #section #statistics #leyend #non_workingLeyend div:first-of-type {
+  background-color: #808080;
+  margin: 5px 10px 7px 3px;
+}
+#imputeHours #section #statistics #leyend #workingRange, #imputeHours #section #statistics #leyend #fridayRange,
+#imputeHours #section #statistics #leyend #intensiveRange, #imputeHours #section #statistics #leyend #specialRange {
+  text-align: right;
+  font-size: 15px;
+  margin-top: -6px;
+}
+
+#notifications #header #headerContent .rightMargin span {
+  font-size: 22px;
+  color: blue;
+}
+#notifications #section table .options-section {
   text-align: center;
-  color: white;
-  font-weight: bold;
-  border-radius: 100px;
-  bottom: -5px;
-  right: -10px;
-  line-height: 20px;
 }
-#home-view .notification-canvas {
-  margin-top: 20px;
+#notifications #section .notiTypes i {
+  font-size: 30px;
+  margin-bottom: 5px;
 }
-#home-view .notification-canvas .notification-alert {
-  overflow: auto;
-  margin-bottom: 10px;
+#notifications #section .notiTypes i.hours_validated {
+  color: red;
 }
-#home-view .notification-canvas .notification-alert:first-child hr {
-  display: none;
+#notifications #section .notiTypes i.hours_pending_req {
+  color: blue;
 }
-#home-view .notification-canvas .notification-alert .time-zone {
-  color: rgba(0, 0, 0, 0.4);
-  letter-spacing: 1px;
-  font-size: 10px;
-  font-weight: bold;
+#notifications #section .notiTypes i.hours_req {
+  color: green;
 }
-#home-view .notification-canvas .notification-alert hr {
-  margin: 0 0 20px 15px;
-  width: 30%;
+#notifications #section #itemsList {
+  width: 80%;
+  margin: 15px auto;
+  padding: 15px;
+  border: 1px solid #E0E0E0;
 }
-#home-view .inside-calendar {
-  position: absolute;
-  top: 19px;
-  font-size: 13px;
-  left: 7px;
+#notifications #section #itemsList:hover {
+  background-color: #F6F6F6;
+}
+#notifications #section #itemsList ul li {
+  list-style: none;
+}
+#notifications #section #itemsList .usersList {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: center;
+}
+#notifications #section #itemsList .usersList .buttons {
+  margin-left: 40px;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: space-between;
+  align-items: center;
+}
+#notifications #section #itemsList li {
+  margin-bottom: 5px;
 }
 
 html, body, body > div, div[ui-view] {
@@ -1133,7 +1165,7 @@ html.blockView {
 }
 .btn.btn-gray {
   outline: none;
-  margin-top: 20px;
+  margin-top: 15px;
   color: white;
   border: none;
   padding: 7px 20px;

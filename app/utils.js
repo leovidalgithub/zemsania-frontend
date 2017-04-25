@@ -152,6 +152,19 @@ function toGMT0(date) {
     date.setMinutes(0);
     date.setSeconds(0);
     date.setMilliseconds(0);
-
     return new Date(date.valueOf() + now.getTimezoneOffset() * 60000);
+}
+
+function showUpButton( upButton, currentScroll ) { // if ( scrollWrapper.scrollTop + window.innerHeight >= scrollWrapper.scrollHeight )
+            if ( currentScroll >= 400 ) {
+                upButton.fadeIn( 'slow' );
+            }
+                if ( currentScroll < 400 ) {
+                upButton.fadeOut( 'slow' );
+            }
+}
+
+// TO TAKE SECTION SCROLL TO TOP
+function takeMeUp() {
+    $( '#page-content-wrapper #section' ).animate( { scrollTop: 0 }, 'slow' );
 }

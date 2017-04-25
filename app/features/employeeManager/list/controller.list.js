@@ -46,10 +46,6 @@
             $( '[ng-click="stepPage(numberOfPages)"]'  ).text( $filter( 'i18next' )( 'actions.lastPage' ) );
         });
 
-        $scope.pageGetUp = function() {
-            $( '#page-content-wrapper #section' ).animate( { scrollTop: 0 }, 'slow' );
-        };
-
         $scope.$on( '$destroy', function () {
             $scope.tmpData( 'add', 'employeeManagerListPage', $scope.tableConfig.currentPage );
         });
@@ -59,6 +55,7 @@
             $scope.$digest();
             setUsersView();
         });
+
         function setUsersView() {
             if( $window.innerWidth < 930 ) {
                 $scope.viewSet = false;
@@ -67,16 +64,16 @@
             }
         }
 
-        var wrapper = document.getElementById( 'section' );
-        wrapper.onscroll = function ( event ) {
-            // if ( wrapper.scrollTop + window.innerHeight >= wrapper.scrollHeight ) {
-            if ( wrapper.scrollTop >= 400 ) {
-                $( '#toUpButton' ).fadeIn( 'slow' );
-            }
-                if ( wrapper.scrollTop < 400 ) {
-            $( '#toUpButton' ).fadeOut( 'slow' );
-            }
+        // SECTION SCROLL MOVE EVENT TO MAKE BUTTON 'toUpButton' APPEAR
+        var scrollWrapper = document.getElementById( 'section' );
+        scrollWrapper.onscroll = function ( event ) {
+            var currentScroll = scrollWrapper.scrollTop;
+            var upButton = $( '#toUpButton' );
+            showUpButton( upButton, currentScroll );
         };
+
+        // BUTTON TO TAKE SECTION SCROLL TO TOP
+        $scope.pageGetUp = function() { takeMeUp() };
 
 }
 

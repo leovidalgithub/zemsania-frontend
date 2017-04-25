@@ -9,7 +9,7 @@
         $stateProvider
             .state( 'dashboard', {
                 url: '/dashboard',
-                templateUrl: '/features/dashboard/home/notifications.tpl.html',
+                templateUrl: '/features/dashboard/notifications/notifications.tpl.html',
                 controller: 'HomeController',
                 data: {
                     template: 'complex',

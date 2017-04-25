@@ -65,10 +65,12 @@
                         <i class="fa fa-arrow-left"></i></button>
                     <button class="btn btn-primary" ng-click="moveDate(+1)" title="{{'words.next' | i18next}}">
                         <i class="fa fa-arrow-right"></i></button>
-                    <button ng-show="weekViewMode" class="btn btn-primary" ng-click="monthWeekViewSwap()">
+                    <button ng-show="weekViewMode" class="btn btn-primary" ng-click="monthWeekViewSwap()"
+                             title="{{'calendar.imputeHours.changeToMonthView' | i18next}}">
                             {{'calendar.imputeHours.monthView' | i18next}}
                     </button>
-                    <button ng-hide="weekViewMode" class="btn btn-primary" ng-click="monthWeekViewSwap()">
+                    <button ng-hide="weekViewMode" class="btn btn-primary" ng-click="monthWeekViewSwap()"
+                             title="{{'calendar.imputeHours.changeToWeekView' | i18next}}">
                             {{'calendar.imputeHours.weekView' | i18next}}
                     </button>
                 </div>
@@ -113,17 +115,30 @@
 
 <hr><!-- STATISTICS CONTROLLER **************************************************************************************************** -->
         <div ng-controller="imputeHoursStatsController">
-<!-- <button class="btn btn-md btn-success" ng-click="fn()">Go!</button> -->
             <div id="statistics">
+
+                <!-- LEYEND -->
+                <div id="leyend">
+                    <div id="workingLeyend"><div class="leyendBox"></div><span>{{'calendars.workingDays' | i18next}}</span></div>
+                    <div id="workingRange"></div>
+                    <div id="fridayLeyend"><div class="leyendBox"></div><span>{{'calendars.fridays' | i18next}}</span></div>
+                    <div id="fridayRange"></div>
+                    <div id="intensiveLeyend"><div class="leyendBox"></div><span>{{'calendars.intensiveDays' | i18next}}</span></div>
+                    <div id="intensiveRange"></div>
+                    <div id="specialLeyend"><div class="leyendBox"></div><span>{{'calendars.specialDays' | i18next}}</span></div>
+                    <div id="specialRange"></div>
+                    <div id="holidaysLeyend"><div class="leyendBox"></div><span>{{'calendars.holidays' | i18next}}</span></div>
+                    <div id="non_workingLeyend"><div class="leyendBox"></div><span>{{'calendars.non_workingDays' | i18next}}</span></div>
+                </div>
 
                 <!-- PROJECTS TABLE -->
                 <div id="projectsTable" class="tableContainer">
-                    <table>
+                    <table style="table-layout: fixed; width: 500px;">
                         <tr class="notHoverPlease">
-                            <th>Proyecto</th>
-                            <th>Horas</th>
-                            <th>Guardias</th>
-                            <th>Jornadas</th>
+                            <th style="width: 46%;">{{'calendar.imputeHours.project' | i18next}}</th>
+                            <th style="width: 18%;">{{'calendar.imputeHours.hours' | i18next}}</th>
+                            <th style="width: 18%;">{{'calendar.imputeHours.guards' | i18next}}</th>
+                            <th style="width: 18%;">{{'calendar.imputeHours.dailywork' | i18next}}</th>
                         </tr>
                         <tr ng-class="{'odd':$odd}" ng-repeat="(key, project) in showStatsObj.projectsInfo">
                             <td>{{project.projectName}}</td>
@@ -136,25 +151,25 @@
 
                 <!-- SUMMARY TABLE -->
                 <div class="tableContainer">
-                    <table>
+                    <table style="table-layout: fixed; width: 330px;">
                         <tr class="notHoverPlease">
-                            <th>Resumen</th>
-                            <th></th>
-                            <th>Media</th>
+                            <th style="width: 60%;">{{'calendar.imputeHours.summary' | i18next}}</th>
+                            <th style="width: 20%;"></th>
+                            <th style="width: 20%;">{{'calendar.imputeHours.media' | i18next}}</th>
                         </tr>
                         <tr>
-                            <td>Total Horas Imputadas</td>
+                            <td>{{'calendar.imputeHours.totalHours' | i18next}}</td>
                             <td ng-class="{'imputeHoursOnRed':showStatsObj.summary.totalImputeHours > 
                             showStatsObj.calendarInfo.totalHoursByMonth}">{{showStatsObj.summary.totalImputeHours}}</td>
                             <td>{{showStatsObj.calendarInfo.totalHoursByMonth}}</td>
                         </tr>
                         <tr class="odd">
-                            <td>Total Guardias Imputadas</td>
+                            <td>{{'calendar.imputeHours.totalGuards' | i18next}}</td>
                             <td>{{showStatsObj.summary.totalImputeGuards}}</td>
                             <td>0</td>
                         </tr>
                         <tr>
-                            <td>Total Jornadas trabajadas</td>
+                            <td>{{'calendar.imputeHours.totalDailywork' | i18next}}</td>
                             <td>{{showStatsObj.summary.totalDailyWork}}</td>
                             <td>0</td>
                         </tr>
@@ -164,29 +179,27 @@
 
                 <!-- DAILYWORK TABLE -->
                 <div class="tableContainer">
-                    <table>
+                    <table style="table-layout: fixed; width: 230px;">
                         <tr class="notHoverPlease">
-                            <th>Guardias</th>
-                            <th>Jornadas</th>
+                            <th style="width: 60%;">{{'calendar.imputeHours.guards' | i18next}}</th>
+                            <th style="width: 40%;">{{'calendar.imputeHours.dailywork' | i18next}}</th>
                         </tr>
                         <tr>
-                            <td>Turnicidad</td>
+                            <td>{{'calendar.imputeHours.turns' | i18next}}</td>
                             <td>{{showStatsObj.guardsInfo.totalTurns}}</td>
                         </tr>
                         <tr class="odd">
-                            <td>Guardia</td>
+                            <td>{{'calendar.imputeHours.guard' | i18next}}</td>
                             <td>{{showStatsObj.guardsInfo.totalGuards}}</td>
                         </tr>
                         <tr>
-                            <td>Varios</td>
+                            <td>{{'calendar.imputeHours.various' | i18next}}</td>
                             <td>{{showStatsObj.guardsInfo.totalVarious}}</td>
                         </tr>
                     </table>
                 </div>
 
-
             </div>
-
         </div>
     </section>
 

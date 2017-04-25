@@ -7,11 +7,16 @@
     DashboardFactory.$invoke = [ '$http', '$q' ];
     function DashboardFactory( $http, $q ) {
         return {
+            
             getUnreadNotifications: function () {
                 var dfd = $q.defer();
                 $http.get( buildURL( 'unreadNotifications' ) )
                     .then( function ( response ) {
-                        dfd.resolve( response.data );
+                        var notifications = response.data.notifications;
+                        notifications.forEach( function( notification ) {
+                            notification.senderId.fullName = notification.senderId.name + ' ' + notification.senderId.surname;
+                        });
+                        dfd.resolve( notifications );
                         })
                         .catch( function ( err ) {
                             dfd.reject( err );
@@ -36,7 +41,7 @@
                     //     }
 
             },
-            markNotificationAsRead: function ( id ) {
+            // markNotificationAsRead: function ( id ) {
                 // var dfd = $q.defer();
                 // $http.post( buildURL( 'markReadNotifications' ), id )
                 //     .then(function () {
@@ -45,7 +50,7 @@
                 //         dfd.resolve( err );
                 //     });
                 // return dfd.promise;
-            }
+            // }
         };
     }
 }());

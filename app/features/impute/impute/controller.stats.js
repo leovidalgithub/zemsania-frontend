@@ -13,7 +13,6 @@
         $scope.$on( 'refreshStats', function( event, data ) {
             generalDataModel = data.generalDataModel;
             if( !millisecondsByType ) getMillisecondsByType();
-            // $( '#imputeHours #section' ).animate( { scrollTop: 300 }, 'slow' );
             buildStatsObj();
         });
 
@@ -24,6 +23,7 @@
             temp.summary        = getsummary( temp.projectsInfo );
             temp.calendarInfo   = getcalendarInfo();
             $scope.showStatsObj = angular.copy( temp );
+            // $( '#imputeHours #section' ).animate( { scrollTop: 300 }, 'slow' );
         }
 
         function getProjectsInfo() {
@@ -92,7 +92,16 @@
                 }
                 return dailyWork;
             }
-            
+            // when one project has not info it does not exist so we create it and fill with zeros (for visual purposes)
+            $scope.userProjects.forEach( function( project ) {
+                if( !projectsInfoTemp[ project._id ] ) {
+                    projectsInfoTemp[ project._id ] = {};
+                    projectsInfoTemp[ project._id ].dailyWork   = 0;
+                    projectsInfoTemp[ project._id ].totalGuards = 0;
+                    projectsInfoTemp[ project._id ].totalHours  = 0;
+                    projectsInfoTemp[ project._id ].projectName = project.name;
+                }
+            });
             return projectsInfoTemp;
         }
 
