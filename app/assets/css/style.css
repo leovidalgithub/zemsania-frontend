@@ -417,6 +417,10 @@
 #complex_layout .advanced-search .form-actions .btn.btn-warning:hover {
   background-color: #858585 !important;
 }
+#complex_layout #section .clearBoth {
+  clear: both;
+  margin-top: 120px;
+}
 #complex_layout .form-group {
   margin-bottom: 25px;
 }
@@ -872,9 +876,8 @@
   align-items: center;
 }
 #imputeHours #section #daysDiv .myWeek .myDay {
-  border: solid 1px gray;
-  background-color: #EAEAEA;
-  border-radius: 3px;
+  position: relative;
+  border-radius: 5px;
   height: 95px;
   width: 85px;
   margin: 7px;
@@ -901,10 +904,63 @@
 #imputeHours #section #daysDiv .myWeek .myDay.non_working {
   background-color: #808080;
 }
-#imputeHours #section #daysDiv .myWeek .myDay.desactive {
+#imputeHours #section #daysDiv .myWeek .myDay.desactivedNotCurrentMonth {
   pointer-events: none;
   cursor: default;
-  background-color: #484747;
+  background-color: #F4F4F4;
+}
+#imputeHours #section #daysDiv .myWeek .myDay.desactivedNotCurrentMonth .myHeader {
+  color: #666;
+}
+#imputeHours #section #daysDiv .myWeek .myDay.desactivedByStatus {
+  background-color: #DBDADA;
+}
+#imputeHours #section #daysDiv .myWeek .myDay.desactivedByStatus .myHeader {
+  color: #333;
+}
+#imputeHours #section #daysDiv .myWeek .myDay .infoTag {
+  z-index: 999;
+  position: absolute;
+  top: -13px;
+  left: -13px;
+  background-color: white;
+  border-radius: 100px;
+  height: 30px;
+  width: 30px;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+}
+#imputeHours #section #daysDiv .myWeek .myDay .infoTag.friday {
+  border: 3px solid #286ABA;
+}
+#imputeHours #section #daysDiv .myWeek .myDay .infoTag.working {
+  border: 3px solid #85AC0C;
+}
+#imputeHours #section #daysDiv .myWeek .myDay .infoTag.intensive {
+  border: 3px solid #EBC21C;
+}
+#imputeHours #section #daysDiv .myWeek .myDay .infoTag.special {
+  border: 3px solid #FF831C;
+}
+#imputeHours #section #daysDiv .myWeek .myDay .infoTag.holidays {
+  border: 3px solid #ff0000;
+}
+#imputeHours #section #daysDiv .myWeek .myDay .infoTag.non_working {
+  border: 3px solid #808080;
+}
+#imputeHours #section #daysDiv .myWeek .myDay .infoTag.draft {
+  color: #105EEE;
+}
+#imputeHours #section #daysDiv .myWeek .myDay .infoTag.sent {
+  color: #FFB400;
+}
+#imputeHours #section #daysDiv .myWeek .myDay .infoTag.approved {
+  color: #1B9C1B;
+}
+#imputeHours #section #daysDiv .myWeek .myDay .infoTag.rejected {
+  color: #D10000;
 }
 #imputeHours #section #daysDiv .myHeader {
   height: 25px;
@@ -1060,13 +1116,19 @@
   margin-bottom: 5px;
 }
 #notifications #section .notiTypes i.hours_validated {
-  color: red;
+  color: #DE0202;
 }
 #notifications #section .notiTypes i.hours_pending_req {
-  color: blue;
+  color: #1C1CED;
 }
 #notifications #section .notiTypes i.hours_req {
-  color: green;
+  color: #009C00;
+}
+#notifications #section .notiTypes i.holiday_req {
+  color: #D68C16;
+}
+#notifications #section .notiTypes i.hours_rejected {
+  color: #990ADC;
 }
 #notifications #section #itemsList {
   width: 80%;
@@ -1095,6 +1157,57 @@
 }
 #notifications #section #itemsList li {
   margin-bottom: 5px;
+}
+
+#approvalHours #header #headerContent .rightMargin span {
+  font-size: 22px;
+  color: blue;
+}
+#approvalHours #section .collapsing {
+  color: #E1E1E1 !important;
+}
+#approvalHours #section .myEmployee {
+  color: #333;
+  font-size: 18px;
+  margin: 20px;
+  transition: all .3s ease;
+}
+#approvalHours #section .myEmployee i {
+  font-size: 22px;
+  margin-right: 8px;
+  transition: all .3s ease;
+}
+#approvalHours #section .myEmployee:hover {
+  font-size: 18.3px;
+}
+#approvalHours #section .myEmployee:hover i {
+  font-size: 26px;
+  color: #3A70EC;
+}
+#approvalHours #section .myEmployee i.opened {
+  color: #73E173;
+}
+#approvalHours #section .employeeCollapse {
+  padding: 0;
+  margin: 0;
+}
+#approvalHours #section .employeeContent {
+  border: 8px outset #B8F3B8;
+  background-color: #EFFFEE;
+  padding: 10px;
+  font-family: monospace;
+  font-size: 21px;
+  height: 100px;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+}
+#approvalHours #section .employeeContent p {
+  margin: 0;
+}
+#approvalHours #section .employeeContent p span {
+  color: blue;
 }
 
 html, body, body > div, div[ui-view] {

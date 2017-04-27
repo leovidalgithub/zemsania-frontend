@@ -2,19 +2,33 @@
     'use strict';
     angular
         .module( 'hours.dashboard' )
-        .controller( 'HomeController', HomeController );
+        .controller( 'NotificationController', NotificationController );
 
-    HomeController.$invoke = [ '$scope', 'notifications', '$window' ];
-    function HomeController( $scope, notifications, $window ) {
+    NotificationController.$invoke = [ '$scope', 'notifications', '$window' ];
+    function NotificationController( $scope, notifications, $window ) {
+
+        $scope.tableConfig = {
+            itemsPerPage: getItemsPerPage( 125 ),
+            maxPages: "3",
+            fillLastPage: false,
+            currentPage: $scope.tmpData( 'get', 'notificationsListPage' ) || 0
+        };
 
         setUsersView();
         $scope.notifications = notifications;
 
-        for( var i = 1; i < 20; i++ ) {
-            var aa = angular.copy( notifications[0] );
-            aa._id = '32r32r324r433_' + ( i + 34573 );
-            notifications.push( aa );
-        }
+// *********************************************** JUST FOR TESTING PURPOSES ***********************************************
+        // for( var i = 1; i < 20; i++ ) {
+        //     var aa = angular.copy( notifications[0] );
+        //     aa._id = '32r32r324r433_' + ( i + 34573 );
+        //     notifications.push( aa );
+        // }
+        // var typesArray = ['holiday_req','hours_req','hours_validated','hours_rejected','hours_pending_req'];
+        // $scope.notifications.forEach( function( el ) {
+        //     var random = Math.floor( Math.random() * 5 );
+        //     el.type = typesArray[random];
+        // });
+// *************************************************************************************************************************
 
         angular.element( $window ).bind( 'resize', function() {
             $scope.$digest();
@@ -39,6 +53,11 @@
 
         // BUTTON TO TAKE SECTION SCROLL TO TOP
         $scope.pageGetUp = function() { takeMeUp() };
+
+        $scope.$on( '$destroy', function () {
+            $scope.tmpData( 'add', 'notificationsListPage', $scope.tableConfig.currentPage );
+        });
+
 
 // ******************************************************* *******************************************************
         // $scope.notifications = notifications;

@@ -32,6 +32,18 @@
                 return dfd.promise;
             },
 
+            advancedCalendarSearch: function( query ) { // LEO WAS HERE
+                var dfd = $q.defer();
+                $http.post( buildURL( 'advancedCalendarSearch' ), query)
+                    .then( function ( response ) {
+                      dfd.resolve( response.data.calendars );
+                    })
+                    .catch( function ( err ) {
+                        dfd.reject( err );
+                    });
+                return dfd.promise;
+            },
+
             // getCalendars: function () { // LEO WAS HERE
             //     var dfd = $q.defer();
             //     $http.get( buildURL( 'getCalendars' ) )

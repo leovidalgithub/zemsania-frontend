@@ -142,11 +142,13 @@
                 }
                 // GET TIMESHEET VALUE
                 var value = 0;
+                var status = '';
                 if( ts[ currentProject ] ) {
                     if( ts[ currentProject ][ thisDate ] ) {
                         if( ts[ currentProject ][ thisDate ][ currentType ] ) {
                             if( ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ] ) {
                                 value = parseFloat( ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ].value );
+                                status = ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ].status;
                             }
                         }
                     }
@@ -157,6 +159,7 @@
                         // VALUE AND DAYTYPE
                         $scope.showDaysObj.weeks[ week ][ thisDate ].dayType = dayType;
                         $scope.showDaysObj.weeks[ week ][ thisDate ].value   = value;
+                        $scope.showDaysObj.weeks[ week ][ thisDate ].status  = status;
                         // INPUTTYPE AND CHECKVALUE
                         if( currentType == 'Guardias' ) {
                             $scope.showDaysObj.weeks[ week ][ thisDate ].inputType = 'checkbox';
@@ -169,11 +172,12 @@
             }
             slideContent( false );
             $scope.$broadcast( 'refreshStats', { generalDataModel : generalDataModel } );
+            $scope.pendingDrafts = findDrafts( false ); // there is some pending draft? (for 'SEND' button)
         }
 
         $scope.inputChanged = function( value ) {
             // verifies if entered value is null or NaN
-            if( value.value === null || isNaN( value.value ) ) {
+            if( value.value === null || isNaN( value.value ) ) { // (NaN is a number)
                 value.value = 0;
             } else {
                 value.value = parseFloat( value.value );             
@@ -206,27 +210,69 @@
             ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ].modified = true;
             
             $scope.$broadcast( 'refreshStats', { generalDataModel : generalDataModel } );
+            refreshShowDaysObj();
         };
 
-        $scope.save = function() {
-            var data = []; // to send an array of just 'timesheetDataModel' objects
+        function findDrafts( toSend ) {
+            
+            for( var date in generalDataModel ) {
+                for( var projectId in generalDataModel[date].timesheetDataModel ) {
+                    for( var day in generalDataModel[date].timesheetDataModel[projectId] ) {
+                        for( var type in generalDataModel[date].timesheetDataModel[projectId][day] ) {
+                            for( var subType in generalDataModel[date].timesheetDataModel[projectId][day][type] ) {
+                                if( generalDataModel[date].timesheetDataModel[projectId][day][type][subType].status == 'draft' ) {
+
+                                    if( !toSend ) { // just to know if there is some 'draft'
+                                        return true;
+                                    }
+
+                                    console.log( 'change to sent' );
+                                    generalDataModel[date].timesheetDataModel[projectId][day][type][subType].status = 'sent';
+                                    generalDataModel[date].timesheetDataModel[projectId][day][type][subType].modified = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return false; // not 'draft' found
+        }
+
+        $scope.save = function( send ) {
+            // if send: all 'draft' gonna be change to 'sent' and 'modified' to true ( findDrafts() )
+            if( send ) {
+                findDrafts( true );
+                refreshShowDaysObj();
+            }
+
+            var myPromises = [];
+            var data       = []; // to send an array of just 'timesheetDataModel' objects
             for( var date in generalDataModel ) {
                 data.push( generalDataModel[ date ].timesheetDataModel );
             }
-            imputeHoursFactory.setAllTimesheets( data )
+
+            myPromises.push( imputeHoursFactory.setAllTimesheets( data ) );
+            if( send ) myPromises.push( imputeHoursFactory.insertNewNotification() );
+
+            Promise.all( myPromises )
+            // imputeHoursFactory.setAllTimesheets( data )
                 .then( function( data ) {
                     $scope.changes.pendingChanges = false;
                     $rootScope.pendingChanges = false;
-                    // success saving message alert
-                    $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.savingSuccess' );
+                    // success saving (and send) message alert
+                    if( send ) {
+                        $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.sendingSuccess' );
+                    } else {
+                        $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.savingSuccess' );                        
+                    }
                     alertMsgOpen( true );
                 })
                 .catch( function( err ) {
                     // error saving message alert
                     $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorSaving' );
-                    alertMsgOpen( false );
+                    alertMsgOpen( false )
                 })
-                .finally( function() {
+                .then( function() { //(.then is .finally for Promise.all)
                     if( goToState ) {
                         $state.go( goToState );
                         goToState = null;

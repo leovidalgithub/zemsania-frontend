@@ -23,7 +23,6 @@
             temp.summary        = getsummary( temp.projectsInfo );
             temp.calendarInfo   = getcalendarInfo();
             $scope.showStatsObj = angular.copy( temp );
-            // $( '#imputeHours #section' ).animate( { scrollTop: 300 }, 'slow' );
         }
 
         function getProjectsInfo() {

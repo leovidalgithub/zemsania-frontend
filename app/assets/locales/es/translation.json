@@ -40,6 +40,7 @@
         }
     },
     "sidebar": {
+        "notifications": "Notificaciones",
         "dashboard": "Página principal",
         "userProfile": "Mi perfil",
         "employeeManager": "Gestionar empleados",
@@ -53,8 +54,8 @@
         "imputeSpents": "Listado de gastos",
         "calendars": "Calendarios",
         "workloadSchemes": "Horarios",
-        "employeeTimesheets": "Aprobacion Gestor",
-        "projectTimesheets": "Aprobacion proyecto",
+        "approvalHours": "Aprobación Gestor",
+        "projectTimesheets": "Aprobación proyecto",
         "imputeAbsences": "Registrar ausencia",
         "moderateAbsences": "Gestión de ausencias",
         "exportFiles": "Exportación de tablas "
@@ -141,7 +142,8 @@
         "no": "No",
         "comments": "Comentarios",
         "next": "Siguiente",
-        "previous": "Anterior"
+        "previous": "Anterior",
+        "from": "De:"
     },
     "employeeManager": {
         "list": {
@@ -164,13 +166,13 @@
             "saveError": "Ha ocurrido un error al guardar los datos. Inténtalo más tarde"
         }
     },
-    "employeeTimesheets": {
-        "title": "Aprobacion Via Gestor",
+    "approvalHours": {
+        "title": "Aprobación vía Gestor",
         "description": "La descripción de la página de tiempos de empleados se explica aquí ..",
         "search": "buscar empleado .."
     },
     "projectTimesheets": {
-        "title": "Aprobacion Via Proyectos",
+        "title": "Aprobación Via Proyectos",
         "description": "La descripción de las páginas de los proyectos .."
     },
     "calendars": {
@@ -224,7 +226,8 @@
             "errorNoProjects": "No tiene ningún proyecto asignado o hubo un error al cargarlo",
             "errorNoCalendar": "No tiene ningún calendario asignado o hubo un error al cargarlo",
             "savingCalendar": "Guardando horas imputadas en el calendario...",
-            "savingSuccess": "Las horas se han imputado correctamente",
+            "savingSuccess": "Las Imputaciones se han guardado correctamente",
+            "sendingSuccess": "Las Imputaciones se han enviado correctamente",
             "approveCalendarSuccess": "Semana aprobada correctamente.",
             "approveCalendarError": "Ha ocurrido un problema al aprobar la semana",
             "rejectCalendarSuccess": "Semana rechazada correctamente",
@@ -247,7 +250,20 @@
             "media": "Media",
             "turns": "Turnicidad",
             "guard": "Guardia",
-            "various": "Varios"
+            "various": "Varios",
+            "sent": "Enviado",
+            "draft": "Modificando",
+            "approved": "Aprobado",
+            "rejected": "Rechazado",
+            "draftspending": "Hay imputaciones pendientes por enviar",
+            "notdraftspending": "No hay imputaciones pendientes por enviar",
+                "message": {
+                    "holiday_req": "Solicitud para aprobación de vacaciones",
+                    "hours_req": "Solicitud para aprobación de horas/guardias imputadas",
+                    "hours_validated": "Sus horas/guardias han sido aprobadas",
+                    "hours_rejected": "Sus horas/guardias han sido rechazadas",
+                    "hours_pending_req": "Recuerde que tiene horas/guardias por imputar"
+                }
         },
         "imputeHoursValidator": {
             "title": "Validación calendarios de imputación laborales",
@@ -345,12 +361,19 @@
         "title": "Notificaciones",
         "unread": "No leído",
         "read": "Leído",
+        "from": "De:",
+        "from2": "Remite",
+        "type": "Tipo",
+        "status": "Estado",
+        "msg": "Mensaje",
         "unreadNotifications": "notificaciones no leídas",
-        "type": {
-            "hours_validated": "ha validado las horas.",
-            "hours_rejected": "ha rechazado las horas.",
-            "hours_sent": "ha imputado sus horas.",
-            "holiday_request": "ha mandado a revisar su calendario de vacaciones. Se requiere una revisión de las mismas."
+        "types": {
+            "hours_validated": "Imputaciones aprobadas",
+            "hours_rejected": "Imputaciones rechazadas",
+            "hours_sent": "Imputaciones enviadas",
+            "hours_req": "Solicitud aprobación imputaciones",
+            "holiday_req": "Solicitud aprobación vacaciones",
+            "hours_pending_req": "Recordatorio para imputar"
         },
         "noNotifications": "No hay notificaciones por atender."
     },

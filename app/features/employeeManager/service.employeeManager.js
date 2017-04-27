@@ -14,10 +14,8 @@
                     .then( function ( response ) {
                         if ( response.data.success ) {
                             var employees = response.data.users;
-                            employees.forEach( function( employee ) { // create fullName field
-                                employee.fullName = employee.name + ' ' + employee.surname;
-                            });
-                                dfd.resolve( employees );
+                            createFullName( employees );
+                            dfd.resolve( employees );
                         } else {
                             dfd.reject( response );
                         }
@@ -31,18 +29,14 @@
                 var dfd = $q.defer();
                 $http.post( buildURL( 'advancedUserSearch' ), query)
                     .then( function ( response ) {
-                        if ( response.data.success ) {
-                            var employees = response.data.users;
-                            dfd.resolve( employees );
-                        } else {
-                            dfd.reject( response );
-                        }
+                        var employees = response.data.users;
+                        createFullName( employees );
+                        dfd.resolve( employees );
                     })
                     .catch( function ( err ) {
                         dfd.reject( err );
                     });
                 return dfd.promise;
-
             },
 
             getEmployeeFromID: function ( userID ) { // LEO WAS HERE
@@ -137,6 +131,12 @@
                 return dfd.promise;
             }
         };
+
+        function createFullName( employees ) {
+            employees.forEach( function( employee ) { // create fullName field
+                employee.fullName = employee.name + ' ' + employee.surname;
+            });
+        }
     }
 }());
 

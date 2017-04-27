@@ -10,7 +10,7 @@
             .state( 'dashboard', {
                 url: '/dashboard',
                 templateUrl: '/features/dashboard/notifications/notifications.tpl.html',
-                controller: 'HomeController',
+                controller: 'NotificationController',
                 data: {
                     template: 'complex',
                     permissions: {

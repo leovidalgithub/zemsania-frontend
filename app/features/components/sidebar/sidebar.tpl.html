@@ -15,6 +15,10 @@
 
         <div class="sidebar-mobile">
             <li class="myTop"> <!-- LEO WORKING HERE - IMPUTE-HOURS -->
+                <a ui-sref="dashboard" ui-sref-active="active" ng-class="{'active' : activeState === 'userConfig'}">
+                <i class="fa fa-bars"></i> {{'sidebar.notifications' | i18next}}</a>
+            </li>
+            <li class="myTop"> <!-- LEO WORKING HERE - IMPUTE-HOURS -->
                 <a ui-sref="imputeHours" ui-sref-active="active" ng-class="{'active' : activeState === 'userConfig'}">
                 <i class="fa fa-clock-o"></i> {{'sidebar.timeCalendar' | i18next}}</a>
             </li>
@@ -34,10 +38,13 @@
                 <a class="not-active"  ui-sref="workloadSchemes" ng-class="{'active' : activeState === 'workloadSchemes'}"><i class="fa fa-hourglass-start"></i>
                     {{'sidebar.workloadSchemes' | i18next}}</a>
             </li>
+
             <li role-auth="{'only' : ['administrator', 'manager']}">
-                <a class="not-active"  ui-sref="employeeTimesheets" ng-class="{'active' : activeState === 'employeeTimesheets'}"><i class="fa fa-calendar-check-o"></i>
-                    {{'sidebar.employeeTimesheets' | i18next}}</a>
+                <a ui-sref="approvalHours" ng-class="{'active' : activeState === 'approvalHours'}">
+                    <i class="fa fa-calendar-check-o"></i>
+                    {{'sidebar.approvalHours' | i18next}}</a>
             </li>
+
             <li role-auth="{'only' : ['administrator', 'manager']}">
                 <a class="not-active"  ui-sref="projectTimesheets" ng-class="{'active' : activeState === 'projectTimesheets'}"><i class="fa fa-calendar-check-o"></i>
                     {{'sidebar.projectTimesheets' | i18next}}</a>

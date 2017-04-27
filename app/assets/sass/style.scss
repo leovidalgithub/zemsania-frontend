@@ -3,24 +3,8 @@
 $mobile: "(max-width: 767px)";
 $tablet: "(max-width: 1023px)";
 
-$zemsania: #F15A29;
-$black: #252525;
-$grey: #9E9E9E;
-$smookeWhite: whitesmoke;
-$red: #EF5350;
-$green: #9CCC65;
-$yellow: #FFEE58;
-$orange: #FFA726;
-
-// DAYTYPES COLORS
-$holidaysColor    : #ff0000;
-$workingColor     : #85AC0C;
-$fridayColor      : #286ABA;
-$intensiveColor   : #EBC21C;
-$specialColor     : #FF831C;
-$non_workingColor : #808080;
-
 // IMPORTS
+@import "colors";
 @import "extends";
 @import "../../layouts/complex";
 @import "../../layouts/login";
@@ -28,6 +12,7 @@ $non_workingColor : #808080;
 @import "../../features/impute/impute/impute";
 @import "../../features/impute/impute/stats";
 @import "../../features/dashboard/notifications/notifications";
+@import "../../features/approval/approval/approvalhours";
 // @import "../../features/calendar/imputHours/imputHours";
 // @import "../../features/calendar/holidayCalendar/holidayCalendar";
 // @import "../../features/calendar/calendarCreator/calendarCreator";

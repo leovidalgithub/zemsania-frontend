@@ -1,0 +1,46 @@
+<!-- https://www.w3schools.com/bootstrap/bootstrap_ref_js_collapse.asp -->
+<div id="approvalHours">
+    <!-- HEADER TOOL-BAR -->
+    <header id="header">
+        <div id="headerContent">
+            <div class="flexDesign box-shadow p20 top-bar">
+                <div>
+                    <h1>{{'approvalHours.title' | i18next}}</h1>
+                </div>
+                 <div class="rightMargin">
+                     <h4><span>24</span> imputaciones por aprobar</h4>
+                </div> 
+            </div>
+        </div>
+    </header>
+
+    <!-- SECTION MAIN CONTENT -->
+    <section id="section" class="box-shadow p20">
+<!-- <button class="btn btn-success" ng-click="fn()">Go!</button> -->
+		<div ng-repeat="(key, employee) in obj">
+
+			<div class="myEmployee" ng-click="myEmployeeClick(employee._id)">
+					<i ng-hide="employee.opened" class="fa fa-calendar-plus-o hours_rejected closed" title="Open employee"></i>
+					<i ng-show="employee.opened" class="fa fa-calendar-minus-o hours_rejected opened" title="Close employee"></i>
+					{{employee.name}} / {{employee.opened}}
+			</div>
+			<!-- div.employeeCollapse inside of collapse div because margin/padding transition jumpy -->
+			<div id="{{employee._id}}" class="collapse employeeCollapse"> 
+
+				<div class="employeeContent">
+					<p>You have discovered <span>{{employee.name}}'s</span> secret!</p>
+				</div>
+			</div>
+		
+		</div>
+
+    </section>
+
+    <!-- FOOTER -->
+    <footer id="footer">
+        <div id="footerContent">
+            <div class="copyRight">Zemsania Time Manager&copy;</div>
+        </div>
+    </footer>
+
+</div>

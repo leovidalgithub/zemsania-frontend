@@ -1,0 +1,66 @@
+
+	#approvalHours {
+		#header {
+			#headerContent {
+				.rightMargin {
+					span {
+						font-size: 22px;
+						color: blue;
+					}
+				}
+			}
+		}
+
+		#section {
+			.collapsing { 
+				color: #E1E1E1 !important;
+			}
+			.myEmployee {
+				color: #333;
+				font-size: 18px;
+				margin: 20px;
+				transition: all .3s ease;
+				i {
+					font-size: 22px;
+					margin-right: 8px;
+					transition: all .3s ease;
+				}
+				&:hover {
+					font-size: 18.3px;
+					i {
+						font-size: 26px;
+						color: #3A70EC;
+					}
+				}
+				i.closed {
+					// color: #1047C3;
+				}
+				i.opened {
+					color: #73E173;
+				}
+			}
+			.employeeCollapse {
+				padding: 0;
+				margin: 0;
+			}
+			.employeeContent {
+				border: 8px outset #B8F3B8;
+				background-color: #EFFFEE;
+				padding: 10px;
+				font-family: monospace;
+				font-size: 21px;
+				height: 100px;
+				display: flex;
+				flex-flow: row nowrap;
+				justify-content: center;
+				align-items: center;
+				p {
+					margin: 0;
+					span {
+						color: blue;
+					}
+				}
+
+			}
+		}
+	}

@@ -3,20 +3,15 @@
     angular
         .module( 'hours.employeeManager' )
         .controller( 'listEmployeeController', listEmployeeController );
-        // .directive('myRole', myRole);
 
     listEmployeeController.$invoke = [ '$scope', 'employees', 'EmployeeManagerFactory', '$timeout', '$filter', '$window' ];
     function listEmployeeController( $scope, employees, EmployeeManagerFactory, $timeout, $filter ,$window ) {
 
         $scope.tableConfig = {
-            itemsPerPage: getItemsPerPage(),
+            itemsPerPage: getItemsPerPage( 65 ),
             maxPages: "3",
             fillLastPage: false,
             currentPage: $scope.tmpData( 'get', 'employeeManagerListPage' ) || 0
-        };
-
-        function getItemsPerPage() {
-            return Math.floor( window.innerHeight / 65 ).toString();
         };
 
         $scope.search = {};
@@ -24,16 +19,21 @@
         $scope.var = false;
         setUsersView();
 
+        // ADVANDED SEARCH TOGGLE BUTTON
         $scope.toggleAdvancedSearch = function () {
-            $( '#page-content-wrapper #section' ).animate( { scrollTop: 0 }, 'slow' );
+            takeMeUp();
             $scope.showAdvancedSearch = !$scope.showAdvancedSearch;
             if ( !$scope.showAdvancedSearch ) {
                 $scope.employees = employees;
             } else {
                 $scope.avancedSearch();
+                $timeout( function() { // search input set_focus
+                    document.getElementById( 'searchInput' ).focus();
+                });
             }
         };
 
+        // ADVANDED SEARCH SERVICE FUNCTION
         $scope.avancedSearch = function () {
             EmployeeManagerFactory.advancedUserSearch( $scope.search )
                 .then( function ( foundEmployees ) {
@@ -77,6 +77,12 @@
 
 }
 
+
+}());
+
+
+    // .directive('myRole', myRole);
+    // IT WAS FOR TRYING TO REMOVE A COMPLETE ELEMENT (TD) FROM AT-TABLE BUT DID NOT WORK PROPERLY
     // function myRole(UserFactory) {
     //     return {
     //         restrict: 'A',
@@ -96,5 +102,3 @@
     //         }
     //     };
     // }
-
-}());

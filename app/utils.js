@@ -33,7 +33,8 @@ var API_paths = {
     projectUserDelete: 'projectUsers/delete',
 
     unreadNotifications: 'notifications/unreads',
-    markReadNotifications: 'notifications/markRead',
+    insertNewNotification: 'notifications/insertNewNotification',
+    // markReadNotifications: 'notifications/markRead',
 
     holidays: 'holidays',
     holidaysRequest: 'holidays/request',
@@ -44,6 +45,7 @@ var API_paths = {
     getCalendarById : 'calendar/getCalendarById/',
     getRefreshCalendarData : 'calendar/getRefreshCalendarData',
     getCalendarsNames : 'calendar/getCalendarNames/',
+    advancedCalendarSearch: 'calendar/advancedCalendarSearch',
     // getCalendarByIdByMonth : 'calendar/getCalendarByIdByMonth/',
 
     getSpents: 'spents/get',
@@ -155,6 +157,7 @@ function toGMT0(date) {
     return new Date(date.valueOf() + now.getTimezoneOffset() * 60000);
 }
 
+// TO SHOW/HIDE 'toUpButton' BUTTON (NOTIFICATIONS AND EMPLOYEEMANAGER-LIST)
 function showUpButton( upButton, currentScroll ) { // if ( scrollWrapper.scrollTop + window.innerHeight >= scrollWrapper.scrollHeight )
             if ( currentScroll >= 400 ) {
                 upButton.fadeIn( 'slow' );
@@ -168,3 +171,8 @@ function showUpButton( upButton, currentScroll ) { // if ( scrollWrapper.scrollT
 function takeMeUp() {
     $( '#page-content-wrapper #section' ).animate( { scrollTop: 0 }, 'slow' );
 }
+
+// CALCULATES AND RETURNS NUMBER OF ITEMS PER PAGE FOR AT-TABLE ON NOTIFICATIONS, EMPLOYEEMANAGER-LIST AND CALENDARS-LIST
+function getItemsPerPage( value ) {
+    return Math.floor( window.innerHeight / value ).toString();
+};

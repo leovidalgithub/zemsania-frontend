@@ -16,6 +16,9 @@
             getUserToken: function () {
                 return $localStorage.User.token;
             },
+            getSuperior: function () {
+                return $localStorage.User.superior;
+            },
             getcalendarID: function () {
                 return $localStorage.User.calendarID;
             },

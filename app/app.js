@@ -5,7 +5,7 @@
 (function() {
     'use strict';
     angular
-        .module('hours', [
+        .module( 'hours', [
             'ui.router',
             'permission',
             'permission.ui',
@@ -29,7 +29,8 @@
             'hours.components',
             'hours.employeeManager',
             'hours.calendar',
-            'hours.impute'
+            'hours.impute',
+            'hours.approvalHours'
             // 'hours.reports',
             // 'hours.projects',
             // 'hours.excelExport'

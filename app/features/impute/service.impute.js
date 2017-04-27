@@ -4,8 +4,8 @@
         .module( 'hours.impute' )
         .factory( 'imputeHoursFactory', imputeHoursFactory );
 
-    imputeHoursFactory.$invoke = [ '$http', '$q', 'UserFactory' ];
-    function imputeHoursFactory( $http, $q, UserFactory ) {
+    imputeHoursFactory.$invoke = [ '$http', '$q', 'UserFactory', '$filter' ];
+    function imputeHoursFactory( $http, $q, UserFactory, $filter ) {
         return {
 
             getProjectsByUserId: function () { // LEO WAS HERE
@@ -38,6 +38,24 @@
                 $http.post( buildURL( 'setAllTimesheets' ) + userID, data )
                     .then( function ( response ) {
                         dfd.resolve( response );
+                    })
+                    .catch( function ( err ) {
+                        dfd.reject( err );
+                    });
+                return dfd.promise;
+            },
+
+            insertNewNotification: function() { // LEO WORKING HERE
+                var data = {
+                                senderId   : UserFactory.getUserID(),
+                                receiverId : UserFactory.getSuperior(),
+                                type       : 'hours_req',
+                                text       : $filter( 'i18next' )( 'calendar.imputeHours.message.hours_req' )
+                };
+                var dfd = $q.defer();
+                $http.post( buildURL( 'insertNewNotification' ), data )
+                    .then( function ( response ) {
+                        dfd.resolve( response  );
                     })
                     .catch( function ( err ) {
                         dfd.reject( err );
@@ -121,9 +139,10 @@
                                                 value      : 0, // it stores 'Horas/Variables' text value
                                                 week       : week,
                                                 thisMonth  : day.getMonth(),
-                                                inputType  : 'number', // 'text' for 'Horas' and 'Variables', and 'checkbox' for 'Guardias'
+                                                inputType  : 'number', // 'number' for 'Horas' and 'Variables', and 'checkbox' for 'Guardias'
                                                 checkValue : false, // it stores 'Guardias' checkbox value
-                                                projectId  : '' // to know this day belongs to what project (for showStatsObj)
+                                                projectId  : '', // to know this day belongs to what project (for showStatsObj)
+                                                status     : '' // (draft, sent, approved, rejected)
                                             };
                 }
                 return showDaysObj;

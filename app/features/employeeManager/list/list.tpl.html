@@ -19,69 +19,62 @@
 
     <!-- SECTION MAIN CONTENT -->
     <section id="section" class="box-shadow p20">
-        <div class="alert alert-danger alert-material" ng-show="removeStatus === 2">
-        {{'employeeManager.list.removeUserError' | i18next}}
-    </div>
-    <div class="alert alert-success alert-material" ng-show="removeStatus === 1">
-        {{'employeeManager.list.removeUserSuccess' | i18next}}
-    </div>
 
-    <div class="advanced-search" ng-show="showAdvancedSearch">
-        <h4>{{'employeeManager.list.advancedSearch' | i18next}}</h4>
         <!-- ADVANCED SEARCH -->
-        <form class="form-inline simple-input" ng-submit="avancedSearch()">
-            <div class="col-md-12 form-elements">
-
-                <div class="form-group col-xs-12 col-md-7">
-                    <input type="text" class="form-control"
-                           placeholder="{{'actions.findingString' | i18next}}" ng-model="search.textToFind">
+        <div class="advanced-search" ng-show="showAdvancedSearch">
+            <h4>{{'employeeManager.list.advancedSearch' | i18next}}</h4>
+            <form class="form-inline simple-input" ng-submit="avancedSearch()">       
+                <div class="col-md-12 form-elements">
+                    <div class="form-group col-xs-12 col-md-7">
+                        <input id="searchInput" type="text" class="form-control"
+                               placeholder="{{'actions.findingString' | i18next}}" ng-model="search.textToFind" />
+                    </div>
                 </div>
-
-            </div>
-            <div class="form-actions">
-                <button type="reset" class="btn btn-warning">{{'actions.reset' | i18next}}</button>
-                <button type="submit" class="btn btn-primary">{{'actions.toSearch' | i18next}}</button>
-            </div>
-        </form>
-    </div>
-
-    <div>
-        <div ng-show="viewSet">
-            <table at-table at-config="tableConfig" at-paginated at-list="employees" class="table table-striped">
-                <div class="table-thead">
-                    <thead></thead>
+                <div class="form-actions">
+                    <button type="reset" class="btn btn-warning">{{'actions.reset' | i18next}}</button>
+                    <button type="submit" class="btn btn-primary">{{'actions.toSearch' | i18next}}</button>
                 </div>
-                <tbody>
-                    <tr ng-class="{'userDisabled':!item.enabled}">
-                        <td at-implicit at-sortable at-initial-sorting="asc" at-attribute="fullName" at-title="{{'userProfile.user.name' | i18next}}"></td>
-                        <td at-implicit at-sortable at-attribute="cp" at-title="CP"></td>
-                        <td at-implicit at-sortable at-attribute="nif" at-title="{{'userProfile.user.nif' | i18next}}"></td>
-                        <td at-implicit at-sortable at-attribute="username" at-title="{{'userProfile.user.email' | i18next}}"></td>
-                        <td class="options-section">
-                            <a ui-sref="employeeManagerEdit({id: item._id})" class="btn btn-success">
-                                <i class="fa fa-pencil"></i></a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            </form>
         </div>
 
-        <div ng-hide="viewSet">
-            <div id="itemsList" ng-repeat="(key, value) in employees">
-                <div class="usersList">
-                    <ul>
-                        <li><strong>{{value.name}} {{value.surname}}</strong></li>
-                        <li>CP {{value.cp}}</li>
-                        <li>NIF {{value.nif}}</li>
-                        <li>{{value.username}}</li>
-                    </ul>
-                        <a ui-sref="employeeManagerEdit({id: value._id })" class="btn btn-success">
-                                <i class="fa fa-pencil"></i>
-                        </a>
+        <div ng-class="{'clearBoth':showAdvancedSearch}">
+            <div ng-show="viewSet">
+                <table at-table at-config="tableConfig" at-paginated at-list="employees" class="table table-striped">
+                    <div class="table-thead">
+                        <thead></thead>
+                    </div>
+                    <tbody>
+                        <tr ng-class="{'userDisabled':!item.enabled}">
+                            <td at-implicit at-sortable at-initial-sorting="asc" at-attribute="fullName" at-title="{{'userProfile.user.name' | i18next}}"></td>
+                            <td at-implicit at-sortable at-attribute="cp" at-title="CP"></td>
+                            <td at-implicit at-sortable at-attribute="nif" at-title="{{'userProfile.user.nif' | i18next}}"></td>
+                            <td at-implicit at-sortable at-attribute="username" at-title="{{'userProfile.user.email' | i18next}}"></td>
+                            <td class="options-section">
+                                <a ui-sref="employeeManagerEdit({id: item._id})" class="btn btn-success">
+                                    <i class="fa fa-pencil"></i></a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div ng-hide="viewSet">
+                <div id="itemsList" ng-repeat="(key, value) in employees">
+                    <div class="usersList">
+                        <ul>
+                            <li><strong>{{value.fullName}}</strong></li>
+                            <li>CP {{value.cp}}</li>
+                            <li>NIF {{value.nif}}</li>
+                            <li>{{value.username}}</li>
+                        </ul>
+                            <a ui-sref="employeeManagerEdit({id: value._id })" class="btn btn-success">
+                                    <i class="fa fa-pencil"></i>
+                            </a>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+
     </section>
 
     <footer id="footer">

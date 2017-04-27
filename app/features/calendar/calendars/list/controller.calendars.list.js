@@ -4,54 +4,44 @@
         .module( 'hours.calendar' )
         .controller( 'CalendarsController', CalendarsController );
 
-    CalendarsController.$invoke = [ '$scope', '$filter', '$window', 'CalendarFactory', 'calendars' ];
-    function CalendarsController( $scope, $filter, $window, CalendarFactory, calendars ) {
+    CalendarsController.$invoke = [ '$scope', '$filter', '$window', 'CalendarFactory', 'calendars', '$timeout' ];
+    function CalendarsController( $scope, $filter, $window, CalendarFactory, calendars, $timeout ) {
+
+        $scope.tableConfig = {
+            itemsPerPage: getItemsPerPage( 65 ),
+            maxPages: "3",
+            fillLastPage: false,
+            currentPage: $scope.tmpData( 'get', 'calendarsListPage' ) || 0
+        };
 
         $scope.calendars = calendars;
-        $scope.tableConfig = {
-            itemsPerPage: getItemsPerPage(),
-            maxPages: "2",
-            fillLastPage: false
-            // currentPage: $scope.tmpData( 'get', 'employeeManagerListPage' ) || 0
-        };
-
-        function getItemsPerPage() {
-            return Math.floor( window.innerHeight / 65 ).toString();
-        };
-
-        // $scope.search = {};
-        // $scope.employees = employees;
-        // $scope.var = false;
         setUsersView();
 
+        // ADVANDED SEARCH TOGGLE BUTTON
         $scope.toggleAdvancedSearch = function () {
+            takeMeUp();
             $scope.showAdvancedSearch = !$scope.showAdvancedSearch;
-            // if ( !$scope.showAdvancedSearch ) {
-            //     $scope.employees = employees;
-            // } else {
-            //     $scope.avancedSearch();
-            // }
+            if ( !$scope.showAdvancedSearch ) {
+                $scope.calendars = calendars;
+            } else {
+                $scope.avancedSearch();
+                $timeout( function() { // search input set_focus
+                    document.getElementById( 'searchInput' ).focus();
+                });
+            }
         };
 
-        // $scope.avancedSearch = function () {
-        //     EmployeeManagerFactory.searchEmployee( $scope.search )
-        //         .then( function ( foundEmployees ) {
-        //             $scope.employees = foundEmployees;
-        //         });
-        // };
+        // ADVANDED SEARCH SERVICE FUNCTION
+        $scope.avancedSearch = function () {
+            CalendarFactory.advancedCalendarSearch( $scope.search )
+                .then( function ( foundCalendars ) {
+                    $scope.calendars = foundCalendars;
+                });
+        };
 
-        // $timeout( function () { // ???
-        //     $( '[ng-click="stepPage(-numberOfPages)"]' ).text( $filter( 'i18next' )( 'actions.nextPage' ) );
-        //     $( '[ng-click="stepPage(numberOfPages)"]'  ).text( $filter( 'i18next' )( 'actions.lastPage' ) );
-        // });
-
-        // $scope.pageGetUp = function() {
-        //     $( '#page-content-wrapper #section' ).animate( { scrollTop: 0 }, 'slow' );
-        // };
-
-        // $scope.$on( '$destroy', function () {
-        //     $scope.tmpData( 'add', 'employeeManagerListPage', $scope.tableConfig.currentPage );
-        // });
+        $scope.$on( '$destroy', function () {
+            $scope.tmpData( 'add', 'calendarsListPage', $scope.tableConfig.currentPage );
+        });
 
         angular.element( $window ).bind( 'resize', function() {
             $scope.$digest();
@@ -66,16 +56,20 @@
             }
         }
 
-        // var wrapper = document.getElementById( 'section' );
-        // wrapper.onscroll = function ( event ) {
-        //     // if ( wrapper.scrollTop + window.innerHeight >= wrapper.scrollHeight ) {
-        //     if ( wrapper.scrollTop >= 400 ) {
-        //         $( '#toUpButton' ).fadeIn( 'slow' );
-        //     }
-        //         if ( wrapper.scrollTop < 400 ) {
-        //     $( '#toUpButton' ).fadeOut( 'slow' );
-        //     }
-        // };
+        // SECTION SCROLL MOVE EVENT TO MAKE BUTTON 'toUpButton' APPEAR
+        var scrollWrapper = document.getElementById( 'section' );
+        scrollWrapper.onscroll = function ( event ) {
+            var currentScroll = scrollWrapper.scrollTop;
+            var upButton = $( '#toUpButton' );
+            showUpButton( upButton, currentScroll );
+        };
+
+        // BUTTON TO TAKE SECTION SCROLL TO TOP
+        $scope.pageGetUp = function() { takeMeUp() };
+
+        $scope.$on( '$destroy', function () {
+            $scope.tmpData( 'add', 'notificationsListPage', $scope.tableConfig.currentPage );
+        });
 
 }
 
