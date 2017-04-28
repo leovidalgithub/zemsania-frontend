@@ -167,9 +167,13 @@
         }
     },
     "approvalHours": {
+        "all": "Todos los Registros",
+        "justPending": "Sólo pendientes",
         "title": "Aprobación vía Gestor",
         "description": "La descripción de la página de tiempos de empleados se explica aquí ..",
-        "search": "buscar empleado .."
+        "search": "Buscar empleado...",
+        "approve": "Aprobar",
+        "reject": "Rechazar"
     },
     "projectTimesheets": {
         "title": "Aprobacion Via Proyectos",
@@ -187,20 +191,20 @@
         "non_workingDays": "Días no laborables",
         "yearShowed": "any mostrat"
     },
-        "months": {
-        "january": "Enero",
-        "february": "Febrero",        
-        "march": "Marzo",
-        "april": "Abril",
-        "may": "Mayo",
-        "june": "Junio",
-        "july": "Julio",
-        "august": "Agosto",
-        "september": "Septiembre",
-        "october": "Octubre",
-        "november": "Noviembre",
-        "december": "Diciembre",
-        "year": "Any",
+    "months": {
+        "0": "Enero",
+        "1": "Febrero",        
+        "2": "Marzo",
+        "3": "Abril",
+        "4": "Mayo",
+        "5": "Junio",
+        "6": "Julio",
+        "7": "Agosto",
+        "8": "Septiembre",
+        "9": "Octubre",
+        "10": "Noviembre",
+        "11": "Diciembre",
+        "year": "Año"
     },
     "days": {
         "Mon": "Lun",

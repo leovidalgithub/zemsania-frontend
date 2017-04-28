@@ -12,6 +12,45 @@
 		}
 
 		#section {
+			#movingDate {
+				text-align: center;
+					div button {
+						border-radius: 5px;
+					}
+				#writtenDate {
+					margin-top: 3px;
+					display: flex;
+					flex-flow: row nowrap;
+					justify-content: center;
+					align-items: center;
+					p {
+						font-family: monospace;
+						font-size: 19px;
+						margin: 0;
+					}
+				}
+			}
+
+			#options {
+				display: flex;
+				flex-flow: row wrap;
+				justify-content: center;
+				align-items: center;
+				margin-top: 10px;
+				.opts {
+					margin-right: 45px;
+					font-size: 17px;
+					font-family: monospace;
+				}
+			}
+
+
+
+
+
+
+
+
 			.collapsing { 
 				color: #E1E1E1 !important;
 			}
@@ -62,5 +101,50 @@
 				}
 
 			}
-		}
+
+			#mainContent {
+				.tableContainer {
+					overflow-x:auto;
+                	margin: 10px;
+
+                	table {
+                		table-layout: fixed;
+                		width: 100%;
+                		text-align: center;
+                		th {
+                			background-color: #F5F5F5;
+                			text-align: center;
+                			}
+                		tr td{
+                			line-height: 45px;
+                		}
+                		td {
+	                		padding: 3px 0;
+	                		border-bottom: 1px solid gray;
+                		}
+                		tr td:first-child {
+                			text-align: left;
+                			padding-left: 20px;
+                			button {
+                				margin-right: 8px;
+                				border-radius: 3px;
+                			}
+                		}
+                		tr:hover:not(.notHoverPlease) * {
+                			border-bottom: 1px solid $zemsania;
+                			}
+
+
+                	}
+
+
+
+
+					}
+			}
+
+
+
+
+		} // section
 	}

@@ -7,9 +7,9 @@
     imputeHoursController.$invoke = [ '$scope', 'UserFactory', 'imputeHoursFactory', 'CalendarFactory', '$q', 'userProjects', '$uibModal', '$rootScope', '$state', '$timeout', '$filter' ];
     function imputeHoursController( $scope, UserFactory, imputeHoursFactory, CalendarFactory, $q, userProjects, $uibModal, $rootScope, $state, $timeout, $filter ) {
 
-        var currentFirstDay  = new Date();
-        var currentMonth     = currentFirstDay.getMonth();
-        var currentYear      = currentFirstDay.getFullYear();
+        var currentDate      = new Date();
+        var currentMonth     = currentDate.getMonth();
+        var currentYear      = currentDate.getFullYear();
         var calendarID       = UserFactory.getcalendarID(); // get user calendar
         var goToState        = null; // when sidebar option is required by user and there are pending-changes
         var generalDataModel = {}; // object with all calendars and timesheet classified by month
@@ -28,13 +28,13 @@
         $scope.typesModel    = $scope.imputeTypes[0];
         $scope.subtypesModel = $scope.imputeTypes[$scope.typesModel][0];
 
-        (function Init() {
+        ( function Init() {
             // USER PROJECTS
             if( !userProjects.length ) { // no userProjects available
-                // error NO userProjects available message alert    
+                // error: NO userProjects available message alert    
                 $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorNoProjects' );
                 alertMsgOpen( false );
-            } else {
+            } else { // userProjects OK cotinues to getData()
                 $scope.userProjects = userProjects;
                 $scope.projectModel = $scope.userProjects[0];
                 getData();

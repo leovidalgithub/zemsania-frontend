@@ -64,7 +64,7 @@
                     <label for="imputeSubTypes">{{'words.subType' | i18next}}</label>
                     <select ng-options="subType for subType in imputeTypes[typesModel]" ng-disabled="!typesModel" ng-model="subtypesModel" ng-change="imputeSubTypeChanged()" id="imputeSubTypes"></select>
                 </div>
-                <!-- BUTTONS -->
+                <!-- MOVING-DATE BUTTONS -->
                 <div class="col-xs-12 col-md-5">
                     <button class="btn btn-primary" ng-click="moveDate(-1)" title="{{'words.previous' | i18next}}">
                         <i class="fa fa-arrow-left"></i></button>
@@ -84,7 +84,7 @@
 
         <!-- MONTH INFO -->
         <div id="monthInfo">
-            <p>{{'months.' + showDaysObj.monthName | i18next}}  {{showDaysObj.currentYear}}
+            <p>{{'months.' + showDaysObj.currentMonth | i18next}}  {{showDaysObj.currentYear}}
             <span ng-show="weekViewMode">{{'words.week' | i18next}} Nº {{showDaysObj.currentWeek + 1}}</span></p>
         </div>
 

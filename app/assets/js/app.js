@@ -526,35 +526,6 @@ function getItemsPerPage( value ) {
     }
 }());
 
-;( function () {
-    'use strict';
-    angular
-        .module( 'hours.dashboard', [] )
-        .config( dashboardConfig );
-
-    dashboardConfig.$invoke = ['$stateProvider'];
-    function dashboardConfig( $stateProvider ) {
-        $stateProvider
-            .state( 'dashboard', {
-                url: '/dashboard',
-                templateUrl: '/features/dashboard/notifications/notifications.tpl.html',
-                controller: 'NotificationController',
-                data: {
-                    template: 'complex',
-                    permissions: {
-                        except: ['anonymous'],
-                        redirectTo: 'login'
-                    }
-                },
-                resolve: {
-                    notifications: function ( DashboardFactory ) {
-                        return DashboardFactory.getUnreadNotifications();
-                    }
-                }
-            });
-    }
-}());
-
 ( function () {
     'use strict';
     angular
@@ -732,6 +703,35 @@ function getItemsPerPage( value ) {
             //         }
             //     }
             // });
+
+;( function () {
+    'use strict';
+    angular
+        .module( 'hours.dashboard', [] )
+        .config( dashboardConfig );
+
+    dashboardConfig.$invoke = ['$stateProvider'];
+    function dashboardConfig( $stateProvider ) {
+        $stateProvider
+            .state( 'dashboard', {
+                url: '/dashboard',
+                templateUrl: '/features/dashboard/notifications/notifications.tpl.html',
+                controller: 'NotificationController',
+                data: {
+                    template: 'complex',
+                    permissions: {
+                        except: ['anonymous'],
+                        redirectTo: 'login'
+                    }
+                },
+                resolve: {
+                    notifications: function ( DashboardFactory ) {
+                        return DashboardFactory.getUnreadNotifications();
+                    }
+                }
+            });
+    }
+}());
 
 ;( function() {
     'use strict';
@@ -1285,63 +1285,6 @@ function getItemsPerPage( value ) {
         };
     }
 }());
-;( function () {
-    'use strict';
-    angular
-        .module( 'hours.dashboard' )
-        .factory( 'DashboardFactory', DashboardFactory );
-
-    DashboardFactory.$invoke = [ '$http', '$q' ];
-    function DashboardFactory( $http, $q ) {
-        return {
-            
-            getUnreadNotifications: function () {
-                var dfd = $q.defer();
-                $http.get( buildURL( 'unreadNotifications' ) )
-                    .then( function ( response ) {
-                        var notifications = response.data.notifications;
-                        notifications.forEach( function( notification ) {
-                            notification.senderId.fullName = notification.senderId.name + ' ' + notification.senderId.surname;
-                        });
-                        dfd.resolve( notifications );
-                        })
-                        .catch( function ( err ) {
-                            dfd.reject( err );
-                        });
-                return dfd.promise;
-
-                    //     if ( response.data.success ) {
-                    //         var notificationTypes, notificationResponse;
-                    //         var notifications = {};
-                    //         response.data.notifications.forEach( function ( notification ) {
-                    //             if ( angular.isUndefined( notifications[ notification.type ] )) {
-                    //                 notifications[notification.type] = [];
-                    //             }
-                    //             notifications[ notification.type ].push( notification );
-                    //         });
-                    //         notificationTypes = Object.keys( notifications );
-                    //         notificationResponse = { keys: notificationTypes, notifications: notifications };
-
-                    //         dfd.resolve( notificationResponse );
-                    //     } else {
-                    //         dfd.reject( response );
-                    //     }
-
-            },
-            // markNotificationAsRead: function ( id ) {
-                // var dfd = $q.defer();
-                // $http.post( buildURL( 'markReadNotifications' ), id )
-                //     .then(function () {
-                //         dfd.resolve( true );
-                //     }, function ( err ) {
-                //         dfd.resolve( err );
-                //     });
-                // return dfd.promise;
-            // }
-        };
-    }
-}());
-
 ( function () {
     'use strict';
     angular
@@ -1689,6 +1632,63 @@ function getItemsPerPage( value ) {
     }
 }());
 
+;( function () {
+    'use strict';
+    angular
+        .module( 'hours.dashboard' )
+        .factory( 'DashboardFactory', DashboardFactory );
+
+    DashboardFactory.$invoke = [ '$http', '$q' ];
+    function DashboardFactory( $http, $q ) {
+        return {
+            
+            getUnreadNotifications: function () {
+                var dfd = $q.defer();
+                $http.get( buildURL( 'unreadNotifications' ) )
+                    .then( function ( response ) {
+                        var notifications = response.data.notifications;
+                        notifications.forEach( function( notification ) {
+                            notification.senderId.fullName = notification.senderId.name + ' ' + notification.senderId.surname;
+                        });
+                        dfd.resolve( notifications );
+                        })
+                        .catch( function ( err ) {
+                            dfd.reject( err );
+                        });
+                return dfd.promise;
+
+                    //     if ( response.data.success ) {
+                    //         var notificationTypes, notificationResponse;
+                    //         var notifications = {};
+                    //         response.data.notifications.forEach( function ( notification ) {
+                    //             if ( angular.isUndefined( notifications[ notification.type ] )) {
+                    //                 notifications[notification.type] = [];
+                    //             }
+                    //             notifications[ notification.type ].push( notification );
+                    //         });
+                    //         notificationTypes = Object.keys( notifications );
+                    //         notificationResponse = { keys: notificationTypes, notifications: notifications };
+
+                    //         dfd.resolve( notificationResponse );
+                    //     } else {
+                    //         dfd.reject( response );
+                    //     }
+
+            },
+            // markNotificationAsRead: function ( id ) {
+                // var dfd = $q.defer();
+                // $http.post( buildURL( 'markReadNotifications' ), id )
+                //     .then(function () {
+                //         dfd.resolve( true );
+                //     }, function ( err ) {
+                //         dfd.resolve( err );
+                //     });
+                // return dfd.promise;
+            // }
+        };
+    }
+}());
+
 ;( function() {
     'use strict';
     angular
@@ -1698,12 +1698,28 @@ function getItemsPerPage( value ) {
     approvalHoursController.$invoke = [ '$scope', 'approvalHoursFactory', '$timeout' ];
     function approvalHoursController( $scope, approvalHoursFactory, $timeout ) {
 
-        $scope.obj = [
-                    { name : 'Leonardo Rodríguez Vidal', hi : 36, opened : false, _id : '3r58d33j5903a034' },
-                    { name : 'Lorenzo Barja Rodríguez', hi : 123, opened : false, _id : '3r58d33j5903a035' },
-                    { name : 'Ana Escribano', hi : 44, opened : false, _id : '3r58d33j5903a036' },
-                    { name : 'Joaquín Crespo', hi : 9, opened : false, _id : '3r58d33j5903a037' },
-                    { name : 'Mónica Pascualotte', hi : 79, opened : false, _id : '3r58d33j5903a038' }
+        var currentDate  = new Date();
+        // var currentMonth = currentDate.getMonth();
+        // var currentYear  = currentDate.getFullYear();
+        $scope.mainOBJ = {};
+        $scope.mainOBJ = {
+                            currentDate          : currentDate,
+                            currentDateTimestamp : currentDate.getTime(),
+                            currentMonth         : currentDate.getMonth(),
+                            currentYear          : currentDate.getFullYear(),
+                            allEmployees         : 'true',
+                            searchText           : ''
+                        };
+
+
+
+// ************************************************** MEN AT WORK **************************************************
+        $scope.employees = [
+                    { name : 'Leonardo Rodríguez Vidal', hi:36, htra:3, jtra:8, jaus:2, jvac:5, tgua:7, opened : false, _id : '3r58d33j5903a034' },
+                    { name : 'Lorenzo Barja Rodríguez',  hi:123, htra:4, jtra:33, jaus:32, jvac:4, tgua:7, opened : false, _id : '3r58d33j5903a035' },
+                    { name : 'Ana Escribano',            hi:44, htra:5, jtra:4, jaus:61, jvac:3, tgua:7, opened : false, _id : '3r58d33j5903a036' },
+                    { name : 'Joaquín Crespo',           hi:9, htra:6, jtra:22, jaus:15, jvac:2, tgua:7, opened : false, _id : '3r58d33j5903a037' },
+                    { name : 'Mónica Pascualotte',       hi : 79, htra:7, jtra:1, jaus:6, jvac:1, tgua:7, opened : false, _id : '3r58d33j5903a038' }
         ];
 
         $scope.myEmployeeClick = function( employeeId ) {
@@ -2093,109 +2109,6 @@ function getItemsPerPage( value ) {
     }
 }());
 
-;( function () {
-    'use strict';
-    angular
-        .module( 'hours.dashboard' )
-        .controller( 'NotificationController', NotificationController );
-
-    NotificationController.$invoke = [ '$scope', 'notifications', '$window' ];
-    function NotificationController( $scope, notifications, $window ) {
-
-        $scope.tableConfig = {
-            itemsPerPage: getItemsPerPage( 125 ),
-            maxPages: "3",
-            fillLastPage: false,
-            currentPage: $scope.tmpData( 'get', 'notificationsListPage' ) || 0
-        };
-
-        setUsersView();
-        $scope.notifications = notifications;
-
-// *********************************************** JUST FOR TESTING PURPOSES ***********************************************
-        // for( var i = 1; i < 20; i++ ) {
-        //     var aa = angular.copy( notifications[0] );
-        //     aa._id = '32r32r324r433_' + ( i + 34573 );
-        //     notifications.push( aa );
-        // }
-        // var typesArray = ['holiday_req','hours_req','hours_validated','hours_rejected','hours_pending_req'];
-        // $scope.notifications.forEach( function( el ) {
-        //     var random = Math.floor( Math.random() * 5 );
-        //     el.type = typesArray[random];
-        // });
-// *************************************************************************************************************************
-
-        angular.element( $window ).bind( 'resize', function() {
-            $scope.$digest();
-            setUsersView();
-        });
-
-        function setUsersView() {
-            if( $window.innerWidth < 1210 ) {
-                $scope.viewSet = false;
-            } else {
-                $scope.viewSet = true;            
-            }
-        }
-
-        // SECTION SCROLL MOVE EVENT TO MAKE BUTTON 'toUpButton' APPEAR
-        var scrollWrapper = document.getElementById( 'section' );
-        scrollWrapper.onscroll = function ( event ) {
-            var currentScroll = scrollWrapper.scrollTop;
-            var upButton = $( '#toUpButton' );
-            showUpButton( upButton, currentScroll );
-        };
-
-        // BUTTON TO TAKE SECTION SCROLL TO TOP
-        $scope.pageGetUp = function() { takeMeUp() };
-
-        $scope.$on( '$destroy', function () {
-            $scope.tmpData( 'add', 'notificationsListPage', $scope.tableConfig.currentPage );
-        });
-
-
-// ******************************************************* *******************************************************
-        // $scope.notifications = notifications;
-        // $scope.user = UserFactory.getUser();
-
-        // $scope.activeNotifications = notifications.keys[0];
-
-        // $scope.openType = function ( type ) {
-        //     $scope.activeNotifications = type;
-        // };
-
-        // $scope.isActive = function ( type ) {
-        //     return $scope.activeNotifications === type && 'active';
-        // };
-
-        // $scope.openNotification = function ( notification ) {
-        //     switch ( notification.type ) {
-        //         case 'holiday_request' :
-        //             $state.go('moderateHolidayCalendar', {
-        //                 userId: notification.senderId,
-        //                 filterBy: 'pending'
-        //             });
-        //             break;
-        //         case 'hours_sent' :
-        //             $state.go( 'calendarImputeHoursValidator-user', {
-        //                 userId: notification.senderId,
-        //                 timestamp: new Date( notification.initDate ).getTime()
-        //             });
-        //             break;
-        //     }
-        // };
-
-        // $scope.markRead = function ( notification, type, index ) {
-        //     DashboardFactory.markNotificationAsRead( { notificationId: notification._id } )
-        //         .then( function () {
-        //             $scope.notifications.notifications[ type ].splice( index, 1 );
-        //         }, function () {
-
-        //         });
-        // };
-        
-    }
-}());
 ( function () {
     'use strict';
     angular
@@ -2545,9 +2458,9 @@ function getItemsPerPage( value ) {
     imputeHoursController.$invoke = [ '$scope', 'UserFactory', 'imputeHoursFactory', 'CalendarFactory', '$q', 'userProjects', '$uibModal', '$rootScope', '$state', '$timeout', '$filter' ];
     function imputeHoursController( $scope, UserFactory, imputeHoursFactory, CalendarFactory, $q, userProjects, $uibModal, $rootScope, $state, $timeout, $filter ) {
 
-        var currentFirstDay  = new Date();
-        var currentMonth     = currentFirstDay.getMonth();
-        var currentYear      = currentFirstDay.getFullYear();
+        var currentDate      = new Date();
+        var currentMonth     = currentDate.getMonth();
+        var currentYear      = currentDate.getFullYear();
         var calendarID       = UserFactory.getcalendarID(); // get user calendar
         var goToState        = null; // when sidebar option is required by user and there are pending-changes
         var generalDataModel = {}; // object with all calendars and timesheet classified by month
@@ -2566,13 +2479,13 @@ function getItemsPerPage( value ) {
         $scope.typesModel    = $scope.imputeTypes[0];
         $scope.subtypesModel = $scope.imputeTypes[$scope.typesModel][0];
 
-        (function Init() {
+        ( function Init() {
             // USER PROJECTS
             if( !userProjects.length ) { // no userProjects available
-                // error NO userProjects available message alert    
+                // error: NO userProjects available message alert    
                 $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorNoProjects' );
                 alertMsgOpen( false );
-            } else {
+            } else { // userProjects OK cotinues to getData()
                 $scope.userProjects = userProjects;
                 $scope.projectModel = $scope.userProjects[0];
                 getData();
@@ -3069,6 +2982,186 @@ function getItemsPerPage( value ) {
 ;( function () {
     'use strict';
     angular
+        .module( 'hours.dashboard' )
+        .controller( 'NotificationController', NotificationController );
+
+    NotificationController.$invoke = [ '$scope', 'notifications', '$window' ];
+    function NotificationController( $scope, notifications, $window ) {
+
+        $scope.tableConfig = {
+            itemsPerPage: getItemsPerPage( 125 ),
+            maxPages: "3",
+            fillLastPage: false,
+            currentPage: $scope.tmpData( 'get', 'notificationsListPage' ) || 0
+        };
+
+        setUsersView();
+        $scope.notifications = notifications;
+
+// *********************************************** JUST FOR TESTING PURPOSES ***********************************************
+        // for( var i = 1; i < 20; i++ ) {
+        //     var aa = angular.copy( notifications[0] );
+        //     aa._id = '32r32r324r433_' + ( i + 34573 );
+        //     notifications.push( aa );
+        // }
+        // var typesArray = ['holiday_req','hours_req','hours_validated','hours_rejected','hours_pending_req'];
+        // $scope.notifications.forEach( function( el ) {
+        //     var random = Math.floor( Math.random() * 5 );
+        //     el.type = typesArray[random];
+        // });
+// *************************************************************************************************************************
+
+        angular.element( $window ).bind( 'resize', function() {
+            $scope.$digest();
+            setUsersView();
+        });
+
+        function setUsersView() {
+            if( $window.innerWidth < 1210 ) {
+                $scope.viewSet = false;
+            } else {
+                $scope.viewSet = true;            
+            }
+        }
+
+        // SECTION SCROLL MOVE EVENT TO MAKE BUTTON 'toUpButton' APPEAR
+        var scrollWrapper = document.getElementById( 'section' );
+        scrollWrapper.onscroll = function ( event ) {
+            var currentScroll = scrollWrapper.scrollTop;
+            var upButton = $( '#toUpButton' );
+            showUpButton( upButton, currentScroll );
+        };
+
+        // BUTTON TO TAKE SECTION SCROLL TO TOP
+        $scope.pageGetUp = function() { takeMeUp() };
+
+        $scope.$on( '$destroy', function () {
+            $scope.tmpData( 'add', 'notificationsListPage', $scope.tableConfig.currentPage );
+        });
+
+
+// ******************************************************* *******************************************************
+        // $scope.notifications = notifications;
+        // $scope.user = UserFactory.getUser();
+
+        // $scope.activeNotifications = notifications.keys[0];
+
+        // $scope.openType = function ( type ) {
+        //     $scope.activeNotifications = type;
+        // };
+
+        // $scope.isActive = function ( type ) {
+        //     return $scope.activeNotifications === type && 'active';
+        // };
+
+        // $scope.openNotification = function ( notification ) {
+        //     switch ( notification.type ) {
+        //         case 'holiday_request' :
+        //             $state.go('moderateHolidayCalendar', {
+        //                 userId: notification.senderId,
+        //                 filterBy: 'pending'
+        //             });
+        //             break;
+        //         case 'hours_sent' :
+        //             $state.go( 'calendarImputeHoursValidator-user', {
+        //                 userId: notification.senderId,
+        //                 timestamp: new Date( notification.initDate ).getTime()
+        //             });
+        //             break;
+        //     }
+        // };
+
+        // $scope.markRead = function ( notification, type, index ) {
+        //     DashboardFactory.markNotificationAsRead( { notificationId: notification._id } )
+        //         .then( function () {
+        //             $scope.notifications.notifications[ type ].splice( index, 1 );
+        //         }, function () {
+
+        //         });
+        // };
+        
+    }
+}());
+( function () {
+    'use strict';
+    angular
+        .module( 'hours.calendar' )
+        .controller( 'CalendarsController', CalendarsController );
+
+    CalendarsController.$invoke = [ '$scope', '$filter', '$window', 'CalendarFactory', 'calendars', '$timeout' ];
+    function CalendarsController( $scope, $filter, $window, CalendarFactory, calendars, $timeout ) {
+
+        $scope.tableConfig = {
+            itemsPerPage: getItemsPerPage( 65 ),
+            maxPages: "3",
+            fillLastPage: false,
+            currentPage: $scope.tmpData( 'get', 'calendarsListPage' ) || 0
+        };
+
+        $scope.calendars = calendars;
+        setUsersView();
+
+        // ADVANDED SEARCH TOGGLE BUTTON
+        $scope.toggleAdvancedSearch = function () {
+            takeMeUp();
+            $scope.showAdvancedSearch = !$scope.showAdvancedSearch;
+            if ( !$scope.showAdvancedSearch ) {
+                $scope.calendars = calendars;
+            } else {
+                $scope.avancedSearch();
+                $timeout( function() { // search input set_focus
+                    document.getElementById( 'searchInput' ).focus();
+                });
+            }
+        };
+
+        // ADVANDED SEARCH SERVICE FUNCTION
+        $scope.avancedSearch = function () {
+            CalendarFactory.advancedCalendarSearch( $scope.search )
+                .then( function ( foundCalendars ) {
+                    $scope.calendars = foundCalendars;
+                });
+        };
+
+        $scope.$on( '$destroy', function () {
+            $scope.tmpData( 'add', 'calendarsListPage', $scope.tableConfig.currentPage );
+        });
+
+        angular.element( $window ).bind( 'resize', function() {
+            $scope.$digest();
+            setUsersView();
+        });
+
+        function setUsersView() {
+            if( $window.innerWidth < 930 ) {
+                $scope.viewSet = false;
+            } else {
+                $scope.viewSet = true;            
+            }
+        }
+
+        // SECTION SCROLL MOVE EVENT TO MAKE BUTTON 'toUpButton' APPEAR
+        var scrollWrapper = document.getElementById( 'section' );
+        scrollWrapper.onscroll = function ( event ) {
+            var currentScroll = scrollWrapper.scrollTop;
+            var upButton = $( '#toUpButton' );
+            showUpButton( upButton, currentScroll );
+        };
+
+        // BUTTON TO TAKE SECTION SCROLL TO TOP
+        $scope.pageGetUp = function() { takeMeUp() };
+
+        $scope.$on( '$destroy', function () {
+            $scope.tmpData( 'add', 'notificationsListPage', $scope.tableConfig.currentPage );
+        });
+
+}
+
+}());
+
+;( function () {
+    'use strict';
+    angular
         .module( 'hours.calendar' )
         .controller( 'editCalendarsController', editCalendarsController );
 
@@ -3256,83 +3349,6 @@ function getItemsPerPage( value ) {
 }
 
 })();
-
-( function () {
-    'use strict';
-    angular
-        .module( 'hours.calendar' )
-        .controller( 'CalendarsController', CalendarsController );
-
-    CalendarsController.$invoke = [ '$scope', '$filter', '$window', 'CalendarFactory', 'calendars', '$timeout' ];
-    function CalendarsController( $scope, $filter, $window, CalendarFactory, calendars, $timeout ) {
-
-        $scope.tableConfig = {
-            itemsPerPage: getItemsPerPage( 65 ),
-            maxPages: "3",
-            fillLastPage: false,
-            currentPage: $scope.tmpData( 'get', 'calendarsListPage' ) || 0
-        };
-
-        $scope.calendars = calendars;
-        setUsersView();
-
-        // ADVANDED SEARCH TOGGLE BUTTON
-        $scope.toggleAdvancedSearch = function () {
-            takeMeUp();
-            $scope.showAdvancedSearch = !$scope.showAdvancedSearch;
-            if ( !$scope.showAdvancedSearch ) {
-                $scope.calendars = calendars;
-            } else {
-                $scope.avancedSearch();
-                $timeout( function() { // search input set_focus
-                    document.getElementById( 'searchInput' ).focus();
-                });
-            }
-        };
-
-        // ADVANDED SEARCH SERVICE FUNCTION
-        $scope.avancedSearch = function () {
-            CalendarFactory.advancedCalendarSearch( $scope.search )
-                .then( function ( foundCalendars ) {
-                    $scope.calendars = foundCalendars;
-                });
-        };
-
-        $scope.$on( '$destroy', function () {
-            $scope.tmpData( 'add', 'calendarsListPage', $scope.tableConfig.currentPage );
-        });
-
-        angular.element( $window ).bind( 'resize', function() {
-            $scope.$digest();
-            setUsersView();
-        });
-
-        function setUsersView() {
-            if( $window.innerWidth < 930 ) {
-                $scope.viewSet = false;
-            } else {
-                $scope.viewSet = true;            
-            }
-        }
-
-        // SECTION SCROLL MOVE EVENT TO MAKE BUTTON 'toUpButton' APPEAR
-        var scrollWrapper = document.getElementById( 'section' );
-        scrollWrapper.onscroll = function ( event ) {
-            var currentScroll = scrollWrapper.scrollTop;
-            var upButton = $( '#toUpButton' );
-            showUpButton( upButton, currentScroll );
-        };
-
-        // BUTTON TO TAKE SECTION SCROLL TO TOP
-        $scope.pageGetUp = function() { takeMeUp() };
-
-        $scope.$on( '$destroy', function () {
-            $scope.tmpData( 'add', 'notificationsListPage', $scope.tableConfig.currentPage );
-        });
-
-}
-
-}());
 
 var TAU = 2 * Math.PI;
 var canvas;

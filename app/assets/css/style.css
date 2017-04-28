@@ -1163,6 +1163,36 @@
   font-size: 22px;
   color: blue;
 }
+#approvalHours #section #movingDate {
+  text-align: center;
+}
+#approvalHours #section #movingDate div button {
+  border-radius: 5px;
+}
+#approvalHours #section #movingDate #writtenDate {
+  margin-top: 3px;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+}
+#approvalHours #section #movingDate #writtenDate p {
+  font-family: monospace;
+  font-size: 19px;
+  margin: 0;
+}
+#approvalHours #section #options {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+}
+#approvalHours #section #options .opts {
+  margin-right: 45px;
+  font-size: 17px;
+  font-family: monospace;
+}
 #approvalHours #section .collapsing {
   color: #E1E1E1 !important;
 }
@@ -1208,6 +1238,37 @@
 }
 #approvalHours #section .employeeContent p span {
   color: blue;
+}
+#approvalHours #section #mainContent .tableContainer {
+  overflow-x: auto;
+  margin: 10px;
+}
+#approvalHours #section #mainContent .tableContainer table {
+  table-layout: fixed;
+  width: 100%;
+  text-align: center;
+}
+#approvalHours #section #mainContent .tableContainer table th {
+  background-color: #F5F5F5;
+  text-align: center;
+}
+#approvalHours #section #mainContent .tableContainer table tr td {
+  line-height: 45px;
+}
+#approvalHours #section #mainContent .tableContainer table td {
+  padding: 3px 0;
+  border-bottom: 1px solid gray;
+}
+#approvalHours #section #mainContent .tableContainer table tr td:first-child {
+  text-align: left;
+  padding-left: 20px;
+}
+#approvalHours #section #mainContent .tableContainer table tr td:first-child button {
+  margin-right: 8px;
+  border-radius: 3px;
+}
+#approvalHours #section #mainContent .tableContainer table tr:hover:not(.notHoverPlease) * {
+  border-bottom: 1px solid #F15A29;
 }
 
 html, body, body > div, div[ui-view] {

@@ -1,3 +1,4 @@
+<!-- <button class="btn btn-success" ng-click="fn()">Go!</button> -->
 <!-- https://www.w3schools.com/bootstrap/bootstrap_ref_js_collapse.asp -->
 <div id="approvalHours">
     <!-- HEADER TOOL-BAR -->
@@ -16,22 +17,147 @@
 
     <!-- SECTION MAIN CONTENT -->
     <section id="section" class="box-shadow p20">
-<!-- <button class="btn btn-success" ng-click="fn()">Go!</button> -->
-		<div ng-repeat="(key, employee) in obj">
 
+        <!-- MOVING-DATE BUTTONS -->
+        <div class="row">
+            <div id="movingDate" class="col-xs-12">
+                <div class="row">
+                    <div class="col-xs-2 col-xs-offset-4 col-sm-2 col-sm-offset-2 col-md-1 col-md-offset-3 col-lg-1 col-lg-offset-4">
+                            <button class="btn btn-primary" ng-click="moveDate(-1)" title="{{'words.previous' | i18next}}">
+                                <i class="fa fa-arrow-left"></i></button>
+                    </div>
+                    <div class="col-xs-2 col-sm-2 col-sm-push-4 col-md-1 col-md-push-3 col-lg-1 col-lg-push-2">
+                        <button class="btn btn-primary" ng-click="moveDate(+1)" title="{{'words.next' | i18next}}">
+                            <i class="fa fa-arrow-right"></i></button>
+                    </div>
+                    <div id="writtenDate" class="col-xs-12 col-sm-4 col-sm-pull-2 col-md-3 col-md-pull-1 col-lg-2 col-lg-pull-1">
+                        <p>{{'months.' + mainOBJ.currentMonth | i18next}}  {{mainOBJ.currentYear}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+<!-- ****************************************** MEN AT WORK ****************************************** -->
+        <!-- OPTIONS -->
+        <div id="options" class="simple-input">
+            <div class="opts">
+                <input type="radio" name="xxx" ng-model="mainOBJ.allEmployees" value="true" /> {{'approvalHours.all' | i18next}}
+            </div>
+            <div class="opts">
+                <input type="radio" name="xxx" ng-model="mainOBJ.allEmployees" value="false" /> {{'approvalHours.justPending' | i18next}}
+            </div>
+            <div class="opts">
+                <input ng-model="mainOBJ.searchText" class="form-control text-capitalize" 
+                    placeholder="{{'approvalHours.search' | i18next}}" />
+            </div>
+        </div>
+
+<!-- ****************************************** MEN AT WORK ****************************************** -->
+
+<!-- MAIN CONTENT TABLE -->
+<div id="mainContent">
+        <div class="tableContainer">
+            <table>
+                <tr class="notHoverPlease">
+                    <th style="width: 26%;">Empleado</th>
+                    <th style="width: 8%;">Horas Imputadas</th>
+                    <th style="width: 8%;">Horas Trabajadas</th>
+                    <th style="width: 8%;">Jornadas Trabajadas</th>
+                    <th style="width: 8%;">Jornadas Ausencias</th>
+                    <th style="width: 8%;">Jornadas Vacaciones</th>
+                    <th style="width: 8%;">Jornadas Vacaciones</th>
+                    <th style="width: 26%;"></th>
+                </tr>
+            </table>
+                
+            <div ng-repeat="(key, employee) in employees">
+                <table>
+                <tr>
+                    <td style="width: 26%;"><button ng-click="myEmployeeClick(employee._id)" class="btn btn-primary"><i class="fa fa-chevron-right"></i></button>{{employee.name}}
+                    </td>
+                    <td style="width: 8%;">{{employee.hi}}</td>
+                    <td style="width: 8%;">{{employee.htra}}</td>
+                    <td style="width: 8%;">{{employee.jtra}}</td>
+                    <td style="width: 8%;">{{employee.jaus}}</td>
+                    <td style="width: 8%;">{{employee.jvac}}</td>
+                    <td style="width: 8%;">{{employee.tgua}}</td>
+                    <td style="width: 26%;">
+                        <button class="btn btn-primary no-margin" ng-click="approve()">
+                            {{'approvalHours.approve' | i18next}}
+                        </button>
+                        <button class="btn btn-gray no-margin" ng-click="reject()">
+                            {{'approvalHours.reject' | i18next}}
+                        </button>
+                    </td>
+                </tr> <!-- main -->
+
+                <tr>
+                    <div id="{{employee._id}}" class="collapse employeeCollapse">
+                        <div class="employeeContent">
+                        <p>You have discovered <span>{{employee.name}}'s</span> secret!</p>
+                        </div>
+                    </div>
+                </tr>
+                
+                <!-- VOY POR AQUÍ -->
+                <!-- EL CONTENIDO COLLAPSE APARECE ARRIBA DE LA FILA CORRESPONDIENTE Y NO DEBAJO COMO DEBE SER -->
+                <!-- VOY POR AQUÍ -->
+                <!-- EL CONTENIDO COLLAPSE APARECE ARRIBA DE LA FILA CORRESPONDIENTE Y NO DEBAJO COMO DEBE SER -->
+                <!-- VOY POR AQUÍ -->
+                <!-- EL CONTENIDO COLLAPSE APARECE ARRIBA DE LA FILA CORRESPONDIENTE Y NO DEBAJO COMO DEBE SER -->
+                <!-- VOY POR AQUÍ -->
+                <!-- EL CONTENIDO COLLAPSE APARECE ARRIBA DE LA FILA CORRESPONDIENTE Y NO DEBAJO COMO DEBE SER -->
+                <!-- VOY POR AQUÍ -->
+                <!-- EL CONTENIDO COLLAPSE APARECE ARRIBA DE LA FILA CORRESPONDIENTE Y NO DEBAJO COMO DEBE SER -->
+
+                </table>
+
+            </div>
+
+
+
+
+
+        </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<hr><!-- ****************************************** MEN AT WORK ****************************************** -->
+
+		<div ng-repeat="(key, employee) in employees">
 			<div class="myEmployee" ng-click="myEmployeeClick(employee._id)">
 					<i ng-hide="employee.opened" class="fa fa-calendar-plus-o hours_rejected closed" title="Open employee"></i>
 					<i ng-show="employee.opened" class="fa fa-calendar-minus-o hours_rejected opened" title="Close employee"></i>
 					{{employee.name}} / {{employee.opened}}
 			</div>
 			<!-- div.employeeCollapse inside of collapse div because margin/padding transition jumpy -->
-			<div id="{{employee._id}}" class="collapse employeeCollapse"> 
-
+			<div id="{{employee._id}}" class="collapse employeeCollapse">
 				<div class="employeeContent">
 					<p>You have discovered <span>{{employee.name}}'s</span> secret!</p>
 				</div>
 			</div>
-		
+
+
 		</div>
 
     </section>
