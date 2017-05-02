@@ -19,6 +19,15 @@
                             allEmployees         : 'true',
                             searchText           : ''
                         };
+init();
+        function init() {
+            approvalHoursFactory.getEmployeesTimesheets( $scope.mainOBJ.currentMonth, $scope.mainOBJ.currentYear )
+                .then( function ( data ) {
+                    // console.log(data);
+                })
+                .catch( function ( err ) {
+                });
+        }
 
 
 
@@ -35,7 +44,7 @@
             var employeeElement = $( '#' + employeeId );
             employeeElement.collapse( 'toggle' );
             var openStatus = employeeElement.attr( 'aria-expanded' );
-            var employee = $scope.obj.find( function( employee ) {
+            var employee = $scope.employees.find( function( employee ) {
                 return employee._id === employeeId;
             });
             employee.opened = ( openStatus === 'true' );
@@ -44,6 +53,7 @@
         };
 
         // $scope.fn = function() {
+        //     console.log( $scope.employees );
         // };
     
     }

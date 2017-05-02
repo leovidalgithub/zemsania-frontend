@@ -13,6 +13,8 @@ var API_paths = {
     newSearchUser: 'user/newSearch',
     removeUser: 'user/delete',    
 
+    getEmployeesTimesheets: 'approval/getEmployeesTimesheets/',
+
     getTimesheets: 'timesheets/getTimesheets/',
     setAllTimesheets: 'timesheets/setAllTimesheets/',
 

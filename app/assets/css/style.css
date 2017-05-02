@@ -883,8 +883,7 @@
   margin: 7px;
 }
 #imputeHours #section #daysDiv .myWeek .myDay:hover {
-  border: solid 1px #CAB023;
-  background-color: #B7B7B7;
+  border: solid .5px white;
 }
 #imputeHours #section #daysDiv .myWeek .myDay.friday {
   background-color: #286ABA;

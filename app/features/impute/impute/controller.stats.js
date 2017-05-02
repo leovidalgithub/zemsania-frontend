@@ -91,6 +91,7 @@
                 }
                 return dailyWork;
             }
+
             // when one project has not info it does not exist so we create it and fill with zeros (for visual purposes)
             $scope.userProjects.forEach( function( project ) {
                 if( !projectsInfoTemp[ project._id ] ) {

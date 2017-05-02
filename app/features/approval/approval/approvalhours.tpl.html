@@ -1,4 +1,3 @@
-<!-- <button class="btn btn-success" ng-click="fn()">Go!</button> -->
 <!-- https://www.w3schools.com/bootstrap/bootstrap_ref_js_collapse.asp -->
 <div id="approvalHours">
     <!-- HEADER TOOL-BAR -->
@@ -17,6 +16,7 @@
 
     <!-- SECTION MAIN CONTENT -->
     <section id="section" class="box-shadow p20">
+<!-- <button class="btn btn-success" ng-click="fn()">Go!</button> -->
 
         <!-- MOVING-DATE BUTTONS -->
         <div class="row">
@@ -71,45 +71,34 @@
                 
             <div ng-repeat="(key, employee) in employees">
                 <table>
-                <tr>
-                    <td style="width: 26%;"><button ng-click="myEmployeeClick(employee._id)" class="btn btn-primary"><i class="fa fa-chevron-right"></i></button>{{employee.name}}
-                    </td>
-                    <td style="width: 8%;">{{employee.hi}}</td>
-                    <td style="width: 8%;">{{employee.htra}}</td>
-                    <td style="width: 8%;">{{employee.jtra}}</td>
-                    <td style="width: 8%;">{{employee.jaus}}</td>
-                    <td style="width: 8%;">{{employee.jvac}}</td>
-                    <td style="width: 8%;">{{employee.tgua}}</td>
-                    <td style="width: 26%;">
-                        <button class="btn btn-primary no-margin" ng-click="approve()">
-                            {{'approvalHours.approve' | i18next}}
-                        </button>
-                        <button class="btn btn-gray no-margin" ng-click="reject()">
-                            {{'approvalHours.reject' | i18next}}
-                        </button>
-                    </td>
-                </tr> <!-- main -->
-
-                <tr>
-                    <div id="{{employee._id}}" class="collapse employeeCollapse">
-                        <div class="employeeContent">
-                        <p>You have discovered <span>{{employee.name}}'s</span> secret!</p>
-                        </div>
-                    </div>
-                </tr>
-                
-                <!-- VOY POR AQUÍ -->
-                <!-- EL CONTENIDO COLLAPSE APARECE ARRIBA DE LA FILA CORRESPONDIENTE Y NO DEBAJO COMO DEBE SER -->
-                <!-- VOY POR AQUÍ -->
-                <!-- EL CONTENIDO COLLAPSE APARECE ARRIBA DE LA FILA CORRESPONDIENTE Y NO DEBAJO COMO DEBE SER -->
-                <!-- VOY POR AQUÍ -->
-                <!-- EL CONTENIDO COLLAPSE APARECE ARRIBA DE LA FILA CORRESPONDIENTE Y NO DEBAJO COMO DEBE SER -->
-                <!-- VOY POR AQUÍ -->
-                <!-- EL CONTENIDO COLLAPSE APARECE ARRIBA DE LA FILA CORRESPONDIENTE Y NO DEBAJO COMO DEBE SER -->
-                <!-- VOY POR AQUÍ -->
-                <!-- EL CONTENIDO COLLAPSE APARECE ARRIBA DE LA FILA CORRESPONDIENTE Y NO DEBAJO COMO DEBE SER -->
-
+                    <tr>
+                        <td style="width: 26%;"><button ng-click="myEmployeeClick(employee._id)" class="btn btn-primary">
+                            <i ng-hide="employee.opened" class="fa fa-chevron-right"></i>
+                            <i ng-show="employee.opened" class="fa fa-chevron-down"></i></button>
+                            {{employee.name}}
+                        </td>
+                        <td style="width: 8%;">{{employee.hi}}</td>
+                        <td style="width: 8%;">{{employee.htra}}</td>
+                        <td style="width: 8%;">{{employee.jtra}}</td>
+                        <td style="width: 8%;">{{employee.jaus}}</td>
+                        <td style="width: 8%;">{{employee.jvac}}</td>
+                        <td style="width: 8%;">{{employee.tgua}}</td>
+                        <td style="width: 26%;">
+                            <button class="btn btn-primary no-margin" ng-click="approve()">
+                                {{'approvalHours.approve' | i18next}}
+                            </button>
+                            <button class="btn btn-gray no-margin" ng-click="reject()">
+                                {{'approvalHours.reject' | i18next}}
+                            </button>
+                        </td>
+                    </tr>
                 </table>
+                <div id="{{employee._id}}" class="collapse employeeCollapse">
+                    <div class="employeeContent">
+                    <p>You have discovered <span>{{employee.name}}'s</span> secret!</p>
+                    </div>
+                </div>
+                
 
             </div>
 

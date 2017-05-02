@@ -26,8 +26,7 @@
                         width: 85px;
                         margin: 7px;
                         &:hover {
-                            border: solid 1px #CAB023;
-                            background-color: #B7B7B7;
+                            border: solid .5px white;
                         }
                         &.friday {
                            background-color: $fridayColor;
