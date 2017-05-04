@@ -178,3 +178,17 @@ function takeMeUp() {
 function getItemsPerPage( value ) {
     return Math.floor( window.innerHeight / value ).toString();
 };
+
+// CALCULATES DAILYWORK ACCORDING TO IMPUTETYPE (HORAS, GUARDIAS, ETC.), IMPUTED VALUE AND DAYTYPEMILLISECONDS
+function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
+    var dailyWork = 0;
+    if( dayTypeMilliseconds != 0 ) { // if no milliseconds (holiday or non-working), no dailyWork is computed
+        if( imputeType == 'Guardias' ) {
+            dailyWork = imputeValue; 
+        } else {
+            var imputedMilliseconds = ( imputeValue * 3600000 );
+            dailyWork = ( imputedMilliseconds / dayTypeMilliseconds );
+        }
+    }
+    return dailyWork;
+}

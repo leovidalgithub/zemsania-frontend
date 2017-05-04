@@ -7,12 +7,12 @@
     function imputeHoursStatsController( $scope ) {
 
         var generalDataModel;
-        var millisecondsByType;
+        var millisecondsByDayType;
         $scope.showStatsObj = {};
 
         $scope.$on( 'refreshStats', function( event, data ) {
             generalDataModel = data.generalDataModel;
-            if( !millisecondsByType ) getMillisecondsByType();
+            if( !millisecondsByDayType ) getMillisecondsByDayType();
             buildStatsObj();
         });
 
@@ -71,7 +71,7 @@
             function dailyWorkCalculate( day, imputeType, imputeValue ) {
                 var currentFirstDay = $scope.showDaysObj.currentFirstDay;
                 var calendar        = generalDataModel[ currentFirstDay ].calendar;
-                var dailyWork = 0;
+                // var dailyWork = 0;
                 var dayType = '';
                 var dayTypeMilliseconds = 0;
                 // getting dayType acoording to day            
@@ -79,17 +79,9 @@
                     dayType = calendar.eventHours[0].eventDates[ day ].type;
                 }
                 // getting dayType milliseconds
-                if( millisecondsByType[ dayType ] ) dayTypeMilliseconds = millisecondsByType[ dayType ].milliseconds;
-                // calculating dailyWork
-                if( dayTypeMilliseconds != 0 ) { // if no milliseconds (holiday or non-working), no dailyWork is computed
-                    if( imputeType == 'Guardias' ) {
-                        dailyWork = imputeValue; 
-                    } else {
-                        var imputedMilliseconds = ( imputeValue * 3600000 );
-                        dailyWork = ( imputedMilliseconds / dayTypeMilliseconds );
-                    }
-                }
-                return dailyWork;
+                if( millisecondsByDayType[ dayType ] ) dayTypeMilliseconds = millisecondsByDayType[ dayType ].milliseconds;
+                // // calculating dailyWork
+                return calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  );
             }
 
             // when one project has not info it does not exist so we create it and fill with zeros (for visual purposes)
@@ -169,10 +161,10 @@
         }
 
         // stores dailywork dayType milliseconds
-        function getMillisecondsByType() {
-            var currentFirstDay = $scope.showDaysObj.currentFirstDay;
-            var calendar        = generalDataModel[ currentFirstDay ].calendar;
-            millisecondsByType  = calendar.eventHours[0].totalPerType;
+        function getMillisecondsByDayType() {
+            var currentFirstDay    = $scope.showDaysObj.currentFirstDay;
+            var calendar           = generalDataModel[ currentFirstDay ].calendar;
+            millisecondsByDayType  = calendar.eventHours[0].totalPerType;
         }
 
 }

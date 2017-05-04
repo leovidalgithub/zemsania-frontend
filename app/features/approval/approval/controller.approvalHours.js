@@ -4,58 +4,130 @@
         .module( 'hours.approvalHours' )
         .controller( 'approvalHoursController', approvalHoursController )
 
-    approvalHoursController.$invoke = [ '$scope', 'approvalHoursFactory', '$timeout' ];
-    function approvalHoursController( $scope, approvalHoursFactory, $timeout ) {
+    approvalHoursController.$invoke = [ '$scope', 'approvalHoursFactory', '$timeout', '$http' ];
+    function approvalHoursController( $scope, approvalHoursFactory, $timeout, $http ) {
+
+        $timeout( function() {
+            $scope.mainOBJ.searchText = 'leo';
+        }, 900 );
 
         var currentDate  = new Date();
-        // var currentMonth = currentDate.getMonth();
-        // var currentYear  = currentDate.getFullYear();
         $scope.mainOBJ = {};
         $scope.mainOBJ = {
                             currentDate          : currentDate,
                             currentDateTimestamp : currentDate.getTime(),
                             currentMonth         : currentDate.getMonth(),
                             currentYear          : currentDate.getFullYear(),
+                            currentFirstDay      : new Date( currentDate.getFullYear(), currentDate.getMonth(), 1 ),
+                            currentLastDay       : new Date( currentDate.getFullYear(), currentDate.getMonth() + 1, 0 ),
+                            totalMonthDays       : new Date( currentDate.getFullYear(), currentDate.getMonth() + 1, 0 ).getDate(),                            
                             allEmployees         : 'true',
                             searchText           : ''
                         };
-init();
+
+        init();
         function init() {
-            approvalHoursFactory.getEmployeesTimesheets( $scope.mainOBJ.currentMonth, $scope.mainOBJ.currentYear )
-                .then( function ( data ) {
-                    // console.log(data);
+            approvalHoursFactory.getEmployeesTimesheets( $scope.mainOBJ )
+                .then( function ( data ) { 
+                    $scope.employees = data;
+                    console.log($scope.employees);
                 })
                 .catch( function ( err ) {
                 });
         }
 
-
-
-// ************************************************** MEN AT WORK **************************************************
-        $scope.employees = [
-                    { name : 'Leonardo Rodríguez Vidal', hi:36, htra:3, jtra:8, jaus:2, jvac:5, tgua:7, opened : false, _id : '3r58d33j5903a034' },
-                    { name : 'Lorenzo Barja Rodríguez',  hi:123, htra:4, jtra:33, jaus:32, jvac:4, tgua:7, opened : false, _id : '3r58d33j5903a035' },
-                    { name : 'Ana Escribano',            hi:44, htra:5, jtra:4, jaus:61, jvac:3, tgua:7, opened : false, _id : '3r58d33j5903a036' },
-                    { name : 'Joaquín Crespo',           hi:9, htra:6, jtra:22, jaus:15, jvac:2, tgua:7, opened : false, _id : '3r58d33j5903a037' },
-                    { name : 'Mónica Pascualotte',       hi : 79, htra:7, jtra:1, jaus:6, jvac:1, tgua:7, opened : false, _id : '3r58d33j5903a038' }
-        ];
-
         $scope.myEmployeeClick = function( employeeId ) {
-            var employeeElement = $( '#' + employeeId );
-            employeeElement.collapse( 'toggle' );
-            var openStatus = employeeElement.attr( 'aria-expanded' );
+            var openStatus = collapseToggle( employeeId );
             var employee = $scope.employees.find( function( employee ) {
-                return employee._id === employeeId;
+                return employee.employeeId === employeeId;
             });
             employee.opened = ( openStatus === 'true' );
+        };
+
+
+        $scope.myProjectClick = function( employeeId, projectId ) {
+            console.log(projectId);
+            var openStatus = collapseToggle( projectId );
+            var employee = $scope.employees.find( function( employee ) {
+                return employee.employeeId === employeeId;
+            });
+            employee.timesheetDataModel[ projectId ].info.opened =  ( openStatus === 'true' );
+        };
+
+        // to collapse toggle of table views
+        function collapseToggle( id ) {
+            var element = $( '#' + id );
+            element.collapse( 'toggle' );
+            return element.attr( 'aria-expanded' ); // to know if it is collapsed or not
+        }
+
+        $( document ).ready( function() {
+            $timeout( function() {
+                  $( '.slickTable' ).slick({
+                    dots: true,
+                    infinite : false,
+                    slidesToShow: 5,
+                    slidesToScroll: 3,
+                    variableWidth : true,
+                    // autoplay : true,
+                    // autoplaySpeed : 600,
+                    // adaptiveHeight : true,
+                    arrows : false,
+                    // speed : 300,
+                    // centerMode : true,
+                  });
+            }, 500 );
+        });
+
+        $scope.dayClick = function( employeeId, projectId, tableName, day, approved ) {
+            approved = approved == 'NA' ? true : !approved;
+            $scope.employees.forEach( function( employee ) {
+                if( employee.employeeId == employeeId ) {
+                    if( employee.timesheetDataModel[ projectId ] ) {
+                        if( employee.timesheetDataModel[ projectId ].info.tables[ tableName ] ) {
+                            var table = employee.timesheetDataModel[ projectId ].info.tables[ tableName ];
+                            var dayToSet = table.days.find( function( dayObj ) {
+                                        return dayObj.day == day;
+                                    });
+                            dayToSet.approved = approved;
+                        }
+                    }
+                }
+            });
+        };
+
+        $scope.notNameFunction = function( approved, level, employeeId, projectId ) {
+
+            var employee = $scope.employees.find( function( employee ) {
+                return employee.employeeId == employeeId;
+            });
+
+            console.log(employee);
+            //VOY POR AQUÍ 
+            //VOY POR AQUÍ 
+            //VOY POR AQUÍ 
+            //VOY POR AQUÍ 
+            //VOY POR AQUÍ 
+            //VOY POR AQUÍ 
+            //VOY POR AQUÍ 
+            //VOY POR AQUÍ
+
+                //     if( employee.timesheetDataModel[ projectId ] ) {
+                //         if( employee.timesheetDataModel[ projectId ].info.tables[ tableName ] ) {
+                //             var table = employee.timesheetDataModel[ projectId ].info.tables[ tableName ];
+                //             var dayToSet = table.days.find( function( dayObj ) {
+                //                         return dayObj.day == day;
+                //                     });
+                //             dayToSet.approved = approved;
+                //         }
+                //     }
 
 
         };
 
-        // $scope.fn = function() {
-        //     console.log( $scope.employees );
-        // };
-    
+
+
+
     }
 
 }());

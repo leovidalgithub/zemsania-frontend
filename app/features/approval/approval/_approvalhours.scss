@@ -78,31 +78,44 @@
 					color: #73E173;
 				}
 			}
-			.employeeCollapse {
-				padding: 0;
-				margin: 0;
-			}
-			.employeeContent {
-				border: 8px outset #B8F3B8;
-				background-color: #EFFFEE;
-				padding: 10px;
-				font-family: monospace;
-				font-size: 21px;
-				height: 100px;
-				display: flex;
-				flex-flow: row nowrap;
-				justify-content: center;
-				align-items: center;
-				p {
-					margin: 0;
-					span {
-						color: blue;
-					}
+
+				.projectTable {
+					width: 95%;
+					margin: auto;
+					// margin: 20px auto;
+					margin-bottom: 20px;
+					padding: 8px 0;
+					// border: .5px solid green;
+					// background-color: #EBEBEB;
 				}
 
-			}
+			// .employeeCollapse {
+			// 	padding: 0;
+			// 	margin: 0;
+			// }
+			// .employeeContent {
+			// 	border: 8px outset #B8F3B8;
+			// 	background-color: #EFFFEE;
+			// 	padding: 10px;
+			// 	font-family: monospace;
+			// 	font-size: 21px;
+			// 	height: 100px;
+			// 	display: flex;
+			// 	flex-flow: row nowrap;
+			// 	justify-content: center;
+			// 	align-items: center;
+			// 	p {
+			// 		margin: 0;
+			// 		span {
+			// 			color: blue;
+			// 		}
+			// 	}
+			// }
+
+
 
 			#mainContent {
+				min-width: 970px;
 				.tableContainer {
 					overflow-x:auto;
                 	margin: 10px;
@@ -112,15 +125,22 @@
                 		width: 100%;
                 		text-align: center;
                 		th {
-                			background-color: #F5F5F5;
+                			// background-color: #F5F5F5;
+                			background-color: #EAEAEA;
                 			text-align: center;
+                			border-radius: 5px;
+                			font-size: 13px;
+                			font-family: monospace;
                 			}
                 		tr td{
                 			line-height: 45px;
                 		}
-                		td {
+                		td:not(.notForMePlease) {
 	                		padding: 3px 0;
 	                		border-bottom: 1px solid gray;
+	                		overflow: hidden;
+	                		// text-overflow:ellipsis;
+	                		white-space: nowrap;
                 		}
                 		tr td:first-child {
                 			text-align: left;
@@ -133,11 +153,107 @@
                 		tr:hover:not(.notHoverPlease) * {
                 			border-bottom: 1px solid $zemsania;
                 			}
-
-
+						.opened { // button: when a callapsable table is opened
+							background-color: lighten( $zemsania, 15% );
+						}
                 	}
 
+						// DAYS TABLE SECTION (HORAS, GUARDIAS, ETC.)
+						#content {
+        					display: flex;
+							flex-flow: row nowrap;
+							justify-content: center;
+							align-items: center;
+						}
+						.buttons {
+					        width: 5%;
+					        * {
+					        	margin-bottom: 5px !important;
+					        	border-radius: 5px;
+					        }
+						}
+					    .slickTable {
+					        background-color: #EAEAEA;
+					        border-radius: 5px;
+					        padding: 7px;
+					        width: 90%;
+					        margin: 0;
+					        margin-right: 15px;
+					        .dayBox {
+						        background-color: white;
+						        // background-color: #85ac0c;
+						        color: black;
+						        width: 40px;
+						        margin-left: 3px;
+						        padding: 6px;
+						        &:hover {
+						        	border: .5px solid gray;
+						        }
 
+
+
+
+						        .dayContent {
+							        background-color: white;
+						        	border: .5px solid gray;
+						        	border-radius: 3px;
+						        	margin-top: 2px;
+						        	height: 20px;
+		        					display: flex;
+									flex-flow: row nowrap;
+									justify-content: center;
+									align-items: center;
+									&.day {
+										color: white;
+				                        &.friday {
+				                           background-color: $fridayColor;
+				                        }
+				                        &.working {
+				                           background-color: $workingColor;
+				                        }
+				                        &.intensive {
+				                           background-color: $intensiveColor;
+				                        }
+				                        &.special {
+				                           background-color: $specialColor;
+				                        }
+				                        &.holidays {
+				                           background-color: $holidaysColor;
+				                        }
+				                        &.non_working {
+				                           background-color: $non_workingColor;
+				                        }
+									}
+									&.value {
+									}
+									&.approved {
+										color: white;
+										font-size: 12px;
+										&.ok {
+											background-color: $zemsania;
+										}
+										&.ko {
+											background-color: gray;
+										}
+										&.na {
+											background-color: #BFBEBE;
+										}
+									}
+
+						        }
+						        &.desactivated {
+									pointer-events: none;
+									cursor: default;
+									background-color: #EAEAEA;
+						        	.dayContent.day, .dayContent.value, .dayContent.approved {
+										background-color: #F4F4F4;
+										color: #A9A9A9;
+						        		
+						        	}
+						        }
+
+					        }
+					    }
 
 
 					}
@@ -148,3 +264,10 @@
 
 		} // section
 	}
+
+
+
+
+                           // .myHeader {
+                           //      color: #666;
+                           // }

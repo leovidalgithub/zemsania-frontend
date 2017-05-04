@@ -77,7 +77,9 @@ gulp.task( 'vendors:css', function () {
             './bower_components/fullcalendar/dist/fullcalendar.min.css',
             './bower_components/animate.css/animate.min.css',
             './bower_components/font-awesome/css/font-awesome.css',
-            './lib/ui-bootstrap/ui-bootstrap-custom-0.14.3-csp.css'
+            './lib/ui-bootstrap/ui-bootstrap-custom-0.14.3-csp.css',
+            './lib/slick/slick.css',
+            './lib/slick/slick-theme.css'
         ])
         .pipe( concat( 'vendors.css') )
         .pipe( minifyCss() )
@@ -112,7 +114,8 @@ gulp.task( 'vendors:js', function () {
             './bower_components/angular-formly/dist/formly.js',
             './bower_components/angular-formly-templates-bootstrap/dist/angular-formly-templates-bootstrap.min.js',
             './bower_components/angular-file-saver/dist/angular-file-saver.bundle.min.js',
-            './lib/ui-bootstrap/ui-bootstrap-custom-tpls-0.14.3.min.js'
+            './lib/ui-bootstrap/ui-bootstrap-custom-tpls-0.14.3.min.js',
+            './lib/slick/slick.min.js'
         ])
         .pipe( concat( 'vendors.js') )
         .pipe( uglify() )

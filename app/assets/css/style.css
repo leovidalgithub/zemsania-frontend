@@ -1216,27 +1216,14 @@
 #approvalHours #section .myEmployee i.opened {
   color: #73E173;
 }
-#approvalHours #section .employeeCollapse {
-  padding: 0;
-  margin: 0;
+#approvalHours #section .projectTable {
+  width: 95%;
+  margin: auto;
+  margin-bottom: 20px;
+  padding: 8px 0;
 }
-#approvalHours #section .employeeContent {
-  border: 8px outset #B8F3B8;
-  background-color: #EFFFEE;
-  padding: 10px;
-  font-family: monospace;
-  font-size: 21px;
-  height: 100px;
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: center;
-  align-items: center;
-}
-#approvalHours #section .employeeContent p {
-  margin: 0;
-}
-#approvalHours #section .employeeContent p span {
-  color: blue;
+#approvalHours #section #mainContent {
+  min-width: 970px;
 }
 #approvalHours #section #mainContent .tableContainer {
   overflow-x: auto;
@@ -1248,15 +1235,20 @@
   text-align: center;
 }
 #approvalHours #section #mainContent .tableContainer table th {
-  background-color: #F5F5F5;
+  background-color: #EAEAEA;
   text-align: center;
+  border-radius: 5px;
+  font-size: 13px;
+  font-family: monospace;
 }
 #approvalHours #section #mainContent .tableContainer table tr td {
   line-height: 45px;
 }
-#approvalHours #section #mainContent .tableContainer table td {
+#approvalHours #section #mainContent .tableContainer table td:not(.notForMePlease) {
   padding: 3px 0;
   border-bottom: 1px solid gray;
+  overflow: hidden;
+  white-space: nowrap;
 }
 #approvalHours #section #mainContent .tableContainer table tr td:first-child {
   text-align: left;
@@ -1268,6 +1260,94 @@
 }
 #approvalHours #section #mainContent .tableContainer table tr:hover:not(.notHoverPlease) * {
   border-bottom: 1px solid #F15A29;
+}
+#approvalHours #section #mainContent .tableContainer table .opened {
+  background-color: #f69171;
+}
+#approvalHours #section #mainContent .tableContainer #content {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+}
+#approvalHours #section #mainContent .tableContainer .buttons {
+  width: 5%;
+}
+#approvalHours #section #mainContent .tableContainer .buttons * {
+  margin-bottom: 5px !important;
+  border-radius: 5px;
+}
+#approvalHours #section #mainContent .tableContainer .slickTable {
+  background-color: #EAEAEA;
+  border-radius: 5px;
+  padding: 7px;
+  width: 90%;
+  margin: 0;
+  margin-right: 15px;
+}
+#approvalHours #section #mainContent .tableContainer .slickTable .dayBox {
+  background-color: white;
+  color: black;
+  width: 40px;
+  margin-left: 3px;
+  padding: 6px;
+}
+#approvalHours #section #mainContent .tableContainer .slickTable .dayBox:hover {
+  border: .5px solid gray;
+}
+#approvalHours #section #mainContent .tableContainer .slickTable .dayBox .dayContent {
+  background-color: white;
+  border: .5px solid gray;
+  border-radius: 3px;
+  margin-top: 2px;
+  height: 20px;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+}
+#approvalHours #section #mainContent .tableContainer .slickTable .dayBox .dayContent.day {
+  color: white;
+}
+#approvalHours #section #mainContent .tableContainer .slickTable .dayBox .dayContent.day.friday {
+  background-color: #286ABA;
+}
+#approvalHours #section #mainContent .tableContainer .slickTable .dayBox .dayContent.day.working {
+  background-color: #85AC0C;
+}
+#approvalHours #section #mainContent .tableContainer .slickTable .dayBox .dayContent.day.intensive {
+  background-color: #EBC21C;
+}
+#approvalHours #section #mainContent .tableContainer .slickTable .dayBox .dayContent.day.special {
+  background-color: #FF831C;
+}
+#approvalHours #section #mainContent .tableContainer .slickTable .dayBox .dayContent.day.holidays {
+  background-color: #ff0000;
+}
+#approvalHours #section #mainContent .tableContainer .slickTable .dayBox .dayContent.day.non_working {
+  background-color: #808080;
+}
+#approvalHours #section #mainContent .tableContainer .slickTable .dayBox .dayContent.approved {
+  color: white;
+  font-size: 12px;
+}
+#approvalHours #section #mainContent .tableContainer .slickTable .dayBox .dayContent.approved.ok {
+  background-color: #F15A29;
+}
+#approvalHours #section #mainContent .tableContainer .slickTable .dayBox .dayContent.approved.ko {
+  background-color: gray;
+}
+#approvalHours #section #mainContent .tableContainer .slickTable .dayBox .dayContent.approved.na {
+  background-color: #BFBEBE;
+}
+#approvalHours #section #mainContent .tableContainer .slickTable .dayBox.desactivated {
+  pointer-events: none;
+  cursor: default;
+  background-color: #EAEAEA;
+}
+#approvalHours #section #mainContent .tableContainer .slickTable .dayBox.desactivated .dayContent.day, #approvalHours #section #mainContent .tableContainer .slickTable .dayBox.desactivated .dayContent.value, #approvalHours #section #mainContent .tableContainer .slickTable .dayBox.desactivated .dayContent.approved {
+  background-color: #F4F4F4;
+  color: #A9A9A9;
 }
 
 html, body, body > div, div[ui-view] {
