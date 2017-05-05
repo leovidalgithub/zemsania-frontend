@@ -159,18 +159,25 @@
                 	}
 
 						// DAYS TABLE SECTION (HORAS, GUARDIAS, ETC.)
-						#content {
+						#tableContent {
         					display: flex;
 							flex-flow: row nowrap;
 							justify-content: center;
 							align-items: center;
-						}
-						.buttons {
-					        width: 5%;
-					        * {
-					        	margin-bottom: 5px !important;
-					        	border-radius: 5px;
-					        }
+							.buttons {
+						        width: 5%;
+						        * {
+						        	margin-bottom: 5px !important;
+						        	border-radius: 5px;
+						        }
+							}
+							.leyend p {
+								font-size: 14px;
+								margin: 0;
+								margin-right: 10px;
+								line-height: 21px;
+								text-align: right;
+							}
 						}
 					    .slickTable {
 					        background-color: #EAEAEA;

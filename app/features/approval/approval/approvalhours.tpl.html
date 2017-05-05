@@ -130,7 +130,14 @@
                                         <div ng-repeat="(tableName, table) in project.info.tables">
                          
                                             <p style="font-size: 18px;font-family: monospace;">{{tableName}}</p>
-                                            <div id="content">
+                                            <div id="tableContent">
+                                                <div class="leyend">
+                                                    <code>
+                                                        <p>Día</p>
+                                                        <p>Valor</p>
+                                                        <p><i class="fa fa-thumbs-up"></i></p>
+                                                    </code>
+                                                </div>
                                                 <div class="slickTable">
                                                     <div ng-class="{'desactivated':!day.enabled}" class="dayBox" ng-repeat="(dayKey, day) in table.days">
                                                         <div class="dayContent day {{day.dayType}}">{{day.day}}</div>
