@@ -32,8 +32,8 @@
                 return dfd.promise;
             },
 
-            setAllTimesheets: function( data ) { // LEO WAS HERE
-                var userID = UserFactory.getUserID();
+            setAllTimesheets: function( data, _userID ) { // LEO WAS HERE
+                var userID = _userID || UserFactory.getUserID(); // ( _userID is used by 'approvalHours controller' )
                 var dfd = $q.defer();
                 $http.post( buildURL( 'setAllTimesheets' ) + userID, data )
                     .then( function ( response ) {

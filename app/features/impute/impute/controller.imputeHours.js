@@ -213,20 +213,16 @@
             refreshShowDaysObj();
         };
 
-        function findDrafts( toSend ) {
-            
+        function findDrafts( toSend ) {            
             for( var date in generalDataModel ) {
                 for( var projectId in generalDataModel[date].timesheetDataModel ) {
                     for( var day in generalDataModel[date].timesheetDataModel[projectId] ) {
                         for( var type in generalDataModel[date].timesheetDataModel[projectId][day] ) {
                             for( var subType in generalDataModel[date].timesheetDataModel[projectId][day][type] ) {
                                 if( generalDataModel[date].timesheetDataModel[projectId][day][type][subType].status == 'draft' ) {
-
                                     if( !toSend ) { // just to know if there is some 'draft'
                                         return true;
                                     }
-
-                                    console.log( 'change to sent' );
                                     generalDataModel[date].timesheetDataModel[projectId][day][type][subType].status = 'sent';
                                     generalDataModel[date].timesheetDataModel[projectId][day][type][subType].modified = true;
                                 }

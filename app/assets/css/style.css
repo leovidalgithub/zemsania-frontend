@@ -1293,7 +1293,7 @@
   padding: 6px;
 }
 #approvalHours #section #mainContent .tableContainer .slickTable .dayBox:hover {
-  border: .5px solid gray;
+  border: .5px solid transparent;
 }
 #approvalHours #section #mainContent .tableContainer .slickTable .dayBox .dayContent {
   background-color: white;

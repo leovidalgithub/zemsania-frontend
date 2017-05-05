@@ -58,10 +58,6 @@
                                     var imputeValue = employee.timesheetDataModel[ projectId ][ day ][ imputeType ][ imputeSubType ].value;
                                     var dailyWorkValue = calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  );
 
-                                    // console.log(employee.name);
-                                    // console.log(imputeValue + ' ' + dailyWorkValue);
-                                    // console.log(imputeValue + dailyWorkValue);
-
                                     totalImputeHours+= imputeValue;
                                     imputeHours+= imputeValue;
                                     totalDailyWork+= dailyWorkValue;
@@ -106,7 +102,7 @@
         function prepareTableDaysData( dfd ) {
             var employees = data.data.employees;
             employees.forEach( function( employee ) {
-                if( employee.name == 'Leonardo A.') {
+                    employee.isPending = false;
                     for( var projectId in employee.timesheetDataModel ) {
 
                         for( var day in employee.timesheetDataModel[ projectId ] ) {
@@ -120,12 +116,17 @@
                                         employee.timesheetDataModel[ projectId ].info.tables[tableName] = {};
                                         var newTable = employee.timesheetDataModel[ projectId ].info.tables[tableName];
                                         newTable.name = tableName;
+                                        newTable.imputeType = imputeType;
+                                        newTable.imputeSubType = imputeSubType;
                                         newTable.days = [];
                                         createTable( newTable );
                                     }
-                                    var table  = employee.timesheetDataModel[ projectId ].info.tables[tableName];
-                                    var value  = employee.timesheetDataModel[ projectId ][ day ][ imputeType ][imputeSubType].value;
-                                    var status = employee.timesheetDataModel[ projectId ][ day ][ imputeType ][imputeSubType].status;
+                                    var table     = employee.timesheetDataModel[ projectId ].info.tables[tableName];
+                                    var value     = employee.timesheetDataModel[ projectId ][ day ][ imputeType ][imputeSubType].value;
+                                    var status    = employee.timesheetDataModel[ projectId ][ day ][ imputeType ][imputeSubType].status;
+                                    var isEnabled = status == 'sent' ? true : false;
+                                    
+                                    if( !employee.isPending && isEnabled ) employee.isPending = true;
 
                                     var currentDay = new Date( parseInt( day,10 ) ).getDate();
 
@@ -133,17 +134,18 @@
                                         return dayObj.day == currentDay;
                                     });
                                     dayToSet.value   = value;
-                                    dayToSet.enabled = status == 'sent' ? true : false;
+                                    dayToSet.enabled = isEnabled;
+                                    employee.timesheetDataModel[ projectId ][ day ][ imputeType ][imputeSubType].enabled = isEnabled;
                                 }
                             }
                         }
                     }
-                }
             });
 
             function createTable( newTable ) {
                 for( var day = 1; day <= mainOBJ.totalMonthDays; day++ ) {
-                    newTable.days.push( { day : day, value : 0, approved : 'NA', enabled : false, leo : 'epa' } );
+                    var dayTimestamp = new Date( mainOBJ.currentYear, mainOBJ.currentMonth, day ).getTime();
+                    newTable.days.push( { day : day, dayTimestamp : dayTimestamp, value : 0, approved : 'NA', enabled : false } );
                 }
             }
             prepareDayType( dfd );
@@ -162,31 +164,10 @@
                             var dayType = calendars[calendarID].eventHours[0].eventDates[currentDay].type;
                             day.dayType = dayType;
                         });
-
                     }
-
-
-
-
-                    // if( day == 'info' ) continue; // 'info' is where all project info is stored, so, it is necessary to skip it
-
-
                 }
-
                 // statements
             });
-
-
-
-
-
-
-
-
-
-
-
-
 
             return dfd.resolve( data.data.employees );
         }

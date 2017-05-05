@@ -4,12 +4,8 @@
         .module( 'hours.approvalHours' )
         .controller( 'approvalHoursController', approvalHoursController )
 
-    approvalHoursController.$invoke = [ '$scope', 'approvalHoursFactory', '$timeout', '$http' ];
-    function approvalHoursController( $scope, approvalHoursFactory, $timeout, $http ) {
-
-        $timeout( function() {
-            $scope.mainOBJ.searchText = 'leo';
-        }, 900 );
+    approvalHoursController.$invoke = [ '$scope', 'approvalHoursFactory', '$timeout', '$http', 'imputeHoursFactory' ];
+    function approvalHoursController( $scope, approvalHoursFactory, $timeout, $http, imputeHoursFactory ) {
 
         var currentDate  = new Date();
         $scope.mainOBJ = {};
@@ -22,7 +18,8 @@
                             currentLastDay       : new Date( currentDate.getFullYear(), currentDate.getMonth() + 1, 0 ),
                             totalMonthDays       : new Date( currentDate.getFullYear(), currentDate.getMonth() + 1, 0 ).getDate(),                            
                             allEmployees         : 'true',
-                            searchText           : ''
+                            searchText           : '',
+                            imputesCount         : 0
                         };
 
         init();
@@ -30,7 +27,7 @@
             approvalHoursFactory.getEmployeesTimesheets( $scope.mainOBJ )
                 .then( function ( data ) { 
                     $scope.employees = data;
-                    console.log($scope.employees);
+                    imputesCount();
                 })
                 .catch( function ( err ) {
                 });
@@ -79,54 +76,81 @@
             }, 500 );
         });
 
-        $scope.dayClick = function( employeeId, projectId, tableName, day, approved ) {
-            approved = approved == 'NA' ? true : !approved;
-            $scope.employees.forEach( function( employee ) {
-                if( employee.employeeId == employeeId ) {
-                    if( employee.timesheetDataModel[ projectId ] ) {
-                        if( employee.timesheetDataModel[ projectId ].info.tables[ tableName ] ) {
-                            var table = employee.timesheetDataModel[ projectId ].info.tables[ tableName ];
-                            var dayToSet = table.days.find( function( dayObj ) {
-                                        return dayObj.day == day;
-                                    });
-                            dayToSet.approved = approved;
-                        }
-                    }
-                }
-            });
-        };
+        $scope.setDays = function( approved, _employeeId, _projectId, _imputeType, _imputeSubType, _dayTimestamp, _dayApproved ) {
+            var projectsObj = {};
+            if( _dayTimestamp && _dayApproved ) {
+                approved = _dayApproved == 'NA' ? true : !_dayApproved;
+            }
 
-        $scope.notNameFunction = function( approved, level, employeeId, projectId ) {
+            var newStatus = approved ? 'approved' : 'rejected';
 
             var employee = $scope.employees.find( function( employee ) {
-                return employee.employeeId == employeeId;
+                return employee.employeeId == _employeeId;
             });
 
-            console.log(employee);
-            //VOY POR AQUÍ 
-            //VOY POR AQUÍ 
-            //VOY POR AQUÍ 
-            //VOY POR AQUÍ 
-            //VOY POR AQUÍ 
-            //VOY POR AQUÍ 
-            //VOY POR AQUÍ 
-            //VOY POR AQUÍ
+            for( var projectId in employee.timesheetDataModel ) {
+                if( _projectId && projectId != _projectId ) continue;
 
-                //     if( employee.timesheetDataModel[ projectId ] ) {
-                //         if( employee.timesheetDataModel[ projectId ].info.tables[ tableName ] ) {
-                //             var table = employee.timesheetDataModel[ projectId ].info.tables[ tableName ];
-                //             var dayToSet = table.days.find( function( dayObj ) {
-                //                         return dayObj.day == day;
-                //                     });
-                //             dayToSet.approved = approved;
-                //         }
-                //     }
+                for( var day in employee.timesheetDataModel[ projectId ] ) {
+                    if( _dayTimestamp && day != _dayTimestamp ) continue;
+                    if( day == 'info' ) continue; // 'info' is where all project info is stored, so, it is necessary to skip it
 
+                        for( var imputeType in employee.timesheetDataModel[ projectId ][ day ] ) {
+                            if( _imputeType && imputeType != _imputeType ) continue;
 
+                            for( var imputeSubType in employee.timesheetDataModel[ projectId ][ day ][ imputeType ] ) {
+                                if( _imputeSubType && imputeSubType != _imputeSubType ) continue;
+
+                                if( employee.timesheetDataModel[ projectId ][ day ][ imputeType ][ imputeSubType ].enabled ) {
+                                    employee.timesheetDataModel[ projectId ][ day ][ imputeType ][ imputeSubType ].status   = newStatus;
+                                    employee.timesheetDataModel[ projectId ][ day ][ imputeType ][ imputeSubType ].modified = true;
+                                    var tableName = imputeType + '_' + imputeSubType;
+                                    var infoObj = employee.timesheetDataModel[ projectId ].info;
+                                    setDayTable( infoObj, tableName, day, approved );
+                                }                                
+                            }                            
+                        }
+                }
+            if( !projectsObj[projectId] ) projectsObj[projectId] = {};
+            projectsObj[projectId] = employee.timesheetDataModel[ projectId ];
+            }
+
+            function setDayTable( infoObj, tableName, day, approved ) {
+                var currentDay = new Date( parseInt( day, 10) ).getDate();
+                var dayObj = infoObj.tables[ tableName ].days.find( function( day ) {
+                    return day.day == currentDay;
+                });
+                dayObj.approved = approved;
+            }
+
+            var wrapProjectsObj = [ projectsObj ];
+            imputeHoursFactory.setAllTimesheets( wrapProjectsObj, _employeeId )
+                .then( function( data ) {
+                })
+                .catch( function( err ) {
+                    console.log('err');
+                    console.log(err);
+                });
         };
 
+        $scope.showEmployee = function( isPending ) {
+            if( $scope.mainOBJ.allEmployees == 'true' ) {
+                return true;
+            } else {
+                return isPending;
+            }
+        };
 
+        function imputesCount() {
+            $scope.employees.forEach( function( employee ) {
+                if( employee.isPending ) $scope.mainOBJ.imputesCount++;
+            });
 
+        }
+
+        // $timeout( function() {
+            // $scope.mainOBJ.searchText = 'leo';
+        // }, 900 );
 
     }
 

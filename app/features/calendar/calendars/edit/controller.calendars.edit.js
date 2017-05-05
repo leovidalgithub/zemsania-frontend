@@ -13,7 +13,6 @@
         $scope.loadingError = false;
         $scope.yearShowed   = currentYear.toString();
         var locale      = UserFactory.getUser().locale;
-        var monthsArray = [ 'january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december' ];
         var types       = { working : 'L-J', special : '', intensive : 'L-V', friday : 'V' };
 
         (function Init() {
@@ -61,7 +60,7 @@
             $scope.monthsHours = [];
             for ( var month in eventHours.totalWorkingHours ) {
                 if( month != 'year' ) {
-                    $scope.monthsHours.push( { month : monthsArray[ month ], hours : eventHours.totalWorkingHours[ month ].hours, minutes : eventHours.totalWorkingHours[ month ].minutes } );
+                    $scope.monthsHours.push( { month : month, hours : eventHours.totalWorkingHours[ month ].hours, minutes : eventHours.totalWorkingHours[ month ].minutes } );
                 } else {
                     $scope.monthsHours.push( { month : 'year', hours : eventHours.totalWorkingHours[ month ].hours, minutes : eventHours.totalWorkingHours[ month ].minutes } );
                 }                

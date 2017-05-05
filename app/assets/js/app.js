@@ -399,49 +399,6 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
     }
 }());
 
-( function () {
-    'use strict';
-    angular
-        .module( 'hours.calendar', [] )
-        .config( calendarsConfig );
-
-    calendarsConfig.$invoke = [ '$stateProvider' ];
-    function calendarsConfig( $stateProvider ) {
-        $stateProvider
-            .state( 'calendars', { // LEO WORKING HERE
-                url: '/calendars',
-                templateUrl: '/features/calendar/calendars/list/calendars.list.tpl.html',
-                controller: 'CalendarsController',
-                data: {
-                    template: 'complex',
-                    permissions: {
-                        except: [ 'anonymous' ],
-                        redirectTo: 'login'
-                    }
-                },
-                resolve : {
-                    calendars : function( CalendarFactory ) {
-                        return CalendarFactory.getCalendarsNames();
-                    }
-                }
-            })
-
-            .state( 'calendarsEdit', { // LEO WORKING HERE
-                url: '/calendars/edit/:id',
-                templateUrl: '/features/calendar/calendars/edit/calendars.edit.tpl.html',
-                controller: 'editCalendarsController',
-                data: {
-                    // state: 'employeeManager',
-                    template: 'complex',
-                    permissions: {
-                        except: [ 'anonymous' ],
-                        redirectTo: 'login'
-                    }
-                }
-            })
-    }
-}());
-
 (function () {
     'use strict';
     angular
@@ -515,6 +472,49 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
             });
     }
 }());
+( function () {
+    'use strict';
+    angular
+        .module( 'hours.calendar', [] )
+        .config( calendarsConfig );
+
+    calendarsConfig.$invoke = [ '$stateProvider' ];
+    function calendarsConfig( $stateProvider ) {
+        $stateProvider
+            .state( 'calendars', { // LEO WORKING HERE
+                url: '/calendars',
+                templateUrl: '/features/calendar/calendars/list/calendars.list.tpl.html',
+                controller: 'CalendarsController',
+                data: {
+                    template: 'complex',
+                    permissions: {
+                        except: [ 'anonymous' ],
+                        redirectTo: 'login'
+                    }
+                },
+                resolve : {
+                    calendars : function( CalendarFactory ) {
+                        return CalendarFactory.getCalendarsNames();
+                    }
+                }
+            })
+
+            .state( 'calendarsEdit', { // LEO WORKING HERE
+                url: '/calendars/edit/:id',
+                templateUrl: '/features/calendar/calendars/edit/calendars.edit.tpl.html',
+                controller: 'editCalendarsController',
+                data: {
+                    // state: 'employeeManager',
+                    template: 'complex',
+                    permissions: {
+                        except: [ 'anonymous' ],
+                        redirectTo: 'login'
+                    }
+                }
+            })
+    }
+}());
+
 ( function () {
     'use strict';
     angular
@@ -809,10 +809,6 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
                                     var imputeValue = employee.timesheetDataModel[ projectId ][ day ][ imputeType ][ imputeSubType ].value;
                                     var dailyWorkValue = calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  );
 
-                                    // console.log(employee.name);
-                                    // console.log(imputeValue + ' ' + dailyWorkValue);
-                                    // console.log(imputeValue + dailyWorkValue);
-
                                     totalImputeHours+= imputeValue;
                                     imputeHours+= imputeValue;
                                     totalDailyWork+= dailyWorkValue;
@@ -857,7 +853,7 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
         function prepareTableDaysData( dfd ) {
             var employees = data.data.employees;
             employees.forEach( function( employee ) {
-                if( employee.name == 'Leonardo A.') {
+                    employee.isPending = false;
                     for( var projectId in employee.timesheetDataModel ) {
 
                         for( var day in employee.timesheetDataModel[ projectId ] ) {
@@ -871,12 +867,17 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
                                         employee.timesheetDataModel[ projectId ].info.tables[tableName] = {};
                                         var newTable = employee.timesheetDataModel[ projectId ].info.tables[tableName];
                                         newTable.name = tableName;
+                                        newTable.imputeType = imputeType;
+                                        newTable.imputeSubType = imputeSubType;
                                         newTable.days = [];
                                         createTable( newTable );
                                     }
-                                    var table  = employee.timesheetDataModel[ projectId ].info.tables[tableName];
-                                    var value  = employee.timesheetDataModel[ projectId ][ day ][ imputeType ][imputeSubType].value;
-                                    var status = employee.timesheetDataModel[ projectId ][ day ][ imputeType ][imputeSubType].status;
+                                    var table     = employee.timesheetDataModel[ projectId ].info.tables[tableName];
+                                    var value     = employee.timesheetDataModel[ projectId ][ day ][ imputeType ][imputeSubType].value;
+                                    var status    = employee.timesheetDataModel[ projectId ][ day ][ imputeType ][imputeSubType].status;
+                                    var isEnabled = status == 'sent' ? true : false;
+                                    
+                                    if( !employee.isPending && isEnabled ) employee.isPending = true;
 
                                     var currentDay = new Date( parseInt( day,10 ) ).getDate();
 
@@ -884,17 +885,18 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
                                         return dayObj.day == currentDay;
                                     });
                                     dayToSet.value   = value;
-                                    dayToSet.enabled = status == 'sent' ? true : false;
+                                    dayToSet.enabled = isEnabled;
+                                    employee.timesheetDataModel[ projectId ][ day ][ imputeType ][imputeSubType].enabled = isEnabled;
                                 }
                             }
                         }
                     }
-                }
             });
 
             function createTable( newTable ) {
                 for( var day = 1; day <= mainOBJ.totalMonthDays; day++ ) {
-                    newTable.days.push( { day : day, value : 0, approved : 'NA', enabled : false, leo : 'epa' } );
+                    var dayTimestamp = new Date( mainOBJ.currentYear, mainOBJ.currentMonth, day ).getTime();
+                    newTable.days.push( { day : day, dayTimestamp : dayTimestamp, value : 0, approved : 'NA', enabled : false } );
                 }
             }
             prepareDayType( dfd );
@@ -913,31 +915,10 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
                             var dayType = calendars[calendarID].eventHours[0].eventDates[currentDay].type;
                             day.dayType = dayType;
                         });
-
                     }
-
-
-
-
-                    // if( day == 'info' ) continue; // 'info' is where all project info is stored, so, it is necessary to skip it
-
-
                 }
-
                 // statements
             });
-
-
-
-
-
-
-
-
-
-
-
-
 
             return dfd.resolve( data.data.employees );
         }
@@ -946,6 +927,144 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
 
 }());
 
+( function () {
+    'use strict';
+    angular
+        .module( 'hours.auth' )
+        .factory( 'UserFactory', UserFactory );
+
+    UserFactory.$invoke = [ '$http', '$q', '$localStorage' ];
+    function UserFactory( $http, $q, $localStorage ) {
+        return {
+            getUser: function () {
+                return $localStorage.User;
+            },
+            getUserID: function () {
+                return $localStorage.User._id;
+            },
+            getUserToken: function () {
+                return $localStorage.User.token;
+            },
+            getSuperior: function () {
+                return $localStorage.User.superior;
+            },
+            getcalendarID: function () {
+                return $localStorage.User.calendarID;
+            },
+            doLogout: function () {
+                delete $localStorage.User;
+            },
+            doLogin: function ( credentials ) { // ***************** LEO WAS HERE *****************
+                var dfd = $q.defer();
+                $http.post( buildURL( 'login' ), credentials )
+                    .then( function ( response ) {
+                        if ( response.data.success) {
+                            var userModel = response.data.user;
+
+                            if ( userModel.roles.indexOf( 'ROLE_USER' ) > -1) {
+                                userModel.role = 'user';
+                            }
+                            if ( userModel.roles.indexOf( 'ROLE_DELIVERY' ) > -1) {
+                                userModel.role = 'delivery';
+                            }
+                            if ( userModel.roles.indexOf( 'ROLE_MANAGER' ) > -1) {
+                                userModel.role = 'manager';
+                            }
+                            if ( userModel.roles.indexOf( 'ROLE_BACKOFFICE' ) > -1) {
+                                userModel.role = 'administrator';
+                            }
+
+                            userModel.token    = response.data.token;
+                            $localStorage.User = userModel;
+                            dfd.resolve( userModel );
+                        } else {
+                            dfd.reject( response );
+                        }
+                    })
+                    .catch( function ( err ) {
+                        dfd.reject( err );
+                    });
+
+                return dfd.promise;
+            },
+            doPasswordRecovery: function ( credentials ) { // ***************** LEO WAS HERE *****************
+                var dfd = $q.defer();
+
+                $http.post( buildURL( 'passwordRecovery' ), credentials )
+                    .then( function ( response ) {
+                        if (response.data.success) {
+                            dfd.resolve(true);
+                        } else {
+                            dfd.reject(response);
+                        }
+                    }, function (err) {
+                        dfd.reject(err);
+                    });
+
+                return dfd.promise;
+            },
+            doChangePassword: function ( credentials ) { // ***************** LEO WAS HERE *****************
+                var dfd           = $q.defer();
+                var passwordReset = {
+                        currentPassword : credentials.current,
+                        newPassword     : credentials.new
+                };
+                $http.post( buildURL( 'passwordReset' ), passwordReset )
+                    .then( function ( data ) {
+                            // delete $localStorage.User;
+                        dfd.resolve( data );
+                    })
+                    .catch( function ( err ) {
+                        dfd.reject( err );
+                    });
+                return dfd.promise;
+            },            
+            saveProfile: function ( credentials ) { // ***************** LEO WAS HERE *****************
+                var dfd = $q.defer();
+                $http.put( buildURL( 'saveUser' ), credentials )
+                    .then( function ( response ) {                            
+                        $localStorage.User = credentials;
+                        dfd.resolve( response );
+                    })
+                    .catch( function( err ) {
+                        dfd.reject( err );
+                    });
+                return dfd.promise;
+            },
+
+            verifyUniqueUserEmail: function ( emailToVerify ) { // ***************** LEO WAS HERE *****************
+                var dfd = $q.defer();
+                $http.get( buildURL( 'verifyUniqueUserEmail' ) + emailToVerify )
+                    .then( function ( response ) {                            
+                        dfd.resolve( response );
+                    })
+                    .catch( function( err ) {
+                        dfd.reject( err );
+                    });
+                return dfd.promise;
+            },
+
+            getUsersBySupervisor: function () {
+                var dfd = $q.defer();
+                var email = UserFactory.getUser().username;
+
+                $http
+                    .post(buildURL('getUsersBySupervisor'), {"email": email})
+                    .then(function (response) {
+                        if (response.data.success) {
+                            dfd.resolve(response.data.users);
+                        } else {
+                            dfd.reject(response.data.errors);
+                        }
+                    }, function (err) {
+                        dfd.reject(err);
+                    });
+
+                return dfd.promise;
+            }
+        };
+    }
+}());
 ( function () {
     'use strict';
     angular
@@ -1343,144 +1462,6 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
         };
     }
 }());
-( function () {
-    'use strict';
-    angular
-        .module( 'hours.auth' )
-        .factory( 'UserFactory', UserFactory );
-
-    UserFactory.$invoke = [ '$http', '$q', '$localStorage' ];
-    function UserFactory( $http, $q, $localStorage ) {
-        return {
-            getUser: function () {
-                return $localStorage.User;
-            },
-            getUserID: function () {
-                return $localStorage.User._id;
-            },
-            getUserToken: function () {
-                return $localStorage.User.token;
-            },
-            getSuperior: function () {
-                return $localStorage.User.superior;
-            },
-            getcalendarID: function () {
-                return $localStorage.User.calendarID;
-            },
-            doLogout: function () {
-                delete $localStorage.User;
-            },
-            doLogin: function ( credentials ) { // ***************** LEO WAS HERE *****************
-                var dfd = $q.defer();
-                $http.post( buildURL( 'login' ), credentials )
-                    .then( function ( response ) {
-                        if ( response.data.success) {
-                            var userModel = response.data.user;
-
-                            if ( userModel.roles.indexOf( 'ROLE_USER' ) > -1) {
-                                userModel.role = 'user';
-                            }
-                            if ( userModel.roles.indexOf( 'ROLE_DELIVERY' ) > -1) {
-                                userModel.role = 'delivery';
-                            }
-                            if ( userModel.roles.indexOf( 'ROLE_MANAGER' ) > -1) {
-                                userModel.role = 'manager';
-                            }
-                            if ( userModel.roles.indexOf( 'ROLE_BACKOFFICE' ) > -1) {
-                                userModel.role = 'administrator';
-                            }
-
-                            userModel.token    = response.data.token;
-                            $localStorage.User = userModel;
-                            dfd.resolve( userModel );
-                        } else {
-                            dfd.reject( response );
-                        }
-                    })
-                    .catch( function ( err ) {
-                        dfd.reject( err );
-                    });
-
-                return dfd.promise;
-            },
-            doPasswordRecovery: function ( credentials ) { // ***************** LEO WAS HERE *****************
-                var dfd = $q.defer();
-
-                $http.post( buildURL( 'passwordRecovery' ), credentials )
-                    .then( function ( response ) {
-                        if (response.data.success) {
-                            dfd.resolve(true);
-                        } else {
-                            dfd.reject(response);
-                        }
-                    }, function (err) {
-                        dfd.reject(err);
-                    });
-
-                return dfd.promise;
-            },
-            doChangePassword: function ( credentials ) { // ***************** LEO WAS HERE *****************
-                var dfd           = $q.defer();
-                var passwordReset = {
-                        currentPassword : credentials.current,
-                        newPassword     : credentials.new
-                };
-                $http.post( buildURL( 'passwordReset' ), passwordReset )
-                    .then( function ( data ) {
-                            // delete $localStorage.User;
-                        dfd.resolve( data );
-                    })
-                    .catch( function ( err ) {
-                        dfd.reject( err );
-                    });
-                return dfd.promise;
-            },            
-            saveProfile: function ( credentials ) { // ***************** LEO WAS HERE *****************
-                var dfd = $q.defer();
-                $http.put( buildURL( 'saveUser' ), credentials )
-                    .then( function ( response ) {                            
-                        $localStorage.User = credentials;
-                        dfd.resolve( response );
-                    })
-                    .catch( function( err ) {
-                        dfd.reject( err );
-                    });
-                return dfd.promise;
-            },
-
-            verifyUniqueUserEmail: function ( emailToVerify ) { // ***************** LEO WAS HERE *****************
-                var dfd = $q.defer();
-                $http.get( buildURL( 'verifyUniqueUserEmail' ) + emailToVerify )
-                    .then( function ( response ) {                            
-                        dfd.resolve( response );
-                    })
-                    .catch( function( err ) {
-                        dfd.reject( err );
-                    });
-                return dfd.promise;
-            },
-
-            getUsersBySupervisor: function () {
-                var dfd = $q.defer();
-                var email = UserFactory.getUser().username;
-
-                $http
-                    .post(buildURL('getUsersBySupervisor'), {"email": email})
-                    .then(function (response) {
-                        if (response.data.success) {
-                            dfd.resolve(response.data.users);
-                        } else {
-                            dfd.reject(response.data.errors);
-                        }
-                    }, function (err) {
-                        dfd.reject(err);
-                    });
-
-                return dfd.promise;
-            }
-        };
-    }
-}());
 ;( function () {
     'use strict';
     angular
@@ -1749,8 +1730,8 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
                 return dfd.promise;
             },
 
-            setAllTimesheets: function( data ) { // LEO WAS HERE
-                var userID = UserFactory.getUserID();
+            setAllTimesheets: function( data, _userID ) { // LEO WAS HERE
+                var userID = _userID || UserFactory.getUserID(); // ( _userID is used by 'approvalHours controller' )
                 var dfd = $q.defer();
                 $http.post( buildURL( 'setAllTimesheets' ) + userID, data )
                     .then( function ( response ) {
@@ -1891,12 +1872,8 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
         .module( 'hours.approvalHours' )
         .controller( 'approvalHoursController', approvalHoursController )
 
-    approvalHoursController.$invoke = [ '$scope', 'approvalHoursFactory', '$timeout', '$http' ];
-    function approvalHoursController( $scope, approvalHoursFactory, $timeout, $http ) {
-
-        $timeout( function() {
-            $scope.mainOBJ.searchText = 'leo';
-        }, 900 );
+    approvalHoursController.$invoke = [ '$scope', 'approvalHoursFactory', '$timeout', '$http', 'imputeHoursFactory' ];
+    function approvalHoursController( $scope, approvalHoursFactory, $timeout, $http, imputeHoursFactory ) {
 
         var currentDate  = new Date();
         $scope.mainOBJ = {};
@@ -1909,7 +1886,8 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
                             currentLastDay       : new Date( currentDate.getFullYear(), currentDate.getMonth() + 1, 0 ),
                             totalMonthDays       : new Date( currentDate.getFullYear(), currentDate.getMonth() + 1, 0 ).getDate(),                            
                             allEmployees         : 'true',
-                            searchText           : ''
+                            searchText           : '',
+                            imputesCount         : 0
                         };
 
         init();
@@ -1917,7 +1895,7 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
             approvalHoursFactory.getEmployeesTimesheets( $scope.mainOBJ )
                 .then( function ( data ) { 
                     $scope.employees = data;
-                    console.log($scope.employees);
+                    imputesCount();
                 })
                 .catch( function ( err ) {
                 });
@@ -1966,54 +1944,81 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
             }, 500 );
         });
 
-        $scope.dayClick = function( employeeId, projectId, tableName, day, approved ) {
-            approved = approved == 'NA' ? true : !approved;
-            $scope.employees.forEach( function( employee ) {
-                if( employee.employeeId == employeeId ) {
-                    if( employee.timesheetDataModel[ projectId ] ) {
-                        if( employee.timesheetDataModel[ projectId ].info.tables[ tableName ] ) {
-                            var table = employee.timesheetDataModel[ projectId ].info.tables[ tableName ];
-                            var dayToSet = table.days.find( function( dayObj ) {
-                                        return dayObj.day == day;
-                                    });
-                            dayToSet.approved = approved;
-                        }
-                    }
-                }
-            });
-        };
+        $scope.setDays = function( approved, _employeeId, _projectId, _imputeType, _imputeSubType, _dayTimestamp, _dayApproved ) {
+            var projectsObj = {};
+            if( _dayTimestamp && _dayApproved ) {
+                approved = _dayApproved == 'NA' ? true : !_dayApproved;
+            }
 
-        $scope.notNameFunction = function( approved, level, employeeId, projectId ) {
+            var newStatus = approved ? 'approved' : 'rejected';
 
             var employee = $scope.employees.find( function( employee ) {
-                return employee.employeeId == employeeId;
+                return employee.employeeId == _employeeId;
             });
 
-            console.log(employee);
-            //VOY POR AQUÍ 
-            //VOY POR AQUÍ 
-            //VOY POR AQUÍ 
-            //VOY POR AQUÍ 
-            //VOY POR AQUÍ 
-            //VOY POR AQUÍ 
-            //VOY POR AQUÍ 
-            //VOY POR AQUÍ
+            for( var projectId in employee.timesheetDataModel ) {
+                if( _projectId && projectId != _projectId ) continue;
 
-                //     if( employee.timesheetDataModel[ projectId ] ) {
-                //         if( employee.timesheetDataModel[ projectId ].info.tables[ tableName ] ) {
-                //             var table = employee.timesheetDataModel[ projectId ].info.tables[ tableName ];
-                //             var dayToSet = table.days.find( function( dayObj ) {
-                //                         return dayObj.day == day;
-                //                     });
-                //             dayToSet.approved = approved;
-                //         }
-                //     }
+                for( var day in employee.timesheetDataModel[ projectId ] ) {
+                    if( _dayTimestamp && day != _dayTimestamp ) continue;
+                    if( day == 'info' ) continue; // 'info' is where all project info is stored, so, it is necessary to skip it
 
+                        for( var imputeType in employee.timesheetDataModel[ projectId ][ day ] ) {
+                            if( _imputeType && imputeType != _imputeType ) continue;
 
+                            for( var imputeSubType in employee.timesheetDataModel[ projectId ][ day ][ imputeType ] ) {
+                                if( _imputeSubType && imputeSubType != _imputeSubType ) continue;
+
+                                if( employee.timesheetDataModel[ projectId ][ day ][ imputeType ][ imputeSubType ].enabled ) {
+                                    employee.timesheetDataModel[ projectId ][ day ][ imputeType ][ imputeSubType ].status   = newStatus;
+                                    employee.timesheetDataModel[ projectId ][ day ][ imputeType ][ imputeSubType ].modified = true;
+                                    var tableName = imputeType + '_' + imputeSubType;
+                                    var infoObj = employee.timesheetDataModel[ projectId ].info;
+                                    setDayTable( infoObj, tableName, day, approved );
+                                }                                
+                            }                            
+                        }
+                }
+            if( !projectsObj[projectId] ) projectsObj[projectId] = {};
+            projectsObj[projectId] = employee.timesheetDataModel[ projectId ];
+            }
+
+            function setDayTable( infoObj, tableName, day, approved ) {
+                var currentDay = new Date( parseInt( day, 10) ).getDate();
+                var dayObj = infoObj.tables[ tableName ].days.find( function( day ) {
+                    return day.day == currentDay;
+                });
+                dayObj.approved = approved;
+            }
+
+            var wrapProjectsObj = [ projectsObj ];
+            imputeHoursFactory.setAllTimesheets( wrapProjectsObj, _employeeId )
+                .then( function( data ) {
+                })
+                .catch( function( err ) {
+                    console.log('err');
+                    console.log(err);
+                });
         };
 
+        $scope.showEmployee = function( isPending ) {
+            if( $scope.mainOBJ.allEmployees == 'true' ) {
+                return true;
+            } else {
+                return isPending;
+            }
+        };
 
+        function imputesCount() {
+            $scope.employees.forEach( function( employee ) {
+                if( employee.isPending ) $scope.mainOBJ.imputesCount++;
+            });
 
+        }
+
+        // $timeout( function() {
+            // $scope.mainOBJ.searchText = 'leo';
+        // }, 900 );
 
     }
 
@@ -2104,42 +2109,6 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
         $scope.$on( '$destroy', function () {
             window.continueVertexPlay = false;
         });
-    }
-}());
-( function () {
-    'use strict';
-    angular
-        .module( 'hours.auth' )
-        .controller( 'RecoveryController', RecoveryController );
-
-    RecoveryController.$invoke = [ '$scope', 'UserFactory', '$state', '$timeout' ];
-    function RecoveryController( $scope, UserFactory, $state, $timeout ) {
-
-        initialVertex();
-
-        $scope.recoveryForm = {
-                            email: null
-                        };
-
-        $scope.recovery = function () {
-            $scope.recoveryForm.error   = false;
-            $scope.recoveryForm.success = false;
-  
-            UserFactory.doPasswordRecovery( $scope.recoveryForm )
-                .then( function( data ) {
-                    console.log('Great');
-                    $scope.recoveryForm.success = true;
-                    
-                    $timeout( function ( data ) {
-                        $state.go( 'login' );
-                    }, 5000 );
-
-                })
-                .catch( function ( err ) {
-                    console.log('Shit');
-                    $scope.recoveryForm.error = err;
-                });
-        };
     }
 }());
 ( function () {
@@ -2360,33 +2329,39 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
 ( function () {
     'use strict';
     angular
-        .module( 'hours.components' )
-        .directive( 'zemSidebar', zemSidebar )
-        .controller( 'SidebarComponentController', SidebarComponentController );
+        .module( 'hours.auth' )
+        .controller( 'RecoveryController', RecoveryController );
 
-    SidebarComponentController.$invoke = [ '$scope', '$rootScope', 'UserFactory', '$state' ];
-    function SidebarComponentController( $scope, $rootScope, UserFactory, $state ) {
-        $scope.username = UserFactory.getUser();
+    RecoveryController.$invoke = [ '$scope', 'UserFactory', '$state', '$timeout' ];
+    function RecoveryController( $scope, UserFactory, $state, $timeout ) {
 
-        $scope.changeState = function( state ) {
-            if( $rootScope.pendingChanges ) {
-                $scope.$broadcast( 'urlChangeRequest', { msg : 'From sidebar URL change request', nextURL : state } );
-            } else {
-                $state.go( state );
-            }
-        };
+        initialVertex();
 
-    }
-    function zemSidebar() {
-        return {
-            restrict: 'E',
-            replace: true,
-            templateUrl: '/features/components/sidebar/sidebar.tpl.html',
-            controller: 'SidebarComponentController'
+        $scope.recoveryForm = {
+                            email: null
+                        };
+
+        $scope.recovery = function () {
+            $scope.recoveryForm.error   = false;
+            $scope.recoveryForm.success = false;
+  
+            UserFactory.doPasswordRecovery( $scope.recoveryForm )
+                .then( function( data ) {
+                    console.log('Great');
+                    $scope.recoveryForm.success = true;
+                    
+                    $timeout( function ( data ) {
+                        $state.go( 'login' );
+                    }, 5000 );
+
+                })
+                .catch( function ( err ) {
+                    console.log('Shit');
+                    $scope.recoveryForm.error = err;
+                });
         };
     }
 }());
-
 ;( function () {
     'use strict';
     angular
@@ -2490,6 +2465,36 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
         
     }
 }());
+( function () {
+    'use strict';
+    angular
+        .module( 'hours.components' )
+        .directive( 'zemSidebar', zemSidebar )
+        .controller( 'SidebarComponentController', SidebarComponentController );
+
+    SidebarComponentController.$invoke = [ '$scope', '$rootScope', 'UserFactory', '$state' ];
+    function SidebarComponentController( $scope, $rootScope, UserFactory, $state ) {
+        $scope.username = UserFactory.getUser();
+
+        $scope.changeState = function( state ) {
+            if( $rootScope.pendingChanges ) {
+                $scope.$broadcast( 'urlChangeRequest', { msg : 'From sidebar URL change request', nextURL : state } );
+            } else {
+                $state.go( state );
+            }
+        };
+
+    }
+    function zemSidebar() {
+        return {
+            restrict: 'E',
+            replace: true,
+            templateUrl: '/features/components/sidebar/sidebar.tpl.html',
+            controller: 'SidebarComponentController'
+        };
+    }
+}());
+
 ( function () {
     'use strict';
     angular
@@ -3045,20 +3050,16 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
             refreshShowDaysObj();
         };
 
-        function findDrafts( toSend ) {
-            
+        function findDrafts( toSend ) {            
             for( var date in generalDataModel ) {
                 for( var projectId in generalDataModel[date].timesheetDataModel ) {
                     for( var day in generalDataModel[date].timesheetDataModel[projectId] ) {
                         for( var type in generalDataModel[date].timesheetDataModel[projectId][day] ) {
                             for( var subType in generalDataModel[date].timesheetDataModel[projectId][day][type] ) {
                                 if( generalDataModel[date].timesheetDataModel[projectId][day][type][subType].status == 'draft' ) {
-
                                     if( !toSend ) { // just to know if there is some 'draft'
                                         return true;
                                     }
-
-                                    console.log( 'change to sent' );
                                     generalDataModel[date].timesheetDataModel[projectId][day][type][subType].status = 'sent';
                                     generalDataModel[date].timesheetDataModel[projectId][day][type][subType].modified = true;
                                 }
@@ -3368,7 +3369,6 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
         $scope.loadingError = false;
         $scope.yearShowed   = currentYear.toString();
         var locale      = UserFactory.getUser().locale;
-        var monthsArray = [ 'january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december' ];
         var types       = { working : 'L-J', special : '', intensive : 'L-V', friday : 'V' };
 
         (function Init() {
@@ -3416,7 +3416,7 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
             $scope.monthsHours = [];
             for ( var month in eventHours.totalWorkingHours ) {
                 if( month != 'year' ) {
-                    $scope.monthsHours.push( { month : monthsArray[ month ], hours : eventHours.totalWorkingHours[ month ].hours, minutes : eventHours.totalWorkingHours[ month ].minutes } );
+                    $scope.monthsHours.push( { month : month, hours : eventHours.totalWorkingHours[ month ].hours, minutes : eventHours.totalWorkingHours[ month ].minutes } );
                 } else {
                     $scope.monthsHours.push( { month : 'year', hours : eventHours.totalWorkingHours[ month ].hours, minutes : eventHours.totalWorkingHours[ month ].minutes } );
                 }                
