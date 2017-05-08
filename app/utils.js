@@ -1,4 +1,4 @@
-var API_base = 'http://' + location.hostname + ':3000/';
+var API_base = 'http://' + location.hostname + ':4000/';
 var API_paths = {
     login: 'authn/login',
     passwordRecovery: 'authn/password/remember',

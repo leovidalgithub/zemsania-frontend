@@ -33,5 +33,8 @@
         $scope.$on( '$destroy', function () {
             window.continueVertexPlay = false;
         });
+
+        console.clear();
+
     }
 }());

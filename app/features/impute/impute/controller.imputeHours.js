@@ -31,7 +31,7 @@
         ( function Init() {
             // USER PROJECTS
             if( !userProjects.length ) { // no userProjects available
-                // error: NO userProjects available message alert    
+                // error: NO userProjects available message alert
                 $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorNoProjects' );
                 alertMsgOpen( false );
             } else { // userProjects OK cotinues to getData()

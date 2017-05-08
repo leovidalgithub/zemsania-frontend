@@ -7,7 +7,7 @@
                     <h1>{{'approvalHours.title' | i18next}}</h1>
                 </div>
                  <div class="rightMargin">
-                     <h4><span>{{mainOBJ.imputesCount}}</span> empleado pendiente por aprobar</h4>
+                    <h4><span>{{mainOBJ.imputesCount}} </span>{{mainOBJ.imputesCount > 1 ? ('approvalHours.employeesPending' | i18next) : ('approvalHours.employeePending' | i18next)}}  por aprobar</h4>
                 </div> 
             </div>
         </div>
@@ -16,6 +16,9 @@
     <!-- SECTION MAIN CONTENT -->
     <section id="section" class="box-shadow p20">
 <!-- <button class="btn btn-success" ng-click="fn()">Go!</button> -->
+
+        <!-- ALERTS MESSAGES -->
+        <alert-message error="alerts.error" msg="alerts.message"></alert-message>
 
         <!-- MOVING-DATE BUTTONS -->
         <div class="row">
@@ -57,21 +60,20 @@
                     <!-- EMPLOYEES TABLE SECTION -->
                     <table>
                         <tr class="notHoverPlease">
-                            <th style="width: 26%;">Empleado</th>
-                            <th style="width: 8%;">Horas Imputadas</th>
-                            <th style="width: 8%;">Horas Trabajadas</th>
-                            <th style="width: 8%;">Jornadas Trabajadas</th>
-                            <th style="width: 8%;">Jornadas Ausencias</th>
-                            <th style="width: 8%;">Jornadas Vacaciones</th>
-                            <th style="width: 8%;">Jornadas Vacaciones</th>
-                            <th style="width: 26%;"></th>
+                            <th style="width: 30%;">{{'approvalHours.employee' | i18next}}</th>
+                            <th style="width: 8%;">{{'approvalHours.imputeHours' | i18next}}</th>
+                            <th style="width: 8%;">{{'approvalHours.workingHours' | i18next}}</th>
+                            <th style="width: 8%;">{{'approvalHours.dailywork' | i18next}}</th>
+                            <th style="width: 8%;">{{'approvalHours.dailyworkabsence' | i18next}}</th>
+                            <th style="width: 8%;">{{'approvalHours.dailyworkHoliday' | i18next}}</th>
+                            <th style="width: 30%;"></th>
                         </tr>
                     </table>
 
                     <div ng-show="showEmployee(employee.isPending)" ng-repeat="(key, employee) in employees | orderBy: 'name' | filter: mainOBJ.searchText">
                         <table>
                             <tr>
-                                <td style="width: 26%;"><button ng-class="{'opened':employee.opened}" ng-click="myEmployeeClick(employee.employeeId)" class="btn btn-primary">
+                                <td style="width: 30%;"><button ng-class="{'opened':employee.opened}" ng-click="myEmployeeClick(employee.employeeId)" class="btn btn-primary">
                                     <i ng-hide="employee.opened" class="fa fa-chevron-right"></i>
                                     <i ng-show="employee.opened" class="fa fa-chevron-down"></i></button>
                                     {{employee.name}} {{employee.surname}}
@@ -81,12 +83,15 @@
                                 <td style="width: 8%;">{{employee.totalDailyWork}}</td>
                                 <td style="width: 8%;">-</td>
                                 <td style="width: 8%;">-</td>
-                                <td style="width: 8%;">-</td>
-                                <td class="notForMePlease" style="width: 26%;">
-                                    <button class="btn btn-primary no-margin" ng-click="setDays(true, employee.employeeId)">
+                                <td class="notForMePlease" style="width: 30%;">
+                                    <button ng-disabled="!employee.isPending" class="btn no-margin mainButtons" 
+                                            ng-click="setDays(true, employee.employeeId)"
+                                            ng-class="{'btn-primary':employee.isPending,'btnDesactivated':!employee.isPending}">
                                         {{'approvalHours.approve' | i18next}}
                                     </button>
-                                    <button class="btn btn-gray no-margin" ng-click="setDays(false, employee.employeeId)">
+                                    <button ng-disabled="!employee.isPending" class="btn no-margin mainButtons" 
+                                            ng-click="setDays(false, employee.employeeId)"
+                                            ng-class="{'btn-gray':employee.isPending,'btnDesactivated':!employee.isPending}">
                                         {{'approvalHours.reject' | i18next}}
                                     </button>
                                 </td>
@@ -98,9 +103,9 @@
                             <div class="projectTable">
                                 <table>
                                     <tr class="notHoverPlease">
-                                        <th style="width: 44%;">Proyecto</th>
-                                        <th style="width: 12%;">Horas Imputadas</th>
-                                        <th style="width: 12%;">Jornadas Trabajadas</th>
+                                        <th style="width: 44%;">{{'calendar.imputeHours.project' | i18next}}</th>
+                                        <th style="width: 12%;">{{'approvalHours.imputeHours' | i18next}}</th>
+                                        <th style="width: 12%;">{{'approvalHours.dailywork' | i18next}}</th>
                                         <th style="width: 32%;"></th>
                                     </tr>
                                 </table>
@@ -115,10 +120,14 @@
                                             <td style="width: 12%;">{{project.info.imputeHours}}</td>
                                             <td style="width: 12%;">{{project.info.dailyWork}}</td>
                                             <td class="notForMePlease" style="width: 32%;">
-                                                <button class="btn btn-primary no-margin" ng-click="setDays(true, employee.employeeId, projectId)">
+                                                <button ng-disabled="!employee.isPending" class="btn no-margin mainButtons" 
+                                                        ng-click="setDays(true, employee.employeeId, projectId)"
+                                                        ng-class="{'btn-primary':employee.isPending,'btnDesactivated':!employee.isPending}">
                                                     {{'approvalHours.approve' | i18next}}
                                                 </button>
-                                                <button class="btn btn-gray no-margin" ng-click="setDays(false, employee.employeeId, projectId)">
+                                                <button ng-disabled="!employee.isPending" class="btn no-margin mainButtons" 
+                                                        ng-click="setDays(false, employee.employeeId, projectId)"
+                                                        ng-class="{'btn-gray':employee.isPending,'btnDesactivated':!employee.isPending}">
                                                     {{'approvalHours.reject' | i18next}}
                                                 </button>
                                             </td>
@@ -133,8 +142,8 @@
                                             <div id="tableContent">
                                                 <div class="leyend">
                                                     <code>
-                                                        <p>Día</p>
-                                                        <p>Valor</p>
+                                                        <p>{{'approvalHours.day' | i18next}}</p>
+                                                        <p>{{'approvalHours.value' | i18next}}</p>
                                                         <p><i class="fa fa-thumbs-up"></i></p>
                                                     </code>
                                                 </div>
@@ -142,18 +151,21 @@
                                                     <div ng-class="{'desactivated':!day.enabled}" class="dayBox" ng-repeat="(dayKey, day) in table.days">
                                                         <div class="dayContent day {{day.dayType}}">{{day.day}}</div>
                                                         <div class="dayContent value">{{day.value}}</div>
-                                                        <div ng-class="{'na':day.approved=='NA','ok':day.approved==true,'ko':day.approved==false}"
-                                                                 class="dayContent approved" 
-                                                                 ng-click="setDays(true, employee.employeeId, projectId, table.imputeType, table.imputeSubType, day.dayTimestamp, day.approved)">
+                                                        <div class="dayContent approved" 
+                                                                ng-class="{'na':day.approved=='NA','ok':day.approved==true,'ko':day.approved==false}" ng-click="setDays(true, employee.employeeId, projectId, table.imputeType, table.imputeSubType, day.dayTimestamp, day.approved)">
                                                                 <span ng-show="day.enabled && day.approved!='NA'">{{day.approved ? 'OK' : 'KO'}}</span>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="buttons">
-                                                    <button class="btn btn-primary no-margin" ng-click="setDays(true, employee.employeeId, projectId, table.imputeType, table.imputeSubType)">
+                                                <div class="lateralButtons">
+                                                    <button ng-disabled="!employee.isPending" class="btn no-margin mainButtons" 
+                                                            ng-click="setDays(true, employee.employeeId, projectId, table.imputeType, table.imputeSubType)"
+                                                            ng-class="{'btn-primary':employee.isPending,'btnDesactivated':!employee.isPending}">
                                                         OK
                                                     </button>
-                                                    <button class="btn btn-gray no-margin" ng-click="setDays(false, employee.employeeId, projectId, table.imputeType, table.imputeSubType)">
+                                                    <button ng-disabled="!employee.isPending" class="btn no-margin mainButtons" 
+                                                            ng-click="setDays(false, employee.employeeId, projectId, table.imputeType, table.imputeSubType)"
+                                                           ng-class="{'btn-gray':employee.isPending,'btnDesactivated':!employee.isPending}">
                                                         KO
                                                     </button>
                                                 </div>

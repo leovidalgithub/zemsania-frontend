@@ -1264,18 +1264,24 @@
 #approvalHours #section #mainContent .tableContainer table .opened {
   background-color: #f69171;
 }
+#approvalHours #section #mainContent .tableContainer table .btnDesactivated {
+  cursor: not-allowed;
+}
 #approvalHours #section #mainContent .tableContainer #tableContent {
   display: flex;
   flex-flow: row nowrap;
   justify-content: center;
   align-items: center;
 }
-#approvalHours #section #mainContent .tableContainer #tableContent .buttons {
+#approvalHours #section #mainContent .tableContainer #tableContent .lateralButtons {
   width: 5%;
 }
-#approvalHours #section #mainContent .tableContainer #tableContent .buttons * {
+#approvalHours #section #mainContent .tableContainer #tableContent .lateralButtons * {
   margin-bottom: 5px !important;
   border-radius: 5px;
+}
+#approvalHours #section #mainContent .tableContainer #tableContent .lateralButtons .btnDesactivated {
+  cursor: not-allowed;
 }
 #approvalHours #section #mainContent .tableContainer #tableContent .leyend p {
   font-size: 14px;

@@ -156,6 +156,9 @@
 						.opened { // button: when a callapsable table is opened
 							background-color: lighten( $zemsania, 15% );
 						}
+						.btnDesactivated {
+							cursor: not-allowed;
+						}
                 	}
 
 						// DAYS TABLE SECTION (HORAS, GUARDIAS, ETC.)
@@ -164,12 +167,15 @@
 							flex-flow: row nowrap;
 							justify-content: center;
 							align-items: center;
-							.buttons {
+							.lateralButtons {
 						        width: 5%;
 						        * {
 						        	margin-bottom: 5px !important;
 						        	border-radius: 5px;
 						        }
+        						.btnDesactivated {
+        							cursor: not-allowed;
+								}
 							}
 							.leyend p {
 								font-size: 14px;

@@ -173,7 +173,20 @@
         "description": "La descripción de la página de tiempos de empleados se explica aquí ..",
         "search": "Buscar empleado...",
         "approve": "Aprobar",
-        "reject": "Rechazar"
+        "reject": "Rechazar",
+        "employeePending": "empleado pendiente",
+        "employeesPending": "empleados pendientes",
+        "employee": "Empleado",
+        "imputeHours": "Horas Imputadas",
+        "workingHours": "Horas Trabajadas",
+        "dailywork": "Jornadas Trabajadas",
+        "dailyworkabsence": "Jornadas Ausencias",
+        "dailyworkHoliday": "Jornadas Vacaciones",
+        "day": "Día",
+        "value": "Valor",
+        "errorLoading": "Ha ocurrido un error al cargar los datos!",
+        "errorSaving": "Ha ocurrido un error al guardar la información. Inténtalo más tarde",
+        "okSaving": "Las Imputaciones han sido guardadas correctamente"
     },
     "projectTimesheets": {
         "title": "Aprobacion Via Proyectos",

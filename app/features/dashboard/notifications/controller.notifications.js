@@ -58,7 +58,8 @@
             $scope.tmpData( 'add', 'notificationsListPage', $scope.tableConfig.currentPage );
         });
 
-
+        console.clear();
+        
 // ******************************************************* *******************************************************
         // $scope.notifications = notifications;
         // $scope.user = UserFactory.getUser();
