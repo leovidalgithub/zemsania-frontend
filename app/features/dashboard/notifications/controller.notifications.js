@@ -4,37 +4,32 @@
         .module( 'hours.dashboard' )
         .controller( 'NotificationController', NotificationController );
 
-    NotificationController.$invoke = [ '$scope', 'notifications', '$window' ];
-    function NotificationController( $scope, notifications, $window ) {
+    NotificationController.$invoke = [ '$scope', '$rootScope', 'notifications', '$window', '$state', 'DashboardFactory', '$filter' ];
+    function NotificationController( $scope, $rootScope, notifications, $window, $state, DashboardFactory, $filter ) {
 
-        $scope.tableConfig = {
-            itemsPerPage: getItemsPerPage( 125 ),
-            maxPages: "3",
-            fillLastPage: false,
-            currentPage: $scope.tmpData( 'get', 'notificationsListPage' ) || 0
-        };
+        (function init() {
+            $scope.tableConfig = {
+                itemsPerPage: getItemsPerPage( 125 ),
+                maxPages: "3",
+                fillLastPage: false,
+                currentPage: $scope.tmpData( 'get', 'notificationsListPage' ) || 0
+            };
 
-        setUsersView();
-        $scope.notifications = notifications;
+            setUsersView();
+            $scope.notifications = notifications;
+            $scope.options = {};
+            $scope.options.justUnread = 'true';
+            $scope.options.length = 0;
+            getUnreadLength();
+        })();
 
-// *********************************************** JUST FOR TESTING PURPOSES ***********************************************
-        // for( var i = 1; i < 20; i++ ) {
-        //     var aa = angular.copy( notifications[0] );
-        //     aa._id = '32r32r324r433_' + ( i + 34573 );
-        //     notifications.push( aa );
-        // }
-        // var typesArray = ['holiday_req','hours_req','hours_validated','hours_rejected','hours_pending_req'];
-        // $scope.notifications.forEach( function( el ) {
-        //     var random = Math.floor( Math.random() * 5 );
-        //     el.type = typesArray[random];
-        // });
-// *************************************************************************************************************************
-
+        // EVERYTIME WINDOW IS RESIZED EVENT
         angular.element( $window ).bind( 'resize', function() {
             $scope.$digest();
             setUsersView();
         });
 
+        // IT GETS WINDOW WIDTH TO CHOOSE ONE OF THE TWO VIEWS
         function setUsersView() {
             if( $window.innerWidth < 1210 ) {
                 $scope.viewSet = false;
@@ -51,54 +46,70 @@
             showUpButton( upButton, currentScroll );
         };
 
-        // BUTTON TO TAKE SECTION SCROLL TO TOP
+        // UP-BUTTON CLICK TO TAKE SECTION SCROLL TO TOP
         $scope.pageGetUp = function() { takeMeUp() };
+
+        // TO GO WHERE NOTIFICATION IS ABOUT
+        $scope.goTo = function( item ) {
+            var senderId       = item.senderId._id;
+            var notificationId = item._id;
+            var issueDate = item.issueDate;
+            var type = item.type;
+            $scope.markRead( notificationId ); // before go, mark this notification as read
+            switch (type) {
+                case 'hours_req':
+                    $rootScope.notification = {};
+                    $rootScope.notification.senderId  = senderId;
+                    $rootScope.notification.issueDate = issueDate;
+                    $state.go( 'approvalHours' );
+                    break;
+                default:
+                    break;
+            }
+        };
+
+        // SET NOTIFICATION AS READ
+        $scope.markRead = function ( notificationId ) {
+            DashboardFactory.markNotificationAsRead( notificationId )
+                .then( function ( data ) {
+                    var notification = getNotification( notificationId );
+                    notification.status = 'read';
+                })
+                .catch( function ( err ) {
+                    $scope.alerts.error   = true; // error code alert
+                    $scope.alerts.message = $filter( 'i18next' )( 'notifications.errorMarkRead' );; // error message alert
+                })
+                .finally( function() {
+                    getUnreadLength();
+                });
+        };
+
+        // GET NOTIFICATION OBJECT BY ITS ID FROM '$scope.notifications'
+        function getNotification( id ) {
+            return $scope.notifications.find( function( notification ) {
+                return notification._id === id;
+            });
+        }
+
+        // GET TOTAL OF UNREAD NOTIFICATIONS
+        function getUnreadLength() {
+            $scope.options.length = 0;
+            $scope.notifications.forEach( function( notification ) {
+                if( notification.status == 'unread') $scope.options.length++;
+            });
+        }
+
+        // FUNCTION FILTER TO SHOW UNREAD OR READ NOTIFICATIONS ONLY (ng-show)
+        $scope.filterNotifications = function( status ) {
+            var radioStatus = $scope.options.justUnread == 'true' ? 'unread' : 'read';
+            return ( status == radioStatus );
+        };
 
         $scope.$on( '$destroy', function () {
             $scope.tmpData( 'add', 'notificationsListPage', $scope.tableConfig.currentPage );
         });
 
         console.clear();
-        
-// ******************************************************* *******************************************************
-        // $scope.notifications = notifications;
-        // $scope.user = UserFactory.getUser();
 
-        // $scope.activeNotifications = notifications.keys[0];
-
-        // $scope.openType = function ( type ) {
-        //     $scope.activeNotifications = type;
-        // };
-
-        // $scope.isActive = function ( type ) {
-        //     return $scope.activeNotifications === type && 'active';
-        // };
-
-        // $scope.openNotification = function ( notification ) {
-        //     switch ( notification.type ) {
-        //         case 'holiday_request' :
-        //             $state.go('moderateHolidayCalendar', {
-        //                 userId: notification.senderId,
-        //                 filterBy: 'pending'
-        //             });
-        //             break;
-        //         case 'hours_sent' :
-        //             $state.go( 'calendarImputeHoursValidator-user', {
-        //                 userId: notification.senderId,
-        //                 timestamp: new Date( notification.initDate ).getTime()
-        //             });
-        //             break;
-        //     }
-        // };
-
-        // $scope.markRead = function ( notification, type, index ) {
-        //     DashboardFactory.markNotificationAsRead( { notificationId: notification._id } )
-        //         .then( function () {
-        //             $scope.notifications.notifications[ type ].splice( index, 1 );
-        //         }, function () {
-
-        //         });
-        // };
-        
     }
 }());

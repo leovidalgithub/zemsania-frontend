@@ -7,6 +7,17 @@
     imputeHoursController.$invoke = [ '$scope', 'UserFactory', 'imputeHoursFactory', 'CalendarFactory', '$q', 'userProjects', '$uibModal', '$rootScope', '$state', '$timeout', '$filter' ];
     function imputeHoursController( $scope, UserFactory, imputeHoursFactory, CalendarFactory, $q, userProjects, $uibModal, $rootScope, $state, $timeout, $filter ) {
 
+// var issueDate = [];
+// var obj = { month : 4, year : 2017 };
+// var obj3 = { month : 4, year : 2017 };
+// // console.log( obj );
+// if( issueDate.indexOf( obj ) == -1 ) issueDate.push( obj );
+// var obj2 = { month : 4, year : 2017 };
+// // console.log( obj2 );
+// if( issueDate.indexOf( obj2 ) == -1 ) issueDate.push( obj2 );
+// console.log(issueDate.indexOf( obj3 ));
+// console.log(issueDate);
+
         var currentDate      = new Date();
         var currentMonth     = currentDate.getMonth();
         var currentYear      = currentDate.getFullYear();
@@ -20,6 +31,7 @@
         $scope.weekViewMode       = true; // week/month view switch flag
         // ALERT MESSAGES
         $scope.alerts = {};
+
         // IMPUTE TYPES AND SUBTYPES INFO
         $scope.imputeTypes                = [ 'Horas', 'Guardias', 'Variables' ];
         $scope.imputeTypes[ 'Horas'     ] = [ 'Hora' ];
@@ -32,8 +44,8 @@
             // USER PROJECTS
             if( !userProjects.length ) { // no userProjects available
                 // error: NO userProjects available message alert
-                $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorNoProjects' );
-                alertMsgOpen( false );
+                $scope.alerts.error = true; // error code alert
+                $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorNoProjects' ); // error message alert
             } else { // userProjects OK cotinues to getData()
                 $scope.userProjects = userProjects;
                 $scope.projectModel = $scope.userProjects[0];
@@ -58,8 +70,8 @@
                     var timesheetDataModel = data[1];
 
                     if ( calendar.success == false ) { // error: calendar not found
-                        $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorNoCalendar' );
-                        alertMsgOpen( false );
+                        $scope.alerts.error = true; // error code alert
+                        $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorNoCalendar' ); // error message alert
                         return;
                     }
                     if( !generalDataModel[ currentFirstDay ] ) generalDataModel[ currentFirstDay ] = {};
@@ -76,8 +88,8 @@
                 })
                 .catch( function( err ) {
                     // error loading data message alert
-                    $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorLoading' );
-                    alertMsgOpen( false );
+                    $scope.alerts.error = true; // error code alert
+                    $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorLoading' ); // error message alert
                 });
         }
 
@@ -213,7 +225,7 @@
             refreshShowDaysObj();
         };
 
-        function findDrafts( toSend ) {            
+        function findDrafts( toSend, issueDate ) {
             for( var date in generalDataModel ) {
                 for( var projectId in generalDataModel[date].timesheetDataModel ) {
                     for( var day in generalDataModel[date].timesheetDataModel[projectId] ) {
@@ -225,6 +237,14 @@
                                     }
                                     generalDataModel[date].timesheetDataModel[projectId][day][type][subType].status = 'sent';
                                     generalDataModel[date].timesheetDataModel[projectId][day][type][subType].modified = true;
+
+                                    // before send to manager, it stores all month/year related. This is for 'issueDate' field
+                                    var thisDay = new Date( parseInt( day, 10 ) );
+                                    var obj = { month : thisDay.getMonth(), year : thisDay.getFullYear() };
+                                    var isRepited = issueDate.some( function( date ) {
+                                        return date.month == obj.month && date.year == obj.year;
+                                    });
+                                    if( !isRepited ) issueDate.push( obj );
                                 }
                             }
                         }
@@ -236,8 +256,9 @@
 
         $scope.save = function( send ) {
             // if send: all 'draft' gonna be change to 'sent' and 'modified' to true ( findDrafts() )
+            var issueDate = [];
             if( send ) {
-                findDrafts( true );
+                findDrafts( true, issueDate );
                 refreshShowDaysObj();
             }
 
@@ -248,25 +269,29 @@
             }
 
             myPromises.push( imputeHoursFactory.setAllTimesheets( data ) );
-            if( send ) myPromises.push( imputeHoursFactory.insertNewNotification() );
+            if( send ) myPromises.push( imputeHoursFactory.insertNewNotification( issueDate ) );
+
+
+// console.log(generalDataModel);
+
+
 
             Promise.all( myPromises )
-            // imputeHoursFactory.setAllTimesheets( data )
                 .then( function( data ) {
                     $scope.changes.pendingChanges = false;
                     $rootScope.pendingChanges = false;
                     // success saving (and send) message alert
                     if( send ) {
-                        $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.sendingSuccess' );
+                        $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.sendingSuccess' ); // ok message alert
                     } else {
-                        $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.savingSuccess' );                        
+                        $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.savingSuccess' ); // ok message alert
                     }
-                    alertMsgOpen( true );
+                    $scope.alerts.error = false; // ok code alert
                 })
                 .catch( function( err ) {
                     // error saving message alert
-                    $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorSaving' );
-                    alertMsgOpen( false )
+                    $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorSaving' ); // error message alert
+                    $scope.alerts.error = true; // error code alert
                 })
                 .then( function() { //(.then is .finally for Promise.all)
                     if( goToState ) {
@@ -328,18 +353,6 @@
                 $( '#daysDiv' ).slideDown( 850 );
             }
         };
-
-        function alertMsgOpen( success ) {
-            $( '#imputeHours #section' ).animate( { scrollTop: 0 }, 'slow' );
-            var $alertWall = $( '#imputeHours #alertMessage .msgAlert' );
-            $scope.alerts.success = success;
-            $alertWall.collapse( 'show' );
-            if( success ) {
-                $timeout( function() {
-                    $alertWall.collapse( 'hide' );
-                }, 3500 );
-            }
-        }
 
 }
 

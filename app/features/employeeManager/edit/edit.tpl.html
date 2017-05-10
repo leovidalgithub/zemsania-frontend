@@ -19,8 +19,9 @@
 
     <!-- SECTION MAIN CONTENT -->
     <section id="section" class="box-shadow p20">
-        <div class="alert alert-danger" ng-show="employee.error">{{'employeeManager.edit.saveError' | i18next}}</div>
-        <div class="alert alert-success" ng-show="employee.success">{{'employeeManager.edit.saveSuccess' | i18next}}</div>
+
+        <!-- ALERTS MESSAGES -->
+        <alert-message error="alerts.error" msg="alerts.message"></alert-message>
 
         <div class="simple-input">
             <form ng-submit="editUser()" name="employeeForm">

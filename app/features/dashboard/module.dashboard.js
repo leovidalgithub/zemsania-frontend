@@ -19,9 +19,9 @@
                     }
                 },
                 resolve: {
-                    notifications: function ( DashboardFactory ) {
-                        return DashboardFactory.getUnreadNotifications();
-                    }
+                    notifications: [ 'DashboardFactory', function ( DashboardFactory ) {
+                        return DashboardFactory.getAllNotifications();
+                    }]
                 }
             });
     }

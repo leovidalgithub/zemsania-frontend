@@ -10,12 +10,37 @@
 			}
 		}
 		#section {
-			table {
-				.options-section {
-					text-align: center;
-					a {
+			#options {
+				display: flex;
+				flex-flow: row wrap;
+				justify-content: center;
+				align-items: center;
+				.opts {
+					margin-right: 45px;
+					font-size: 19px;
+					font-family: monospace;
+					& input[type="radio"]+label:hover {
+						color: blue;
+						cursor: pointer;
+					}
+					input[type="radio"]:checked+label {
+						font-size: 19.1px;
+						font-weight: bold;
 					}
 				}
+			}
+
+			table {
+				.buttons {
+		        	margin-left: 40px;
+					display: flex;
+					flex-flow: column nowrap;
+					justify-content: space-between;
+					align-items: center;
+					.desactivated {
+						cursor: not-allowed;
+					}
+		        }
 			}
 
 			.notiTypes i {
@@ -60,7 +85,12 @@
 					flex-flow: column nowrap;
 					justify-content: space-between;
 					align-items: center;
+					.desactivated {
+						cursor: not-allowed;
+					}
 		          }
+
+
 		        }
 		        li {
 		        	margin-bottom: 5px;

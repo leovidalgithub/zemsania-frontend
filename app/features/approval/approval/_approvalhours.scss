@@ -12,6 +12,7 @@
 		}
 
 		#section {
+
 			#movingDate {
 				text-align: center;
 					div button {
@@ -41,15 +42,16 @@
 					margin-right: 45px;
 					font-size: 17px;
 					font-family: monospace;
+					& input[type="radio"]+label:hover {
+						color: blue;
+						cursor: pointer;
+					}
+					input[type="radio"]:checked+label {
+						font-size: 17.1px;
+						font-weight: bold;
+					}
 				}
 			}
-
-
-
-
-
-
-
 
 			.collapsing { 
 				color: #E1E1E1 !important;
@@ -75,47 +77,21 @@
 					// color: #1047C3;
 				}
 				i.opened {
-					color: #73E173;
+					// color: #73E173;
 				}
 			}
-
-				.projectTable {
-					width: 95%;
-					margin: auto;
-					// margin: 20px auto;
-					margin-bottom: 20px;
-					padding: 8px 0;
-					// border: .5px solid green;
-					// background-color: #EBEBEB;
-				}
-
-			// .employeeCollapse {
-			// 	padding: 0;
-			// 	margin: 0;
-			// }
-			// .employeeContent {
-			// 	border: 8px outset #B8F3B8;
-			// 	background-color: #EFFFEE;
-			// 	padding: 10px;
-			// 	font-family: monospace;
-			// 	font-size: 21px;
-			// 	height: 100px;
-			// 	display: flex;
-			// 	flex-flow: row nowrap;
-			// 	justify-content: center;
-			// 	align-items: center;
-			// 	p {
-			// 		margin: 0;
-			// 		span {
-			// 			color: blue;
-			// 		}
-			// 	}
-			// }
-
 
 
 			#mainContent {
 				min-width: 970px;
+
+				.projectTable {
+					width: 95%;
+					margin: auto;
+					margin-bottom: 20px;
+					padding: 8px 0;
+				}
+
 				.tableContainer {
 					overflow-x:auto;
                 	margin: 10px;
@@ -154,7 +130,7 @@
                 			border-bottom: 1px solid $zemsania;
                 			}
 						.opened { // button: when a callapsable table is opened
-							background-color: lighten( $zemsania, 15% );
+							background-color: lighten( $zemsania, 10% );
 						}
 						.btnDesactivated {
 							cursor: not-allowed;
@@ -193,12 +169,12 @@
 					        margin: 0;
 					        margin-right: 15px;
 					        .dayBox {
-						        background-color: white;
-						        // background-color: #85ac0c;
+						        background-color: orange;
 						        color: black;
 						        width: 40px;
 						        margin-left: 3px;
-						        padding: 6px;
+						        padding: 4px;
+						        border-radius: 3px;
 						        &:hover {
 						        	border: .5px solid transparent;
 						        }
@@ -256,28 +232,70 @@
 									cursor: default;
 									background-color: #EAEAEA;
 						        	.dayContent.day, .dayContent.value, .dayContent.approved {
-										background-color: #F4F4F4;
-										color: #A9A9A9;
-						        		
+										// background-color: #F4F4F4;
+										color: #CCCCCC;
 						        	}
 						        }
-
 					        }
 					    }
-
-
 					}
 			}
 
-
-
+            /***** LEYEND *****/
+            #leyend {
+                @include myLeyend( 220px, 1px );
+                .leyendBox {
+                    @include myLeyendBox( 20px, 60px );
+                }
+                #workingLeyend {
+                    @extend .ext_flex-start_;
+                         div:first-of-type {
+                                background-color: $workingColor;
+                                margin: 3px 10px 5px 3px;
+                         }
+                }
+                #fridayLeyend {
+                    @extend .ext_flex-start_;
+                         div {
+                                background-color: $fridayColor;
+                                margin: 5px 10px 7px 3px;
+                         }
+                }
+                #intensiveLeyend {
+                    @extend .ext_flex-start_;
+                         div {
+                                background-color: $intensiveColor;
+                                margin: 5px 10px 7px 3px;
+                         }
+                }
+                #specialLeyend {
+                    @extend .ext_flex-start_;
+                         div {
+                                background-color: $specialColor;
+                                margin: 5px 10px 7px 3px;
+                         }
+                }
+                #holidaysLeyend {
+                    @extend .ext_flex-start_;
+                         div {
+                                background-color: $holidaysColor;
+                                margin: 5px 10px 7px 3px;
+                         }                  
+                }
+                #non_workingLeyend {
+                    @extend .ext_flex-start_;
+                         div:first-of-type {
+                                background-color: $non_workingColor;
+                                margin: 5px 10px 7px 3px;
+                         }
+                }
+                    #workingRange, #fridayRange, 
+                    #intensiveRange, #specialRange {
+                                text-align: right;
+                                font-size: 15px;
+                                margin-top: -6px;
+                    }
+            } // #leyend
 
 		} // section
 	}
-
-
-
-
-                           // .myHeader {
-                           //      color: #666;
-                           // }

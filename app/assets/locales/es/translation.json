@@ -377,12 +377,16 @@
     "notifications": {
         "title": "Notificaciones",
         "unread": "No leído",
+        "unreads": "No leídos",
         "read": "Leído",
+        "reads": "Leídos",
         "from": "De:",
         "from2": "Remite",
         "type": "Tipo",
         "status": "Estado",
         "msg": "Mensaje",
+        "goTo": "Ir a ello",
+        "markAsRead": "Marcar como leído",
         "unreadNotifications": "notificaciones no leídas",
         "types": {
             "hours_validated": "Imputaciones aprobadas",
@@ -392,7 +396,8 @@
             "holiday_req": "Solicitud aprobación vacaciones",
             "hours_pending_req": "Recordatorio para imputar"
         },
-        "noNotifications": "No hay notificaciones por atender."
+        "noNotifications": "No hay notificaciones por atender.",
+        "errorMarkRead": "Ha ocurrido intentado marcar la notificación como leída"
     },
     "locale": {
         "es": "Español",

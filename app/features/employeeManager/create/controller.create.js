@@ -9,6 +9,7 @@
 
         $scope.companies = data.enterprises;
         $scope.supervisors = data.supervisors;
+        $scope.calendars   = data.calendars;
 
         var employee = {
             roles: ['ROLE_USER'],
@@ -99,23 +100,24 @@
         };
 
         $scope.signupUser = function () {
-            $scope.employee.error = false;
-            $scope.employee.alreadyExists = false;
+            console.log($scope.employee);
             $( '#page-content-wrapper #section' ).animate( { scrollTop: 0 }, 'slow' );
-            
             EmployeeManagerFactory.createEmployee( $scope.employee )
                 .then( function ( data ) {
                     if( data.success ) {
-                        $scope.employee.success = true;
+                        $scope.alerts.error = false; // ok code alert
+                        $scope.alerts.message = $filter( 'i18next' )( 'employeeManager.create.saveSuccess' ); // ok message alert
                         $timeout( function () {
                             $state.go( 'employeeManager' );
                         }, 2500 );
                     } else {
-                        $scope.employee.alreadyExists = true;
+                        $scope.alerts.error = true; // error code alert
+                        $scope.alerts.message = $filter( 'i18next' )( 'employeeManager.create.userAlreadyExists' ); // error message alert
                     }
                 })
                 .catch( function ( err ) {
-                    $scope.employee.error = true;
+                    $scope.alerts.error = true; // error code alert
+                    $scope.alerts.message = $filter( 'i18next' )( 'employeeManager.create.saveError' ); // error message alert
                 });
         };
     }

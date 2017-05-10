@@ -7,7 +7,7 @@
     calendarsConfig.$invoke = [ '$stateProvider' ];
     function calendarsConfig( $stateProvider ) {
         $stateProvider
-            .state( 'calendars', { // LEO WORKING HERE
+            .state( 'calendars', { // LEO WAS HERE
                 url: '/calendars',
                 templateUrl: '/features/calendar/calendars/list/calendars.list.tpl.html',
                 controller: 'CalendarsController',
@@ -19,13 +19,13 @@
                     }
                 },
                 resolve : {
-                    calendars : function( CalendarFactory ) {
+                    calendars : [ 'CalendarFactory', function( CalendarFactory ) {
                         return CalendarFactory.getCalendarsNames();
-                    }
+                    }]
                 }
             })
 
-            .state( 'calendarsEdit', { // LEO WORKING HERE
+            .state( 'calendarsEdit', { // LEO WAS HERE
                 url: '/calendars/edit/:id',
                 templateUrl: '/features/calendar/calendars/edit/calendars.edit.tpl.html',
                 controller: 'editCalendarsController',

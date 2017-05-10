@@ -3,30 +3,40 @@
     <header id="header">
         <div id="headerContent">
             <div class="flexDesign box-shadow p20 top-bar">
-
                 <div>
                     <h1>{{'notifications.title' | i18next}}</h1>
                 </div>
-
                  <div class="rightMargin">
-                     <h4><span>{{notifications.length}}</span> {{'notifications.unreadNotifications' | i18next}}</h4>
+                     <h4><span>{{options.length}}</span> {{'notifications.unreadNotifications' | i18next}}</h4>
                 </div>
             </div>
         </div>
     </header>
 
-
     <!-- SECTION MAIN CONTENT -->
     <section id="section" class="box-shadow p20">
+
+        <!-- ALERTS MESSAGES -->
+        <alert-message error="alerts.error" msg="alerts.message"></alert-message>
+
+        <!-- OPTIONS -->
+        <div id="options" class="simple-input">
+            <div class="opts">
+                <input id="rad1" type="radio" name="read_unreadRadio" ng-model="options.justUnread" value="true" /> 
+                    <label for="rad1">{{'notifications.unreads' | i18next}}</label>
+            </div>
+            <div class="opts">
+                <input id="rad2" type="radio" name="read_unreadRadio" ng-model="options.justUnread" value="false" /> 
+                    <label for="rad2">{{'notifications.reads' | i18next}}</label>
+            </div>
+        </div>
 
         <div>
             <div ng-show="viewSet">
                 <table at-table at-config="tableConfig" at-paginated at-list="notifications" class="table table-striped">
-                    <div class="table-thead">
-                        <thead><h4>Notificaciones NO leídas</h4></thead>
-                    </div>
+                    <div class="table-thead"><thead></thead></div>
                     <tbody>
-                        <tr ng-show="item.status=='unread'" ng-click="xxx({id: item._id})" 
+                        <tr ng-show="filterNotifications(item.status)" 
                             title="{{item.initDate | date : 'dd/MMM/yyyy'}} - {{item.endDate | date : 'dd/MMM/yyyy'}}">
                             <td at-implicit at-sortable at-initial-sorting="asc" at-attribute="senderId.fullName" at-title="{{'notifications.from2' | i18next}}"></td>
                             <td at-implicit at-sortable at-attribute="null" at-title="{{'notifications.type' | i18next}}">
@@ -44,16 +54,22 @@
                                 </div>
                             </td>
                             <td at-implicit at-sortable at-attribute="null" at-title="{{'notifications.status' | i18next}}">
-                                <strong style="color: #333;">{{'notifications.unread' | i18next}}</strong>
+                                <code>
+                                    {{item.status=='unread' ? ('notifications.unread' | i18next) : ('notifications.read' | i18next)}}
+                                </code>
                             </td>
-                            <td at-implicit at-attribute="text" at-title="{{'notifications.msg' | i18next}}" width="40%"></td>
-                            <td class="options-section">
-                                <a ui-sref="employeeManagerEdit({id: item._id})" class="btn btn-primary" title="Ir a ello">
-                                    <i class="fa fa-forward"></i>
-                                </a>
-                                <a ng-click="markRead({id: item._id})" class="btn btn-gray" title="Marcar como leído">
-                                    <i class="fa fa-thumbs-up"></i>
-                                </a>
+                            <td at-implicit at-attribute="text" at-title="{{'notifications.msg' | i18next}}" width="40%">
+                                <code>{{'months.' + item.issueDate.month | i18next}} {{item.issueDate.year}}</code>
+                            </td>
+                            <td class="buttons">
+                                <button ng-click="goTo(item)" class="btn btn-primary" title="{{'notifications.goTo' | i18next}}">
+                                         <i class="fa fa-forward"></i>
+                                </button>
+                                <button ng-disabled="(options.justUnread == 'false')" ng-click="markRead(item._id)" 
+                                        ng-class="{'desactivated':(options.justUnread == 'false')}" class="btn btn-gray" 
+                                        ng-attr-title="{{options.justUnread == 'true' ? ('notifications.markAsRead' | i18next) : ''}}">
+                                        <i class="fa fa-thumbs-up"></i>
+                                </button>
                             </td>
                         </tr>
                     </tbody>
@@ -61,7 +77,7 @@
             </div>
 
             <div ng-hide="viewSet">
-                <div id="itemsList" ng-repeat="(key, notification) in notifications"
+                <div ng-show="filterNotifications(notification.status)" id="itemsList" ng-repeat="(key, notification) in notifications"
                     title="{{notification.initDate | date : 'dd/MMM/yyyy'}} - {{notification.endDate | date : 'dd/MMM/yyyy'}}">
                     <div class="usersList">
                         <div>
@@ -81,22 +97,25 @@
                                     </div>
                                 </li>
                                 <li>{{'notifications.from' | i18next}} <strong>{{notification.senderId.fullName}}</strong></li>
-                                <li>{{'notifications.unread' | i18next}}</li>
-                                <li>{{notification.text}}</li>
+                                <li>{{notification.status=='unread' ? ('notifications.unread' | i18next) : ('notifications.read' | i18next)}}</li>
+                                <li>{{notification.text}}
+                                    <code>{{'months.' + notification.issueDate.month | i18next}} {{notification.issueDate.year}}</code>
+                                </li>
                             </ul>
                         </div>
                         <div class="buttons">
-                            <a ui-sref="employeeManagerEdit({id: item._id})" class="btn btn-primary" title="Ir a ello">
-                                <i class="fa fa-forward"></i>
-                            </a>
-                            <a ng-click="markRead({id: item._id})" class="btn btn-gray" title="Marcar como leído">
-                                <i class="fa fa-thumbs-up"></i>
-                            </a>
+                            <button ng-click="goTo(notification)" class="btn btn-primary" title="Ir a ello">
+                                    <i class="fa fa-forward"></i>
+                            </button>
+                            <button ng-disabled="(options.justUnread == 'false')" ng-click="markRead(notification._id)" 
+                                    ng-class="{'desactivated':(options.justUnread == 'false')}" class="btn btn-gray" 
+                                    ng-attr-title="{{options.justUnread == 'true' ? ('notifications.markAsRead' | i18next) : ''}}">
+                                    <i class="fa fa-thumbs-up"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
-
         </div>
 
     </section>

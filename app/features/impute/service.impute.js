@@ -45,12 +45,13 @@
                 return dfd.promise;
             },
 
-            insertNewNotification: function() { // LEO WORKING HERE
+            insertNewNotification: function( issueDate ) { // LEO WORKING HERE
                 var data = {
                                 senderId   : UserFactory.getUserID(),
                                 receiverId : UserFactory.getSuperior(),
                                 type       : 'hours_req',
-                                text       : $filter( 'i18next' )( 'calendar.imputeHours.message.hours_req' )
+                                text       : $filter( 'i18next' )( 'calendar.imputeHours.message.hours_req' ),
+                                issueDate  : issueDate
                 };
                 var dfd = $q.defer();
                 $http.post( buildURL( 'insertNewNotification' ), data )

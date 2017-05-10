@@ -29,19 +29,7 @@
 <!-- <button class="btn btn-lg" style="background-color: #05AE88; color: white;font-size: 17px;" ng-click="fn()">Go!!</button> -->
 
         <!-- ALERTS MESSAGES -->
-        <div id="alertMessage">
-            <div class="row">
-                <div class="col-xs-offset-1 col-xs-10">
-                    <div class="collapse msgAlert">
-                        <div style="text-align: center; font-size: 16px;" class="alert alert-dismissible" role="alert"
-                            ng-class="{'alert-danger': !alerts.success, 'alert-success': alerts.success }">
-                            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-                            <span>{{alerts.message}}!</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <alert-message error="alerts.error" msg="alerts.message"></alert-message>
 
         <!-- OPTIONS -->
         <div id="imputeOptions" class="simple-input">

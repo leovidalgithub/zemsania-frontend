@@ -19,50 +19,47 @@
     
     <!-- SECTION MAIN CONTENT -->
     <section id="section" class="box-shadow p20">
-    <!-- CHANGE PASSWORD -->
-        <form name="pwdForm" ng-submit="processPWDChange()" class="modal-body" ng-show="showPwdContent">
-            <div data-fields>
-                <!-- ERROR/OK MESSAGES -->
-                <div class="row simple-input">
-                    <div class="col-lg-5 col-md-6" ng-show="changePassword.displayMessage != 0">
-                        <p class="alert" 
-                        ng-class="{ 'alert-success': changePassword.displayMessage > 0, 'alert-danger': changePassword.displayMessage < 0 }">
-                            {{'auth.changePassword.' + changePassword.messageToDisplay | i18next}}
-                        </p>
+
+        <!-- ALERTS MESSAGES -->
+        <alert-message error="alerts.error" msg="alerts.message"></alert-message>
+
+        <!-- CHANGE PASSWORD -->
+        <div ng-show="showPwdContent">
+            <form name="pwdForm" ng-submit="processPWDChange()" class="modal-body">
+                <div data-fields>
+
+                    <!-- CURRENT PASSWORD -->
+                    <div class="row simple-input">
+                        <div class="col-lg-5 col-md-6">
+                            <div>{{'auth.changePassword.currentPassword' | i18next}}</div>
+                            <input type="password" name="" ng-model="changePassword.current" class="form-control" placeholder="{{'auth.changePassword.enterCurrent' | i18next}}" required />
+                        </div>
                     </div>
-                </div>
-                <!-- CURRENT PASSWORD -->
-                <div class="row simple-input">
-                    <div class="col-lg-5 col-md-6">
-                        <div>{{'auth.changePassword.currentPassword' | i18next}}</div>
-                        <input type="password" name="" ng-model="changePassword.current" class="form-control" placeholder="{{'auth.changePassword.enterCurrent' | i18next}}" required />
+                    <br>
+                    <!-- NEW PASSWORD -->
+                    <div class="row simple-input">
+                        <div class="col-lg-5 col-md-6">
+                            <div>{{'auth.changePassword.newPassword' | i18next}}</div>
+                            <input type="password" name="" ng-model="changePassword.new" class="form-control" placeholder="{{'auth.changePassword.enterNew' | i18next}}" required />
+                        </div>
                     </div>
+                    <br>
+                    <!-- CONFIRM PASSWORD -->
+                    <div class="row simple-input">
+                        <div class="col-lg-5 col-md-6">
+                            <div>{{'auth.changePassword.confirmPassword' | i18next}}</div>
+                            <input type="password" name="" ng-model="changePassword.confirm" class="form-control" placeholder="{{'auth.changePassword.enterConfirm' | i18next}}" required />
+                        </div>
+                    </div>                
                 </div>
                 <br>
-                <!-- NEW PASSWORD -->
-                <div class="row simple-input">
-                    <div class="col-lg-5 col-md-6">
-                        <div>{{'auth.changePassword.newPassword' | i18next}}</div>
-                        <input type="password" name="" ng-model="changePassword.new" class="form-control" placeholder="{{'auth.changePassword.enterNew' | i18next}}" required/>
-                    </div>
-                </div>
-                <br>
-                <!-- CONFIRM PASSWORD -->
-                <div class="row simple-input">
-                    <div class="col-lg-5 col-md-6">
-                        <div>{{'auth.changePassword.confirmPassword' | i18next}}</div>
-                        <input type="password" name="" ng-model="changePassword.confirm" class="form-control" placeholder="{{'auth.changePassword.enterConfirm' | i18next}}" required/>
-                    </div>
-                </div>                
-            </div>
-            <br>
-            <button type="sbumit" class="btn btn-primary no-margin-t no-margin-l" ng-disabled="pwdForm.$invalid"
-            ng-class="{ 'btn-gray': pwdForm.$invalid, 'btn-primary': pwdForm.$valid }">{{'auth.changePassword.changeBtn' | i18next}}</button>
-        </form>
+                <button type="sbumit" class="btn btn-primary no-margin-t no-margin-l" ng-disabled="pwdForm.$invalid"
+                ng-class="{ 'btn-gray': pwdForm.$invalid, 'btn-primary': pwdForm.$valid }">{{'auth.changePassword.changeBtn' | i18next}}</button>
+            </form>
+        </div>
 
         <div ng-hide="showPwdContent" class="over-visible">
-            <div ng-show="profileStatus === 1" class="alert alert-success">{{'auth.profile.saveSuccess' | i18next}}</div>
-            <div ng-show="profileStatus === 2" class="alert alert-danger">{{'auth.profile.saveError' | i18next}}</div>
+
             <div class="auto-form simple-input">
                 <!-- USER PROFILE FORM -->
                 <form name="userProfileForm" novalidate>

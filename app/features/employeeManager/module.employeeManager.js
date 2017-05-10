@@ -20,9 +20,9 @@
                     }
                 },
                 resolve: {
-                    employees: function ( EmployeeManagerFactory ) {
+                    employees: [ 'EmployeeManagerFactory', function ( EmployeeManagerFactory ) {
                         return EmployeeManagerFactory.getEmployeeList();
-                    }
+                    }]
                 }
             })
             .state( 'employeeManagerEdit', { // LEO WAS HERE
@@ -38,13 +38,13 @@
                     }
                 },
                 resolve: {
-                    data: function ( CalendarFactory, EmployeeManagerFactory, $stateParams, $q ) {
+                    data: [ 'CalendarFactory', 'EmployeeManagerFactory', '$stateParams', '$q', function ( CalendarFactory, EmployeeManagerFactory, $stateParams, $q ) {
                         var employee    = EmployeeManagerFactory.getEmployeeFromID( $stateParams.id );
                         var enterprises = EmployeeManagerFactory.getEnterprises();
                         var supervisors = EmployeeManagerFactory.supervisorsExceptID( $stateParams.id );
                         var calendars   = CalendarFactory.getCalendarsNames();
                         return $q.all( { employee : employee, enterprises : enterprises, supervisors : supervisors, calendars : calendars } );
-                    }
+                    }]
                 }
             })
             
@@ -61,12 +61,13 @@
                     }
                 },
                 resolve: {
-                    data: function ( EmployeeManagerFactory, $stateParams, $q ) {
+                    data: [ 'CalendarFactory', 'EmployeeManagerFactory', '$stateParams', '$q', function ( CalendarFactory, EmployeeManagerFactory, $stateParams, $q ) {
                         var enterprises     = EmployeeManagerFactory.getEnterprises();
                         var supervisors     = EmployeeManagerFactory.getAllSupervisors();                        
                         var defaultPassword = EmployeeManagerFactory.getDefaultPassword();
-                        return $q.all( { enterprises : enterprises, supervisors : supervisors, defaultPassword : defaultPassword } );
-                    }
+                        var calendars       = CalendarFactory.getCalendarsNames();
+                        return $q.all( { enterprises : enterprises, supervisors : supervisors, defaultPassword : defaultPassword, calendars : calendars } );
+                    }]
                 }
             });
     }

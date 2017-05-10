@@ -42,17 +42,18 @@
         <!-- OPTIONS -->
         <div id="options" class="simple-input">
             <div class="opts">
-                <input type="radio" name="justPendingRadio" ng-model="mainOBJ.allEmployees" value="true" /> {{'approvalHours.all' | i18next}}
+                <input id="rad1" type="radio" name="justPendingRadio" ng-model="mainOBJ.allEmployees" value="true" />
+                    <label for="rad1">{{'approvalHours.all' | i18next}}</label>
             </div>
             <div class="opts">
-                <input type="radio" name="justPendingRadio" ng-model="mainOBJ.allEmployees" value="false" /> {{'approvalHours.justPending' | i18next}}
+                <input id="rad2" type="radio" name="justPendingRadio" ng-model="mainOBJ.allEmployees" value="false" />
+                    <label for="rad2">{{'approvalHours.justPending' | i18next}}</label>
             </div>
             <div class="opts">
-                <input ng-model="mainOBJ.searchText" class="form-control text-capitalize" 
+                <input ng-model="mainOBJ.searchText" type="text" class="form-control text-capitalize" 
                     placeholder="{{'approvalHours.search' | i18next}}" />
             </div>
         </div>
-
 
         <!-- MAIN CONTENT TABLE -->
         <div id="mainContent">
@@ -73,7 +74,8 @@
                     <div ng-show="showEmployee(employee.isPending)" ng-repeat="(key, employee) in employees | orderBy: 'name' | filter: mainOBJ.searchText">
                         <table>
                             <tr>
-                                <td style="width: 30%;"><button ng-class="{'opened':employee.opened}" ng-click="myEmployeeClick(employee.employeeId)" class="btn btn-primary">
+                                <td style="width: 30%;"><button ng-class="{'opened':employee.opened}" 
+                                                                ng-click="myEmployeeClick(employee.employeeId)" class="btn btn-primary">
                                     <i ng-hide="employee.opened" class="fa fa-chevron-right"></i>
                                     <i ng-show="employee.opened" class="fa fa-chevron-down"></i></button>
                                     {{employee.name}} {{employee.surname}}
@@ -112,7 +114,9 @@
                                 <div ng-repeat="(projectId, project) in employee.timesheetDataModel">
                                     <table>
                                         <tr>
-                                            <td style="width: 44%;"><button ng-class="{'opened':project.info.opened}" ng-click="myProjectClick(employee.employeeId, projectId)" class="btn btn-primary">
+                                            <td style="width: 44%;"><button ng-class="{'opened':project.info.opened}" 
+                                                                            ng-click="myProjectClick(employee.employeeId, projectId)" 
+                                                                            class="btn btn-primary">
                                                 <i ng-hide="project.info.opened" class="fa fa-chevron-right"></i>
                                                 <i ng-show="project.info.opened" class="fa fa-chevron-down"></i></button>
                                                 {{project.info.name}}
@@ -179,6 +183,21 @@
                     </div> <!-- MAIN NG-REPEAT -->
                 </div>
         </div>
+
+        <!-- LEYEND --><hr>
+        <div id="leyend">
+            <div id="workingLeyend"><div class="leyendBox"></div><span>{{'calendars.workingDays' | i18next}}</span></div>
+            <div id="workingRange"></div>
+            <div id="fridayLeyend"><div class="leyendBox"></div><span>{{'calendars.fridays' | i18next}}</span></div>
+            <div id="fridayRange"></div>
+            <div id="intensiveLeyend"><div class="leyendBox"></div><span>{{'calendars.intensiveDays' | i18next}}</span></div>
+            <div id="intensiveRange"></div>
+            <div id="specialLeyend"><div class="leyendBox"></div><span>{{'calendars.specialDays' | i18next}}</span></div>
+            <div id="specialRange"></div>
+            <div id="holidaysLeyend"><div class="leyendBox"></div><span>{{'calendars.holidays' | i18next}}</span></div>
+            <div id="non_workingLeyend"><div class="leyendBox"></div><span>{{'calendars.non_workingDays' | i18next}}</span></div>
+        </div>
+
     </section>
 
     <!-- FOOTER -->

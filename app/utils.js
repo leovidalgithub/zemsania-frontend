@@ -34,9 +34,10 @@ var API_paths = {
     projectUserUpdate: 'projectUsers/update',
     projectUserDelete: 'projectUsers/delete',
 
-    unreadNotifications: 'notifications/unreads',
+    getAllNotifications: 'notifications/allNotifications',
     insertNewNotification: 'notifications/insertNewNotification',
-    // markReadNotifications: 'notifications/markRead',
+    markReadNotifications: 'notifications/markRead',
+    // unreadNotifications: 'notifications/unreads',
 
     holidays: 'holidays',
     holidaysRequest: 'holidays/request',

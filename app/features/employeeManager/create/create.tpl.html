@@ -19,9 +19,9 @@
 
     <!-- SECTION MAIN CONTENT -->
     <section id="section" class="box-shadow p20">
-        <div class="alert alert-danger" ng-show="employee.error">{{'employeeManager.create.saveError' | i18next}}</div>
-        <div class="alert alert-danger" ng-show="employee.alreadyExists">{{'employeeManager.create.userAlreadyExists' | i18next}}</div>
-        <div class="alert alert-success" ng-show="employee.success">{{'employeeManager.create.saveSuccess' | i18next}}</div>
+
+        <!-- ALERTS MESSAGES -->
+        <alert-message error="alerts.error" msg="alerts.message"></alert-message>
 
         <div class="simple-input">
             <form ng-submit="signupUser()" name="employeeForm">
@@ -70,8 +70,8 @@
 
                 <div class="form-group row">
                     <div class="col-md-4">
-                        <label for="user_nif">{{'holidaySchemes.title' | i18next}}</label>
-                        <select id="user_genre" ng-model="employee.holidayScheme" class="col-md-12" ng-options="scheme._id as scheme.name for scheme in holidaySchemes"></select>
+                        <label for="user_nif">{{'calendars.title' | i18next}}</label>
+                        <select id="user_genre" ng-model="employee.calendarID" class="col-md-12" ng-options="calendar._id as calendar.name for calendar in calendars"></select>
                     </div>
                     <div class="col-md-4">
                         <label for="user_genre">{{'workloadSchemes.title' | i18next}}</label>

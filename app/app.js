@@ -2,7 +2,7 @@
 /*global setFormlyConfig:true*/
 /*global tmpData:true*/
 
-(function() {
+;( function() {
     'use strict';
     angular
         .module( 'hours', [
@@ -10,7 +10,6 @@
             'permission',
             'permission.ui',
             'angularMoment',
-            // 'ngAnimate', // ng-show/ng-hide/ng-if delay issue!!!
             'ngStorage',
             'angular-loading-bar',
             'ngSanitize',
@@ -22,15 +21,16 @@
             'formly',
             'formlyBootstrap',
             'ngFileSaver',
+            // 'ngAnimate', // this cause ng-show/ng-hide/ng-if delay issue
             'hours.auth',
-            // 'hours.projectWorkflow',
-            // 'hours.errors',
             'hours.dashboard',
             'hours.components',
             'hours.employeeManager',
             'hours.calendar',
             'hours.impute',
             'hours.approvalHours'
+            // 'hours.projectWorkflow',
+            // 'hours.errors',
             // 'hours.reports',
             // 'hours.projects',
             // 'hours.excelExport'
@@ -45,51 +45,52 @@
             $state.transitionTo( 'login' );
         });
         cfpLoadingBarProvider.includeSpinner = false;
+
+        $locationProvider.html5Mode( true );
+        $locationProvider.hashPrefix( '!' );
     }
 
-    appRun.$invoke = [ 'PermRoleStore', 'UserFactory', '$rootScope', '$http', 'formlyConfig', '$uibModal', '$localStorage','$i18next' ];
-    function appRun( PermRoleStore, UserFactory, $rootScope, $http, formlyConfig, $uibModal, $localStorage, $i18next ) {
+    appRun.$invoke = [ 'PermRoleStore', 'UserFactory', '$rootScope', '$http', 'formlyConfig', '$i18next' ];
+    function appRun( PermRoleStore, UserFactory, $rootScope, $http, formlyConfig, $i18next ) {
 
         window.i18next
             .use( window.i18nextXHRBackend );
-        window.i18next.init({
-            lng: 'es', // If not given, i18n will detect the browser language.
-            fallbackLng: 'dev', // Default is dev
-            backend: {
-                loadPath: 'assets/locales/{{lng}}/{{ns}}.json'
+        window.i18next.init( {
+            lng : 'es', // If not given, i18n will detect the browser language.
+            fallbackLng : 'dev', // Default is dev
+            backend : {
+                loadPath : 'assets/locales/{{lng}}/{{ns}}.json'
             }
         }, function ( err, t ) {
-            // console.log('resources loaded');
             $rootScope.$apply();
         });
 
         $rootScope.$on( '$stateChangePermissionStart', function( event, args ) {            
             var reqPerms = args.data.permissions;
-            var anonymousUser = angular.isDefined(reqPerms.only) && reqPerms.only[0] === 'anonymous';
-            var locale = (navigator.language || navigator.userLanguage).split('-')[0];
+            var anonymousUser = angular.isDefined( reqPerms.only ) && reqPerms.only[0] === 'anonymous';
+            var locale = ( navigator.language || navigator.userLanguage ).split( '-' )[0];
 
             $rootScope.activeState = args.data.state;
             $rootScope.layoutTemplate = '/layouts/' + args.data.template + '.html';
 
-            // If not anonymous user put Auth header
-            if (!anonymousUser) {
+            // if not anonymous, we put token on http header for all requests. And set locale from user credentials
+            if ( !anonymousUser ) {
                 $http.defaults.headers.common['x-auth-token'] = UserFactory.getUserToken();
                 locale = UserFactory.getUser().locale;
             }
 
-            $i18next.changeLanguage(locale);
-
+            $i18next.changeLanguage( locale );
             $rootScope.toggleSidebarStatus = false;
         });
 
-        $rootScope.toggleSidebarStatus = false;
-        $rootScope.toggleMobileSidebar = function() {
+        $rootScope.toggleSidebarStatus     = false;
+        $rootScope.toggleMobileSidebar     = function() {
             $rootScope.toggleSidebarStatus = !$rootScope.toggleSidebarStatus;
         };
 
-        loadPermissions(PermRoleStore, UserFactory);
-        tmpData($rootScope);
-        setFormlyConfig(formlyConfig);
+        loadPermissions( PermRoleStore, UserFactory );
+        tmpData( $rootScope );
+        setFormlyConfig( formlyConfig );
 
     }
 }());

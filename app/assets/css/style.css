@@ -1,4 +1,4 @@
-.ext_flex-start_, #calendars #section #options #leyend #workingLeyend, #calendars #section #options #leyend #fridayLeyend, #calendars #section #options #leyend #intensiveLeyend, #calendars #section #options #leyend #specialLeyend, #calendars #section #options #leyend #holidaysLeyend, #calendars #section #options #leyend #non_workingLeyend, #imputeHours #section #statistics #leyend #workingLeyend, #imputeHours #section #statistics #leyend #fridayLeyend, #imputeHours #section #statistics #leyend #intensiveLeyend, #imputeHours #section #statistics #leyend #specialLeyend, #imputeHours #section #statistics #leyend #holidaysLeyend, #imputeHours #section #statistics #leyend #non_workingLeyend {
+.ext_flex-start_, #calendars #section #options #leyend #workingLeyend, #calendars #section #options #leyend #fridayLeyend, #calendars #section #options #leyend #intensiveLeyend, #calendars #section #options #leyend #specialLeyend, #calendars #section #options #leyend #holidaysLeyend, #calendars #section #options #leyend #non_workingLeyend, #imputeHours #section #statistics #leyend #workingLeyend, #imputeHours #section #statistics #leyend #fridayLeyend, #imputeHours #section #statistics #leyend #intensiveLeyend, #imputeHours #section #statistics #leyend #specialLeyend, #imputeHours #section #statistics #leyend #holidaysLeyend, #imputeHours #section #statistics #leyend #non_workingLeyend, #approvalHours #section #leyend #workingLeyend, #approvalHours #section #leyend #fridayLeyend, #approvalHours #section #leyend #intensiveLeyend, #approvalHours #section #leyend #specialLeyend, #approvalHours #section #leyend #holidaysLeyend, #approvalHours #section #leyend #non_workingLeyend {
   margin-top: 5px;
   display: flex;
   flex-flow: row wrap;
@@ -1107,8 +1107,34 @@
   font-size: 22px;
   color: blue;
 }
-#notifications #section table .options-section {
-  text-align: center;
+#notifications #section #options {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  align-items: center;
+}
+#notifications #section #options .opts {
+  margin-right: 45px;
+  font-size: 19px;
+  font-family: monospace;
+}
+#notifications #section #options .opts input[type="radio"] + label:hover {
+  color: blue;
+  cursor: pointer;
+}
+#notifications #section #options .opts input[type="radio"]:checked + label {
+  font-size: 19.1px;
+  font-weight: bold;
+}
+#notifications #section table .buttons {
+  margin-left: 40px;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: space-between;
+  align-items: center;
+}
+#notifications #section table .buttons .desactivated {
+  cursor: not-allowed;
 }
 #notifications #section .notiTypes i {
   font-size: 30px;
@@ -1154,6 +1180,9 @@
   justify-content: space-between;
   align-items: center;
 }
+#notifications #section #itemsList .usersList .buttons .desactivated {
+  cursor: not-allowed;
+}
 #notifications #section #itemsList li {
   margin-bottom: 5px;
 }
@@ -1161,6 +1190,9 @@
 #approvalHours #header #headerContent .rightMargin span {
   font-size: 22px;
   color: blue;
+}
+#approvalHours #section {
+  /***** LEYEND *****/
 }
 #approvalHours #section #movingDate {
   text-align: center;
@@ -1192,6 +1224,14 @@
   font-size: 17px;
   font-family: monospace;
 }
+#approvalHours #section #options .opts input[type="radio"] + label:hover {
+  color: blue;
+  cursor: pointer;
+}
+#approvalHours #section #options .opts input[type="radio"]:checked + label {
+  font-size: 17.1px;
+  font-weight: bold;
+}
 #approvalHours #section .collapsing {
   color: #E1E1E1 !important;
 }
@@ -1213,17 +1253,14 @@
   font-size: 26px;
   color: #3A70EC;
 }
-#approvalHours #section .myEmployee i.opened {
-  color: #73E173;
+#approvalHours #section #mainContent {
+  min-width: 970px;
 }
-#approvalHours #section .projectTable {
+#approvalHours #section #mainContent .projectTable {
   width: 95%;
   margin: auto;
   margin-bottom: 20px;
   padding: 8px 0;
-}
-#approvalHours #section #mainContent {
-  min-width: 970px;
 }
 #approvalHours #section #mainContent .tableContainer {
   overflow-x: auto;
@@ -1262,7 +1299,7 @@
   border-bottom: 1px solid #F15A29;
 }
 #approvalHours #section #mainContent .tableContainer table .opened {
-  background-color: #f69171;
+  background-color: #f47f59;
 }
 #approvalHours #section #mainContent .tableContainer table .btnDesactivated {
   cursor: not-allowed;
@@ -1299,11 +1336,12 @@
   margin-right: 15px;
 }
 #approvalHours #section #mainContent .tableContainer .slickTable .dayBox {
-  background-color: white;
+  background-color: orange;
   color: black;
   width: 40px;
   margin-left: 3px;
-  padding: 6px;
+  padding: 4px;
+  border-radius: 3px;
 }
 #approvalHours #section #mainContent .tableContainer .slickTable .dayBox:hover {
   border: .5px solid transparent;
@@ -1359,8 +1397,53 @@
   background-color: #EAEAEA;
 }
 #approvalHours #section #mainContent .tableContainer .slickTable .dayBox.desactivated .dayContent.day, #approvalHours #section #mainContent .tableContainer .slickTable .dayBox.desactivated .dayContent.value, #approvalHours #section #mainContent .tableContainer .slickTable .dayBox.desactivated .dayContent.approved {
-  background-color: #F4F4F4;
-  color: #A9A9A9;
+  color: #CCCCCC;
+}
+#approvalHours #section #leyend {
+  border: solid 1px #6C6C6C;
+  border-radius: 5px;
+  background-color: #FBFBFB;
+  width: 220px;
+  margin: 5px auto;
+  text-align: left;
+  padding: 10px;
+}
+#approvalHours #section #leyend .leyendBox {
+  height: 20px;
+  width: 60px;
+  border-radius: 2px;
+  border: solid 1px black;
+  display: inline-block;
+}
+#approvalHours #section #leyend #workingLeyend div:first-of-type {
+  background-color: #85AC0C;
+  margin: 3px 10px 5px 3px;
+}
+#approvalHours #section #leyend #fridayLeyend div {
+  background-color: #286ABA;
+  margin: 5px 10px 7px 3px;
+}
+#approvalHours #section #leyend #intensiveLeyend div {
+  background-color: #EBC21C;
+  margin: 5px 10px 7px 3px;
+}
+#approvalHours #section #leyend #specialLeyend div {
+  background-color: #FF831C;
+  margin: 5px 10px 7px 3px;
+}
+#approvalHours #section #leyend #holidaysLeyend div {
+  background-color: #ff0000;
+  margin: 5px 10px 7px 3px;
+}
+#approvalHours #section #leyend #non_workingLeyend div:first-of-type {
+  background-color: #808080;
+  margin: 5px 10px 7px 3px;
+}
+#approvalHours #section #leyend #workingRange, #approvalHours #section #leyend #fridayRange,
+#approvalHours #section #leyend #intensiveRange, #approvalHours #section #leyend #specialRange {
+  text-align: right;
+  font-size: 15px;
+  margin-top: -6px;
 }
 
 html, body, body > div, div[ui-view] {

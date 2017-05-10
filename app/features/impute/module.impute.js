@@ -19,14 +19,11 @@
                     }
                 },
                 resolve : {
-                    userProjects : function( imputeHoursFactory ){
+                    userProjects : [ 'imputeHoursFactory', function( imputeHoursFactory ){
                         return imputeHoursFactory.getProjectsByUserId();
-                    }
+                    }]
                 }
-
-
             });
-
 
     }
 }());
@@ -68,9 +65,9 @@
             //         }
             //     },
             //     resolve: {
-            //         holidays: function (CalendarFactory) {
+            //         holidays : [ 'CalendarFactory', function ( CalendarFactory ) {
             //             return CalendarFactory.getUserHolidayCalendar();
-            //         }
+            //         }]
             //     }
             // })
             // .state('moderateHolidayCalendar', {

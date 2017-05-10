@@ -96,16 +96,17 @@
 
         $scope.editUser = function () {
             $( '#page-content-wrapper #section' ).animate( { scrollTop: 0 }, 'slow' );
-            $scope.employee.error = false;
             EmployeeManagerFactory.updateEmployee( $scope.employee )
                 .then( function () {
-                        $scope.employee.success = true;
-                        $timeout( function () {
-                            $state.go( 'employeeManager' );
-                        }, 2500 );
-                    })
+                    $scope.alerts.error = false; // ok code alert
+                    $scope.alerts.message = $filter( 'i18next' )( 'employeeManager.edit.saveSuccess' ); // ok message alert
+                    $timeout( function () {
+                        $state.go( 'employeeManager' );
+                    }, 2500 );
+                })
                 .catch( function () {
-                        $scope.employee.error = true;
+                    $scope.alerts.error = true; // error code alert
+                    $scope.alerts.message = $filter( 'i18next' )( 'employeeManager.edit.saveError' ); // error message alert
                     });
         };
 

@@ -19,16 +19,14 @@
   
             UserFactory.doPasswordRecovery( $scope.recoveryForm )
                 .then( function( data ) {
-                    console.log('Great');
                     $scope.recoveryForm.success = true;
-                    
+                                        
                     $timeout( function ( data ) {
                         $state.go( 'login' );
                     }, 5000 );
 
                 })
                 .catch( function ( err ) {
-                    console.log('Shit');
                     $scope.recoveryForm.error = err;
                 });
         };
