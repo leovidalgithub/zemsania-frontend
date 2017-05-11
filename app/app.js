@@ -28,11 +28,11 @@
             'hours.employeeManager',
             'hours.calendar',
             'hours.impute',
-            'hours.approvalHours'
+            'hours.approvalHours',
+            'hours.projects'
             // 'hours.projectWorkflow',
             // 'hours.errors',
             // 'hours.reports',
-            // 'hours.projects',
             // 'hours.excelExport'
         ])
         .config( appConfig )

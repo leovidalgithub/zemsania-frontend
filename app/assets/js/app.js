@@ -28,11 +28,11 @@
             'hours.employeeManager',
             'hours.calendar',
             'hours.impute',
-            'hours.approvalHours'
+            'hours.approvalHours',
+            'hours.projects'
             // 'hours.projectWorkflow',
             // 'hours.errors',
             // 'hours.reports',
-            // 'hours.projects',
             // 'hours.excelExport'
         ])
         .config( appConfig )
@@ -208,9 +208,9 @@ var API_paths = {
     daySend: 'dailyReport/send',
     getDailyConcepts: 'dailyReport/getDailyConcepts',
 
+    projectSearch: 'project/search',
     getProjectsByUserId: 'projectUsers/getProjectsByUserID/',
     projectGetUsers: 'projectUsers/getUsersByProjectID',
-    projectSearch: 'project/search',
     projectUserSave: 'projectUsers/save',
     // getUsersBySupervisor: 'projectUsers/getUsersBySupervisor',
     projectUserUpdate: 'projectUsers/update',
@@ -748,6 +748,30 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
             //         }
             //     }
             // });
+
+;( function () {
+    'use strict';
+    angular
+        .module( 'hours.projects', [] )
+        .config( projectsConfig );
+
+    projectsConfig.$invoke = [ '$stateProvider' ];
+    function projectsConfig( $stateProvider ) {
+        $stateProvider
+            .state( 'projectAssign', {
+                url: '/projects/assign',
+                templateUrl: '/features/projects/projectAssign/projectAssign.tpl.html',
+                controller: 'ProjectAssignController',
+                data: {
+                    template: 'complex',
+                    permissions: {
+                        only: [ 'administrator', 'manager' ],
+                        redirectTo: 'dashboard'
+                    }
+                }
+            });
+    }
+}());
 
 ;( function() {
     'use strict';
@@ -1867,6 +1891,102 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
     }
 }());
 
+;( function () {
+    'use strict';
+    angular
+        .module( 'hours.projects' )
+        .factory( 'ProjectsFactory', ProjectsFactory );
+
+    ProjectsFactory.$invoke = [ '$http', '$q' ];
+    function ProjectsFactory( $http, $q ) {
+        return {
+
+            advancedProjectSearch : function ( searchText ) {
+                var dfd = $q.defer();
+                $http.post( buildURL( 'projectSearch' ), { searchText : searchText } )
+                    .then( function ( response ) {
+                        dfd.resolve( response.data );
+                    })
+                    .catch( function ( err ) {
+                        dfd.reject( err );
+                    });
+
+                return dfd.promise;
+            }
+
+            // getUsersInProjectByID: function (projectID) {
+            //     var dfd = $q.defer();
+            //     $http
+            //         .post(buildURL('projectGetUsers'), {projectId: projectID})
+            //         .then(function (response) {
+            //             if (response.data.success) {
+            //                 dfd.resolve(response.data.users);
+            //             } else {
+            //                 dfd.reject(response);
+            //             }
+            //         }, function (err) {
+            //             dfd.reject(err);
+            //         });
+
+            //     return dfd.promise;
+            // },
+            // addUserInProject: function (userProject) {
+            //     var dfd = $q.defer();
+            //     $http
+            //         .post(buildURL('projectUserSave'), userProject)
+            //         .then(function (response) {
+            //             if (response.data.success) {
+            //                 dfd.resolve(true);
+            //             } else {
+            //                 dfd.reject(response);
+            //             }
+            //         }, function (err) {
+            //             dfd.reject(err);
+            //         });
+
+            //     return dfd.promise;
+            // },
+            // updateUserInProject: function (userProject) {
+            //     var dfd = $q.defer();
+            //     $http
+            //         .put(buildURL('projectUserUpdate'), userProject)
+            //         .then(function (response) {
+            //             if (response.data.success) {
+            //                 dfd.resolve(true);
+            //             } else {
+            //                 dfd.reject(response);
+            //             }
+            //         }, function (err) {
+            //             dfd.reject(err);
+            //         });
+
+            //     return dfd.promise;
+            // },
+            // deleteUserInProject: function (userProject) {
+            //     var dfd = $q.defer();
+            //     $http
+            //         .delete(buildURL('projectUserDelete'), {
+            //             data: userProject,
+            //             headers: {
+            //                 "Content-type": "application/json; charset=utf-8"
+            //             }
+            //         })
+            //         .then(function (response) {
+            //             if (response.data.success) {
+            //                 dfd.resolve(true);
+            //             } else {
+            //                 dfd.reject(response);
+            //             }
+            //         }, function (err) {
+            //             dfd.reject(err);
+            //         });
+
+            //     return dfd.promise;
+            // }
+            
+        };
+    }
+}());
 ;( function() {
     'use strict';
     angular
@@ -2651,131 +2771,6 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
     'use strict';
     angular
         .module( 'hours.employeeManager' )
-        .controller( 'createEmployeeController', createEmployeeController );
-
-    createEmployeeController.$invoke = [ '$scope', '$state', 'data', '$filter', '$timeout', 'EmployeeManagerFactory' ];
-    function createEmployeeController( $scope, $state, data, $filter, $timeout, EmployeeManagerFactory ) {
-
-        $scope.companies = data.enterprises;
-        $scope.supervisors = data.supervisors;
-        $scope.calendars   = data.calendars;
-
-        var employee = {
-            roles: ['ROLE_USER'],
-            enabled: true,
-            password: data.defaultPassword.defaultPassword
-        };
-
-        $scope.employee = employee;
-        $scope.maxDate = new Date();
-
-        $scope.open = function () {
-            $scope.status.opened = true;
-        };
-
-        $scope.dateOptions = {
-            formatYear: 'yy',
-            startingDay: 1,
-            showWeeks: false
-        };
-
-        $scope.status = {
-            opened: false
-        };
-
-        function loadSelectsTranslate() {
-            $scope.genres = [
-                {
-                    name: $filter( 'i18next' )( 'userProfile.user.genre_male' ),
-                    slug: 'male'
-                },
-                {
-                    name: $filter( 'i18next' )( 'userProfile.user.genre_female' ),
-                    slug: 'female'
-                }
-            ];
-
-            $scope.locales = [
-                {
-                    name: 'Español',
-                    slug: 'es'
-                },
-                {
-                    name: 'English',
-                    slug: 'en'
-                },
-                {
-                    name: 'Catalán',
-                    slug: 'ca'
-                }
-            ];
-
-            $scope.roles = [
-                {
-                    name: $filter( 'i18next' )( 'role.ROLE_BACKOFFICE' ),
-                    slug: 'ROLE_BACKOFFICE'
-                },
-                {
-                    name: $filter( 'i18next' )( 'role.ROLE_DELIVERY' ),
-                    slug: 'ROLE_DELIVERY'
-                },
-                {
-                    name: $filter( 'i18next' )( 'role.ROLE_MANAGER' ),
-                    slug: 'ROLE_MANAGER'
-                },
-                {
-                    name: $filter( 'i18next' )( 'role.ROLE_USER' ),
-                    slug: 'ROLE_USER'
-                }
-            ];
-
-            employee.roles.forEach( function ( role ) {
-                $filter( 'filter' )( $scope.roles, { slug: role} )[0].active = true;
-            });
-
-        }
-
-        $timeout( function () {
-            loadSelectsTranslate();
-        }, 100 );
-
-        $scope.changeRole = function () {
-            $scope.employee.roles = [];
-            $scope.roles.forEach( function( role ) {
-                if ( role.active ) {
-                    $scope.employee.roles.push( role.slug );
-                }
-            });
-        };
-
-        $scope.signupUser = function () {
-            console.log($scope.employee);
-            $( '#page-content-wrapper #section' ).animate( { scrollTop: 0 }, 'slow' );
-            EmployeeManagerFactory.createEmployee( $scope.employee )
-                .then( function ( data ) {
-                    if( data.success ) {
-                        $scope.alerts.error = false; // ok code alert
-                        $scope.alerts.message = $filter( 'i18next' )( 'employeeManager.create.saveSuccess' ); // ok message alert
-                        $timeout( function () {
-                            $state.go( 'employeeManager' );
-                        }, 2500 );
-                    } else {
-                        $scope.alerts.error = true; // error code alert
-                        $scope.alerts.message = $filter( 'i18next' )( 'employeeManager.create.userAlreadyExists' ); // error message alert
-                    }
-                })
-                .catch( function ( err ) {
-                    $scope.alerts.error = true; // error code alert
-                    $scope.alerts.message = $filter( 'i18next' )( 'employeeManager.create.saveError' ); // error message alert
-                });
-        };
-    }
-}());
-
-( function () {
-    'use strict';
-    angular
-        .module( 'hours.employeeManager' )
         .controller( 'listEmployeeController', listEmployeeController );
 
     listEmployeeController.$invoke = [ '$scope', 'employees', 'EmployeeManagerFactory', '$timeout', '$filter', '$window' ];
@@ -3408,6 +3403,207 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
 
 }
 })();
+
+;( function () {
+    'use strict';
+    angular
+        .module( 'hours.projects' )
+        .controller( 'ProjectAssignController', ProjectAssignController );
+        // .controller( 'ModalProjectInfo',        ModalProjectInfo )
+        // .controller( 'ModalAddUserToProject',   ModalAddUserToProject )
+        // .controller( 'ModalUserInfo',           ModalUserInfo );
+
+    ProjectAssignController.$invoke = [ '$scope', 'ProjectsFactory', '$uibModal' ];
+    function ProjectAssignController( $scope, ProjectsFactory, $uibModal ) {
+
+        // $scope.openProject = null;
+        // $scope.advancedSearchVisible = false;
+        // $scope.loadingProjectUsers = null;
+
+        $scope.searchProject = function ( searchText ) {
+            ProjectsFactory.advancedProjectSearch( searchText )
+                .then( function ( data ) {
+                    $scope.projects = data.projects;
+                })
+                .catch( function ( err ) {
+
+                });
+        };
+
+        $scope.openInfo = function ( project ) {
+            var modalInstance = $uibModal.open({
+                animation: true,
+                templateUrl: '/features/projects/projectAssign/modals/modalProjectInfo.tpl.html',
+                controller: 'ModalProjectInfo',
+                resolve: {
+                    project: project
+                }
+            });
+        };
+
+        (function Init( search ) {
+            $scope.searchProject( search );
+        })('1');
+
+
+    }
+
+    // ModalProjectInfo.$invoke = ['$scope', '$uibModalInstance', 'project'];
+    // function ModalProjectInfo($scope, $uibModalInstance, project) {
+    // }
+
+    // ModalUserInfo.$invoke = ['$scope', '$uibModalInstance', 'user'];
+    // function ModalUserInfo($scope, $uibModalInstance, user) {
+    // }
+
+    // ModalAddUserToProject.$invoke = ['$scope', '$uibModalInstance', 'user', 'project'];
+    // function ModalAddUserToProject($scope, $uibModalInstance, user, project) {
+    // }
+
+}());
+;( function () {
+    'use strict';
+    angular
+        .module( 'hours.projects' )
+        .controller( 'ModalProjectInfo', ModalProjectInfo );
+
+    ModalProjectInfo.$invoke = [ '$scope', '$uibModalInstance', 'project' ];
+    function ModalProjectInfo( $scope, $uibModalInstance, project ) {
+
+        $scope.project = project;
+
+        $scope.cancel = function () {
+            $uibModalInstance.dismiss( 'cancel' );
+        };
+
+    }
+
+
+}());
+( function () {
+    'use strict';
+    angular
+        .module( 'hours.employeeManager' )
+        .controller( 'createEmployeeController', createEmployeeController );
+
+    createEmployeeController.$invoke = [ '$scope', '$state', 'data', '$filter', '$timeout', 'EmployeeManagerFactory' ];
+    function createEmployeeController( $scope, $state, data, $filter, $timeout, EmployeeManagerFactory ) {
+
+        $scope.companies = data.enterprises;
+        $scope.supervisors = data.supervisors;
+        $scope.calendars   = data.calendars;
+
+        var employee = {
+            roles: ['ROLE_USER'],
+            enabled: true,
+            password: data.defaultPassword.defaultPassword
+        };
+
+        $scope.employee = employee;
+        $scope.maxDate = new Date();
+
+        $scope.open = function () {
+            $scope.status.opened = true;
+        };
+
+        $scope.dateOptions = {
+            formatYear: 'yy',
+            startingDay: 1,
+            showWeeks: false
+        };
+
+        $scope.status = {
+            opened: false
+        };
+
+        function loadSelectsTranslate() {
+            $scope.genres = [
+                {
+                    name: $filter( 'i18next' )( 'userProfile.user.genre_male' ),
+                    slug: 'male'
+                },
+                {
+                    name: $filter( 'i18next' )( 'userProfile.user.genre_female' ),
+                    slug: 'female'
+                }
+            ];
+
+            $scope.locales = [
+                {
+                    name: 'Español',
+                    slug: 'es'
+                },
+                {
+                    name: 'English',
+                    slug: 'en'
+                },
+                {
+                    name: 'Catalán',
+                    slug: 'ca'
+                }
+            ];
+
+            $scope.roles = [
+                {
+                    name: $filter( 'i18next' )( 'role.ROLE_BACKOFFICE' ),
+                    slug: 'ROLE_BACKOFFICE'
+                },
+                {
+                    name: $filter( 'i18next' )( 'role.ROLE_DELIVERY' ),
+                    slug: 'ROLE_DELIVERY'
+                },
+                {
+                    name: $filter( 'i18next' )( 'role.ROLE_MANAGER' ),
+                    slug: 'ROLE_MANAGER'
+                },
+                {
+                    name: $filter( 'i18next' )( 'role.ROLE_USER' ),
+                    slug: 'ROLE_USER'
+                }
+            ];
+
+            employee.roles.forEach( function ( role ) {
+                $filter( 'filter' )( $scope.roles, { slug: role} )[0].active = true;
+            });
+
+        }
+
+        $timeout( function () {
+            loadSelectsTranslate();
+        }, 100 );
+
+        $scope.changeRole = function () {
+            $scope.employee.roles = [];
+            $scope.roles.forEach( function( role ) {
+                if ( role.active ) {
+                    $scope.employee.roles.push( role.slug );
+                }
+            });
+        };
+
+        $scope.signupUser = function () {
+            console.log($scope.employee);
+            $( '#page-content-wrapper #section' ).animate( { scrollTop: 0 }, 'slow' );
+            EmployeeManagerFactory.createEmployee( $scope.employee )
+                .then( function ( data ) {
+                    if( data.success ) {
+                        $scope.alerts.error = false; // ok code alert
+                        $scope.alerts.message = $filter( 'i18next' )( 'employeeManager.create.saveSuccess' ); // ok message alert
+                        $timeout( function () {
+                            $state.go( 'employeeManager' );
+                        }, 2500 );
+                    } else {
+                        $scope.alerts.error = true; // error code alert
+                        $scope.alerts.message = $filter( 'i18next' )( 'employeeManager.create.userAlreadyExists' ); // error message alert
+                    }
+                })
+                .catch( function ( err ) {
+                    $scope.alerts.error = true; // error code alert
+                    $scope.alerts.message = $filter( 'i18next' )( 'employeeManager.create.saveError' ); // error message alert
+                });
+        };
+    }
+}());
 
 ;( function () {
     'use strict';

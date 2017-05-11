@@ -143,7 +143,9 @@
         "comments": "Comentarios",
         "next": "Siguiente",
         "previous": "Anterior",
-        "from": "De:"
+        "from": "De:",
+        "enabled": "Activo",
+        "disabled": "No Activo"
     },
     "employeeManager": {
         "list": {
@@ -344,12 +346,15 @@
     },
     "projects": {
         "projectAssign": {
-            "title": "Asignar proyectos a empleados",
+            "title": "Asignar proyectos",
             "userInfo": "Edición del empleado en el proyecto",
             "addUserToProject": "Agregar empleado al proyecto",
             "projectGeneralInfo": "Información del proyecto",
             "selectProjectFirst": "Ningún proyecto seleccionado",
             "projectName": "Nombre del proyecto",
+            "description": "Descripción",
+            "alias": "Alias",
+            "searchProject": "Nombre, descripción, código...",
             "activeUsers": "Empleados asignados",
             "removeUserFromProject": "¿Eliminar empleado de este proyecto?",
             "searchResultUsers": "Empleados encontrados",

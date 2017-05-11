@@ -1,0 +1,30 @@
+
+<div class="simple-input no-margin">
+    <form class="form-inline form-partial" ng-submit="searchProject(searchText)">
+        <div class="input-group">
+            <div>
+                <input ng-model="searchText" type="text" class="form-control" autofocus 
+                       placeholder="{{'projects.projectAssign.searchProject' | i18next}}" />
+            </div>
+        </div>
+        <div class="buttons">
+            <button type="submit" class="btn btn-primary">{{'actions.search' | i18next}}</button>
+        </div>
+    </form>
+    <div ng-show="projects">
+        <ul class="list-group">
+            <li ng-repeat="project in projects" class="list-group-item">
+                <div class="pull-left">
+                    <i class="fa"
+                       ng-class="{true : 'fa-folder-open', false : 'fa-folder' }[openProject._id === project._id]"></i>
+                    {{project.name}}
+                </div>
+                <div class="pull-right">
+                    <button class="btn btn-warning" ng-click="openInfo(project)" 
+                            title="{{'projects.projectAssign.projectGeneralInfo' | i18next}}"><i class="fa fa-info"></i></button>
+                    <button class="btn btn-success" ng-click="openThisProject(project)"><i class="fa fa-pencil"></i></button>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>

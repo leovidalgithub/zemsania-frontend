@@ -2,6 +2,7 @@
     <h3>{{'auth.login.login' | i18next}}</h3>
 
     <form name="form" ng-submit="login()" role="form" class="set-padding-t-xl">
+
         <div class="form-group" ng-class="{'has-error': form.username.$dirty && form.username.$error.required}">
             <input type="email" name="username" placeholder="{{'auth.login.username' | i18next}}" class="form-control" 
                     ng-model="loginForm.username" required />
