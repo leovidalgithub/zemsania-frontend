@@ -13,6 +13,10 @@
                 var dfd = $q.defer();
                 $http.get( buildURL( 'getProjectsByUserId' ) + userID )
                     .then( function ( response ) {
+                        var projects = response.data.projects;
+                        projects.forEach( function( project ) { // we show 'code' + 'name' as nameToShow
+                            project.nameToShow = project.code + ' - ' + project.name;
+                        });
                         dfd.resolve( response.data.projects );
                     })
                     .catch( function ( err ) {

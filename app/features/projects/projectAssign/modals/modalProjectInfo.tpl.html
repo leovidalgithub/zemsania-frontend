@@ -5,24 +5,36 @@
     <div class="modal-body">
         <table class="table table-striped">
             <tr>
-                <td>{{'projects.projectAssign.projectName' | i18next}}</td>
+                <td class="tittle">{{'projects.projectAssign.code' | i18next}}</td>
+                <td>{{project.code}}</td>
+            </tr>
+            <tr>
+                <td class="tittle">{{'projects.projectAssign.projectName' | i18next}}</td>
                 <td>{{project.name}}</td>
             </tr>
             <tr>
-                <td>{{'projects.projectAssign.description' | i18next}}</td>
+                <td class="tittle">{{'projects.projectAssign.description' | i18next}}</td>
                 <td>{{project.description}}</td>
             </tr>
             <tr>
-                <td>{{'projects.projectAssign.alias' | i18next}}</td>
+                <td class="tittle">{{'projects.projectAssign.alias' | i18next}}</td>
                 <td>{{project.alias}}</td>
             </tr>
             <tr>
-                <td>{{'words.enabled' | i18next}}</td>
+                <td class="tittle">{{'words.enabled' | i18next}}</td>
                 <td>{{project.enabled ? ('words.yes' | i18next) : ('words.no' | i18next)}}</td>
             </tr>
             <tr>
-                <td>{{'projects.projectAssign.initDate' | i18next}}</td>
+                <td class="tittle">{{'projects.projectAssign.initDate' | i18next}}</td>
                 <td>{{project.initDate | date : 'dd/MMMM/yyyy'}}</td>
+            </tr>
+            <tr>
+                <td class="tittle">{{'projects.projectAssign.idOrigen' | i18next}}</td>
+                <td>{{project.idOrigen}}</td>
+            </tr>
+            <tr>
+                <td class="tittle">{{'projects.projectAssign.origenTipo' | i18next}}</td>
+                <td>{{project.origenTipo}}</td>
             </tr>
         </table>
     </div>

@@ -1,16 +1,25 @@
 
 <div class="simple-input no-margin">
+    
+    <!-- HEADER STUFFS: FIND TEXT, SEARCH BUTTON -->
     <form class="form-inline form-partial" ng-submit="searchProject(searchText)">
         <div class="input-group">
             <div>
-                <input ng-model="searchText" type="text" class="form-control" autofocus 
-                       placeholder="{{'projects.projectAssign.searchProject' | i18next}}" />
+                <input id="searchInput" ng-model="searchText" type="text" class="form-control" 
+                        placeholder="{{'projects.projectAssign.searchProject' | i18next}}" autocomplete="off" />
             </div>
         </div>
         <div class="buttons">
             <button type="submit" class="btn btn-primary">{{'actions.search' | i18next}}</button>
         </div>
     </form>
+    
+    <!-- PROJECTS WAIT-SPINNER ANIMATED ICON --> <!-- fa fa-spinner fa-pulse fa-3x fa-fw -->
+    <div ng-show="spinners.projects" class="waitSpinner">
+        <i class="fa fa-refresh fa-spin"></i><span>&nbsp;&nbsp;{{'actions.loading' | i18next}}</span>
+    </div>
+
+    <!-- PROJECTS LIST -->
     <div ng-show="projects">
         <ul class="list-group">
             <li ng-repeat="project in projects" class="list-group-item">
@@ -28,3 +37,4 @@
         </ul>
     </div>
 </div>
+

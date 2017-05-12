@@ -4,19 +4,8 @@
         .module( 'hours.impute' )
         .controller( 'imputeHoursController', imputeHoursController );
 
-    imputeHoursController.$invoke = [ '$scope', 'UserFactory', 'imputeHoursFactory', 'CalendarFactory', '$q', 'userProjects', '$uibModal', '$rootScope', '$state', '$timeout', '$filter' ];
-    function imputeHoursController( $scope, UserFactory, imputeHoursFactory, CalendarFactory, $q, userProjects, $uibModal, $rootScope, $state, $timeout, $filter ) {
-
-// var issueDate = [];
-// var obj = { month : 4, year : 2017 };
-// var obj3 = { month : 4, year : 2017 };
-// // console.log( obj );
-// if( issueDate.indexOf( obj ) == -1 ) issueDate.push( obj );
-// var obj2 = { month : 4, year : 2017 };
-// // console.log( obj2 );
-// if( issueDate.indexOf( obj2 ) == -1 ) issueDate.push( obj2 );
-// console.log(issueDate.indexOf( obj3 ));
-// console.log(issueDate);
+    imputeHoursController.$invoke = [ '$scope', 'UserFactory', 'imputeHoursFactory', 'userProjects', 'CalendarFactory', '$q', '$uibModal', '$rootScope', '$state', '$timeout', '$filter' ];
+    function imputeHoursController( $scope, UserFactory, imputeHoursFactory, userProjects, CalendarFactory, $q, $uibModal, $rootScope, $state, $timeout, $filter ) {
 
         var currentDate      = new Date();
         var currentMonth     = currentDate.getMonth();
@@ -41,11 +30,13 @@
         $scope.subtypesModel = $scope.imputeTypes[$scope.typesModel][0];
 
         ( function Init() {
-            // USER PROJECTS
+            // VERIFIES USER-PROJECTS LENGTH
             if( !userProjects.length ) { // no userProjects available
                 // error: NO userProjects available message alert
-                $scope.alerts.error = true; // error code alert
-                $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorNoProjects' ); // error message alert
+                $timeout( function() {
+                    $scope.alerts.error = true; // error code alert
+                    $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorNoProjects' ); // error message alert
+                }, 1000 );
             } else { // userProjects OK cotinues to getData()
                 $scope.userProjects = userProjects;
                 $scope.projectModel = $scope.userProjects[0];
@@ -270,11 +261,6 @@
 
             myPromises.push( imputeHoursFactory.setAllTimesheets( data ) );
             if( send ) myPromises.push( imputeHoursFactory.insertNewNotification( issueDate ) );
-
-
-// console.log(generalDataModel);
-
-
 
             Promise.all( myPromises )
                 .then( function( data ) {

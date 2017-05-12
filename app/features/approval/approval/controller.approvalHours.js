@@ -7,7 +7,7 @@
     approvalHoursController.$invoke = [ '$scope', '$rootScope', 'approvalHoursFactory', '$timeout', 'imputeHoursFactory', '$filter' ];
     function approvalHoursController( $scope, $rootScope, approvalHoursFactory, $timeout, imputeHoursFactory, $filter ) {
 
-        (function init() {
+        ( function init() {
             var currentDate;
             if( $rootScope.notification ) { // if it comes from notification it takes the date from that notification
                 currentDate = new Date( $rootScope.notification.issueDate.year, $rootScope.notification.issueDate.month, 1 );
@@ -41,6 +41,8 @@
                     if( $rootScope.notification ) showNotificationData();
                 })
                 .catch( function ( err ) {
+                    console.log('err');
+                    console.log(err);
                     $scope.alerts.error = true; // error code alert
                     $scope.alerts.message = $filter( 'i18next' )( 'approvalHours.errorLoading' ); // error message alert
                 });

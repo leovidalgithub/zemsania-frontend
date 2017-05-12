@@ -1008,6 +1008,7 @@
 #imputeHours #section #imputeOptions select {
   font-size: 17px;
   font-family: monospace;
+  width: 100%;
 }
 #imputeHours #section #imputeOptions button {
   margin-right: 4px;
@@ -1444,6 +1445,37 @@
   text-align: right;
   font-size: 15px;
   margin-top: -6px;
+}
+
+#projectAssign #section .mainBoxes {
+  max-height: 650px;
+  overflow-y: auto;
+}
+#projectAssign #section .waitSpinner {
+  text-align: center;
+  margin-top: 25px;
+}
+#projectAssign #section .waitSpinner i {
+  font-size: 24px;
+}
+#projectAssign #section .waitSpinner span {
+  font-size: 18px;
+}
+
+#modal-projectInfo .modal-title {
+  font-family: monospace;
+}
+#modal-projectInfo .modal-body {
+  margin-top: 10px;
+  padding: 0 20px;
+}
+#modal-projectInfo .modal-body .tittle {
+  font-family: monospace;
+  font-size: 17px;
+  font-weight: bold;
+}
+#modal-projectInfo .modal-footer {
+  padding: 0 20px 20px 20px;
 }
 
 html, body, body > div, div[ui-view] {

@@ -64,7 +64,7 @@
             function getProjectName( projectId ) {
                 return $scope.userProjects.find( function( project ) {
                     return project._id == projectId;
-                }).name;
+                }).nameToShow;
             }
 
             // calculates dailyWork according to dayType milliseconds and imputed-hours
@@ -91,7 +91,7 @@
                     projectsInfoTemp[ project._id ].dailyWork   = 0;
                     projectsInfoTemp[ project._id ].totalGuards = 0;
                     projectsInfoTemp[ project._id ].totalHours  = 0;
-                    projectsInfoTemp[ project._id ].projectName = project.name;
+                    projectsInfoTemp[ project._id ].projectName = project.nameToShow;
                 }
             });
             return projectsInfoTemp;

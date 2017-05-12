@@ -1,0 +1,49 @@
+#projectAssign {
+
+	#header {
+		#headerContent {			
+		}
+	}
+
+	#section {
+
+		.mainBoxes {
+			max-height: 650px;
+			overflow-y: auto;
+		}
+
+		.waitSpinner {
+			text-align: center;
+			margin-top: 25px;
+			i {
+				font-size: 24px;
+			}
+			span {
+				font-size: 18px;
+			}
+		}
+	}
+}
+
+// MODALS
+// MODAL PROJECT INFO
+#modal-projectInfo {
+	.modal-title {
+		font-family: monospace;		
+	}
+	.modal-body {
+		margin-top: 10px;
+		padding: 0 20px;
+		.tittle {
+			font-family: monospace;
+			font-size: 17px;
+			font-weight: bold;
+		}
+	}
+	.modal-footer {
+		padding: 0 20px 20px 20px;
+	}
+}
+	
+
+
