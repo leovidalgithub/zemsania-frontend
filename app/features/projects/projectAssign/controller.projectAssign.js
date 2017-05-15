@@ -23,18 +23,14 @@
         };
 
         $scope.searchProject = function ( searchText ) {
-            $scope.spinners.projects = true;
-            ProjectsFactory.advancedProjectSearch( searchText )
-                .then( function ( data ) {
-                    $scope.projects = data.projects;
-                })
-                .catch( function ( err ) {
-
-                })
-                .finally( function() {
-                    $scope.spinners.projects = false;
-                });
+            $scope.$broadcast( 'toSearchEvent', { searchText : searchText } );
         };
+
+        // $timeout( function() {
+        //     $scope.$broadcast( 'toSearchEvent', { searchText : '1' } );            
+        // }, 600 );
+
+
 
         $scope.openInfo = function ( project ) {
             var modalInstance = $uibModal.open({

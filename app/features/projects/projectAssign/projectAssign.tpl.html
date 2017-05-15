@@ -18,25 +18,38 @@
         <!-- ALERTS MESSAGES -->
         <alert-message error="alerts.error" msg="alerts.message"></alert-message>
 
-        <div class="row">
-            <div class="mainBoxes col-md-6">
-                <div class="box-shadow p20"
-                     ng-include="'/features/projects/projectAssign/partials/projectPartial.tpl.html'">
+        <!-- ADVANCED SEARCH -->
+        <div class="advanced-search">
+            <h4>{{'employeeManager.list.advancedSearch' | i18next}}</h4>
+            <form class="form-inline simple-input" ng-submit="searchProject(searchText)">       
+                <div class="col-md-8 form-elements">
+                    <div style="width: 100%;" class="form-group">
+                        <input id="searchInput" ng-model="searchText" type="text" class="form-control" 
+                                placeholder="{{'projects.projectAssign.searchPlaceholder' | i18next}}" autocomplete="off" />
+                    </div>
                 </div>
-            </div>
+                <div class="col-md-4 form-actions">
+                    <button type="reset" class="btn btn-warning">{{'actions.reset' | i18next}}</button>
+                    <button type="submit" class="btn btn-primary">{{'actions.toSearch' | i18next}}</button>
+                </div>
+            </form>
+        </div>
 
-            <div class="mainBoxes col-md-6">
-                <div class="box-shadow p20"
-                     ng-include="'/features/projects/projectAssign/partials/userPartial.tpl.html'">
+        <div id="mainContent">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mainBoxes box-shadow p20"
+                         ng-include="'/features/projects/projectAssign/partials/projectPartial.tpl.html'">
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="mainBoxes box-shadow p20"
+                         ng-include="'/features/projects/projectAssign/partials/userPartial.tpl.html'">
+                    </div>
                 </div>
             </div>
         </div>
-
-<!-- <div class="no-project">
-    <h2><i style="font-size: 24px;" class="fa fa-refresh fa-spin"></i> {{'actions.loading' | i18next}}</h2>
-    <h2><i style="font-size: 24px;" class="fa fa-spinner fa-pulse fa-3x fa-fw"></i> {{'actions.loading' | i18next}}</h2>
-</div>
- -->
 
     </section>
 

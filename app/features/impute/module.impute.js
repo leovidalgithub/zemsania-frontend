@@ -19,8 +19,9 @@
                     }
                 },
                 resolve : {
-                    userProjects : [ 'imputeHoursFactory', function( imputeHoursFactory ){
-                        return imputeHoursFactory.getProjectsByUserId();
+                    userProjects : [ 'ProjectsFactory', 'UserFactory', function( ProjectsFactory, UserFactory ) {
+                        var userID = UserFactory.getUserID();
+                        return ProjectsFactory.getProjectsById( userID );
                     }]
                 }
             });

@@ -6,20 +6,28 @@
 	}
 
 	#section {
+		#mainContent {
+			clear: both;
 
-		.mainBoxes {
-			max-height: 650px;
-			overflow-y: auto;
-		}
-
-		.waitSpinner {
-			text-align: center;
-			margin-top: 25px;
-			i {
-				font-size: 24px;
+			.contentTitle {
+				font-family: monospace;
+				font-size: 22px;
+				text-align: center;
 			}
-			span {
-				font-size: 18px;
+			.mainBoxes {
+				min-height: 300px;
+				max-height: 550px;
+				overflow-y: auto;
+			}
+			.waitSpinner {
+				text-align: center;
+				margin-top: 25px;
+				i {
+					font-size: 24px;
+				}
+				span {
+					font-size: 18px;
+				}
 			}
 		}
 	}

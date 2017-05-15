@@ -209,7 +209,8 @@ var API_paths = {
     getDailyConcepts: 'dailyReport/getDailyConcepts',
 
     projectSearch: 'project/search',
-    getProjectsByUserId: 'projectUsers/getProjectsByUserID/',
+    getProjectsById: 'projectUsers/getProjectsById/',
+    getUsersById: 'projectUsers/getUsersById/',
     projectGetUsers: 'projectUsers/getUsersByProjectID',
     projectUserSave: 'projectUsers/save',
     // getUsersBySupervisor: 'projectUsers/getUsersBySupervisor',
@@ -669,8 +670,9 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
                     }
                 },
                 resolve : {
-                    userProjects : [ 'imputeHoursFactory', function( imputeHoursFactory ){
-                        return imputeHoursFactory.getProjectsByUserId();
+                    userProjects : [ 'ProjectsFactory', 'UserFactory', function( ProjectsFactory, UserFactory ) {
+                        var userID = UserFactory.getUserID();
+                        return ProjectsFactory.getProjectsById( userID );
                     }]
                 }
             });
@@ -1559,7 +1561,7 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
                     .then( function ( response ) {
                         if ( response.data.success ) {
                             var employees = response.data.users;
-                            createFullName( employees );
+                            prepareData( employees );
                             dfd.resolve( employees );
                         } else {
                             dfd.reject( response );
@@ -1575,7 +1577,7 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
                 $http.post( buildURL( 'advancedUserSearch' ), query)
                     .then( function ( response ) {
                         var employees = response.data.users;
-                        createFullName( employees );
+                        prepareData( employees );
                         dfd.resolve( employees );
                     })
                     .catch( function ( err ) {
@@ -1677,9 +1679,15 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
             }
         };
 
-        function createFullName( employees ) {
-            employees.forEach( function( employee ) { // create fullName field
+        function prepareData( employees ) {
+            employees.forEach( function( employee ) {
+                // create fullName field
                 employee.fullName = employee.name + ' ' + employee.surname;
+                // create isManager field
+                var isManager = employee.roles.some( function( role ) {
+                    return role == 'ROLE_MANAGER';
+                });
+                employee.isManager = isManager;
             });
         }
     }
@@ -1729,23 +1737,6 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
     imputeHoursFactory.$invoke = [ '$http', '$q', 'UserFactory', '$filter' ];
     function imputeHoursFactory( $http, $q, UserFactory, $filter ) {
         return {
-
-            getProjectsByUserId: function () { // LEO WAS HERE
-                var userID = UserFactory.getUserID();
-                var dfd = $q.defer();
-                $http.get( buildURL( 'getProjectsByUserId' ) + userID )
-                    .then( function ( response ) {
-                        var projects = response.data.projects;
-                        projects.forEach( function( project ) { // we show 'code' + 'name' as nameToShow
-                            project.nameToShow = project.code + ' - ' + project.name;
-                        });
-                        dfd.resolve( response.data.projects );
-                    })
-                    .catch( function ( err ) {
-                        dfd.reject( err );
-                    });
-                return dfd.promise;
-            },
 
             getTimesheets: function ( year, month, userProjects ) { // LEO WAS HERE
                 var userID = UserFactory.getUserID();
@@ -1901,8 +1892,8 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
         .module( 'hours.projects' )
         .factory( 'ProjectsFactory', ProjectsFactory );
 
-    ProjectsFactory.$invoke = [ '$http', '$q' ];
-    function ProjectsFactory( $http, $q ) {
+    ProjectsFactory.$invoke = [ '$http', '$q', 'UserFactory' ];
+    function ProjectsFactory( $http, $q, UserFactory ) {
         return {
 
             advancedProjectSearch : function ( searchText ) {
@@ -1914,9 +1905,44 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
                     .catch( function ( err ) {
                         dfd.reject( err );
                     });
-
                 return dfd.promise;
-            }
+            },
+
+            getProjectsById: function ( userID ) { // LEO WAS HERE
+                var dfd = $q.defer();
+                $http.get( buildURL( 'getProjectsById' ) + userID )
+                    .then( function ( response ) {
+                        console.log( '******** PROJECTS ********' );
+                        console.log(response.data.projects);
+                        var projects = response.data.projects;
+                        projects.forEach( function( project ) { // compound name for impute-hours view
+                            project.nameToShow = project.code + ' - ' + project.name;
+                        });
+                        dfd.resolve( response.data.projects );
+                    })
+                    .catch( function ( err ) {
+                        dfd.reject( err );
+                    });
+                return dfd.promise;
+            },
+
+            getUsersById: function ( projectID ) { // LEO WAS HERE                
+                var dfd = $q.defer();
+                $http.get( buildURL( 'getUsersById' ) + projectID )
+                    .then( function ( response ) {
+                        console.log( '******** USERS ********' );
+                        console.log(response.data.users);
+                        dfd.resolve( response.data );
+                    })
+                    .catch( function ( err ) {
+                        dfd.reject( err );
+                    });
+                return dfd.promise;
+            },
+
+
+
+
 
             // getUsersInProjectByID: function (projectID) {
             //     var dfd = $q.defer();
@@ -3546,18 +3572,14 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
         };
 
         $scope.searchProject = function ( searchText ) {
-            $scope.spinners.projects = true;
-            ProjectsFactory.advancedProjectSearch( searchText )
-                .then( function ( data ) {
-                    $scope.projects = data.projects;
-                })
-                .catch( function ( err ) {
-
-                })
-                .finally( function() {
-                    $scope.spinners.projects = false;
-                });
+            $scope.$broadcast( 'toSearchEvent', { searchText : searchText } );
         };
+
+        // $timeout( function() {
+        //     $scope.$broadcast( 'toSearchEvent', { searchText : '1' } );            
+        // }, 600 );
+
+
 
         $scope.openInfo = function ( project ) {
             var modalInstance = $uibModal.open({
@@ -3876,6 +3898,83 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
 
     }
 
+
+}());
+;( function () {
+    'use strict';
+    angular
+        .module( 'hours.projects' )
+        .controller( 'ProjectAssignProjectController', ProjectAssignProjectController );
+
+    ProjectAssignProjectController.$invoke = [ '$scope', 'ProjectsFactory', '$uibModal', '$timeout' ];
+    function ProjectAssignProjectController( $scope, ProjectsFactory, $uibModal, $timeout ) {
+
+        $scope.$on( 'toSearchEvent', function( event, data ) {
+
+            $scope.spinners.projects = true;
+            ProjectsFactory.advancedProjectSearch( data.searchText )
+                .then( function ( data ) {
+                    $scope.projects = data.projects;
+                })
+                .catch( function ( err ) {
+
+                })
+                .finally( function() {
+                    $scope.spinners.projects = false;
+                });
+        });
+
+        $scope.activeThisProject = function( projectId ) {
+            ProjectsFactory.getUsersById( projectId )
+                .then( function ( data ) {
+                })
+                .catch( function ( err ) {
+                })
+                .finally( function() {
+                });
+        };
+
+
+
+
+    }
+
+}());
+;( function () {
+    'use strict';
+    angular
+        .module( 'hours.projects' )
+        .controller( 'ProjectAssignUsersController', ProjectAssignUsersController );
+
+    ProjectAssignUsersController.$invoke = [ '$scope', 'EmployeeManagerFactory', 'ProjectsFactory' ];
+    function ProjectAssignUsersController( $scope, EmployeeManagerFactory, ProjectsFactory ) {
+
+        $scope.$on( 'toSearchEvent', function( event, data ) {
+            $scope.spinners.users = true;
+
+            EmployeeManagerFactory.advancedUserSearch( { textToFind : data.searchText } )
+                .then( function ( data ) {
+                    $scope.employees = data;
+                })
+                .catch( function ( err ) {
+                })
+                .finally( function() {
+                    $scope.spinners.users = false;
+                });
+        });
+
+        $scope.activeThisUser = function( userId ) {
+            ProjectsFactory.getProjectsById( userId )
+                .then( function ( data ) {
+                })
+                .catch( function ( err ) {
+                })
+                .finally( function() {
+                });
+        };
+
+
+    }
 
 }());
 var TAU = 2 * Math.PI;

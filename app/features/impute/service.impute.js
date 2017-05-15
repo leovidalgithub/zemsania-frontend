@@ -8,23 +8,6 @@
     function imputeHoursFactory( $http, $q, UserFactory, $filter ) {
         return {
 
-            getProjectsByUserId: function () { // LEO WAS HERE
-                var userID = UserFactory.getUserID();
-                var dfd = $q.defer();
-                $http.get( buildURL( 'getProjectsByUserId' ) + userID )
-                    .then( function ( response ) {
-                        var projects = response.data.projects;
-                        projects.forEach( function( project ) { // we show 'code' + 'name' as nameToShow
-                            project.nameToShow = project.code + ' - ' + project.name;
-                        });
-                        dfd.resolve( response.data.projects );
-                    })
-                    .catch( function ( err ) {
-                        dfd.reject( err );
-                    });
-                return dfd.promise;
-            },
-
             getTimesheets: function ( year, month, userProjects ) { // LEO WAS HERE
                 var userID = UserFactory.getUserID();
                 var dfd    = $q.defer();

@@ -14,7 +14,7 @@
                     .then( function ( response ) {
                         if ( response.data.success ) {
                             var employees = response.data.users;
-                            createFullName( employees );
+                            prepareData( employees );
                             dfd.resolve( employees );
                         } else {
                             dfd.reject( response );
@@ -30,7 +30,7 @@
                 $http.post( buildURL( 'advancedUserSearch' ), query)
                     .then( function ( response ) {
                         var employees = response.data.users;
-                        createFullName( employees );
+                        prepareData( employees );
                         dfd.resolve( employees );
                     })
                     .catch( function ( err ) {
@@ -132,9 +132,15 @@
             }
         };
 
-        function createFullName( employees ) {
-            employees.forEach( function( employee ) { // create fullName field
+        function prepareData( employees ) {
+            employees.forEach( function( employee ) {
+                // create fullName field
                 employee.fullName = employee.name + ' ' + employee.surname;
+                // create isManager field
+                var isManager = employee.roles.some( function( role ) {
+                    return role == 'ROLE_MANAGER';
+                });
+                employee.isManager = isManager;
             });
         }
     }

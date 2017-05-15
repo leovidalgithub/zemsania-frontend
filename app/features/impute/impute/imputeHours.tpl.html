@@ -118,9 +118,9 @@
                         </div>
 
                         <div class="myFooter" ng-show="showDaysObj.currentMonth==day.thisMonth">
-                            <button ng-disabled="day.status=='approved' || day.status=='sent'" class="btn btn-xs btn-warning" title="{{'calendar.imputeHours.expenses' | i18next}}">
+                            <button ng-disabled="day.status=='approved' || day.status=='sent'" class="btn btn-xs btn-warning" title="{{'calendar.imputeHours.expenses' | i18next}}" tabindex="-1">
                                 <i class="fa fa-eur"></i></button>
-                            <button ng-disabled="day.status=='approved' || day.status=='sent'" class="btn btn-xs btn-danger" title="{{'words.comments' | i18next}}">
+                            <button ng-disabled="day.status=='approved' || day.status=='sent'" class="btn btn-xs btn-danger" title="{{'words.comments' | i18next}}" tabindex="-1">
                                 <i class="fa fa-comment"></i></button>
                         </div>
                     </div>

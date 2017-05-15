@@ -1447,18 +1447,27 @@
   margin-top: -6px;
 }
 
-#projectAssign #section .mainBoxes {
-  max-height: 650px;
+#projectAssign #section #mainContent {
+  clear: both;
+}
+#projectAssign #section #mainContent .contentTitle {
+  font-family: monospace;
+  font-size: 22px;
+  text-align: center;
+}
+#projectAssign #section #mainContent .mainBoxes {
+  min-height: 300px;
+  max-height: 550px;
   overflow-y: auto;
 }
-#projectAssign #section .waitSpinner {
+#projectAssign #section #mainContent .waitSpinner {
   text-align: center;
   margin-top: 25px;
 }
-#projectAssign #section .waitSpinner i {
+#projectAssign #section #mainContent .waitSpinner i {
   font-size: 24px;
 }
-#projectAssign #section .waitSpinner span {
+#projectAssign #section #mainContent .waitSpinner span {
   font-size: 18px;
 }
 

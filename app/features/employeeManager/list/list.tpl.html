@@ -24,13 +24,13 @@
         <div class="advanced-search" ng-show="showAdvancedSearch">
             <h4>{{'employeeManager.list.advancedSearch' | i18next}}</h4>
             <form class="form-inline simple-input" ng-submit="avancedSearch()">       
-                <div class="col-md-12 form-elements">
-                    <div class="form-group col-xs-12 col-md-7">
+                <div class="col-md-8 form-elements">
+                    <div style="width: 100%;" class="form-group">
                         <input id="searchInput" type="text" class="form-control"
                                placeholder="{{'actions.findingString' | i18next}}" ng-model="search.textToFind" />
                     </div>
                 </div>
-                <div class="form-actions">
+                <div class="col-md-4 form-actions">
                     <button type="reset" class="btn btn-warning">{{'actions.reset' | i18next}}</button>
                     <button type="submit" class="btn btn-primary">{{'actions.toSearch' | i18next}}</button>
                 </div>
@@ -45,7 +45,11 @@
                     </div>
                     <tbody>
                         <tr ng-class="{'userDisabled':!item.enabled}">
-                            <td at-implicit at-sortable at-initial-sorting="asc" at-attribute="fullName" at-title="{{'userProfile.user.name' | i18next}}"></td>
+                            <td at-implicit at-sortable at-initial-sorting="asc" at-attribute="fullName" 
+                                at-title="{{'userProfile.user.name' | i18next}}"></td>
+                            <!-- PERSONAL MANAGER ICON -->
+                            <td><i ng-show="item.isManager" style="font-size: 18px;color: blue;" 
+                                   title="{{'userProfile.user.superior' | i18next}}" class="fa fa-hand-o-left"></i></td>
                             <td at-implicit at-sortable at-attribute="cp" at-title="CP"></td>
                             <td at-implicit at-sortable at-attribute="nif" at-title="{{'userProfile.user.nif' | i18next}}"></td>
                             <td at-implicit at-sortable at-attribute="username" at-title="{{'userProfile.user.email' | i18next}}"></td>
@@ -59,10 +63,14 @@
             </div>
 
             <div ng-hide="viewSet">
-                <div id="itemsList" ng-repeat="(key, value) in employees">
+                <div id="itemsList" ng-repeat="(key, value) in employees | orderBy: 'fullName'">
                     <div class="usersList">
                         <ul>
-                            <li><strong>{{value.fullName}}</strong></li>
+                            <li><strong>{{value.fullName}}</strong>
+                                <!-- PERSONAL MANAGER ICON -->
+                                <i ng-show="value.isManager" style="font-size: 18px;color: blue;" 
+                                   title="{{'userProfile.user.superior' | i18next}}" class="fa fa-hand-o-left"></i>
+                            </li>
                             <li>CP {{value.cp}}</li>
                             <li>NIF {{value.nif}}</li>
                             <li>{{value.username}}</li>

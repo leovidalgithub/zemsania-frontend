@@ -27,7 +27,8 @@ var API_paths = {
     getDailyConcepts: 'dailyReport/getDailyConcepts',
 
     projectSearch: 'project/search',
-    getProjectsByUserId: 'projectUsers/getProjectsByUserID/',
+    getProjectsById: 'projectUsers/getProjectsById/',
+    getUsersById: 'projectUsers/getUsersById/',
     projectGetUsers: 'projectUsers/getUsersByProjectID',
     projectUserSave: 'projectUsers/save',
     // getUsersBySupervisor: 'projectUsers/getUsersBySupervisor',

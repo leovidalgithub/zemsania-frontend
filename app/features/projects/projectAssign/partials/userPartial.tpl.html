@@ -1,84 +1,31 @@
-<h1>{{var}}</h1>
-<div ng-show="openProject && !loadingProjectUsers" class="simple-input no-margin users-project">
-    <h1>{{openProject.projectName}}</h1>
+<div ng-controller="ProjectAssignUsersController">
 
-    <div class="active-users">
-        <div class="header-toggle">
-            {{'projects.projectAssign.activeUsers' | i18next}} ({{usersInProject.length}})
-            <div class="pull-right" ng-click="openUsers = !openUsers" ng-init="openUsers = true">
-                <i class="fa" ng-class="{false: 'fa-angle-down', true : 'fa-angle-up'}[openUsers]"></i>
-            </div>
+    <div class="simple-input no-margin">
+        <p class="contentTitle">{{'words.users' | i18next}}</p>
+        
+         <!-- USER WAIT-SPINNER ANIMATED ICON -->
+        <div ng-show="spinners.users" class="waitSpinner">
+            <i class="fa fa-refresh fa-spin"></i><span>&nbsp;&nbsp;{{'actions.loading' | i18next}}</span>
         </div>
-        <div class="collapse-list-group" ng-show="openUsers">
+
+        <!-- PROJECTS LIST -->
+        <div ng-show="employees">
             <ul class="list-group">
-                <li class="list-group-item list-group-input no-padding">
-                    <div class="input-group">
-                        <div>
-                            <div class="input-group-addon"><i class="fa fa-search"></i></div>
-                            <input ng-model="userFilter" class="form-control" placeholder="{{'user.email' | i18next}}">
-                        </div>
-                    </div>
-                </li>
-                <li ng-repeat="user in usersInProject | filter: {username: userFilter}" class="list-group-item">
+                <li ng-repeat="employee in employees" class="list-group-item">
                     <div class="pull-left">
                         <i class="fa fa-user"></i>
-                        {{::user.username}}
+                        {{employee.fullName}}
                     </div>
                     <div class="pull-right">
-                        <button class="btn btn-success" ng-click="openUserOptions(user)"><i class="fa fa-pencil"></i>
-                        </button>
+
+                        <button class="btn btn-danger" ng-click="activeThisUser(employee._id)"><i class="fa fa-filter"></i></button>
+                    
+                        <button class="btn btn-warning" ng-click="openInfo(project)" 
+                                title="{{'projects.projectAssign.projectGeneralInfo' | i18next}}"><i class="fa fa-info"></i></button>
+                        <button class="btn btn-success" ng-click="openThisProject(project)"><i class="fa fa-pencil"></i></button>
                     </div>
                 </li>
             </ul>
         </div>
     </div>
-
-    <h3>{{'projects.projectAssign.addUserToProject' | i18next}}</h3>
-    <form class="form-inline form-partial form-simple" ng-submit="searchUsers(searchUsername)">
-        <div class="input-group">
-            <div>
-                <div class="input-group-addon"><i class="fa fa-search"></i></div>
-                <input type="email" required ng-model="searchUsername" class="form-control"
-                       placeholder="{{'user.email' | i18next}}">
-            </div>
-        </div>
-        <div class="buttons">
-            <button type="submit" class="btn btn-primary">{{'actions.search' | i18next}}</button>
-        </div>
-    </form>
-
-    <div class="search-users">
-        <div class="collapse-list-group">
-            <ul class="list-group no-margin">
-                <li ng-repeat="user in usersInSearch" class="list-group-item">
-                    <div class="pull-left">
-                        <i class="fa fa-user"></i>
-                        {{::user.username}}
-                    </div>
-                    <div class="pull-right">
-                        <button class="btn btn-success" ng-click="addUserToProject(user)"><i class="fa fa-plus"></i>
-                        </button>
-                    </div>
-                </li>
-            </ul>
-            <div ng-show="usersInSearch.length < 1">
-                <ul class="list-group no-margin">
-                    <li class="list-group-item">
-                        <div class="pull-left">
-                            <i class="fa fa-user-times"></i>
-                            {{'user.notFound' |i18next}}
-                        </div>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div ng-hide="openProject" class="no-project">
-    <h1><i class="fa fa-folder"></i> {{'projects.projectAssign.selectProjectFirst' | i18next}}</h1>
-</div>
-
-<div ng-show="loadingProjectUsers" class="no-project">
-    <h1><i class="fa fa-refresh fa-spin"></i> {{'actions.loading' | i18next}}</h1>
 </div>
