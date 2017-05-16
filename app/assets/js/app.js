@@ -518,6 +518,33 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
     }
 }());
 
+( function () {
+    'use strict';
+    angular
+        .module( 'hours.components', [] )
+        .directive( 'roleAuth', roleAuth );
+
+    function roleAuth( UserFactory ) {
+        return {
+            restrict: 'A',
+            scope: {
+                'roleAuth': '@'
+            },
+            link: function compile( scope, element, attrs ) {                
+                var authRoles = JSON.parse(attrs.roleAuth.replace(/'/g, '"')); // convert to JSON object
+                var userRole = UserFactory.getUser().role;
+
+                if ( angular.isDefined( authRoles.only ) && authRoles.only.indexOf( userRole ) < 0 ) {
+                    element.remove();
+                }
+                if ( angular.isDefined( authRoles.except ) && authRoles.except.indexOf( userRole ) >= 0 ) {
+                    element.remove();
+                }
+            }
+        };
+    }
+}());
+
 ;( function () {
     'use strict';
     angular
@@ -550,27 +577,75 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
 ( function () {
     'use strict';
     angular
-        .module( 'hours.components', [] )
-        .directive( 'roleAuth', roleAuth );
+        .module( 'hours.employeeManager', [] )
+        .config( emConfig );
 
-    function roleAuth( UserFactory ) {
-        return {
-            restrict: 'A',
-            scope: {
-                'roleAuth': '@'
-            },
-            link: function compile( scope, element, attrs ) {                
-                var authRoles = JSON.parse(attrs.roleAuth.replace(/'/g, '"')); // convert to JSON object
-                var userRole = UserFactory.getUser().role;
-
-                if ( angular.isDefined( authRoles.only ) && authRoles.only.indexOf( userRole ) < 0 ) {
-                    element.remove();
+    emConfig.$invoke = [ '$stateProvider' ];
+    function emConfig( $stateProvider ) {
+        $stateProvider
+            .state( 'employeeManager', { // LEO WAS HERE
+                url: '/employeeManager/list',
+                templateUrl: '/features/employeeManager/list/list.tpl.html',
+                controller: 'listEmployeeController',
+                data: {
+                    state: 'employeeManager',
+                    template: 'complex',
+                    permissions: {
+                        only: ['administrator'],
+                        redirectTo: 'dashboard'
+                    }
+                },
+                resolve: {
+                    employees: [ 'EmployeeManagerFactory', function ( EmployeeManagerFactory ) {
+                        return EmployeeManagerFactory.getEmployeeList();
+                    }]
                 }
-                if ( angular.isDefined( authRoles.except ) && authRoles.except.indexOf( userRole ) >= 0 ) {
-                    element.remove();
+            })
+            .state( 'employeeManagerEdit', { // LEO WAS HERE
+                url: '/employeeManager/edit/:id',
+                templateUrl: '/features/employeeManager/edit/edit.tpl.html',
+                controller: 'editEmployeeController',
+                data: {
+                    state: 'employeeManager',
+                    template: 'complex',
+                    permissions: {
+                        only: ['administrator'],
+                        redirectTo: 'dashboard'
+                    }
+                },
+                resolve: {
+                    data: [ 'CalendarFactory', 'EmployeeManagerFactory', '$stateParams', '$q', function ( CalendarFactory, EmployeeManagerFactory, $stateParams, $q ) {
+                        var employee    = EmployeeManagerFactory.getEmployeeFromID( $stateParams.id );
+                        var enterprises = EmployeeManagerFactory.getEnterprises();
+                        var supervisors = EmployeeManagerFactory.supervisorsExceptID( $stateParams.id );
+                        var calendars   = CalendarFactory.getCalendarsNames();
+                        return $q.all( { employee : employee, enterprises : enterprises, supervisors : supervisors, calendars : calendars } );
+                    }]
                 }
-            }
-        };
+            })
+            
+            .state( 'employeeManagerCreate', { // LEO WAS HERE
+                url: '/employeeManager/create',
+                templateUrl: '/features/employeeManager/create/create.tpl.html',
+                controller: 'createEmployeeController',
+                data: {
+                    state: 'employeeManager',
+                    template: 'complex',
+                    permissions: {
+                        only: ['administrator'],
+                        redirectTo: 'dashboard'
+                    }
+                },
+                resolve: {
+                    data: [ 'CalendarFactory', 'EmployeeManagerFactory', '$stateParams', '$q', function ( CalendarFactory, EmployeeManagerFactory, $stateParams, $q ) {
+                        var enterprises     = EmployeeManagerFactory.getEnterprises();
+                        var supervisors     = EmployeeManagerFactory.getAllSupervisors();                        
+                        var defaultPassword = EmployeeManagerFactory.getDefaultPassword();
+                        var calendars       = CalendarFactory.getCalendarsNames();
+                        return $q.all( { enterprises : enterprises, supervisors : supervisors, defaultPassword : defaultPassword, calendars : calendars } );
+                    }]
+                }
+            });
     }
 }());
 
@@ -675,81 +750,6 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
             //         }
             //     }
             // });
-
-( function () {
-    'use strict';
-    angular
-        .module( 'hours.employeeManager', [] )
-        .config( emConfig );
-
-    emConfig.$invoke = [ '$stateProvider' ];
-    function emConfig( $stateProvider ) {
-        $stateProvider
-            .state( 'employeeManager', { // LEO WAS HERE
-                url: '/employeeManager/list',
-                templateUrl: '/features/employeeManager/list/list.tpl.html',
-                controller: 'listEmployeeController',
-                data: {
-                    state: 'employeeManager',
-                    template: 'complex',
-                    permissions: {
-                        only: ['administrator'],
-                        redirectTo: 'dashboard'
-                    }
-                },
-                resolve: {
-                    employees: [ 'EmployeeManagerFactory', function ( EmployeeManagerFactory ) {
-                        return EmployeeManagerFactory.getEmployeeList();
-                    }]
-                }
-            })
-            .state( 'employeeManagerEdit', { // LEO WAS HERE
-                url: '/employeeManager/edit/:id',
-                templateUrl: '/features/employeeManager/edit/edit.tpl.html',
-                controller: 'editEmployeeController',
-                data: {
-                    state: 'employeeManager',
-                    template: 'complex',
-                    permissions: {
-                        only: ['administrator'],
-                        redirectTo: 'dashboard'
-                    }
-                },
-                resolve: {
-                    data: [ 'CalendarFactory', 'EmployeeManagerFactory', '$stateParams', '$q', function ( CalendarFactory, EmployeeManagerFactory, $stateParams, $q ) {
-                        var employee    = EmployeeManagerFactory.getEmployeeFromID( $stateParams.id );
-                        var enterprises = EmployeeManagerFactory.getEnterprises();
-                        var supervisors = EmployeeManagerFactory.supervisorsExceptID( $stateParams.id );
-                        var calendars   = CalendarFactory.getCalendarsNames();
-                        return $q.all( { employee : employee, enterprises : enterprises, supervisors : supervisors, calendars : calendars } );
-                    }]
-                }
-            })
-            
-            .state( 'employeeManagerCreate', { // LEO WAS HERE
-                url: '/employeeManager/create',
-                templateUrl: '/features/employeeManager/create/create.tpl.html',
-                controller: 'createEmployeeController',
-                data: {
-                    state: 'employeeManager',
-                    template: 'complex',
-                    permissions: {
-                        only: ['administrator'],
-                        redirectTo: 'dashboard'
-                    }
-                },
-                resolve: {
-                    data: [ 'CalendarFactory', 'EmployeeManagerFactory', '$stateParams', '$q', function ( CalendarFactory, EmployeeManagerFactory, $stateParams, $q ) {
-                        var enterprises     = EmployeeManagerFactory.getEnterprises();
-                        var supervisors     = EmployeeManagerFactory.getAllSupervisors();                        
-                        var defaultPassword = EmployeeManagerFactory.getDefaultPassword();
-                        var calendars       = CalendarFactory.getCalendarsNames();
-                        return $q.all( { enterprises : enterprises, supervisors : supervisors, defaultPassword : defaultPassword, calendars : calendars } );
-                    }]
-                }
-            });
-    }
-}());
 
 ;( function () {
     'use strict';
@@ -1548,164 +1548,6 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
 ( function () {
     'use strict';
     angular
-        .module( 'hours.impute' )
-        .factory( 'imputeHoursFactory', imputeHoursFactory );
-
-    imputeHoursFactory.$invoke = [ '$http', '$q', 'UserFactory', '$filter' ];
-    function imputeHoursFactory( $http, $q, UserFactory, $filter ) {
-        return {
-
-            getTimesheets: function ( year, month, userProjects ) { // LEO WAS HERE
-                var userID = UserFactory.getUserID();
-                var dfd    = $q.defer();
-                $http.get( buildURL( 'getTimesheets' ) + userID + '?year=' + year + '&month=' + month )
-                    .then( prepareTimesheetsData.bind( null, userProjects, dfd ) )
-                    .catch( function ( err ) {
-                        dfd.reject( err );
-                    });
-                return dfd.promise;
-            },
-
-            setAllTimesheets: function( data, _userID ) { // LEO WAS HERE
-                var userID = _userID || UserFactory.getUserID(); // ( _userID is used by 'approvalHours controller' )
-                var dfd = $q.defer();
-                $http.post( buildURL( 'setAllTimesheets' ) + userID, data )
-                    .then( function ( response ) {
-                        dfd.resolve( response );
-                    })
-                    .catch( function ( err ) {
-                        dfd.reject( err );
-                    });
-                return dfd.promise;
-            },
-
-            insertNewNotification: function( issueDate ) { // LEO WORKING HERE
-                var data = {
-                                senderId   : UserFactory.getUserID(),
-                                receiverId : UserFactory.getSuperior(),
-                                type       : 'hours_req',
-                                text       : $filter( 'i18next' )( 'calendar.imputeHours.message.hours_req' ),
-                                issueDate  : issueDate
-                };
-                var dfd = $q.defer();
-                $http.post( buildURL( 'insertNewNotification' ), data )
-                    .then( function ( response ) {
-                        dfd.resolve( response  );
-                    })
-                    .catch( function ( err ) {
-                        dfd.reject( err );
-                    });
-                return dfd.promise;
-            },
-
-            getShowDaysObj : function ( month, year, currentWeekAtFirst ) { // LEO WAS HERE
-                var months          = [ 'january' ,'february' ,'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december' ];
-                var currentFirstDay = new Date( year, month, 1 ),
-                    currentLastDay  = new Date( year, month + 1, 0 ),
-                    totalMonthDays  = currentLastDay.getDate(),
-                    currentDay      = angular.copy( currentFirstDay ),
-                    currentMonth    = currentFirstDay.getMonth(),
-                    monthName       = months[ currentMonth ],
-                    currentYear     = currentFirstDay.getFullYear(),
-                    week            = 0; // number of the week inside month
-
-                var showDaysObj             = {};
-                showDaysObj.currentWeek     = 0;
-                showDaysObj.currentFirstDay = currentFirstDay.getTime();
-                showDaysObj.currentLastDay  = currentLastDay.getTime();
-                showDaysObj.totalMonthDays  = totalMonthDays;
-                showDaysObj.currentMonth    = currentMonth;
-                showDaysObj.currentYear     = currentYear;
-                showDaysObj.monthName       = monthName;
-                showDaysObj.weeks           = {};
-
-                while( true ) {
-                    if( currentDay.getDate() == 1 && currentDay.getDay() != 1 ) { // just in case of last-month-final-days (to complete the week view)
-                        var lastMonthFinalsDays = angular.copy( currentDay );
-                        var tempArray = [];
-                        while( true ) {
-                            lastMonthFinalsDays.setDate( lastMonthFinalsDays.getDate() - 1 );
-                            var day = new Date( lastMonthFinalsDays.getFullYear(), lastMonthFinalsDays.getMonth(), lastMonthFinalsDays.getDate() );
-                            tempArray.push( day );
-                            if( lastMonthFinalsDays.getDay() == 1 ) {
-                                tempArray = tempArray.reverse();
-                                tempArray.forEach( function( day ) {
-                                    addNewDay( day, week );
-                                })
-                                break;
-                            }
-                        }
-                    }
-                    
-                    var day = new Date( new Date( year, month, currentDay.getDate() ) );
-                    addNewDay( day, week );
-
-                    if( currentDay.getDate() == totalMonthDays ) { // when gets at last day
-                        if( currentDay.getDay() != 0 ) { // just in case of next-month-inital-days (to complete the days view)
-                            while( true ) {
-                                currentDay.setDate( currentDay.getDate() + 1 );
-
-                                var day = new Date( new Date( currentDay.getFullYear(), currentDay.getMonth(), currentDay.getDate() ) );
-                                addNewDay( day, week );
-
-                                if( currentDay.getDay() == 0 ) {
-                                    break;
-                                }
-                            }
-                        }
-                        break;
-                    }
-                    
-                    currentDay = new Date( year, month, currentDay.getDate() + 1 );
-                    if( currentDay.getDay() == 1 ) { // when week ends and start a new one
-                        week++;
-                    }
-                }
-
-                showDaysObj.totalMonthWeeks = week + 1;
-
-                function addNewDay( day, week ) {
-                    var timeStamp = new Date( day ).getTime(); // stores in timestamp format
-                    if ( !showDaysObj.weeks[ week ] ) showDaysObj.weeks[ week ] = {};
-                    if ( !showDaysObj.weeks[ week ][ timeStamp ] ) showDaysObj.weeks[ week ][ timeStamp ] = {};
-                    showDaysObj.weeks[ week ][ timeStamp ] = {
-                                                day        : day,
-                                                timeStamp  : timeStamp,
-                                                value      : 0, // it stores 'Horas/Variables' text value
-                                                week       : week,
-                                                thisMonth  : day.getMonth(),
-                                                inputType  : 'number', // 'number' for 'Horas' and 'Variables', and 'checkbox' for 'Guardias'
-                                                checkValue : false, // it stores 'Guardias' checkbox value
-                                                projectId  : '', // to know this day belongs to what project (for showStatsObj)
-                                                status     : '' // (draft, sent, approved, rejected)
-                                            };
-                }
-                return showDaysObj;
-            }
-        } // main return
-
-        // INTERNAL FUNCTION ( getTimesheets() )
-        // THIS FUNCTION REMOVES ALL PROJECTS INSIDE 'TIMESHEETMODEL' THAT DOES NOT EXIST IN 'USERPROJECTS'
-        // USER ONLY CAN BE ABLE TO IMPUTE IN PROJECTS THAT EXISTS IN PROJECT_USERS COLLECTION (many to many relationchip between users and projects)
-        function prepareTimesheetsData( userProjects, dfd, data ) {
-            var timesheetDataModel = data.data.timesheetDataModel;
-            for( var projectId in timesheetDataModel ) {
-                var exists = userProjects.some( function( project ) {
-                    return project._id == projectId;
-                });
-                if ( !exists ) {
-                    delete timesheetDataModel[ projectId ];
-                }
-            }
-            return dfd.resolve( timesheetDataModel );
-        }
-
-    }
-}());
-
-( function () {
-    'use strict';
-    angular
         .module( 'hours.employeeManager' )
         .factory( 'EmployeeManagerFactory', EmployeeManagerFactory );
 
@@ -1885,6 +1727,164 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
             //         });
             //     return dfd.promise;
             // },
+
+( function () {
+    'use strict';
+    angular
+        .module( 'hours.impute' )
+        .factory( 'imputeHoursFactory', imputeHoursFactory );
+
+    imputeHoursFactory.$invoke = [ '$http', '$q', 'UserFactory', '$filter' ];
+    function imputeHoursFactory( $http, $q, UserFactory, $filter ) {
+        return {
+
+            getTimesheets: function ( year, month, userProjects ) { // LEO WAS HERE
+                var userID = UserFactory.getUserID();
+                var dfd    = $q.defer();
+                $http.get( buildURL( 'getTimesheets' ) + userID + '?year=' + year + '&month=' + month )
+                    .then( prepareTimesheetsData.bind( null, userProjects, dfd ) )
+                    .catch( function ( err ) {
+                        dfd.reject( err );
+                    });
+                return dfd.promise;
+            },
+
+            setAllTimesheets: function( data, _userID ) { // LEO WAS HERE
+                var userID = _userID || UserFactory.getUserID(); // ( _userID is used by 'approvalHours controller' )
+                var dfd = $q.defer();
+                $http.post( buildURL( 'setAllTimesheets' ) + userID, data )
+                    .then( function ( response ) {
+                        dfd.resolve( response );
+                    })
+                    .catch( function ( err ) {
+                        dfd.reject( err );
+                    });
+                return dfd.promise;
+            },
+
+            insertNewNotification: function( issueDate ) { // LEO WORKING HERE
+                var data = {
+                                senderId   : UserFactory.getUserID(),
+                                receiverId : UserFactory.getSuperior(),
+                                type       : 'hours_req',
+                                text       : $filter( 'i18next' )( 'calendar.imputeHours.message.hours_req' ),
+                                issueDate  : issueDate
+                };
+                var dfd = $q.defer();
+                $http.post( buildURL( 'insertNewNotification' ), data )
+                    .then( function ( response ) {
+                        dfd.resolve( response  );
+                    })
+                    .catch( function ( err ) {
+                        dfd.reject( err );
+                    });
+                return dfd.promise;
+            },
+
+            getShowDaysObj : function ( month, year, currentWeekAtFirst ) { // LEO WAS HERE
+                var months          = [ 'january' ,'february' ,'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december' ];
+                var currentFirstDay = new Date( year, month, 1 ),
+                    currentLastDay  = new Date( year, month + 1, 0 ),
+                    totalMonthDays  = currentLastDay.getDate(),
+                    currentDay      = angular.copy( currentFirstDay ),
+                    currentMonth    = currentFirstDay.getMonth(),
+                    monthName       = months[ currentMonth ],
+                    currentYear     = currentFirstDay.getFullYear(),
+                    week            = 0; // number of the week inside month
+
+                var showDaysObj             = {};
+                showDaysObj.currentWeek     = 0;
+                showDaysObj.currentFirstDay = currentFirstDay.getTime();
+                showDaysObj.currentLastDay  = currentLastDay.getTime();
+                showDaysObj.totalMonthDays  = totalMonthDays;
+                showDaysObj.currentMonth    = currentMonth;
+                showDaysObj.currentYear     = currentYear;
+                showDaysObj.monthName       = monthName;
+                showDaysObj.weeks           = {};
+
+                while( true ) {
+                    if( currentDay.getDate() == 1 && currentDay.getDay() != 1 ) { // just in case of last-month-final-days (to complete the week view)
+                        var lastMonthFinalsDays = angular.copy( currentDay );
+                        var tempArray = [];
+                        while( true ) {
+                            lastMonthFinalsDays.setDate( lastMonthFinalsDays.getDate() - 1 );
+                            var day = new Date( lastMonthFinalsDays.getFullYear(), lastMonthFinalsDays.getMonth(), lastMonthFinalsDays.getDate() );
+                            tempArray.push( day );
+                            if( lastMonthFinalsDays.getDay() == 1 ) {
+                                tempArray = tempArray.reverse();
+                                tempArray.forEach( function( day ) {
+                                    addNewDay( day, week );
+                                })
+                                break;
+                            }
+                        }
+                    }
+                    
+                    var day = new Date( new Date( year, month, currentDay.getDate() ) );
+                    addNewDay( day, week );
+
+                    if( currentDay.getDate() == totalMonthDays ) { // when gets at last day
+                        if( currentDay.getDay() != 0 ) { // just in case of next-month-inital-days (to complete the days view)
+                            while( true ) {
+                                currentDay.setDate( currentDay.getDate() + 1 );
+
+                                var day = new Date( new Date( currentDay.getFullYear(), currentDay.getMonth(), currentDay.getDate() ) );
+                                addNewDay( day, week );
+
+                                if( currentDay.getDay() == 0 ) {
+                                    break;
+                                }
+                            }
+                        }
+                        break;
+                    }
+                    
+                    currentDay = new Date( year, month, currentDay.getDate() + 1 );
+                    if( currentDay.getDay() == 1 ) { // when week ends and start a new one
+                        week++;
+                    }
+                }
+
+                showDaysObj.totalMonthWeeks = week + 1;
+
+                function addNewDay( day, week ) {
+                    var timeStamp = new Date( day ).getTime(); // stores in timestamp format
+                    if ( !showDaysObj.weeks[ week ] ) showDaysObj.weeks[ week ] = {};
+                    if ( !showDaysObj.weeks[ week ][ timeStamp ] ) showDaysObj.weeks[ week ][ timeStamp ] = {};
+                    showDaysObj.weeks[ week ][ timeStamp ] = {
+                                                day        : day,
+                                                timeStamp  : timeStamp,
+                                                value      : 0, // it stores 'Horas/Variables' text value
+                                                week       : week,
+                                                thisMonth  : day.getMonth(),
+                                                inputType  : 'number', // 'number' for 'Horas' and 'Variables', and 'checkbox' for 'Guardias'
+                                                checkValue : false, // it stores 'Guardias' checkbox value
+                                                projectId  : '', // to know this day belongs to what project (for showStatsObj)
+                                                status     : '' // (draft, sent, approved, rejected)
+                                            };
+                }
+                return showDaysObj;
+            }
+        } // main return
+
+        // INTERNAL FUNCTION ( getTimesheets() )
+        // THIS FUNCTION REMOVES ALL PROJECTS INSIDE 'TIMESHEETMODEL' THAT DOES NOT EXIST IN 'USERPROJECTS'
+        // USER ONLY CAN BE ABLE TO IMPUTE IN PROJECTS THAT EXISTS IN PROJECT_USERS COLLECTION (many to many relationchip between users and projects)
+        function prepareTimesheetsData( userProjects, dfd, data ) {
+            var timesheetDataModel = data.data.timesheetDataModel;
+            for( var projectId in timesheetDataModel ) {
+                var exists = userProjects.some( function( project ) {
+                    return project._id == projectId;
+                });
+                if ( !exists ) {
+                    delete timesheetDataModel[ projectId ];
+                }
+            }
+            return dfd.resolve( timesheetDataModel );
+        }
+
+    }
+}());
 
 ;( function () {
     'use strict';
@@ -2215,7 +2215,7 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
 
             $timeout( function() {
                 for( var project in employee.timesheetDataModel ) {
-                    collapseToggle( project );
+                    collapseToggle( project + '_' + senderId );
                     employee.timesheetDataModel[project].info.opened = true;
                 }
                 collapseToggle( senderId );
@@ -2490,6 +2490,81 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
     }
 }());
 
+( function () {
+    'use strict';
+    angular
+        .module( 'hours.components' )
+        .directive( 'alertMessage', alertMessage )
+        .controller( 'alertMessageController', alertMessageController );
+
+    alertMessageController.$invoke = [ '$scope', '$interval', '$window' ];
+    function alertMessageController( $scope, $interval, $window ) {
+            var $alertSome = $( '#alertMessage .msgAlert' );
+            var promiseInterval;
+            $scope.$watch( 'error', function( value ) {
+                if ( value !== null ) {
+                    $interval.cancel( promiseInterval );
+                    $scope.horizontalMode = true;
+                    // $scope.horizontalMode = ( $window.innerWidth >= 600 ) ? true : false;
+                    $scope.alertMessage = $scope.msg;
+                    $alertSome.collapse( 'show' );
+                    promiseInterval = $interval( function() {
+                        $scope.error = null;
+                        $alertSome.collapse( 'hide' );
+                    }, $scope.error ? 6000 : 2500 );
+                }
+            });
+        }
+
+    function alertMessage() {
+        return {
+            restrict: 'E',
+            scope: {
+                error : '=',
+                msg   : '='
+            },
+            transclude: false,
+            templateUrl: 'features/components/alertMsg/alertmsg.tpl.html',
+            controller : alertMessageController,
+            link : function( scope, elem, attrs ) {
+                scope.error = null;
+                scope.msg = '';
+            }
+        };
+    }
+
+}());
+
+( function () {
+    'use strict';
+    angular
+        .module( 'hours.components' )
+        .directive( 'zemSidebar', zemSidebar )
+        .controller( 'SidebarComponentController', SidebarComponentController );
+
+    SidebarComponentController.$invoke = [ '$scope', '$rootScope', 'UserFactory', '$state' ];
+    function SidebarComponentController( $scope, $rootScope, UserFactory, $state ) {
+        $scope.username = UserFactory.getUser();
+
+        $scope.changeState = function( state ) {
+            if( $rootScope.pendingChanges ) {
+                $scope.$broadcast( 'urlChangeRequest', { msg : 'From sidebar URL change request', nextURL : state } );
+            } else {
+                $state.go( state );
+            }
+        };
+
+    }
+    function zemSidebar() {
+        return {
+            restrict: 'E',
+            replace: true,
+            templateUrl: '/features/components/sidebar/sidebar.tpl.html',
+            controller: 'SidebarComponentController'
+        };
+    }
+}());
+
 ;( function () {
     'use strict';
     angular
@@ -2608,77 +2683,346 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
 ( function () {
     'use strict';
     angular
-        .module( 'hours.components' )
-        .directive( 'alertMessage', alertMessage )
-        .controller( 'alertMessageController', alertMessageController );
+        .module( 'hours.employeeManager' )
+        .controller( 'createEmployeeController', createEmployeeController );
 
-    alertMessageController.$invoke = [ '$scope', '$interval', '$window' ];
-    function alertMessageController( $scope, $interval, $window ) {
-            var $alertSome = $( '#alertMessage .msgAlert' );
-            var promiseInterval;
-            $scope.$watch( 'error', function( value ) {
-                if ( value !== null ) {
-                    $interval.cancel( promiseInterval );
-                    $scope.horizontalMode = true;
-                    // $scope.horizontalMode = ( $window.innerWidth >= 600 ) ? true : false;
-                    $scope.alertMessage = $scope.msg;
-                    $alertSome.collapse( 'show' );
-                    promiseInterval = $interval( function() {
-                        $scope.error = null;
-                        $alertSome.collapse( 'hide' );
-                    }, $scope.error ? 6000 : 2500 );
+    createEmployeeController.$invoke = [ '$scope', '$state', 'data', '$filter', '$timeout', 'EmployeeManagerFactory' ];
+    function createEmployeeController( $scope, $state, data, $filter, $timeout, EmployeeManagerFactory ) {
+
+        $scope.companies = data.enterprises;
+        $scope.supervisors = data.supervisors;
+        $scope.calendars   = data.calendars;
+
+        var employee = {
+            roles: ['ROLE_USER'],
+            enabled: true,
+            password: data.defaultPassword.defaultPassword
+        };
+
+        $scope.employee = employee;
+        $scope.maxDate = new Date();
+
+        $scope.open = function () {
+            $scope.status.opened = true;
+        };
+
+        $scope.dateOptions = {
+            formatYear: 'yy',
+            startingDay: 1,
+            showWeeks: false
+        };
+
+        $scope.status = {
+            opened: false
+        };
+
+        function loadSelectsTranslate() {
+            $scope.genres = [
+                {
+                    name: $filter( 'i18next' )( 'userProfile.user.genre_male' ),
+                    slug: 'male'
+                },
+                {
+                    name: $filter( 'i18next' )( 'userProfile.user.genre_female' ),
+                    slug: 'female'
                 }
+            ];
+
+            $scope.locales = [
+                {
+                    name: 'Español',
+                    slug: 'es'
+                },
+                {
+                    name: 'English',
+                    slug: 'en'
+                },
+                {
+                    name: 'Catalán',
+                    slug: 'ca'
+                }
+            ];
+
+            $scope.roles = [
+                {
+                    name: $filter( 'i18next' )( 'role.ROLE_BACKOFFICE' ),
+                    slug: 'ROLE_BACKOFFICE'
+                },
+                {
+                    name: $filter( 'i18next' )( 'role.ROLE_DELIVERY' ),
+                    slug: 'ROLE_DELIVERY'
+                },
+                {
+                    name: $filter( 'i18next' )( 'role.ROLE_MANAGER' ),
+                    slug: 'ROLE_MANAGER'
+                },
+                {
+                    name: $filter( 'i18next' )( 'role.ROLE_USER' ),
+                    slug: 'ROLE_USER'
+                }
+            ];
+
+            employee.roles.forEach( function ( role ) {
+                $filter( 'filter' )( $scope.roles, { slug: role} )[0].active = true;
             });
+
         }
 
-    function alertMessage() {
-        return {
-            restrict: 'E',
-            scope: {
-                error : '=',
-                msg   : '='
-            },
-            transclude: false,
-            templateUrl: 'features/components/alertMsg/alertmsg.tpl.html',
-            controller : alertMessageController,
-            link : function( scope, elem, attrs ) {
-                scope.error = null;
-                scope.msg = '';
-            }
+        $timeout( function () {
+            loadSelectsTranslate();
+        }, 100 );
+
+        $scope.changeRole = function () {
+            $scope.employee.roles = [];
+            $scope.roles.forEach( function( role ) {
+                if ( role.active ) {
+                    $scope.employee.roles.push( role.slug );
+                }
+            });
+        };
+
+        $scope.signupUser = function () {
+            console.log($scope.employee);
+            $( '#page-content-wrapper #section' ).animate( { scrollTop: 0 }, 'slow' );
+            EmployeeManagerFactory.createEmployee( $scope.employee )
+                .then( function ( data ) {
+                    if( data.success ) {
+                        $scope.alerts.error = false; // ok code alert
+                        $scope.alerts.message = $filter( 'i18next' )( 'employeeManager.create.saveSuccess' ); // ok message alert
+                        $timeout( function () {
+                            $state.go( 'employeeManager' );
+                        }, 2500 );
+                    } else {
+                        $scope.alerts.error = true; // error code alert
+                        $scope.alerts.message = $filter( 'i18next' )( 'employeeManager.create.userAlreadyExists' ); // error message alert
+                    }
+                })
+                .catch( function ( err ) {
+                    $scope.alerts.error = true; // error code alert
+                    $scope.alerts.message = $filter( 'i18next' )( 'employeeManager.create.saveError' ); // error message alert
+                });
         };
     }
-
 }());
 
+;( function () {
+    'use strict';
+    angular
+        .module( 'hours.employeeManager' )
+        .controller( 'editEmployeeController', editEmployeeController );
+
+    editEmployeeController.$invoke = [ '$scope', '$state', 'data', '$filter', '$timeout', 'EmployeeManagerFactory' ];
+    function editEmployeeController( $scope, $state, data, $filter, $timeout, EmployeeManagerFactory ) {
+        
+        $scope.companies   = data.enterprises;
+        $scope.supervisors = data.supervisors;
+        $scope.calendars   = data.calendars;
+
+        data.employee.birthdate = new Date( data.employee.birthdate );
+        $scope.employee = data.employee;
+        $scope.maxDate = new Date();
+
+        $scope.open = function () {
+            $scope.status.opened = true;
+        };
+
+        $scope.dateOptions = {
+            formatYear: 'yy',
+            startingDay: 1,
+            showWeeks: false
+        };
+
+        $scope.status = {
+            opened: false
+        };
+
+        function loadSelectsTranslate() {
+            $scope.genres = [
+                {
+                    name: $filter( 'i18next' )( 'userProfile.user.genre_male' ),
+                    slug: 'male'
+                },
+                {
+                    name: $filter( 'i18next' )( 'userProfile.user.genre_female' ),
+                    slug: 'female'
+                }
+            ];
+
+            $scope.locales = [
+                {
+                    name: 'Español',
+                    slug: 'es'
+                },
+                {
+                    name: 'English',
+                    slug: 'en'
+                },
+                {
+                    name: 'Catalán',
+                    slug: 'ca'
+                }
+            ];
+
+            $scope.roles = [
+                {
+                    name: $filter( 'i18next' )( 'role.ROLE_BACKOFFICE' ),
+                    slug: 'ROLE_BACKOFFICE'
+                },
+                {
+                    name: $filter( 'i18next' )( 'role.ROLE_DELIVERY' ),
+                    slug: 'ROLE_DELIVERY'
+                },
+                {
+                    name: $filter( 'i18next' )( 'role.ROLE_MANAGER' ),
+                    slug: 'ROLE_MANAGER'
+                },
+                {
+                    name: $filter( 'i18next' )( 'role.ROLE_USER' ),
+                    slug: 'ROLE_USER'
+                }
+            ];
+
+            data.employee.roles.forEach( function( role ) {
+                $filter( 'filter' )( $scope.roles, { slug: role })[0].active = true;
+            });
+
+        }
+
+        $timeout( function () {
+            loadSelectsTranslate();
+        }, 100 );
+
+        $scope.changeRole = function () {
+            $scope.employee.roles = [];
+            $scope.roles.forEach( function( role ) {
+                if ( role.active ) {
+                    $scope.employee.roles.push( role.slug );
+                }
+            });
+        };
+
+        $scope.editUser = function () {
+            $( '#page-content-wrapper #section' ).animate( { scrollTop: 0 }, 'slow' );
+            EmployeeManagerFactory.updateEmployee( $scope.employee )
+                .then( function () {
+                    $scope.alerts.error = false; // ok code alert
+                    $scope.alerts.message = $filter( 'i18next' )( 'employeeManager.edit.saveSuccess' ); // ok message alert
+                    $timeout( function () {
+                        $state.go( 'employeeManager' );
+                    }, 2500 );
+                })
+                .catch( function () {
+                    $scope.alerts.error = true; // error code alert
+                    $scope.alerts.message = $filter( 'i18next' )( 'employeeManager.edit.saveError' ); // error message alert
+                    });
+        };
+
+    }
+}());
 ( function () {
     'use strict';
     angular
-        .module( 'hours.components' )
-        .directive( 'zemSidebar', zemSidebar )
-        .controller( 'SidebarComponentController', SidebarComponentController );
+        .module( 'hours.employeeManager' )
+        .controller( 'listEmployeeController', listEmployeeController );
 
-    SidebarComponentController.$invoke = [ '$scope', '$rootScope', 'UserFactory', '$state' ];
-    function SidebarComponentController( $scope, $rootScope, UserFactory, $state ) {
-        $scope.username = UserFactory.getUser();
+    listEmployeeController.$invoke = [ '$scope', 'employees', 'EmployeeManagerFactory', '$timeout', '$filter', '$window' ];
+    function listEmployeeController( $scope, employees, EmployeeManagerFactory, $timeout, $filter ,$window ) {
 
-        $scope.changeState = function( state ) {
-            if( $rootScope.pendingChanges ) {
-                $scope.$broadcast( 'urlChangeRequest', { msg : 'From sidebar URL change request', nextURL : state } );
+        $scope.tableConfig = {
+            itemsPerPage: getItemsPerPage( 65 ),
+            maxPages: "3",
+            fillLastPage: false,
+            currentPage: $scope.tmpData( 'get', 'employeeManagerListPage' ) || 0
+        };
+
+        $scope.search = {};
+        $scope.employees = employees;
+        $scope.var = false;
+        setUsersView();
+
+        // ADVANDED SEARCH TOGGLE BUTTON
+        $scope.toggleAdvancedSearch = function () {
+            takeMeUp();
+            $scope.showAdvancedSearch = !$scope.showAdvancedSearch;
+            if ( !$scope.showAdvancedSearch ) {
+                $scope.employees = employees;
             } else {
-                $state.go( state );
+                $scope.avancedSearch();
+                $timeout( function() { // search input set_focus
+                    document.getElementById( 'searchInput' ).focus();
+                });
             }
         };
 
-    }
-    function zemSidebar() {
-        return {
-            restrict: 'E',
-            replace: true,
-            templateUrl: '/features/components/sidebar/sidebar.tpl.html',
-            controller: 'SidebarComponentController'
+        // ADVANDED SEARCH SERVICE FUNCTION
+        $scope.avancedSearch = function () {
+            EmployeeManagerFactory.advancedUserSearch( $scope.search )
+                .then( function ( foundEmployees ) {
+                    $scope.employees = foundEmployees;
+                });
         };
-    }
+
+        $timeout( function () { // ???
+            $( '[ng-click="stepPage(-numberOfPages)"]' ).text( $filter( 'i18next' )( 'actions.nextPage' ) );
+            $( '[ng-click="stepPage(numberOfPages)"]'  ).text( $filter( 'i18next' )( 'actions.lastPage' ) );
+        });
+
+        $scope.$on( '$destroy', function () {
+            $scope.tmpData( 'add', 'employeeManagerListPage', $scope.tableConfig.currentPage );
+        });
+
+
+        angular.element( $window ).bind( 'resize', function() {
+            $scope.$digest();
+            setUsersView();
+        });
+
+        function setUsersView() {
+            if( $window.innerWidth < 930 ) {
+                $scope.viewSet = false;
+            } else {
+                $scope.viewSet = true;            
+            }
+        }
+
+        // SECTION SCROLL MOVE EVENT TO MAKE BUTTON 'toUpButton' APPEAR
+        var scrollWrapper = document.getElementById( 'section' );
+        scrollWrapper.onscroll = function ( event ) {
+            var currentScroll = scrollWrapper.scrollTop;
+            var upButton = $( '#toUpButton' );
+            showUpButton( upButton, currentScroll );
+        };
+
+        // BUTTON TO TAKE SECTION SCROLL TO TOP
+        $scope.pageGetUp = function() { takeMeUp() };
+
+}
+
+
 }());
+
+
+    // .directive('myRole', myRole);
+    // IT WAS FOR TRYING TO REMOVE A COMPLETE ELEMENT (TD) FROM AT-TABLE BUT DID NOT WORK PROPERLY
+    // function myRole(UserFactory) {
+    //     return {
+    //         restrict: 'A',
+    //         scope: {
+    //             'myRole': '@'
+    //         },
+    //         compile: function(element, attributes){  
+    //             return {
+    //                 pre: function(scope, element, attributes, controller, transcludeFn){
+    //                     element.remove();
+    //                 },
+    //                 post: function(scope, element, attributes, controller, transcludeFn){
+    //                 }
+    //             }
+    //         },
+    //         link: function compile(scope, element, attrs) {
+    //         }
+    //     };
+    // }
 
 ;( function () {
     'use strict';
@@ -3202,350 +3546,6 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
 
 }
 })();
-
-( function () {
-    'use strict';
-    angular
-        .module( 'hours.employeeManager' )
-        .controller( 'createEmployeeController', createEmployeeController );
-
-    createEmployeeController.$invoke = [ '$scope', '$state', 'data', '$filter', '$timeout', 'EmployeeManagerFactory' ];
-    function createEmployeeController( $scope, $state, data, $filter, $timeout, EmployeeManagerFactory ) {
-
-        $scope.companies = data.enterprises;
-        $scope.supervisors = data.supervisors;
-        $scope.calendars   = data.calendars;
-
-        var employee = {
-            roles: ['ROLE_USER'],
-            enabled: true,
-            password: data.defaultPassword.defaultPassword
-        };
-
-        $scope.employee = employee;
-        $scope.maxDate = new Date();
-
-        $scope.open = function () {
-            $scope.status.opened = true;
-        };
-
-        $scope.dateOptions = {
-            formatYear: 'yy',
-            startingDay: 1,
-            showWeeks: false
-        };
-
-        $scope.status = {
-            opened: false
-        };
-
-        function loadSelectsTranslate() {
-            $scope.genres = [
-                {
-                    name: $filter( 'i18next' )( 'userProfile.user.genre_male' ),
-                    slug: 'male'
-                },
-                {
-                    name: $filter( 'i18next' )( 'userProfile.user.genre_female' ),
-                    slug: 'female'
-                }
-            ];
-
-            $scope.locales = [
-                {
-                    name: 'Español',
-                    slug: 'es'
-                },
-                {
-                    name: 'English',
-                    slug: 'en'
-                },
-                {
-                    name: 'Catalán',
-                    slug: 'ca'
-                }
-            ];
-
-            $scope.roles = [
-                {
-                    name: $filter( 'i18next' )( 'role.ROLE_BACKOFFICE' ),
-                    slug: 'ROLE_BACKOFFICE'
-                },
-                {
-                    name: $filter( 'i18next' )( 'role.ROLE_DELIVERY' ),
-                    slug: 'ROLE_DELIVERY'
-                },
-                {
-                    name: $filter( 'i18next' )( 'role.ROLE_MANAGER' ),
-                    slug: 'ROLE_MANAGER'
-                },
-                {
-                    name: $filter( 'i18next' )( 'role.ROLE_USER' ),
-                    slug: 'ROLE_USER'
-                }
-            ];
-
-            employee.roles.forEach( function ( role ) {
-                $filter( 'filter' )( $scope.roles, { slug: role} )[0].active = true;
-            });
-
-        }
-
-        $timeout( function () {
-            loadSelectsTranslate();
-        }, 100 );
-
-        $scope.changeRole = function () {
-            $scope.employee.roles = [];
-            $scope.roles.forEach( function( role ) {
-                if ( role.active ) {
-                    $scope.employee.roles.push( role.slug );
-                }
-            });
-        };
-
-        $scope.signupUser = function () {
-            console.log($scope.employee);
-            $( '#page-content-wrapper #section' ).animate( { scrollTop: 0 }, 'slow' );
-            EmployeeManagerFactory.createEmployee( $scope.employee )
-                .then( function ( data ) {
-                    if( data.success ) {
-                        $scope.alerts.error = false; // ok code alert
-                        $scope.alerts.message = $filter( 'i18next' )( 'employeeManager.create.saveSuccess' ); // ok message alert
-                        $timeout( function () {
-                            $state.go( 'employeeManager' );
-                        }, 2500 );
-                    } else {
-                        $scope.alerts.error = true; // error code alert
-                        $scope.alerts.message = $filter( 'i18next' )( 'employeeManager.create.userAlreadyExists' ); // error message alert
-                    }
-                })
-                .catch( function ( err ) {
-                    $scope.alerts.error = true; // error code alert
-                    $scope.alerts.message = $filter( 'i18next' )( 'employeeManager.create.saveError' ); // error message alert
-                });
-        };
-    }
-}());
-
-;( function () {
-    'use strict';
-    angular
-        .module( 'hours.employeeManager' )
-        .controller( 'editEmployeeController', editEmployeeController );
-
-    editEmployeeController.$invoke = [ '$scope', '$state', 'data', '$filter', '$timeout', 'EmployeeManagerFactory' ];
-    function editEmployeeController( $scope, $state, data, $filter, $timeout, EmployeeManagerFactory ) {
-        
-        $scope.companies   = data.enterprises;
-        $scope.supervisors = data.supervisors;
-        $scope.calendars   = data.calendars;
-
-        data.employee.birthdate = new Date( data.employee.birthdate );
-        $scope.employee = data.employee;
-        $scope.maxDate = new Date();
-
-        $scope.open = function () {
-            $scope.status.opened = true;
-        };
-
-        $scope.dateOptions = {
-            formatYear: 'yy',
-            startingDay: 1,
-            showWeeks: false
-        };
-
-        $scope.status = {
-            opened: false
-        };
-
-        function loadSelectsTranslate() {
-            $scope.genres = [
-                {
-                    name: $filter( 'i18next' )( 'userProfile.user.genre_male' ),
-                    slug: 'male'
-                },
-                {
-                    name: $filter( 'i18next' )( 'userProfile.user.genre_female' ),
-                    slug: 'female'
-                }
-            ];
-
-            $scope.locales = [
-                {
-                    name: 'Español',
-                    slug: 'es'
-                },
-                {
-                    name: 'English',
-                    slug: 'en'
-                },
-                {
-                    name: 'Catalán',
-                    slug: 'ca'
-                }
-            ];
-
-            $scope.roles = [
-                {
-                    name: $filter( 'i18next' )( 'role.ROLE_BACKOFFICE' ),
-                    slug: 'ROLE_BACKOFFICE'
-                },
-                {
-                    name: $filter( 'i18next' )( 'role.ROLE_DELIVERY' ),
-                    slug: 'ROLE_DELIVERY'
-                },
-                {
-                    name: $filter( 'i18next' )( 'role.ROLE_MANAGER' ),
-                    slug: 'ROLE_MANAGER'
-                },
-                {
-                    name: $filter( 'i18next' )( 'role.ROLE_USER' ),
-                    slug: 'ROLE_USER'
-                }
-            ];
-
-            data.employee.roles.forEach( function( role ) {
-                $filter( 'filter' )( $scope.roles, { slug: role })[0].active = true;
-            });
-
-        }
-
-        $timeout( function () {
-            loadSelectsTranslate();
-        }, 100 );
-
-        $scope.changeRole = function () {
-            $scope.employee.roles = [];
-            $scope.roles.forEach( function( role ) {
-                if ( role.active ) {
-                    $scope.employee.roles.push( role.slug );
-                }
-            });
-        };
-
-        $scope.editUser = function () {
-            $( '#page-content-wrapper #section' ).animate( { scrollTop: 0 }, 'slow' );
-            EmployeeManagerFactory.updateEmployee( $scope.employee )
-                .then( function () {
-                    $scope.alerts.error = false; // ok code alert
-                    $scope.alerts.message = $filter( 'i18next' )( 'employeeManager.edit.saveSuccess' ); // ok message alert
-                    $timeout( function () {
-                        $state.go( 'employeeManager' );
-                    }, 2500 );
-                })
-                .catch( function () {
-                    $scope.alerts.error = true; // error code alert
-                    $scope.alerts.message = $filter( 'i18next' )( 'employeeManager.edit.saveError' ); // error message alert
-                    });
-        };
-
-    }
-}());
-( function () {
-    'use strict';
-    angular
-        .module( 'hours.employeeManager' )
-        .controller( 'listEmployeeController', listEmployeeController );
-
-    listEmployeeController.$invoke = [ '$scope', 'employees', 'EmployeeManagerFactory', '$timeout', '$filter', '$window' ];
-    function listEmployeeController( $scope, employees, EmployeeManagerFactory, $timeout, $filter ,$window ) {
-
-        $scope.tableConfig = {
-            itemsPerPage: getItemsPerPage( 65 ),
-            maxPages: "3",
-            fillLastPage: false,
-            currentPage: $scope.tmpData( 'get', 'employeeManagerListPage' ) || 0
-        };
-
-        $scope.search = {};
-        $scope.employees = employees;
-        $scope.var = false;
-        setUsersView();
-
-        // ADVANDED SEARCH TOGGLE BUTTON
-        $scope.toggleAdvancedSearch = function () {
-            takeMeUp();
-            $scope.showAdvancedSearch = !$scope.showAdvancedSearch;
-            if ( !$scope.showAdvancedSearch ) {
-                $scope.employees = employees;
-            } else {
-                $scope.avancedSearch();
-                $timeout( function() { // search input set_focus
-                    document.getElementById( 'searchInput' ).focus();
-                });
-            }
-        };
-
-        // ADVANDED SEARCH SERVICE FUNCTION
-        $scope.avancedSearch = function () {
-            EmployeeManagerFactory.advancedUserSearch( $scope.search )
-                .then( function ( foundEmployees ) {
-                    $scope.employees = foundEmployees;
-                });
-        };
-
-        $timeout( function () { // ???
-            $( '[ng-click="stepPage(-numberOfPages)"]' ).text( $filter( 'i18next' )( 'actions.nextPage' ) );
-            $( '[ng-click="stepPage(numberOfPages)"]'  ).text( $filter( 'i18next' )( 'actions.lastPage' ) );
-        });
-
-        $scope.$on( '$destroy', function () {
-            $scope.tmpData( 'add', 'employeeManagerListPage', $scope.tableConfig.currentPage );
-        });
-
-
-        angular.element( $window ).bind( 'resize', function() {
-            $scope.$digest();
-            setUsersView();
-        });
-
-        function setUsersView() {
-            if( $window.innerWidth < 930 ) {
-                $scope.viewSet = false;
-            } else {
-                $scope.viewSet = true;            
-            }
-        }
-
-        // SECTION SCROLL MOVE EVENT TO MAKE BUTTON 'toUpButton' APPEAR
-        var scrollWrapper = document.getElementById( 'section' );
-        scrollWrapper.onscroll = function ( event ) {
-            var currentScroll = scrollWrapper.scrollTop;
-            var upButton = $( '#toUpButton' );
-            showUpButton( upButton, currentScroll );
-        };
-
-        // BUTTON TO TAKE SECTION SCROLL TO TOP
-        $scope.pageGetUp = function() { takeMeUp() };
-
-}
-
-
-}());
-
-
-    // .directive('myRole', myRole);
-    // IT WAS FOR TRYING TO REMOVE A COMPLETE ELEMENT (TD) FROM AT-TABLE BUT DID NOT WORK PROPERLY
-    // function myRole(UserFactory) {
-    //     return {
-    //         restrict: 'A',
-    //         scope: {
-    //             'myRole': '@'
-    //         },
-    //         compile: function(element, attributes){  
-    //             return {
-    //                 pre: function(scope, element, attributes, controller, transcludeFn){
-    //                     element.remove();
-    //                 },
-    //                 post: function(scope, element, attributes, controller, transcludeFn){
-    //                 }
-    //             }
-    //         },
-    //         link: function compile(scope, element, attrs) {
-    //         }
-    //     };
-    // }
 
 ;( function () {
     'use strict';

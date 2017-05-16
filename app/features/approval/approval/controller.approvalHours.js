@@ -200,7 +200,7 @@
 
             $timeout( function() {
                 for( var project in employee.timesheetDataModel ) {
-                    collapseToggle( project );
+                    collapseToggle( project + '_' + senderId );
                     employee.timesheetDataModel[project].info.opened = true;
                 }
                 collapseToggle( senderId );
