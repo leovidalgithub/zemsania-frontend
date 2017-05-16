@@ -54,9 +54,8 @@
             employee.opened = ( openStatus === 'true' );
         };
 
-
         $scope.myProjectClick = function( employeeId, projectId ) {
-            var openStatus = collapseToggle( projectId );
+            var openStatus = collapseToggle( projectId + '_' + employeeId );
             var employee = getEmployee( employeeId );
             employee.timesheetDataModel[ projectId ].info.opened =  ( openStatus === 'true' );
         };

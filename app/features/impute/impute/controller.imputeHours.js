@@ -20,6 +20,7 @@
         $scope.weekViewMode       = true; // week/month view switch flag
         // ALERT MESSAGES
         $scope.alerts = {};
+        $scope.alerts.permanentError = true;
 
         // IMPUTE TYPES AND SUBTYPES INFO
         $scope.imputeTypes                = [ 'Horas', 'Guardias', 'Variables' ];
@@ -30,11 +31,12 @@
         $scope.subtypesModel = $scope.imputeTypes[$scope.typesModel][0];
 
         ( function Init() {
-            // VERIFIES USER-PROJECTS LENGTH
-            if( !userProjects.length ) { // no userProjects available
+            // VERIFIES USER PROJECTS LENGTH
+            if( !userProjects.length ) { // no user Projects available
                 // error: NO userProjects available message alert
                 $timeout( function() {
                     $scope.alerts.error = true; // error code alert
+                    $scope.alerts.permanentError = true;
                     $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorNoProjects' ); // error message alert
                 }, 1000 );
             } else { // userProjects OK cotinues to getData()
@@ -48,7 +50,6 @@
             slideContent( true );
             $scope.showDaysObj  = imputeHoursFactory.getShowDaysObj( currentMonth, currentYear );
             var currentFirstDay = $scope.showDaysObj.currentFirstDay;
-
             if( generalDataModel[ currentFirstDay ] ) { // if that month and year already exists in 'generalDataModel', do not find anything
                 refreshShowDaysObj();
                 return;
@@ -62,6 +63,7 @@
 
                     if ( calendar.success == false ) { // error: calendar not found
                         $scope.alerts.error = true; // error code alert
+                        $scope.alerts.permanentError = true;
                         $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorNoCalendar' ); // error message alert
                         return;
                     }
@@ -73,13 +75,16 @@
                                 calendar           : calendar,
                                 timesheetDataModel : timesheetDataModel
                               };
+
                     generalDataModel[ currentFirstDay ] = angular.copy( obj );
                     $scope.changes.originalGeneralDataModel[ currentFirstDay ] = angular.copy( obj );
                     refreshShowDaysObj();
+                    $scope.alerts.permanentError = false;
                 })
                 .catch( function( err ) {
                     // error loading data message alert
                     $scope.alerts.error = true; // error code alert
+                    $scope.alerts.permanentError = true;
                     $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorLoading' ); // error message alert
                 });
         }
@@ -334,7 +339,7 @@
 
         function slideContent( up ) {
             if( up ) {
-                $( '#daysDiv' ).slideUp( 0 );
+                $( '#daysDiv' ).slideUp( 500 );
             } else {
                 $( '#daysDiv' ).slideDown( 850 );
             }

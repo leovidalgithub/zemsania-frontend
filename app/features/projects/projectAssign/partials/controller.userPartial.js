@@ -4,8 +4,8 @@
         .module( 'hours.projects' )
         .controller( 'ProjectAssignUsersController', ProjectAssignUsersController );
 
-    ProjectAssignUsersController.$invoke = [ '$scope', 'EmployeeManagerFactory', 'ProjectsFactory' ];
-    function ProjectAssignUsersController( $scope, EmployeeManagerFactory, ProjectsFactory ) {
+    ProjectAssignUsersController.$invoke = [ '$scope', '$rootScope', 'EmployeeManagerFactory', 'ProjectsFactory' ];
+    function ProjectAssignUsersController( $scope, $rootScope, EmployeeManagerFactory, ProjectsFactory ) {
 
         $scope.$on( 'toSearchEvent', function( event, data ) {
             $scope.spinners.users = true;
@@ -23,7 +23,12 @@
 
         $scope.activeThisUser = function( userId ) {
             ProjectsFactory.getProjectsById( userId )
-                .then( function ( data ) {
+                .then( function ( projects ) {
+                    // console.log('$scope.employees');
+                    // console.log($scope.employees);
+                    // console.log('$scope.projects');
+                    // console.log($scope.projects);
+                    $rootScope.$broadcast( 'toFilterProjects', { projects : projects } );
                 })
                 .catch( function ( err ) {
                 })

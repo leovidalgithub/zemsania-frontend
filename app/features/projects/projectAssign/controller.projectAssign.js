@@ -26,12 +26,6 @@
             $scope.$broadcast( 'toSearchEvent', { searchText : searchText } );
         };
 
-        // $timeout( function() {
-        //     $scope.$broadcast( 'toSearchEvent', { searchText : '1' } );            
-        // }, 600 );
-
-
-
         $scope.openInfo = function ( project ) {
             var modalInstance = $uibModal.open({
                 animation: true,
@@ -44,11 +38,11 @@
         };
 
         $timeout( function() { // search input set_focus
+            $scope.$broadcast( 'toSearchEvent', { searchText : '1' } );
             document.getElementById( 'searchInput' ).focus();
         }, 800 );
     
 // };
-
 
     }
 

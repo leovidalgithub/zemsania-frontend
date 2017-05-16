@@ -237,7 +237,7 @@
     },
     "calendar": {
         "imputeHours": {
-            "title": "Calendario de imputación laboral",
+            "title": "Imputación horas",
             "reportTitle": "Reporte sobre el proyecto",
             "reportPlaceholder": "Escribe aquí el contenido de tu reporte.",
             "loadingCalendar": "Cargando contenido del calendario...",

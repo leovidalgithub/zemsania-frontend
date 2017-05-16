@@ -24,8 +24,6 @@
                 var dfd = $q.defer();
                 $http.get( buildURL( 'getProjectsById' ) + userID )
                     .then( function ( response ) {
-                        console.log( '******** PROJECTS ********' );
-                        console.log(response.data.projects);
                         var projects = response.data.projects;
                         projects.forEach( function( project ) { // compound name for impute-hours view
                             project.nameToShow = project.code + ' - ' + project.name;
@@ -42,8 +40,6 @@
                 var dfd = $q.defer();
                 $http.get( buildURL( 'getUsersById' ) + projectID )
                     .then( function ( response ) {
-                        console.log( '******** USERS ********' );
-                        console.log(response.data.users);
                         dfd.resolve( response.data );
                     })
                     .catch( function ( err ) {

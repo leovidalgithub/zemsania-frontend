@@ -73,7 +73,7 @@
                 <div class="form-group row">
                     <div class="col-md-4">
                         <label for="user_nif">{{'calendars.title' | i18next}}</label>
-                        <select id="user_genre" ng-model="employee.calendarID" class="col-md-12" ng-options="calendar._id as calendar.name for calendar in calendars"></select>
+                        <select id="user_genre" ng-model="employee.calendarID" class="col-md-12" ng-options="calendar._id as calendar.name for calendar in calendars | orderBy : 'name'"></select>
                     </div>
                     <div class="col-md-4">
                         <label for="user_genre">{{'workloadSchemes.title' | i18next}}</label>
@@ -83,7 +83,7 @@
                     <div class="col-md-4">
                         <div>
                             <label for="user_superior">{{'userProfile.user.superior' | i18next}}</label>
-                            <select id="user_superior" ng-model="employee.superior" class="col-md-12 text-capitalize" ng-options="sup._id as (sup.name + ' ' + sup.surname) for sup in supervisors">
+                            <select id="user_superior" ng-model="employee.superior" class="col-md-12 text-capitalize" ng-options="sup._id as (sup.name + ' ' + sup.surname) for sup in supervisors | orderBy : 'name'">
                             </select>
                         </div>
                         <span class="text-muted">-</span>
@@ -116,8 +116,8 @@
                     </div>
                     <div class="col-md-4">
                         <div>
-                            <label for="user_superior">{{'userProfile.user.company' | i18next}}</label>
-                            <select id="user_superior" ng-model="employee.company._id" class="col-md-12 text-capitalize" ng-options="c._id as c.enterpriseName for c in companies">
+                            <label for="user_company">{{'userProfile.user.company' | i18next}}</label>
+                            <select id="user_company" ng-model="employee.company._id" class="col-md-12 text-capitalize" ng-options="c._id as c.enterpriseName for c in companies | orderBy : 'enterpriseName'">
                             </select>
                         </div>
                         <span class="text-muted">-</span>

@@ -65,7 +65,7 @@
             <div ng-hide="viewSet">
                 <div id="itemsList" ng-repeat="(key, value) in employees | orderBy: 'fullName'">
                     <div class="usersList">
-                        <ul>
+                        <ul ng-class="{'userDisabled':!value.enabled}">
                             <li><strong>{{value.fullName}}</strong>
                                 <!-- PERSONAL MANAGER ICON -->
                                 <i ng-show="value.isManager" style="font-size: 18px;color: blue;" 

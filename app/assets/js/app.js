@@ -518,33 +518,6 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
     }
 }());
 
-( function () {
-    'use strict';
-    angular
-        .module( 'hours.components', [] )
-        .directive( 'roleAuth', roleAuth );
-
-    function roleAuth( UserFactory ) {
-        return {
-            restrict: 'A',
-            scope: {
-                'roleAuth': '@'
-            },
-            link: function compile( scope, element, attrs ) {                
-                var authRoles = JSON.parse(attrs.roleAuth.replace(/'/g, '"')); // convert to JSON object
-                var userRole = UserFactory.getUser().role;
-
-                if ( angular.isDefined( authRoles.only ) && authRoles.only.indexOf( userRole ) < 0 ) {
-                    element.remove();
-                }
-                if ( angular.isDefined( authRoles.except ) && authRoles.except.indexOf( userRole ) >= 0 ) {
-                    element.remove();
-                }
-            }
-        };
-    }
-}());
-
 ;( function () {
     'use strict';
     angular
@@ -577,75 +550,27 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
 ( function () {
     'use strict';
     angular
-        .module( 'hours.employeeManager', [] )
-        .config( emConfig );
+        .module( 'hours.components', [] )
+        .directive( 'roleAuth', roleAuth );
 
-    emConfig.$invoke = [ '$stateProvider' ];
-    function emConfig( $stateProvider ) {
-        $stateProvider
-            .state( 'employeeManager', { // LEO WAS HERE
-                url: '/employeeManager/list',
-                templateUrl: '/features/employeeManager/list/list.tpl.html',
-                controller: 'listEmployeeController',
-                data: {
-                    state: 'employeeManager',
-                    template: 'complex',
-                    permissions: {
-                        only: ['administrator'],
-                        redirectTo: 'dashboard'
-                    }
-                },
-                resolve: {
-                    employees: [ 'EmployeeManagerFactory', function ( EmployeeManagerFactory ) {
-                        return EmployeeManagerFactory.getEmployeeList();
-                    }]
+    function roleAuth( UserFactory ) {
+        return {
+            restrict: 'A',
+            scope: {
+                'roleAuth': '@'
+            },
+            link: function compile( scope, element, attrs ) {                
+                var authRoles = JSON.parse(attrs.roleAuth.replace(/'/g, '"')); // convert to JSON object
+                var userRole = UserFactory.getUser().role;
+
+                if ( angular.isDefined( authRoles.only ) && authRoles.only.indexOf( userRole ) < 0 ) {
+                    element.remove();
                 }
-            })
-            .state( 'employeeManagerEdit', { // LEO WAS HERE
-                url: '/employeeManager/edit/:id',
-                templateUrl: '/features/employeeManager/edit/edit.tpl.html',
-                controller: 'editEmployeeController',
-                data: {
-                    state: 'employeeManager',
-                    template: 'complex',
-                    permissions: {
-                        only: ['administrator'],
-                        redirectTo: 'dashboard'
-                    }
-                },
-                resolve: {
-                    data: [ 'CalendarFactory', 'EmployeeManagerFactory', '$stateParams', '$q', function ( CalendarFactory, EmployeeManagerFactory, $stateParams, $q ) {
-                        var employee    = EmployeeManagerFactory.getEmployeeFromID( $stateParams.id );
-                        var enterprises = EmployeeManagerFactory.getEnterprises();
-                        var supervisors = EmployeeManagerFactory.supervisorsExceptID( $stateParams.id );
-                        var calendars   = CalendarFactory.getCalendarsNames();
-                        return $q.all( { employee : employee, enterprises : enterprises, supervisors : supervisors, calendars : calendars } );
-                    }]
+                if ( angular.isDefined( authRoles.except ) && authRoles.except.indexOf( userRole ) >= 0 ) {
+                    element.remove();
                 }
-            })
-            
-            .state( 'employeeManagerCreate', { // LEO WAS HERE
-                url: '/employeeManager/create',
-                templateUrl: '/features/employeeManager/create/create.tpl.html',
-                controller: 'createEmployeeController',
-                data: {
-                    state: 'employeeManager',
-                    template: 'complex',
-                    permissions: {
-                        only: ['administrator'],
-                        redirectTo: 'dashboard'
-                    }
-                },
-                resolve: {
-                    data: [ 'CalendarFactory', 'EmployeeManagerFactory', '$stateParams', '$q', function ( CalendarFactory, EmployeeManagerFactory, $stateParams, $q ) {
-                        var enterprises     = EmployeeManagerFactory.getEnterprises();
-                        var supervisors     = EmployeeManagerFactory.getAllSupervisors();                        
-                        var defaultPassword = EmployeeManagerFactory.getDefaultPassword();
-                        var calendars       = CalendarFactory.getCalendarsNames();
-                        return $q.all( { enterprises : enterprises, supervisors : supervisors, defaultPassword : defaultPassword, calendars : calendars } );
-                    }]
-                }
-            });
+            }
+        };
     }
 }());
 
@@ -750,6 +675,81 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
             //         }
             //     }
             // });
+
+( function () {
+    'use strict';
+    angular
+        .module( 'hours.employeeManager', [] )
+        .config( emConfig );
+
+    emConfig.$invoke = [ '$stateProvider' ];
+    function emConfig( $stateProvider ) {
+        $stateProvider
+            .state( 'employeeManager', { // LEO WAS HERE
+                url: '/employeeManager/list',
+                templateUrl: '/features/employeeManager/list/list.tpl.html',
+                controller: 'listEmployeeController',
+                data: {
+                    state: 'employeeManager',
+                    template: 'complex',
+                    permissions: {
+                        only: ['administrator'],
+                        redirectTo: 'dashboard'
+                    }
+                },
+                resolve: {
+                    employees: [ 'EmployeeManagerFactory', function ( EmployeeManagerFactory ) {
+                        return EmployeeManagerFactory.getEmployeeList();
+                    }]
+                }
+            })
+            .state( 'employeeManagerEdit', { // LEO WAS HERE
+                url: '/employeeManager/edit/:id',
+                templateUrl: '/features/employeeManager/edit/edit.tpl.html',
+                controller: 'editEmployeeController',
+                data: {
+                    state: 'employeeManager',
+                    template: 'complex',
+                    permissions: {
+                        only: ['administrator'],
+                        redirectTo: 'dashboard'
+                    }
+                },
+                resolve: {
+                    data: [ 'CalendarFactory', 'EmployeeManagerFactory', '$stateParams', '$q', function ( CalendarFactory, EmployeeManagerFactory, $stateParams, $q ) {
+                        var employee    = EmployeeManagerFactory.getEmployeeFromID( $stateParams.id );
+                        var enterprises = EmployeeManagerFactory.getEnterprises();
+                        var supervisors = EmployeeManagerFactory.supervisorsExceptID( $stateParams.id );
+                        var calendars   = CalendarFactory.getCalendarsNames();
+                        return $q.all( { employee : employee, enterprises : enterprises, supervisors : supervisors, calendars : calendars } );
+                    }]
+                }
+            })
+            
+            .state( 'employeeManagerCreate', { // LEO WAS HERE
+                url: '/employeeManager/create',
+                templateUrl: '/features/employeeManager/create/create.tpl.html',
+                controller: 'createEmployeeController',
+                data: {
+                    state: 'employeeManager',
+                    template: 'complex',
+                    permissions: {
+                        only: ['administrator'],
+                        redirectTo: 'dashboard'
+                    }
+                },
+                resolve: {
+                    data: [ 'CalendarFactory', 'EmployeeManagerFactory', '$stateParams', '$q', function ( CalendarFactory, EmployeeManagerFactory, $stateParams, $q ) {
+                        var enterprises     = EmployeeManagerFactory.getEnterprises();
+                        var supervisors     = EmployeeManagerFactory.getAllSupervisors();                        
+                        var defaultPassword = EmployeeManagerFactory.getDefaultPassword();
+                        var calendars       = CalendarFactory.getCalendarsNames();
+                        return $q.all( { enterprises : enterprises, supervisors : supervisors, defaultPassword : defaultPassword, calendars : calendars } );
+                    }]
+                }
+            });
+    }
+}());
 
 ;( function () {
     'use strict';
@@ -1548,6 +1548,164 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
 ( function () {
     'use strict';
     angular
+        .module( 'hours.impute' )
+        .factory( 'imputeHoursFactory', imputeHoursFactory );
+
+    imputeHoursFactory.$invoke = [ '$http', '$q', 'UserFactory', '$filter' ];
+    function imputeHoursFactory( $http, $q, UserFactory, $filter ) {
+        return {
+
+            getTimesheets: function ( year, month, userProjects ) { // LEO WAS HERE
+                var userID = UserFactory.getUserID();
+                var dfd    = $q.defer();
+                $http.get( buildURL( 'getTimesheets' ) + userID + '?year=' + year + '&month=' + month )
+                    .then( prepareTimesheetsData.bind( null, userProjects, dfd ) )
+                    .catch( function ( err ) {
+                        dfd.reject( err );
+                    });
+                return dfd.promise;
+            },
+
+            setAllTimesheets: function( data, _userID ) { // LEO WAS HERE
+                var userID = _userID || UserFactory.getUserID(); // ( _userID is used by 'approvalHours controller' )
+                var dfd = $q.defer();
+                $http.post( buildURL( 'setAllTimesheets' ) + userID, data )
+                    .then( function ( response ) {
+                        dfd.resolve( response );
+                    })
+                    .catch( function ( err ) {
+                        dfd.reject( err );
+                    });
+                return dfd.promise;
+            },
+
+            insertNewNotification: function( issueDate ) { // LEO WORKING HERE
+                var data = {
+                                senderId   : UserFactory.getUserID(),
+                                receiverId : UserFactory.getSuperior(),
+                                type       : 'hours_req',
+                                text       : $filter( 'i18next' )( 'calendar.imputeHours.message.hours_req' ),
+                                issueDate  : issueDate
+                };
+                var dfd = $q.defer();
+                $http.post( buildURL( 'insertNewNotification' ), data )
+                    .then( function ( response ) {
+                        dfd.resolve( response  );
+                    })
+                    .catch( function ( err ) {
+                        dfd.reject( err );
+                    });
+                return dfd.promise;
+            },
+
+            getShowDaysObj : function ( month, year, currentWeekAtFirst ) { // LEO WAS HERE
+                var months          = [ 'january' ,'february' ,'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december' ];
+                var currentFirstDay = new Date( year, month, 1 ),
+                    currentLastDay  = new Date( year, month + 1, 0 ),
+                    totalMonthDays  = currentLastDay.getDate(),
+                    currentDay      = angular.copy( currentFirstDay ),
+                    currentMonth    = currentFirstDay.getMonth(),
+                    monthName       = months[ currentMonth ],
+                    currentYear     = currentFirstDay.getFullYear(),
+                    week            = 0; // number of the week inside month
+
+                var showDaysObj             = {};
+                showDaysObj.currentWeek     = 0;
+                showDaysObj.currentFirstDay = currentFirstDay.getTime();
+                showDaysObj.currentLastDay  = currentLastDay.getTime();
+                showDaysObj.totalMonthDays  = totalMonthDays;
+                showDaysObj.currentMonth    = currentMonth;
+                showDaysObj.currentYear     = currentYear;
+                showDaysObj.monthName       = monthName;
+                showDaysObj.weeks           = {};
+
+                while( true ) {
+                    if( currentDay.getDate() == 1 && currentDay.getDay() != 1 ) { // just in case of last-month-final-days (to complete the week view)
+                        var lastMonthFinalsDays = angular.copy( currentDay );
+                        var tempArray = [];
+                        while( true ) {
+                            lastMonthFinalsDays.setDate( lastMonthFinalsDays.getDate() - 1 );
+                            var day = new Date( lastMonthFinalsDays.getFullYear(), lastMonthFinalsDays.getMonth(), lastMonthFinalsDays.getDate() );
+                            tempArray.push( day );
+                            if( lastMonthFinalsDays.getDay() == 1 ) {
+                                tempArray = tempArray.reverse();
+                                tempArray.forEach( function( day ) {
+                                    addNewDay( day, week );
+                                })
+                                break;
+                            }
+                        }
+                    }
+                    
+                    var day = new Date( new Date( year, month, currentDay.getDate() ) );
+                    addNewDay( day, week );
+
+                    if( currentDay.getDate() == totalMonthDays ) { // when gets at last day
+                        if( currentDay.getDay() != 0 ) { // just in case of next-month-inital-days (to complete the days view)
+                            while( true ) {
+                                currentDay.setDate( currentDay.getDate() + 1 );
+
+                                var day = new Date( new Date( currentDay.getFullYear(), currentDay.getMonth(), currentDay.getDate() ) );
+                                addNewDay( day, week );
+
+                                if( currentDay.getDay() == 0 ) {
+                                    break;
+                                }
+                            }
+                        }
+                        break;
+                    }
+                    
+                    currentDay = new Date( year, month, currentDay.getDate() + 1 );
+                    if( currentDay.getDay() == 1 ) { // when week ends and start a new one
+                        week++;
+                    }
+                }
+
+                showDaysObj.totalMonthWeeks = week + 1;
+
+                function addNewDay( day, week ) {
+                    var timeStamp = new Date( day ).getTime(); // stores in timestamp format
+                    if ( !showDaysObj.weeks[ week ] ) showDaysObj.weeks[ week ] = {};
+                    if ( !showDaysObj.weeks[ week ][ timeStamp ] ) showDaysObj.weeks[ week ][ timeStamp ] = {};
+                    showDaysObj.weeks[ week ][ timeStamp ] = {
+                                                day        : day,
+                                                timeStamp  : timeStamp,
+                                                value      : 0, // it stores 'Horas/Variables' text value
+                                                week       : week,
+                                                thisMonth  : day.getMonth(),
+                                                inputType  : 'number', // 'number' for 'Horas' and 'Variables', and 'checkbox' for 'Guardias'
+                                                checkValue : false, // it stores 'Guardias' checkbox value
+                                                projectId  : '', // to know this day belongs to what project (for showStatsObj)
+                                                status     : '' // (draft, sent, approved, rejected)
+                                            };
+                }
+                return showDaysObj;
+            }
+        } // main return
+
+        // INTERNAL FUNCTION ( getTimesheets() )
+        // THIS FUNCTION REMOVES ALL PROJECTS INSIDE 'TIMESHEETMODEL' THAT DOES NOT EXIST IN 'USERPROJECTS'
+        // USER ONLY CAN BE ABLE TO IMPUTE IN PROJECTS THAT EXISTS IN PROJECT_USERS COLLECTION (many to many relationchip between users and projects)
+        function prepareTimesheetsData( userProjects, dfd, data ) {
+            var timesheetDataModel = data.data.timesheetDataModel;
+            for( var projectId in timesheetDataModel ) {
+                var exists = userProjects.some( function( project ) {
+                    return project._id == projectId;
+                });
+                if ( !exists ) {
+                    delete timesheetDataModel[ projectId ];
+                }
+            }
+            return dfd.resolve( timesheetDataModel );
+        }
+
+    }
+}());
+
+( function () {
+    'use strict';
+    angular
         .module( 'hours.employeeManager' )
         .factory( 'EmployeeManagerFactory', EmployeeManagerFactory );
 
@@ -1728,164 +1886,6 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
             //     return dfd.promise;
             // },
 
-( function () {
-    'use strict';
-    angular
-        .module( 'hours.impute' )
-        .factory( 'imputeHoursFactory', imputeHoursFactory );
-
-    imputeHoursFactory.$invoke = [ '$http', '$q', 'UserFactory', '$filter' ];
-    function imputeHoursFactory( $http, $q, UserFactory, $filter ) {
-        return {
-
-            getTimesheets: function ( year, month, userProjects ) { // LEO WAS HERE
-                var userID = UserFactory.getUserID();
-                var dfd    = $q.defer();
-                $http.get( buildURL( 'getTimesheets' ) + userID + '?year=' + year + '&month=' + month )
-                    .then( prepareTimesheetsData.bind( null, userProjects, dfd ) )
-                    .catch( function ( err ) {
-                        dfd.reject( err );
-                    });
-                return dfd.promise;
-            },
-
-            setAllTimesheets: function( data, _userID ) { // LEO WAS HERE
-                var userID = _userID || UserFactory.getUserID(); // ( _userID is used by 'approvalHours controller' )
-                var dfd = $q.defer();
-                $http.post( buildURL( 'setAllTimesheets' ) + userID, data )
-                    .then( function ( response ) {
-                        dfd.resolve( response );
-                    })
-                    .catch( function ( err ) {
-                        dfd.reject( err );
-                    });
-                return dfd.promise;
-            },
-
-            insertNewNotification: function( issueDate ) { // LEO WORKING HERE
-                var data = {
-                                senderId   : UserFactory.getUserID(),
-                                receiverId : UserFactory.getSuperior(),
-                                type       : 'hours_req',
-                                text       : $filter( 'i18next' )( 'calendar.imputeHours.message.hours_req' ),
-                                issueDate  : issueDate
-                };
-                var dfd = $q.defer();
-                $http.post( buildURL( 'insertNewNotification' ), data )
-                    .then( function ( response ) {
-                        dfd.resolve( response  );
-                    })
-                    .catch( function ( err ) {
-                        dfd.reject( err );
-                    });
-                return dfd.promise;
-            },
-
-            getShowDaysObj : function ( month, year, currentWeekAtFirst ) { // LEO WAS HERE
-                var months          = [ 'january' ,'february' ,'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december' ];
-                var currentFirstDay = new Date( year, month, 1 ),
-                    currentLastDay  = new Date( year, month + 1, 0 ),
-                    totalMonthDays  = currentLastDay.getDate(),
-                    currentDay      = angular.copy( currentFirstDay ),
-                    currentMonth    = currentFirstDay.getMonth(),
-                    monthName       = months[ currentMonth ],
-                    currentYear     = currentFirstDay.getFullYear(),
-                    week            = 0; // number of the week inside month
-
-                var showDaysObj             = {};
-                showDaysObj.currentWeek     = 0;
-                showDaysObj.currentFirstDay = currentFirstDay.getTime();
-                showDaysObj.currentLastDay  = currentLastDay.getTime();
-                showDaysObj.totalMonthDays  = totalMonthDays;
-                showDaysObj.currentMonth    = currentMonth;
-                showDaysObj.currentYear     = currentYear;
-                showDaysObj.monthName       = monthName;
-                showDaysObj.weeks           = {};
-
-                while( true ) {
-                    if( currentDay.getDate() == 1 && currentDay.getDay() != 1 ) { // just in case of last-month-final-days (to complete the week view)
-                        var lastMonthFinalsDays = angular.copy( currentDay );
-                        var tempArray = [];
-                        while( true ) {
-                            lastMonthFinalsDays.setDate( lastMonthFinalsDays.getDate() - 1 );
-                            var day = new Date( lastMonthFinalsDays.getFullYear(), lastMonthFinalsDays.getMonth(), lastMonthFinalsDays.getDate() );
-                            tempArray.push( day );
-                            if( lastMonthFinalsDays.getDay() == 1 ) {
-                                tempArray = tempArray.reverse();
-                                tempArray.forEach( function( day ) {
-                                    addNewDay( day, week );
-                                })
-                                break;
-                            }
-                        }
-                    }
-                    
-                    var day = new Date( new Date( year, month, currentDay.getDate() ) );
-                    addNewDay( day, week );
-
-                    if( currentDay.getDate() == totalMonthDays ) { // when gets at last day
-                        if( currentDay.getDay() != 0 ) { // just in case of next-month-inital-days (to complete the days view)
-                            while( true ) {
-                                currentDay.setDate( currentDay.getDate() + 1 );
-
-                                var day = new Date( new Date( currentDay.getFullYear(), currentDay.getMonth(), currentDay.getDate() ) );
-                                addNewDay( day, week );
-
-                                if( currentDay.getDay() == 0 ) {
-                                    break;
-                                }
-                            }
-                        }
-                        break;
-                    }
-                    
-                    currentDay = new Date( year, month, currentDay.getDate() + 1 );
-                    if( currentDay.getDay() == 1 ) { // when week ends and start a new one
-                        week++;
-                    }
-                }
-
-                showDaysObj.totalMonthWeeks = week + 1;
-
-                function addNewDay( day, week ) {
-                    var timeStamp = new Date( day ).getTime(); // stores in timestamp format
-                    if ( !showDaysObj.weeks[ week ] ) showDaysObj.weeks[ week ] = {};
-                    if ( !showDaysObj.weeks[ week ][ timeStamp ] ) showDaysObj.weeks[ week ][ timeStamp ] = {};
-                    showDaysObj.weeks[ week ][ timeStamp ] = {
-                                                day        : day,
-                                                timeStamp  : timeStamp,
-                                                value      : 0, // it stores 'Horas/Variables' text value
-                                                week       : week,
-                                                thisMonth  : day.getMonth(),
-                                                inputType  : 'number', // 'number' for 'Horas' and 'Variables', and 'checkbox' for 'Guardias'
-                                                checkValue : false, // it stores 'Guardias' checkbox value
-                                                projectId  : '', // to know this day belongs to what project (for showStatsObj)
-                                                status     : '' // (draft, sent, approved, rejected)
-                                            };
-                }
-                return showDaysObj;
-            }
-        } // main return
-
-        // INTERNAL FUNCTION ( getTimesheets() )
-        // THIS FUNCTION REMOVES ALL PROJECTS INSIDE 'TIMESHEETMODEL' THAT DOES NOT EXIST IN 'USERPROJECTS'
-        // USER ONLY CAN BE ABLE TO IMPUTE IN PROJECTS THAT EXISTS IN PROJECT_USERS COLLECTION (many to many relationchip between users and projects)
-        function prepareTimesheetsData( userProjects, dfd, data ) {
-            var timesheetDataModel = data.data.timesheetDataModel;
-            for( var projectId in timesheetDataModel ) {
-                var exists = userProjects.some( function( project ) {
-                    return project._id == projectId;
-                });
-                if ( !exists ) {
-                    delete timesheetDataModel[ projectId ];
-                }
-            }
-            return dfd.resolve( timesheetDataModel );
-        }
-
-    }
-}());
-
 ;( function () {
     'use strict';
     angular
@@ -1912,8 +1912,6 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
                 var dfd = $q.defer();
                 $http.get( buildURL( 'getProjectsById' ) + userID )
                     .then( function ( response ) {
-                        console.log( '******** PROJECTS ********' );
-                        console.log(response.data.projects);
                         var projects = response.data.projects;
                         projects.forEach( function( project ) { // compound name for impute-hours view
                             project.nameToShow = project.code + ' - ' + project.name;
@@ -1930,8 +1928,6 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
                 var dfd = $q.defer();
                 $http.get( buildURL( 'getUsersById' ) + projectID )
                     .then( function ( response ) {
-                        console.log( '******** USERS ********' );
-                        console.log(response.data.users);
                         dfd.resolve( response.data );
                     })
                     .catch( function ( err ) {
@@ -2073,9 +2069,8 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
             employee.opened = ( openStatus === 'true' );
         };
 
-
         $scope.myProjectClick = function( employeeId, projectId ) {
-            var openStatus = collapseToggle( projectId );
+            var openStatus = collapseToggle( projectId + '_' + employeeId );
             var employee = getEmployee( employeeId );
             employee.timesheetDataModel[ projectId ].info.opened =  ( openStatus === 'true' );
         };
@@ -2495,81 +2490,6 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
     }
 }());
 
-( function () {
-    'use strict';
-    angular
-        .module( 'hours.components' )
-        .directive( 'alertMessage', alertMessage )
-        .controller( 'alertMessageController', alertMessageController );
-
-    alertMessageController.$invoke = [ '$scope', '$interval', '$window' ];
-    function alertMessageController( $scope, $interval, $window ) {
-            var $alertSome = $( '#alertMessage .msgAlert' );
-            var promiseInterval;
-            $scope.$watch( 'error', function( value ) {
-                if ( value !== null ) {
-                    $interval.cancel( promiseInterval );
-                    $scope.horizontalMode = true;
-                    // $scope.horizontalMode = ( $window.innerWidth >= 600 ) ? true : false;
-                    $scope.alertMessage = $scope.msg;
-                    $alertSome.collapse( 'show' );
-                    promiseInterval = $interval( function() {
-                        $scope.error = null;
-                        $alertSome.collapse( 'hide' );
-                    }, $scope.error ? 6000 : 2500 );
-                }
-            });
-        }
-
-    function alertMessage() {
-        return {
-            restrict: 'E',
-            scope: {
-                error : '=',
-                msg   : '='
-            },
-            transclude: false,
-            templateUrl: 'features/components/alertMsg/alertmsg.tpl.html',
-            controller : alertMessageController,
-            link : function( scope, elem, attrs ) {
-                scope.error = null;
-                scope.msg = '';
-            }
-        };
-    }
-
-}());
-
-( function () {
-    'use strict';
-    angular
-        .module( 'hours.components' )
-        .directive( 'zemSidebar', zemSidebar )
-        .controller( 'SidebarComponentController', SidebarComponentController );
-
-    SidebarComponentController.$invoke = [ '$scope', '$rootScope', 'UserFactory', '$state' ];
-    function SidebarComponentController( $scope, $rootScope, UserFactory, $state ) {
-        $scope.username = UserFactory.getUser();
-
-        $scope.changeState = function( state ) {
-            if( $rootScope.pendingChanges ) {
-                $scope.$broadcast( 'urlChangeRequest', { msg : 'From sidebar URL change request', nextURL : state } );
-            } else {
-                $state.go( state );
-            }
-        };
-
-    }
-    function zemSidebar() {
-        return {
-            restrict: 'E',
-            replace: true,
-            templateUrl: '/features/components/sidebar/sidebar.tpl.html',
-            controller: 'SidebarComponentController'
-        };
-    }
-}());
-
 ;( function () {
     'use strict';
     angular
@@ -2685,6 +2605,604 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
 
     }
 }());
+( function () {
+    'use strict';
+    angular
+        .module( 'hours.components' )
+        .directive( 'alertMessage', alertMessage )
+        .controller( 'alertMessageController', alertMessageController );
+
+    alertMessageController.$invoke = [ '$scope', '$interval', '$window' ];
+    function alertMessageController( $scope, $interval, $window ) {
+            var $alertSome = $( '#alertMessage .msgAlert' );
+            var promiseInterval;
+            $scope.$watch( 'error', function( value ) {
+                if ( value !== null ) {
+                    $interval.cancel( promiseInterval );
+                    $scope.horizontalMode = true;
+                    // $scope.horizontalMode = ( $window.innerWidth >= 600 ) ? true : false;
+                    $scope.alertMessage = $scope.msg;
+                    $alertSome.collapse( 'show' );
+                    promiseInterval = $interval( function() {
+                        $scope.error = null;
+                        $alertSome.collapse( 'hide' );
+                    }, $scope.error ? 6000 : 2500 );
+                }
+            });
+        }
+
+    function alertMessage() {
+        return {
+            restrict: 'E',
+            scope: {
+                error : '=',
+                msg   : '='
+            },
+            transclude: false,
+            templateUrl: 'features/components/alertMsg/alertmsg.tpl.html',
+            controller : alertMessageController,
+            link : function( scope, elem, attrs ) {
+                scope.error = null;
+                scope.msg = '';
+            }
+        };
+    }
+
+}());
+
+( function () {
+    'use strict';
+    angular
+        .module( 'hours.components' )
+        .directive( 'zemSidebar', zemSidebar )
+        .controller( 'SidebarComponentController', SidebarComponentController );
+
+    SidebarComponentController.$invoke = [ '$scope', '$rootScope', 'UserFactory', '$state' ];
+    function SidebarComponentController( $scope, $rootScope, UserFactory, $state ) {
+        $scope.username = UserFactory.getUser();
+
+        $scope.changeState = function( state ) {
+            if( $rootScope.pendingChanges ) {
+                $scope.$broadcast( 'urlChangeRequest', { msg : 'From sidebar URL change request', nextURL : state } );
+            } else {
+                $state.go( state );
+            }
+        };
+
+    }
+    function zemSidebar() {
+        return {
+            restrict: 'E',
+            replace: true,
+            templateUrl: '/features/components/sidebar/sidebar.tpl.html',
+            controller: 'SidebarComponentController'
+        };
+    }
+}());
+
+;( function () {
+    'use strict';
+    angular
+        .module( 'hours.impute' )
+        .controller( 'imputeHoursController', imputeHoursController );
+
+    imputeHoursController.$invoke = [ '$scope', 'UserFactory', 'imputeHoursFactory', 'userProjects', 'CalendarFactory', '$q', '$uibModal', '$rootScope', '$state', '$timeout', '$filter' ];
+    function imputeHoursController( $scope, UserFactory, imputeHoursFactory, userProjects, CalendarFactory, $q, $uibModal, $rootScope, $state, $timeout, $filter ) {
+
+        var currentDate      = new Date();
+        var currentMonth     = currentDate.getMonth();
+        var currentYear      = currentDate.getFullYear();
+        var calendarID       = UserFactory.getcalendarID(); // get user calendar
+        var goToState        = null; // when sidebar option is required by user and there are pending-changes
+        var generalDataModel = {}; // object with all calendars and timesheet classified by month
+        $scope.changes = {};
+        $scope.changes.pendingChanges = false;
+        $scope.changes.originalGeneralDataModel = {}; // to get back pending changes
+        $rootScope.pendingChanges = false; // pending-changes for sidebar options
+        $scope.weekViewMode       = true; // week/month view switch flag
+        // ALERT MESSAGES
+        $scope.alerts = {};
+        $scope.alerts.permanentError = true;
+
+        // IMPUTE TYPES AND SUBTYPES INFO
+        $scope.imputeTypes                = [ 'Horas', 'Guardias', 'Variables' ];
+        $scope.imputeTypes[ 'Horas'     ] = [ 'Hora' ];
+        $scope.imputeTypes[ 'Guardias'  ] = [ 'Turnicidad', 'Guardia', 'Varios' ];
+        $scope.imputeTypes[ 'Variables' ] = [ 'Hora extra', 'Hora extra festivo', 'Horas nocturnas', 'Formación', 'Intervenciones', 'Varios' ];
+        $scope.typesModel    = $scope.imputeTypes[0];
+        $scope.subtypesModel = $scope.imputeTypes[$scope.typesModel][0];
+
+        ( function Init() {
+            // VERIFIES USER PROJECTS LENGTH
+            if( !userProjects.length ) { // no user Projects available
+                // error: NO userProjects available message alert
+                $timeout( function() {
+                    $scope.alerts.error = true; // error code alert
+                    $scope.alerts.permanentError = true;
+                    $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorNoProjects' ); // error message alert
+                }, 1000 );
+            } else { // userProjects OK cotinues to getData()
+                $scope.userProjects = userProjects;
+                $scope.projectModel = $scope.userProjects[0];
+                getData();
+            }
+        })();
+
+        function getData() {
+            slideContent( true );
+            $scope.showDaysObj  = imputeHoursFactory.getShowDaysObj( currentMonth, currentYear );
+            var currentFirstDay = $scope.showDaysObj.currentFirstDay;
+            if( generalDataModel[ currentFirstDay ] ) { // if that month and year already exists in 'generalDataModel', do not find anything
+                refreshShowDaysObj();
+                return;
+            }
+            var getCalendarPromise   = CalendarFactory.getCalendarById( calendarID, currentYear, currentMonth );
+            var getTimeSheetsPromise = imputeHoursFactory.getTimesheets( currentYear, currentMonth, $scope.userProjects );
+            $q.all( [ getCalendarPromise, getTimeSheetsPromise ] )
+                .then( function( data ) {
+                    var calendar = data[0];
+                    var timesheetDataModel = data[1];
+
+                    if ( calendar.success == false ) { // error: calendar not found
+                        $scope.alerts.error = true; // error code alert
+                        $scope.alerts.permanentError = true;
+                        $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorNoCalendar' ); // error message alert
+                        return;
+                    }
+                    if( !generalDataModel[ currentFirstDay ] ) generalDataModel[ currentFirstDay ] = {};
+                    if( !$scope.changes.originalGeneralDataModel[ currentFirstDay ] ) $scope.changes.originalGeneralDataModel[ currentFirstDay ] = {};
+                    var obj = {
+                                timeStamp          : currentFirstDay,
+                                date               : new Date( currentFirstDay ),
+                                calendar           : calendar,
+                                timesheetDataModel : timesheetDataModel
+                              };
+
+                    generalDataModel[ currentFirstDay ] = angular.copy( obj );
+                    $scope.changes.originalGeneralDataModel[ currentFirstDay ] = angular.copy( obj );
+                    refreshShowDaysObj();
+                    $scope.alerts.permanentError = false;
+                })
+                .catch( function( err ) {
+                    // error loading data message alert
+                    $scope.alerts.error = true; // error code alert
+                    $scope.alerts.permanentError = true;
+                    $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorLoading' ); // error message alert
+                });
+        }
+
+        $scope.projectChanged = function() {            
+            refreshShowDaysObj();
+        };
+        $scope.imputeTypeChanged = function() {
+            $scope.subtypesModel = $scope.imputeTypes[$scope.typesModel][0];
+            refreshShowDaysObj();
+        };
+        $scope.imputeSubTypeChanged = function() {
+            refreshShowDaysObj();
+		};
+        $scope.monthWeekViewSwap = function() {
+            $scope.weekViewMode = !$scope.weekViewMode;
+        };
+
+        $scope.moveDate = function( moveTo ) {
+            if( $scope.weekViewMode ) { // if week-mode
+                $scope.showDaysObj.currentWeek += moveTo;
+                if( $scope.showDaysObj.currentWeek > ( $scope.showDaysObj.totalMonthWeeks - 1 ) ) {
+                    monthChange( moveTo );
+                    $scope.showDaysObj.currentWeek = 0;
+                }
+                if( $scope.showDaysObj.currentWeek < 0 ) {
+                    monthChange( moveTo );
+                    $scope.showDaysObj.currentWeek = ( $scope.showDaysObj.totalMonthWeeks - 1 );
+                }
+            } else { // if month-mode
+                monthChange( moveTo );
+            }
+            function monthChange( moveTo ) {
+                currentMonth += moveTo;
+                if( currentMonth > 11 ) {
+                    currentMonth = 0;
+                    currentYear  += moveTo;
+                }
+                if( currentMonth < 0 ) {
+                    currentMonth = 11;
+                    currentYear  += moveTo;
+                }
+                getData();
+            }
+        };
+
+        function refreshShowDaysObj() {
+            var currentType     = $scope.typesModel;
+            var currentSubType  = $scope.subtypesModel;
+            var currentProject  = $scope.projectModel._id;
+            var currentFirstDay = $scope.showDaysObj.currentFirstDay;
+            // var currentLastDay  = $scope.showDaysObj.currentLastDay;
+            var totalMonthDays  = $scope.showDaysObj.totalMonthDays;
+            var ts              = generalDataModel[ currentFirstDay ].timesheetDataModel;
+
+            for( var day = 1; day < totalMonthDays + 1; day++ ) {
+                var thisDate = new Date( currentYear, currentMonth, day, 0, 0, 0, 0 ).getTime(); // to timestamp format
+
+                // GET CALENDAR DAYTYPE (working, holidays, etc.)
+                var dayType = '';
+                if( generalDataModel[ currentFirstDay ].calendar.eventHours[0].eventDates[ thisDate ] ) {
+                    dayType = generalDataModel[ currentFirstDay ].calendar.eventHours[0].eventDates[ thisDate ].type;
+                }
+                // GET TIMESHEET VALUE
+                var value = 0;
+                var status = '';
+                if( ts[ currentProject ] ) {
+                    if( ts[ currentProject ][ thisDate ] ) {
+                        if( ts[ currentProject ][ thisDate ][ currentType ] ) {
+                            if( ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ] ) {
+                                value = parseFloat( ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ].value );
+                                status = ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ].status;
+                            }
+                        }
+                    }
+                }
+                // STORES DAYTYPE, VALUE, INPUTTYPE AND CHECKVALUE INSIDE 'showDaysObj'
+                for( var week in $scope.showDaysObj.weeks ) {
+                    if( $scope.showDaysObj.weeks[ week ][ thisDate ] ) {
+                        // VALUE AND DAYTYPE
+                        $scope.showDaysObj.weeks[ week ][ thisDate ].dayType = dayType;
+                        $scope.showDaysObj.weeks[ week ][ thisDate ].value   = value;
+                        $scope.showDaysObj.weeks[ week ][ thisDate ].status  = status;
+                        // INPUTTYPE AND CHECKVALUE
+                        if( currentType == 'Guardias' ) {
+                            $scope.showDaysObj.weeks[ week ][ thisDate ].inputType = 'checkbox';
+                            $scope.showDaysObj.weeks[ week ][ thisDate ].checkValue = $scope.showDaysObj.weeks[ week ][ thisDate ].value == 0 ? false : true;
+                        } else {
+                            $scope.showDaysObj.weeks[ week ][ thisDate ].inputType = 'number';
+                        }
+                    }
+                }
+            }
+            slideContent( false );
+            $scope.$broadcast( 'refreshStats', { generalDataModel : generalDataModel } );
+            $scope.pendingDrafts = findDrafts( false ); // there is some pending draft? (for 'SEND' button)
+        }
+
+        $scope.inputChanged = function( value ) {
+            // verifies if entered value is null or NaN
+            if( value.value === null || isNaN( value.value ) ) { // (NaN is a number)
+                value.value = 0;
+            } else {
+                value.value = parseFloat( value.value );             
+            }
+
+            $scope.changes.pendingChanges = true;
+            $rootScope.pendingChanges     = true;
+
+            var currentType     = $scope.typesModel;
+            var currentSubType  = $scope.subtypesModel;
+            var currentProject  = $scope.projectModel._id; 
+            var currentFirstDay = $scope.showDaysObj.currentFirstDay;          
+            var ts              = generalDataModel[ currentFirstDay ].timesheetDataModel;
+            var thisDate        = value.day.getTime();
+
+            // creating associative data if it not exists
+            if( !ts[ currentProject ] ) ts[ currentProject ] = {};
+            if( !ts[ currentProject ][ thisDate ] ) ts[ currentProject ][ thisDate ] = {};
+            if( !ts[ currentProject ][ thisDate ][ currentType ] ) ts[ currentProject ][ thisDate ][ currentType ] = {};
+            if( !ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ] ) ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ] = {};
+
+            // stores values
+            if( currentType == 'Guardias' ) {
+                var newValue = value.checkValue ? 1 : 0;
+                ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ].value = newValue;    
+            } else {
+                ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ].value = value.value;    
+            }
+            ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ].status   = 'draft';
+            ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ].modified = true;
+            
+            $scope.$broadcast( 'refreshStats', { generalDataModel : generalDataModel } );
+            refreshShowDaysObj();
+        };
+
+        function findDrafts( toSend, issueDate ) {
+            for( var date in generalDataModel ) {
+                for( var projectId in generalDataModel[date].timesheetDataModel ) {
+                    for( var day in generalDataModel[date].timesheetDataModel[projectId] ) {
+                        for( var type in generalDataModel[date].timesheetDataModel[projectId][day] ) {
+                            for( var subType in generalDataModel[date].timesheetDataModel[projectId][day][type] ) {
+                                if( generalDataModel[date].timesheetDataModel[projectId][day][type][subType].status == 'draft' ) {
+                                    if( !toSend ) { // just to know if there is some 'draft'
+                                        return true;
+                                    }
+                                    generalDataModel[date].timesheetDataModel[projectId][day][type][subType].status = 'sent';
+                                    generalDataModel[date].timesheetDataModel[projectId][day][type][subType].modified = true;
+
+                                    // before send to manager, it stores all month/year related. This is for 'issueDate' field
+                                    var thisDay = new Date( parseInt( day, 10 ) );
+                                    var obj = { month : thisDay.getMonth(), year : thisDay.getFullYear() };
+                                    var isRepited = issueDate.some( function( date ) {
+                                        return date.month == obj.month && date.year == obj.year;
+                                    });
+                                    if( !isRepited ) issueDate.push( obj );
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return false; // not 'draft' found
+        }
+
+        $scope.save = function( send ) {
+            // if send: all 'draft' gonna be change to 'sent' and 'modified' to true ( findDrafts() )
+            var issueDate = [];
+            if( send ) {
+                findDrafts( true, issueDate );
+                refreshShowDaysObj();
+            }
+
+            var myPromises = [];
+            var data       = []; // to send an array of just 'timesheetDataModel' objects
+            for( var date in generalDataModel ) {
+                data.push( generalDataModel[ date ].timesheetDataModel );
+            }
+
+            myPromises.push( imputeHoursFactory.setAllTimesheets( data ) );
+            if( send ) myPromises.push( imputeHoursFactory.insertNewNotification( issueDate ) );
+
+            Promise.all( myPromises )
+                .then( function( data ) {
+                    $scope.changes.pendingChanges = false;
+                    $rootScope.pendingChanges = false;
+                    // success saving (and send) message alert
+                    if( send ) {
+                        $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.sendingSuccess' ); // ok message alert
+                    } else {
+                        $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.savingSuccess' ); // ok message alert
+                    }
+                    $scope.alerts.error = false; // ok code alert
+                })
+                .catch( function( err ) {
+                    // error saving message alert
+                    $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorSaving' ); // error message alert
+                    $scope.alerts.error = true; // error code alert
+                })
+                .then( function() { //(.then is .finally for Promise.all)
+                    if( goToState ) {
+                        $state.go( goToState );
+                        goToState = null;
+                    }
+                });
+
+        };
+        $scope.notSave = function() {
+            generalDataModel = angular.copy( $scope.changes.originalGeneralDataModel );
+            $scope.changes.pendingChanges = false;
+            refreshShowDaysObj();
+            if( goToState ) {
+                $state.go( goToState );
+                goToState = null;
+            }
+        };
+
+        // MODAL - WARNING PENDING CHANGES MODAL
+        $scope.openPendingChangesModal = function() {
+            var modalPendingChangesInstance = $uibModal.open({
+            animation : true,
+            ariaLabelledBy : 'modal-title',
+            ariaDescribedBy : 'modal-body',
+            templateUrl : '/features/impute/modals/pendingChangesModal.tpl.html',
+            controller : function( $scope, $uibModalInstance, $rootScope ) {
+                $scope.cancel = function() {
+                    $uibModalInstance.close();
+                    goToState = null;
+                };
+                $scope.save = function() {
+                    $uibModalInstance.close();
+                    $rootScope.$emit( 'modalToSave', 'Modal has been closed to save data');
+                };
+                $scope.notSave = function() {
+                    $uibModalInstance.close();
+                    $rootScope.$emit( 'modalNotToSave', 'Modal has been closed to NOT save data');
+                };
+            },
+            backdrop: 'static',
+            size: 'md'
+            });
+        }
+        $rootScope.$on( 'modalToSave', function ( event, data ) { $scope.save() } );
+        $rootScope.$on( 'modalNotToSave', function ( event, data ) { $scope.notSave() } );
+
+        // when pendingChanges this comes from 'sidebar' to prevent URL change without save changes 
+        $scope.$on( 'urlChangeRequest', function ( event, data ) {
+            event.preventDefault();
+            $scope.openPendingChangesModal();
+            goToState = data.nextURL;
+        });
+
+        function slideContent( up ) {
+            if( up ) {
+                $( '#daysDiv' ).slideUp( 500 );
+            } else {
+                $( '#daysDiv' ).slideDown( 850 );
+            }
+        };
+
+}
+
+})();
+
+;( function () {
+    'use strict';
+    angular
+        .module( 'hours.impute' )
+        .controller( 'imputeHoursStatsController', imputeHoursStatsController );
+    imputeHoursStatsController.$invoke = [ '$scope' ];
+    function imputeHoursStatsController( $scope ) {
+
+        var generalDataModel;
+        var millisecondsByDayType;
+        $scope.showStatsObj = {};
+
+        $scope.$on( 'refreshStats', function( event, data ) {
+            generalDataModel = data.generalDataModel;
+            if( !millisecondsByDayType ) getMillisecondsByDayType();
+            buildStatsObj();
+        });
+
+        function buildStatsObj() {
+            var temp            = {};
+            temp.projectsInfo   = getProjectsInfo();
+            temp.guardsInfo     = getguardsInfo();
+            temp.summary        = getsummary( temp.projectsInfo );
+            temp.calendarInfo   = getcalendarInfo();
+            $scope.showStatsObj = angular.copy( temp );
+        }
+
+        function getProjectsInfo() {
+            var currentFirstDay = $scope.showDaysObj.currentFirstDay;
+            var ts              = generalDataModel[ currentFirstDay ].timesheetDataModel;
+            var projectsInfoTemp = {};
+
+            // getting total of hours and guards in the current month by project
+            for( var projectId in ts ) {
+                var projectName = '';
+                var totalGuards = 0;
+                var totalHours  = 0;
+                var dailyWork   = 0;
+                if( !projectsInfoTemp[ projectId ] ) projectsInfoTemp[ projectId ] = {};
+                for( var day in ts[ projectId ] ) {
+                    for( var imputeType in ts[ projectId ][ day ] ) {
+                        for( var imputeSubType in ts[ projectId ][ day ][ imputeType ] ) {
+                            // accumulating totalGuards, totalHours and dailyWork
+                            var imputeValue = ts[ projectId ][ day ][ imputeType ][ imputeSubType ].value; // getting value
+                            dailyWork += dailyWorkCalculate( day, imputeType, imputeValue ); // calculating dailyWork
+                            if( imputeType == 'Guardias' ) {
+                                totalGuards += imputeValue;
+                            } else {
+                                totalHours  += imputeValue;
+                            }
+                        }
+                    }
+                }
+                // getting project name
+                projectName = getProjectName( projectId );
+                dailyWork = Number( dailyWork.toFixed( 1 ) ); // round 'dailyWork' to one decimal
+                // stores values into 'projectsInfoTemp'
+                projectsInfoTemp[ projectId ].totalGuards = totalGuards;
+                projectsInfoTemp[ projectId ].totalHours  = totalHours;
+                projectsInfoTemp[ projectId ].dailyWork   = dailyWork;
+                projectsInfoTemp[ projectId ].projectName = projectName;
+            }
+
+            function getProjectName( projectId ) {
+                return $scope.userProjects.find( function( project ) {
+                    return project._id == projectId;
+                }).nameToShow;
+            }
+
+            // calculates dailyWork according to dayType milliseconds and imputed-hours
+            function dailyWorkCalculate( day, imputeType, imputeValue ) {
+                var currentFirstDay = $scope.showDaysObj.currentFirstDay;
+                var calendar        = generalDataModel[ currentFirstDay ].calendar;
+                // var dailyWork = 0;
+                var dayType = '';
+                var dayTypeMilliseconds = 0;
+                // getting dayType acoording to day            
+                if( calendar.eventHours[0].eventDates[ day ] ) {
+                    dayType = calendar.eventHours[0].eventDates[ day ].type;
+                }
+                // getting dayType milliseconds
+                if( millisecondsByDayType[ dayType ] ) dayTypeMilliseconds = millisecondsByDayType[ dayType ].milliseconds;
+                // // calculating dailyWork
+                return calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  );
+            }
+
+            // when one project has not info it does not exist so we create it and fill with zeros (for visual purposes)
+            $scope.userProjects.forEach( function( project ) {
+                if( !projectsInfoTemp[ project._id ] ) {
+                    projectsInfoTemp[ project._id ] = {};
+                    projectsInfoTemp[ project._id ].dailyWork   = 0;
+                    projectsInfoTemp[ project._id ].totalGuards = 0;
+                    projectsInfoTemp[ project._id ].totalHours  = 0;
+                    projectsInfoTemp[ project._id ].projectName = project.nameToShow;
+                }
+            });
+            return projectsInfoTemp;
+        }
+
+        // RETURNS SUMMARY INFO. TOTAL IMPUTED HOURS, GUARDS AND DAILYWORK
+        function getsummary( projectsInfo ) {
+            var totalImputeHours  = 0;
+            var totalImputeGuards = 0;
+            var totalDailyWork    = 0;
+            for( var project in projectsInfo ) {
+                totalImputeHours  += projectsInfo[project].totalHours;
+                totalImputeGuards += projectsInfo[project].totalGuards;
+                totalDailyWork    += projectsInfo[project].dailyWork;
+            }
+            return {
+                totalImputeHours  : totalImputeHours,
+                totalImputeGuards : totalImputeGuards,
+                totalDailyWork    : Number( totalDailyWork.toFixed( 1 ) )
+            };
+        }
+
+        // RETURNS TOTAL OF HOURS OF CURRENT MONTH
+        function getcalendarInfo() {
+            var currentFirstDay   = $scope.showDaysObj.currentFirstDay;
+            var currentMonth      = new Date( parseInt( currentFirstDay ) ).getMonth();
+            var calendar          = generalDataModel[ currentFirstDay ].calendar;
+            var totalHoursByMonth = 0;
+            totalHoursByMonth     = calendar.eventHours[0].totalWorkingHours[ currentMonth ].milliseconds;
+            totalHoursByMonth    /= 3600000;
+            totalHoursByMonth     = Number( totalHoursByMonth.toFixed( 1 ) );
+            return { totalHoursByMonth : totalHoursByMonth };
+        }
+
+        // RETURNS TOTAL OF GUARDS ACCORDING TO EACH TYPE
+        function getguardsInfo() {
+            var currentFirstDay = $scope.showDaysObj.currentFirstDay;
+            var ts              = generalDataModel[ currentFirstDay ].timesheetDataModel;
+            var totalTurns   = 0;
+            var totalGuards  = 0;
+            var totalVarious = 0;
+            // getting total of guards accoding of its subType by project
+            for( var projectId in ts ) {
+                for( var day in ts[ projectId ] ) {
+                    for( var imputeType in ts[ projectId ][ day ] ) {
+                        for( var imputeSubType in ts[ projectId ][ day ][ imputeType ] ) {
+                            var imputeValue = ts[ projectId ][ day ][ imputeType ][ imputeSubType ].value; // getting value
+                            if( imputeType == 'Guardias' ) {
+                                if( imputeSubType == 'Turnicidad' ) {
+                                    totalTurns   += imputeValue;
+                                } else if ( imputeSubType == 'Guardia' ) {
+                                    totalGuards  += imputeValue;
+                                } else if ( imputeSubType == 'Varios' ) {
+                                    totalVarious += imputeValue;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return {
+                    totalTurns   : totalTurns,
+                    totalGuards  : totalGuards,
+                    totalVarious : totalVarious
+            };
+
+        }
+
+        // stores dailywork dayType milliseconds
+        function getMillisecondsByDayType() {
+            var currentFirstDay    = $scope.showDaysObj.currentFirstDay;
+            var calendar           = generalDataModel[ currentFirstDay ].calendar;
+            millisecondsByDayType  = calendar.eventHours[0].totalPerType;
+        }
+
+}
+})();
+
 ( function () {
     'use strict';
     angular
@@ -3032,524 +3550,6 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
 ;( function () {
     'use strict';
     angular
-        .module( 'hours.impute' )
-        .controller( 'imputeHoursController', imputeHoursController );
-
-    imputeHoursController.$invoke = [ '$scope', 'UserFactory', 'imputeHoursFactory', 'userProjects', 'CalendarFactory', '$q', '$uibModal', '$rootScope', '$state', '$timeout', '$filter' ];
-    function imputeHoursController( $scope, UserFactory, imputeHoursFactory, userProjects, CalendarFactory, $q, $uibModal, $rootScope, $state, $timeout, $filter ) {
-
-        var currentDate      = new Date();
-        var currentMonth     = currentDate.getMonth();
-        var currentYear      = currentDate.getFullYear();
-        var calendarID       = UserFactory.getcalendarID(); // get user calendar
-        var goToState        = null; // when sidebar option is required by user and there are pending-changes
-        var generalDataModel = {}; // object with all calendars and timesheet classified by month
-        $scope.changes = {};
-        $scope.changes.pendingChanges = false;
-        $scope.changes.originalGeneralDataModel = {}; // to get back pending changes
-        $rootScope.pendingChanges = false; // pending-changes for sidebar options
-        $scope.weekViewMode       = true; // week/month view switch flag
-        // ALERT MESSAGES
-        $scope.alerts = {};
-
-        // IMPUTE TYPES AND SUBTYPES INFO
-        $scope.imputeTypes                = [ 'Horas', 'Guardias', 'Variables' ];
-        $scope.imputeTypes[ 'Horas'     ] = [ 'Hora' ];
-        $scope.imputeTypes[ 'Guardias'  ] = [ 'Turnicidad', 'Guardia', 'Varios' ];
-        $scope.imputeTypes[ 'Variables' ] = [ 'Hora extra', 'Hora extra festivo', 'Horas nocturnas', 'Formación', 'Intervenciones', 'Varios' ];
-        $scope.typesModel    = $scope.imputeTypes[0];
-        $scope.subtypesModel = $scope.imputeTypes[$scope.typesModel][0];
-
-        ( function Init() {
-            // VERIFIES USER-PROJECTS LENGTH
-            if( !userProjects.length ) { // no userProjects available
-                // error: NO userProjects available message alert
-                $timeout( function() {
-                    $scope.alerts.error = true; // error code alert
-                    $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorNoProjects' ); // error message alert
-                }, 1000 );
-            } else { // userProjects OK cotinues to getData()
-                $scope.userProjects = userProjects;
-                $scope.projectModel = $scope.userProjects[0];
-                getData();
-            }
-        })();
-
-        function getData() {
-            slideContent( true );
-            $scope.showDaysObj  = imputeHoursFactory.getShowDaysObj( currentMonth, currentYear );
-            var currentFirstDay = $scope.showDaysObj.currentFirstDay;
-
-            if( generalDataModel[ currentFirstDay ] ) { // if that month and year already exists in 'generalDataModel', do not find anything
-                refreshShowDaysObj();
-                return;
-            }
-            var getCalendarPromise   = CalendarFactory.getCalendarById( calendarID, currentYear, currentMonth );
-            var getTimeSheetsPromise = imputeHoursFactory.getTimesheets( currentYear, currentMonth, $scope.userProjects );
-            $q.all( [ getCalendarPromise, getTimeSheetsPromise ] )
-                .then( function( data ) {
-                    var calendar = data[0];
-                    var timesheetDataModel = data[1];
-
-                    if ( calendar.success == false ) { // error: calendar not found
-                        $scope.alerts.error = true; // error code alert
-                        $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorNoCalendar' ); // error message alert
-                        return;
-                    }
-                    if( !generalDataModel[ currentFirstDay ] ) generalDataModel[ currentFirstDay ] = {};
-                    if( !$scope.changes.originalGeneralDataModel[ currentFirstDay ] ) $scope.changes.originalGeneralDataModel[ currentFirstDay ] = {};
-                    var obj = {
-                                timeStamp          : currentFirstDay,
-                                date               : new Date( currentFirstDay ),
-                                calendar           : calendar,
-                                timesheetDataModel : timesheetDataModel
-                              };
-                    generalDataModel[ currentFirstDay ] = angular.copy( obj );
-                    $scope.changes.originalGeneralDataModel[ currentFirstDay ] = angular.copy( obj );
-                    refreshShowDaysObj();
-                })
-                .catch( function( err ) {
-                    // error loading data message alert
-                    $scope.alerts.error = true; // error code alert
-                    $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorLoading' ); // error message alert
-                });
-        }
-
-        $scope.projectChanged = function() {            
-            refreshShowDaysObj();
-        };
-        $scope.imputeTypeChanged = function() {
-            $scope.subtypesModel = $scope.imputeTypes[$scope.typesModel][0];
-            refreshShowDaysObj();
-        };
-        $scope.imputeSubTypeChanged = function() {
-            refreshShowDaysObj();
-		};
-        $scope.monthWeekViewSwap = function() {
-            $scope.weekViewMode = !$scope.weekViewMode;
-        };
-
-        $scope.moveDate = function( moveTo ) {
-            if( $scope.weekViewMode ) { // if week-mode
-                $scope.showDaysObj.currentWeek += moveTo;
-                if( $scope.showDaysObj.currentWeek > ( $scope.showDaysObj.totalMonthWeeks - 1 ) ) {
-                    monthChange( moveTo );
-                    $scope.showDaysObj.currentWeek = 0;
-                }
-                if( $scope.showDaysObj.currentWeek < 0 ) {
-                    monthChange( moveTo );
-                    $scope.showDaysObj.currentWeek = ( $scope.showDaysObj.totalMonthWeeks - 1 );
-                }
-            } else { // if month-mode
-                monthChange( moveTo );
-            }
-            function monthChange( moveTo ) {
-                currentMonth += moveTo;
-                if( currentMonth > 11 ) {
-                    currentMonth = 0;
-                    currentYear  += moveTo;
-                }
-                if( currentMonth < 0 ) {
-                    currentMonth = 11;
-                    currentYear  += moveTo;
-                }
-                getData();
-            }
-        };
-
-        function refreshShowDaysObj() {
-            var currentType     = $scope.typesModel;
-            var currentSubType  = $scope.subtypesModel;
-            var currentProject  = $scope.projectModel._id;
-            var currentFirstDay = $scope.showDaysObj.currentFirstDay;
-            // var currentLastDay  = $scope.showDaysObj.currentLastDay;
-            var totalMonthDays  = $scope.showDaysObj.totalMonthDays;
-            var ts              = generalDataModel[ currentFirstDay ].timesheetDataModel;
-
-            for( var day = 1; day < totalMonthDays + 1; day++ ) {
-                var thisDate = new Date( currentYear, currentMonth, day, 0, 0, 0, 0 ).getTime(); // to timestamp format
-
-                // GET CALENDAR DAYTYPE (working, holidays, etc.)
-                var dayType = '';
-                if( generalDataModel[ currentFirstDay ].calendar.eventHours[0].eventDates[ thisDate ] ) {
-                    dayType = generalDataModel[ currentFirstDay ].calendar.eventHours[0].eventDates[ thisDate ].type;
-                }
-                // GET TIMESHEET VALUE
-                var value = 0;
-                var status = '';
-                if( ts[ currentProject ] ) {
-                    if( ts[ currentProject ][ thisDate ] ) {
-                        if( ts[ currentProject ][ thisDate ][ currentType ] ) {
-                            if( ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ] ) {
-                                value = parseFloat( ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ].value );
-                                status = ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ].status;
-                            }
-                        }
-                    }
-                }
-                // STORES DAYTYPE, VALUE, INPUTTYPE AND CHECKVALUE INSIDE 'showDaysObj'
-                for( var week in $scope.showDaysObj.weeks ) {
-                    if( $scope.showDaysObj.weeks[ week ][ thisDate ] ) {
-                        // VALUE AND DAYTYPE
-                        $scope.showDaysObj.weeks[ week ][ thisDate ].dayType = dayType;
-                        $scope.showDaysObj.weeks[ week ][ thisDate ].value   = value;
-                        $scope.showDaysObj.weeks[ week ][ thisDate ].status  = status;
-                        // INPUTTYPE AND CHECKVALUE
-                        if( currentType == 'Guardias' ) {
-                            $scope.showDaysObj.weeks[ week ][ thisDate ].inputType = 'checkbox';
-                            $scope.showDaysObj.weeks[ week ][ thisDate ].checkValue = $scope.showDaysObj.weeks[ week ][ thisDate ].value == 0 ? false : true;
-                        } else {
-                            $scope.showDaysObj.weeks[ week ][ thisDate ].inputType = 'number';
-                        }
-                    }
-                }
-            }
-            slideContent( false );
-            $scope.$broadcast( 'refreshStats', { generalDataModel : generalDataModel } );
-            $scope.pendingDrafts = findDrafts( false ); // there is some pending draft? (for 'SEND' button)
-        }
-
-        $scope.inputChanged = function( value ) {
-            // verifies if entered value is null or NaN
-            if( value.value === null || isNaN( value.value ) ) { // (NaN is a number)
-                value.value = 0;
-            } else {
-                value.value = parseFloat( value.value );             
-            }
-
-            $scope.changes.pendingChanges = true;
-            $rootScope.pendingChanges     = true;
-
-            var currentType     = $scope.typesModel;
-            var currentSubType  = $scope.subtypesModel;
-            var currentProject  = $scope.projectModel._id; 
-            var currentFirstDay = $scope.showDaysObj.currentFirstDay;          
-            var ts              = generalDataModel[ currentFirstDay ].timesheetDataModel;
-            var thisDate        = value.day.getTime();
-
-            // creating associative data if it not exists
-            if( !ts[ currentProject ] ) ts[ currentProject ] = {};
-            if( !ts[ currentProject ][ thisDate ] ) ts[ currentProject ][ thisDate ] = {};
-            if( !ts[ currentProject ][ thisDate ][ currentType ] ) ts[ currentProject ][ thisDate ][ currentType ] = {};
-            if( !ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ] ) ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ] = {};
-
-            // stores values
-            if( currentType == 'Guardias' ) {
-                var newValue = value.checkValue ? 1 : 0;
-                ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ].value = newValue;    
-            } else {
-                ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ].value = value.value;    
-            }
-            ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ].status   = 'draft';
-            ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ].modified = true;
-            
-            $scope.$broadcast( 'refreshStats', { generalDataModel : generalDataModel } );
-            refreshShowDaysObj();
-        };
-
-        function findDrafts( toSend, issueDate ) {
-            for( var date in generalDataModel ) {
-                for( var projectId in generalDataModel[date].timesheetDataModel ) {
-                    for( var day in generalDataModel[date].timesheetDataModel[projectId] ) {
-                        for( var type in generalDataModel[date].timesheetDataModel[projectId][day] ) {
-                            for( var subType in generalDataModel[date].timesheetDataModel[projectId][day][type] ) {
-                                if( generalDataModel[date].timesheetDataModel[projectId][day][type][subType].status == 'draft' ) {
-                                    if( !toSend ) { // just to know if there is some 'draft'
-                                        return true;
-                                    }
-                                    generalDataModel[date].timesheetDataModel[projectId][day][type][subType].status = 'sent';
-                                    generalDataModel[date].timesheetDataModel[projectId][day][type][subType].modified = true;
-
-                                    // before send to manager, it stores all month/year related. This is for 'issueDate' field
-                                    var thisDay = new Date( parseInt( day, 10 ) );
-                                    var obj = { month : thisDay.getMonth(), year : thisDay.getFullYear() };
-                                    var isRepited = issueDate.some( function( date ) {
-                                        return date.month == obj.month && date.year == obj.year;
-                                    });
-                                    if( !isRepited ) issueDate.push( obj );
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            return false; // not 'draft' found
-        }
-
-        $scope.save = function( send ) {
-            // if send: all 'draft' gonna be change to 'sent' and 'modified' to true ( findDrafts() )
-            var issueDate = [];
-            if( send ) {
-                findDrafts( true, issueDate );
-                refreshShowDaysObj();
-            }
-
-            var myPromises = [];
-            var data       = []; // to send an array of just 'timesheetDataModel' objects
-            for( var date in generalDataModel ) {
-                data.push( generalDataModel[ date ].timesheetDataModel );
-            }
-
-            myPromises.push( imputeHoursFactory.setAllTimesheets( data ) );
-            if( send ) myPromises.push( imputeHoursFactory.insertNewNotification( issueDate ) );
-
-            Promise.all( myPromises )
-                .then( function( data ) {
-                    $scope.changes.pendingChanges = false;
-                    $rootScope.pendingChanges = false;
-                    // success saving (and send) message alert
-                    if( send ) {
-                        $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.sendingSuccess' ); // ok message alert
-                    } else {
-                        $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.savingSuccess' ); // ok message alert
-                    }
-                    $scope.alerts.error = false; // ok code alert
-                })
-                .catch( function( err ) {
-                    // error saving message alert
-                    $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorSaving' ); // error message alert
-                    $scope.alerts.error = true; // error code alert
-                })
-                .then( function() { //(.then is .finally for Promise.all)
-                    if( goToState ) {
-                        $state.go( goToState );
-                        goToState = null;
-                    }
-                });
-
-        };
-        $scope.notSave = function() {
-            generalDataModel = angular.copy( $scope.changes.originalGeneralDataModel );
-            $scope.changes.pendingChanges = false;
-            refreshShowDaysObj();
-            if( goToState ) {
-                $state.go( goToState );
-                goToState = null;
-            }
-        };
-
-        // MODAL - WARNING PENDING CHANGES MODAL
-        $scope.openPendingChangesModal = function() {
-            var modalPendingChangesInstance = $uibModal.open({
-            animation : true,
-            ariaLabelledBy : 'modal-title',
-            ariaDescribedBy : 'modal-body',
-            templateUrl : '/features/impute/modals/pendingChangesModal.tpl.html',
-            controller : function( $scope, $uibModalInstance, $rootScope ) {
-                $scope.cancel = function() {
-                    $uibModalInstance.close();
-                    goToState = null;
-                };
-                $scope.save = function() {
-                    $uibModalInstance.close();
-                    $rootScope.$emit( 'modalToSave', 'Modal has been closed to save data');
-                };
-                $scope.notSave = function() {
-                    $uibModalInstance.close();
-                    $rootScope.$emit( 'modalNotToSave', 'Modal has been closed to NOT save data');
-                };
-            },
-            backdrop: 'static',
-            size: 'md'
-            });
-        }
-        $rootScope.$on( 'modalToSave', function ( event, data ) { $scope.save() } );
-        $rootScope.$on( 'modalNotToSave', function ( event, data ) { $scope.notSave() } );
-
-        // when pendingChanges this comes from 'sidebar' to prevent URL change without save changes 
-        $scope.$on( 'urlChangeRequest', function ( event, data ) {
-            event.preventDefault();
-            $scope.openPendingChangesModal();
-            goToState = data.nextURL;
-        });
-
-        function slideContent( up ) {
-            if( up ) {
-                $( '#daysDiv' ).slideUp( 0 );
-            } else {
-                $( '#daysDiv' ).slideDown( 850 );
-            }
-        };
-
-}
-
-})();
-
-;( function () {
-    'use strict';
-    angular
-        .module( 'hours.impute' )
-        .controller( 'imputeHoursStatsController', imputeHoursStatsController );
-    imputeHoursStatsController.$invoke = [ '$scope' ];
-    function imputeHoursStatsController( $scope ) {
-
-        var generalDataModel;
-        var millisecondsByDayType;
-        $scope.showStatsObj = {};
-
-        $scope.$on( 'refreshStats', function( event, data ) {
-            generalDataModel = data.generalDataModel;
-            if( !millisecondsByDayType ) getMillisecondsByDayType();
-            buildStatsObj();
-        });
-
-        function buildStatsObj() {
-            var temp            = {};
-            temp.projectsInfo   = getProjectsInfo();
-            temp.guardsInfo     = getguardsInfo();
-            temp.summary        = getsummary( temp.projectsInfo );
-            temp.calendarInfo   = getcalendarInfo();
-            $scope.showStatsObj = angular.copy( temp );
-        }
-
-        function getProjectsInfo() {
-            var currentFirstDay = $scope.showDaysObj.currentFirstDay;
-            var ts              = generalDataModel[ currentFirstDay ].timesheetDataModel;
-            var projectsInfoTemp = {};
-
-            // getting total of hours and guards in the current month by project
-            for( var projectId in ts ) {
-                var projectName = '';
-                var totalGuards = 0;
-                var totalHours  = 0;
-                var dailyWork   = 0;
-                if( !projectsInfoTemp[ projectId ] ) projectsInfoTemp[ projectId ] = {};
-                for( var day in ts[ projectId ] ) {
-                    for( var imputeType in ts[ projectId ][ day ] ) {
-                        for( var imputeSubType in ts[ projectId ][ day ][ imputeType ] ) {
-                            // accumulating totalGuards, totalHours and dailyWork
-                            var imputeValue = ts[ projectId ][ day ][ imputeType ][ imputeSubType ].value; // getting value
-                            dailyWork += dailyWorkCalculate( day, imputeType, imputeValue ); // calculating dailyWork
-                            if( imputeType == 'Guardias' ) {
-                                totalGuards += imputeValue;
-                            } else {
-                                totalHours  += imputeValue;
-                            }
-                        }
-                    }
-                }
-                // getting project name
-                projectName = getProjectName( projectId );
-                dailyWork = Number( dailyWork.toFixed( 1 ) ); // round 'dailyWork' to one decimal
-                // stores values into 'projectsInfoTemp'
-                projectsInfoTemp[ projectId ].totalGuards = totalGuards;
-                projectsInfoTemp[ projectId ].totalHours  = totalHours;
-                projectsInfoTemp[ projectId ].dailyWork   = dailyWork;
-                projectsInfoTemp[ projectId ].projectName = projectName;
-            }
-
-            function getProjectName( projectId ) {
-                return $scope.userProjects.find( function( project ) {
-                    return project._id == projectId;
-                }).nameToShow;
-            }
-
-            // calculates dailyWork according to dayType milliseconds and imputed-hours
-            function dailyWorkCalculate( day, imputeType, imputeValue ) {
-                var currentFirstDay = $scope.showDaysObj.currentFirstDay;
-                var calendar        = generalDataModel[ currentFirstDay ].calendar;
-                // var dailyWork = 0;
-                var dayType = '';
-                var dayTypeMilliseconds = 0;
-                // getting dayType acoording to day            
-                if( calendar.eventHours[0].eventDates[ day ] ) {
-                    dayType = calendar.eventHours[0].eventDates[ day ].type;
-                }
-                // getting dayType milliseconds
-                if( millisecondsByDayType[ dayType ] ) dayTypeMilliseconds = millisecondsByDayType[ dayType ].milliseconds;
-                // // calculating dailyWork
-                return calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  );
-            }
-
-            // when one project has not info it does not exist so we create it and fill with zeros (for visual purposes)
-            $scope.userProjects.forEach( function( project ) {
-                if( !projectsInfoTemp[ project._id ] ) {
-                    projectsInfoTemp[ project._id ] = {};
-                    projectsInfoTemp[ project._id ].dailyWork   = 0;
-                    projectsInfoTemp[ project._id ].totalGuards = 0;
-                    projectsInfoTemp[ project._id ].totalHours  = 0;
-                    projectsInfoTemp[ project._id ].projectName = project.nameToShow;
-                }
-            });
-            return projectsInfoTemp;
-        }
-
-        // RETURNS SUMMARY INFO. TOTAL IMPUTED HOURS, GUARDS AND DAILYWORK
-        function getsummary( projectsInfo ) {
-            var totalImputeHours  = 0;
-            var totalImputeGuards = 0;
-            var totalDailyWork    = 0;
-            for( var project in projectsInfo ) {
-                totalImputeHours  += projectsInfo[project].totalHours;
-                totalImputeGuards += projectsInfo[project].totalGuards;
-                totalDailyWork    += projectsInfo[project].dailyWork;
-            }
-            return {
-                totalImputeHours  : totalImputeHours,
-                totalImputeGuards : totalImputeGuards,
-                totalDailyWork    : Number( totalDailyWork.toFixed( 1 ) )
-            };
-        }
-
-        // RETURNS TOTAL OF HOURS OF CURRENT MONTH
-        function getcalendarInfo() {
-            var currentFirstDay   = $scope.showDaysObj.currentFirstDay;
-            var currentMonth      = new Date( parseInt( currentFirstDay ) ).getMonth();
-            var calendar          = generalDataModel[ currentFirstDay ].calendar;
-            var totalHoursByMonth = 0;
-            totalHoursByMonth     = calendar.eventHours[0].totalWorkingHours[ currentMonth ].milliseconds;
-            totalHoursByMonth    /= 3600000;
-            totalHoursByMonth     = Number( totalHoursByMonth.toFixed( 1 ) );
-            return { totalHoursByMonth : totalHoursByMonth };
-        }
-
-        // RETURNS TOTAL OF GUARDS ACCORDING TO EACH TYPE
-        function getguardsInfo() {
-            var currentFirstDay = $scope.showDaysObj.currentFirstDay;
-            var ts              = generalDataModel[ currentFirstDay ].timesheetDataModel;
-            var totalTurns   = 0;
-            var totalGuards  = 0;
-            var totalVarious = 0;
-            // getting total of guards accoding of its subType by project
-            for( var projectId in ts ) {
-                for( var day in ts[ projectId ] ) {
-                    for( var imputeType in ts[ projectId ][ day ] ) {
-                        for( var imputeSubType in ts[ projectId ][ day ][ imputeType ] ) {
-                            var imputeValue = ts[ projectId ][ day ][ imputeType ][ imputeSubType ].value; // getting value
-                            if( imputeType == 'Guardias' ) {
-                                if( imputeSubType == 'Turnicidad' ) {
-                                    totalTurns   += imputeValue;
-                                } else if ( imputeSubType == 'Guardia' ) {
-                                    totalGuards  += imputeValue;
-                                } else if ( imputeSubType == 'Varios' ) {
-                                    totalVarious += imputeValue;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            return {
-                    totalTurns   : totalTurns,
-                    totalGuards  : totalGuards,
-                    totalVarious : totalVarious
-            };
-
-        }
-
-        // stores dailywork dayType milliseconds
-        function getMillisecondsByDayType() {
-            var currentFirstDay    = $scope.showDaysObj.currentFirstDay;
-            var calendar           = generalDataModel[ currentFirstDay ].calendar;
-            millisecondsByDayType  = calendar.eventHours[0].totalPerType;
-        }
-
-}
-})();
-
-;( function () {
-    'use strict';
-    angular
         .module( 'hours.projects' )
         .controller( 'ProjectAssignController', ProjectAssignController );
         // .controller( 'ModalProjectInfo',        ModalProjectInfo )
@@ -3575,12 +3575,6 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
             $scope.$broadcast( 'toSearchEvent', { searchText : searchText } );
         };
 
-        // $timeout( function() {
-        //     $scope.$broadcast( 'toSearchEvent', { searchText : '1' } );            
-        // }, 600 );
-
-
-
         $scope.openInfo = function ( project ) {
             var modalInstance = $uibModal.open({
                 animation: true,
@@ -3593,11 +3587,11 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
         };
 
         $timeout( function() { // search input set_focus
+            $scope.$broadcast( 'toSearchEvent', { searchText : '1' } );
             document.getElementById( 'searchInput' ).focus();
         }, 800 );
     
 // };
-
 
     }
 
@@ -3908,9 +3902,13 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
 
     ProjectAssignProjectController.$invoke = [ '$scope', 'ProjectsFactory', '$uibModal', '$timeout' ];
     function ProjectAssignProjectController( $scope, ProjectsFactory, $uibModal, $timeout ) {
+        
+
+        $scope.$on( 'toFilterProjects', function( event, filter ) {
+            $scope.projects = filter.projects;
+        });
 
         $scope.$on( 'toSearchEvent', function( event, data ) {
-
             $scope.spinners.projects = true;
             ProjectsFactory.advancedProjectSearch( data.searchText )
                 .then( function ( data ) {
@@ -3946,8 +3944,8 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
         .module( 'hours.projects' )
         .controller( 'ProjectAssignUsersController', ProjectAssignUsersController );
 
-    ProjectAssignUsersController.$invoke = [ '$scope', 'EmployeeManagerFactory', 'ProjectsFactory' ];
-    function ProjectAssignUsersController( $scope, EmployeeManagerFactory, ProjectsFactory ) {
+    ProjectAssignUsersController.$invoke = [ '$scope', '$rootScope', 'EmployeeManagerFactory', 'ProjectsFactory' ];
+    function ProjectAssignUsersController( $scope, $rootScope, EmployeeManagerFactory, ProjectsFactory ) {
 
         $scope.$on( 'toSearchEvent', function( event, data ) {
             $scope.spinners.users = true;
@@ -3965,7 +3963,12 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
 
         $scope.activeThisUser = function( userId ) {
             ProjectsFactory.getProjectsById( userId )
-                .then( function ( data ) {
+                .then( function ( projects ) {
+                    // console.log('$scope.employees');
+                    // console.log($scope.employees);
+                    // console.log('$scope.projects');
+                    // console.log($scope.projects);
+                    $rootScope.$broadcast( 'toFilterProjects', { projects : projects } );
                 })
                 .catch( function ( err ) {
                 })

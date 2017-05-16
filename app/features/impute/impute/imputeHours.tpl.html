@@ -4,9 +4,9 @@
         <div id="headerContent">
             <div class="flexDesign box-shadow p20 top-bar">
                 <div>
-                    <h3>Imputar Horas</h3>
+                    <h3>{{'calendar.imputeHours.title' | i18next}}</h3>
                 </div>
-                 <div class="rightMargin">
+                 <div class="rightMargin" ng-hide="alerts.permanentError">
                      <button ng-disabled="!changes.pendingChanges" class="btn btn-gray no-margin" ng-click="openPendingChangesModal()">
                         {{'actions.cancel' | i18next}}
                     </button>
@@ -31,8 +31,9 @@
         <!-- ALERTS MESSAGES -->
         <alert-message error="alerts.error" msg="alerts.message"></alert-message>
 
-        <!-- IF NOT USERPROJECTS NOT SHOW ANYTHING -->
-        <div ng-hide="!userProjects.length">
+        <!-- IF NOT USERPROJECTS OR NOT CALENDAR OR ANY LOAD ERROR -->
+        <!-- <div ng-hide="!userProjects.length"> -->
+        <div ng-hide="alerts.permanentError">
 
             <!-- OPTIONS -->
             <div id="imputeOptions" class="simple-input">

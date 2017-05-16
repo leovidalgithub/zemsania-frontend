@@ -6,9 +6,13 @@
 
     ProjectAssignProjectController.$invoke = [ '$scope', 'ProjectsFactory', '$uibModal', '$timeout' ];
     function ProjectAssignProjectController( $scope, ProjectsFactory, $uibModal, $timeout ) {
+        
+
+        $scope.$on( 'toFilterProjects', function( event, filter ) {
+            $scope.projects = filter.projects;
+        });
 
         $scope.$on( 'toSearchEvent', function( event, data ) {
-
             $scope.spinners.projects = true;
             ProjectsFactory.advancedProjectSearch( data.searchText )
                 .then( function ( data ) {
