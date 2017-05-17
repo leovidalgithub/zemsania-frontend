@@ -37,12 +37,11 @@
                 .then( function ( data ) {
                     $scope.employees = data;
                     imputesCount();
-                    initialSlick();
                     if( $rootScope.notification ) showNotificationData();
+                    initialSlick();
                 })
                 .catch( function ( err ) {
                     console.log('err');
-                    console.log(err);
                     $scope.alerts.error = true; // error code alert
                     $scope.alerts.message = $filter( 'i18next' )( 'approvalHours.errorLoading' ); // error message alert
                 });
@@ -58,18 +57,25 @@
             var openStatus = collapseToggle( projectId + '_' + employeeId );
             var employee = getEmployee( employeeId );
             employee.timesheetDataModel[ projectId ].info.opened =  ( openStatus === 'true' );
+            if ( openStatus ) { // if project content is opening, we have to reinitalize the slickTable to show corretly for the first time
+                var element = '#' + projectId + '_' + employeeId + ' .slickTable';
+                initialSlick( element );
+            }
         };
 
         // to collapse toggle of table views
         function collapseToggle( id ) {
             var element = $( '#' + id );
             element.collapse( 'toggle' );
-            return element.attr( 'aria-expanded' ); // to know if it is collapsed or not
+            return element.attr( 'aria-expanded' ); // to know if tab content is collapsed or not
         }
 
-        function initialSlick() {
+        // SLICKTABLE ISSUE: when it comes from notifications, for some reason, all hidden slickTables do not show corretly. So, every time a 
+        // project table is open, we have to initialize or reinitialize the slick element to show properly
+        function initialSlick( element ) {
+            element = element ? element : '.slickTable';
             $timeout( function() {
-                  $( '.slickTable' ).slick({
+                  $( element ).slick({
                     dots: true,
                     infinite : false,
                     slidesToShow: 5,
@@ -82,7 +88,7 @@
                     // speed : 300,
                     // centerMode : true,
                   });
-            }, 500 );
+            }, 400 );
         }
 
         // WHEN USER CLICKS ON ANY APPROVAL OR REJECT BUTTON. THERE ARE 4 LEVEL OF APPROVAL/REJECT CLICKS
@@ -199,11 +205,11 @@
             $rootScope.notification   = null;
 
             $timeout( function() {
-                for( var project in employee.timesheetDataModel ) {
+                for( var project in employee.timesheetDataModel ) { // to open every project content of that employee
                     collapseToggle( project + '_' + senderId );
                     employee.timesheetDataModel[project].info.opened = true;
                 }
-                collapseToggle( senderId );
+                collapseToggle( senderId ); // to open employee content
                 employee.opened = true;                    
             }, 800 );
         }

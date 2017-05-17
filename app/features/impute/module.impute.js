@@ -21,7 +21,7 @@
                 resolve : {
                     userProjects : [ 'ProjectsFactory', 'UserFactory', function( ProjectsFactory, UserFactory ) {
                         var userID = UserFactory.getUserID();
-                        return ProjectsFactory.getProjectsById( userID );
+                        return ProjectsFactory.getProjectsByUserId( userID );
                     }]
                 }
             });

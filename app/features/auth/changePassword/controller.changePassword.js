@@ -27,7 +27,6 @@
                         }, 2500 );
                     } else {
                         $scope.passwordForm.error = true;
-                        console.log(data.data.code);
                         switch( data.data.code ) {
                             case 101:
                                 $scope.changePassword.messageToDisplay = 'userNotFound';

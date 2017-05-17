@@ -11,7 +11,7 @@
         <!-- PROJECTS LIST -->
         <div ng-show="projects">
             <ul class="list-group">
-                <li ng-repeat="project in projects" class="list-group-item">
+                <li ng-repeat="project in projects | orderBy: 'name'" class="list-group-item">
                     <div class="pull-left col-xs-8">
                         <i class="fa fa-folder"></i>
                             {{project.name}}

@@ -100,7 +100,6 @@
         };
 
         $scope.signupUser = function () {
-            console.log($scope.employee);
             $( '#page-content-wrapper #section' ).animate( { scrollTop: 0 }, 'slow' );
             EmployeeManagerFactory.createEmployee( $scope.employee )
                 .then( function ( data ) {

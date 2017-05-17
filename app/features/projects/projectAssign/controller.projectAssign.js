@@ -3,16 +3,11 @@
     angular
         .module( 'hours.projects' )
         .controller( 'ProjectAssignController', ProjectAssignController );
-        // .controller( 'ModalProjectInfo',        ModalProjectInfo )
         // .controller( 'ModalAddUserToProject',   ModalAddUserToProject )
         // .controller( 'ModalUserInfo',           ModalUserInfo );
 
     ProjectAssignController.$invoke = [ '$scope', 'ProjectsFactory', '$uibModal', '$timeout' ];
     function ProjectAssignController( $scope, ProjectsFactory, $uibModal, $timeout ) {
-
-        // (function Init( search ) {
-        //     $scope.searchProject( search );
-        // })('1');
 
         // $scope.openProject = null;
         // $scope.advancedSearchVisible = false;
@@ -34,7 +29,7 @@
                 resolve: {
                     project: project
                 }
-            });
+            }).result.then( function() {}, function( res ) {} ); // to avoid: 'Possibly unhandled rejection: backdrop click'
         };
 
         $timeout( function() { // search input set_focus
@@ -42,13 +37,7 @@
             document.getElementById( 'searchInput' ).focus();
         }, 800 );
     
-// };
-
     }
-
-    // ModalProjectInfo.$invoke = ['$scope', '$uibModalInstance', 'project'];
-    // function ModalProjectInfo($scope, $uibModalInstance, project) {
-    // }
 
     // ModalUserInfo.$invoke = ['$scope', '$uibModalInstance', 'user'];
     // function ModalUserInfo($scope, $uibModalInstance, user) {

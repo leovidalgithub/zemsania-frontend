@@ -209,10 +209,10 @@ var API_paths = {
     getDailyConcepts: 'dailyReport/getDailyConcepts',
 
     projectSearch: 'project/search',
-    getProjectsById: 'projectUsers/getProjectsById/',
-    getUsersById: 'projectUsers/getUsersById/',
-    projectGetUsers: 'projectUsers/getUsersByProjectID',
-    projectUserSave: 'projectUsers/save',
+    getProjectsByUserId: 'projectUsers/getProjectsByUserId/',
+    getUsersByProjectId: 'projectUsers/getUsersByProjectId/',
+    // projectGetUsers: 'projectUsers/getUsersByProjectID',
+    // projectUserSave: 'projectUsers/save',
     // getUsersBySupervisor: 'projectUsers/getUsersBySupervisor',
     projectUserUpdate: 'projectUsers/update',
     projectUserDelete: 'projectUsers/delete',
@@ -672,7 +672,7 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
                 resolve : {
                     userProjects : [ 'ProjectsFactory', 'UserFactory', function( ProjectsFactory, UserFactory ) {
                         var userID = UserFactory.getUserID();
-                        return ProjectsFactory.getProjectsById( userID );
+                        return ProjectsFactory.getProjectsByUserId( userID );
                     }]
                 }
             });
@@ -1908,9 +1908,9 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
                 return dfd.promise;
             },
 
-            getProjectsById: function ( userID ) { // LEO WAS HERE
+            getProjectsByUserId: function ( userID ) { // LEO WAS HERE
                 var dfd = $q.defer();
-                $http.get( buildURL( 'getProjectsById' ) + userID )
+                $http.get( buildURL( 'getProjectsByUserId' ) + userID )
                     .then( function ( response ) {
                         var projects = response.data.projects;
                         projects.forEach( function( project ) { // compound name for impute-hours view
@@ -1924,9 +1924,9 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
                 return dfd.promise;
             },
 
-            getUsersById: function ( projectID ) { // LEO WAS HERE                
+            getUsersByProjectId: function ( projectId ) { // LEO WAS HERE
                 var dfd = $q.defer();
-                $http.get( buildURL( 'getUsersById' ) + projectID )
+                $http.get( buildURL( 'getUsersByProjectId' ) + projectId )
                     .then( function ( response ) {
                         dfd.resolve( response.data );
                     })
@@ -1940,10 +1940,10 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
 
 
 
-            // getUsersInProjectByID: function (projectID) {
+            // getUsersInProjectByID: function (projectId) {
             //     var dfd = $q.defer();
             //     $http
-            //         .post(buildURL('projectGetUsers'), {projectId: projectID})
+            //         .post(buildURL('projectGetUsers'), {projectId: projectId})
             //         .then(function (response) {
             //             if (response.data.success) {
             //                 dfd.resolve(response.data.users);
@@ -2052,12 +2052,11 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
                 .then( function ( data ) {
                     $scope.employees = data;
                     imputesCount();
-                    initialSlick();
                     if( $rootScope.notification ) showNotificationData();
+                    initialSlick();
                 })
                 .catch( function ( err ) {
                     console.log('err');
-                    console.log(err);
                     $scope.alerts.error = true; // error code alert
                     $scope.alerts.message = $filter( 'i18next' )( 'approvalHours.errorLoading' ); // error message alert
                 });
@@ -2073,18 +2072,25 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
             var openStatus = collapseToggle( projectId + '_' + employeeId );
             var employee = getEmployee( employeeId );
             employee.timesheetDataModel[ projectId ].info.opened =  ( openStatus === 'true' );
+            if ( openStatus ) { // if project content is opening, we have to reinitalize the slickTable to show corretly for the first time
+                var element = '#' + projectId + '_' + employeeId + ' .slickTable';
+                initialSlick( element );
+            }
         };
 
         // to collapse toggle of table views
         function collapseToggle( id ) {
             var element = $( '#' + id );
             element.collapse( 'toggle' );
-            return element.attr( 'aria-expanded' ); // to know if it is collapsed or not
+            return element.attr( 'aria-expanded' ); // to know if tab content is collapsed or not
         }
 
-        function initialSlick() {
+        // SLICKTABLE ISSUE: when it comes from notifications, for some reason, all hidden slickTables do not show corretly. So, every time a 
+        // project table is open, we have to initialize or reinitialize the slick element to show properly
+        function initialSlick( element ) {
+            element = element ? element : '.slickTable';
             $timeout( function() {
-                  $( '.slickTable' ).slick({
+                  $( element ).slick({
                     dots: true,
                     infinite : false,
                     slidesToShow: 5,
@@ -2097,7 +2103,7 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
                     // speed : 300,
                     // centerMode : true,
                   });
-            }, 500 );
+            }, 400 );
         }
 
         // WHEN USER CLICKS ON ANY APPROVAL OR REJECT BUTTON. THERE ARE 4 LEVEL OF APPROVAL/REJECT CLICKS
@@ -2214,11 +2220,11 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
             $rootScope.notification   = null;
 
             $timeout( function() {
-                for( var project in employee.timesheetDataModel ) {
+                for( var project in employee.timesheetDataModel ) { // to open every project content of that employee
                     collapseToggle( project + '_' + senderId );
                     employee.timesheetDataModel[project].info.opened = true;
                 }
-                collapseToggle( senderId );
+                collapseToggle( senderId ); // to open employee content
                 employee.opened = true;                    
             }, 800 );
         }
@@ -2262,7 +2268,6 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
                         }, 2500 );
                     } else {
                         $scope.passwordForm.error = true;
-                        console.log(data.data.code);
                         switch( data.data.code ) {
                             case 101:
                                 $scope.changePassword.messageToDisplay = 'userNotFound';
@@ -2302,7 +2307,6 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
             $scope.loginForm.disabled = true;
             UserFactory.doLogin( $scope.loginForm )
                 .then( function ( data ) {
-                    console.log(data);
                     if ( data.defaultPassword ) {
                         $state.go( 'changePassword' );
                     } else {
@@ -2782,7 +2786,6 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
         };
 
         $scope.signupUser = function () {
-            console.log($scope.employee);
             $( '#page-content-wrapper #section' ).animate( { scrollTop: 0 }, 'slow' );
             EmployeeManagerFactory.createEmployee( $scope.employee )
                 .then( function ( data ) {
@@ -3552,16 +3555,11 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
     angular
         .module( 'hours.projects' )
         .controller( 'ProjectAssignController', ProjectAssignController );
-        // .controller( 'ModalProjectInfo',        ModalProjectInfo )
         // .controller( 'ModalAddUserToProject',   ModalAddUserToProject )
         // .controller( 'ModalUserInfo',           ModalUserInfo );
 
     ProjectAssignController.$invoke = [ '$scope', 'ProjectsFactory', '$uibModal', '$timeout' ];
     function ProjectAssignController( $scope, ProjectsFactory, $uibModal, $timeout ) {
-
-        // (function Init( search ) {
-        //     $scope.searchProject( search );
-        // })('1');
 
         // $scope.openProject = null;
         // $scope.advancedSearchVisible = false;
@@ -3583,7 +3581,7 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
                 resolve: {
                     project: project
                 }
-            });
+            }).result.then( function() {}, function( res ) {} ); // to avoid: 'Possibly unhandled rejection: backdrop click'
         };
 
         $timeout( function() { // search input set_focus
@@ -3591,13 +3589,7 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
             document.getElementById( 'searchInput' ).focus();
         }, 800 );
     
-// };
-
     }
-
-    // ModalProjectInfo.$invoke = ['$scope', '$uibModalInstance', 'project'];
-    // function ModalProjectInfo($scope, $uibModalInstance, project) {
-    // }
 
     // ModalUserInfo.$invoke = ['$scope', '$uibModalInstance', 'user'];
     // function ModalUserInfo($scope, $uibModalInstance, user) {
@@ -3608,6 +3600,7 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
     // }
 
 }());
+
 ;( function () {
     'use strict';
     angular
@@ -3902,11 +3895,6 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
 
     ProjectAssignProjectController.$invoke = [ '$scope', 'ProjectsFactory', '$uibModal', '$timeout' ];
     function ProjectAssignProjectController( $scope, ProjectsFactory, $uibModal, $timeout ) {
-        
-
-        $scope.$on( 'toFilterProjects', function( event, filter ) {
-            $scope.projects = filter.projects;
-        });
 
         $scope.$on( 'toSearchEvent', function( event, data ) {
             $scope.spinners.projects = true;
@@ -3915,7 +3903,6 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
                     $scope.projects = data.projects;
                 })
                 .catch( function ( err ) {
-
                 })
                 .finally( function() {
                     $scope.spinners.projects = false;
@@ -3923,8 +3910,9 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
         });
 
         $scope.activeThisProject = function( projectId ) {
-            ProjectsFactory.getUsersById( projectId )
-                .then( function ( data ) {
+            ProjectsFactory.getUsersByProjectId( projectId )
+                .then( function ( users ) {
+                    $scope.$emit( 'sendFilteredUsers', { users : users } );
                 })
                 .catch( function ( err ) {
                 })
@@ -3932,12 +3920,14 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
                 });
         };
 
-
-
+        $scope.$on( 'sendFilteredProjects', function( event, filteredProjects ) {
+            $scope.projects = filteredProjects.projects;
+        });
 
     }
 
 }());
+
 ;( function () {
     'use strict';
     angular
@@ -3949,7 +3939,6 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
 
         $scope.$on( 'toSearchEvent', function( event, data ) {
             $scope.spinners.users = true;
-
             EmployeeManagerFactory.advancedUserSearch( { textToFind : data.searchText } )
                 .then( function ( data ) {
                     $scope.employees = data;
@@ -3962,13 +3951,9 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
         });
 
         $scope.activeThisUser = function( userId ) {
-            ProjectsFactory.getProjectsById( userId )
+            ProjectsFactory.getProjectsByUserId( userId )
                 .then( function ( projects ) {
-                    // console.log('$scope.employees');
-                    // console.log($scope.employees);
-                    // console.log('$scope.projects');
-                    // console.log($scope.projects);
-                    $rootScope.$broadcast( 'toFilterProjects', { projects : projects } );
+                    $rootScope.$broadcast( 'sendFilteredProjects', { projects : projects } );
                 })
                 .catch( function ( err ) {
                 })
@@ -3976,10 +3961,16 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
                 });
         };
 
+// 15MS0643IECEC6
+// 15MS0160EMTSAU
+        $rootScope.$on( 'sendFilteredUsers', function( event, filteredUsers ) {
+            $scope.employees = filteredUsers.users.users;
+        });
 
     }
 
 }());
+
 var TAU = 2 * Math.PI;
 var canvas;
 var ctx;

@@ -9,7 +9,6 @@
 
         $scope.$on( 'toSearchEvent', function( event, data ) {
             $scope.spinners.users = true;
-
             EmployeeManagerFactory.advancedUserSearch( { textToFind : data.searchText } )
                 .then( function ( data ) {
                     $scope.employees = data;
@@ -22,13 +21,9 @@
         });
 
         $scope.activeThisUser = function( userId ) {
-            ProjectsFactory.getProjectsById( userId )
+            ProjectsFactory.getProjectsByUserId( userId )
                 .then( function ( projects ) {
-                    // console.log('$scope.employees');
-                    // console.log($scope.employees);
-                    // console.log('$scope.projects');
-                    // console.log($scope.projects);
-                    $rootScope.$broadcast( 'toFilterProjects', { projects : projects } );
+                    $rootScope.$broadcast( 'sendFilteredProjects', { projects : projects } );
                 })
                 .catch( function ( err ) {
                 })
@@ -36,6 +31,11 @@
                 });
         };
 
+// 15MS0643IECEC6
+// 15MS0160EMTSAU
+        $rootScope.$on( 'sendFilteredUsers', function( event, filteredUsers ) {
+            $scope.employees = filteredUsers.users.users;
+        });
 
     }
 

@@ -11,10 +11,10 @@
         <!-- PROJECTS LIST -->
         <div ng-show="employees">
             <ul class="list-group">
-                <li ng-repeat="employee in employees" class="list-group-item">
+                <li ng-repeat="employee in employees | orderBy: ['name','surname']" class="list-group-item">
                     <div class="pull-left">
                         <i class="fa fa-user"></i>
-                        {{employee.fullName}}
+                        {{employee.name}} {{employee.surname}}
                     </div>
                     <div class="pull-right">
 

@@ -6,11 +6,6 @@
 
     ProjectAssignProjectController.$invoke = [ '$scope', 'ProjectsFactory', '$uibModal', '$timeout' ];
     function ProjectAssignProjectController( $scope, ProjectsFactory, $uibModal, $timeout ) {
-        
-
-        $scope.$on( 'toFilterProjects', function( event, filter ) {
-            $scope.projects = filter.projects;
-        });
 
         $scope.$on( 'toSearchEvent', function( event, data ) {
             $scope.spinners.projects = true;
@@ -19,7 +14,6 @@
                     $scope.projects = data.projects;
                 })
                 .catch( function ( err ) {
-
                 })
                 .finally( function() {
                     $scope.spinners.projects = false;
@@ -27,8 +21,9 @@
         });
 
         $scope.activeThisProject = function( projectId ) {
-            ProjectsFactory.getUsersById( projectId )
-                .then( function ( data ) {
+            ProjectsFactory.getUsersByProjectId( projectId )
+                .then( function ( users ) {
+                    $scope.$emit( 'sendFilteredUsers', { users : users } );
                 })
                 .catch( function ( err ) {
                 })
@@ -36,8 +31,9 @@
                 });
         };
 
-
-
+        $scope.$on( 'sendFilteredProjects', function( event, filteredProjects ) {
+            $scope.projects = filteredProjects.projects;
+        });
 
     }
 

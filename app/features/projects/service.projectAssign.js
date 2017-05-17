@@ -20,9 +20,9 @@
                 return dfd.promise;
             },
 
-            getProjectsById: function ( userID ) { // LEO WAS HERE
+            getProjectsByUserId: function ( userID ) { // LEO WAS HERE
                 var dfd = $q.defer();
-                $http.get( buildURL( 'getProjectsById' ) + userID )
+                $http.get( buildURL( 'getProjectsByUserId' ) + userID )
                     .then( function ( response ) {
                         var projects = response.data.projects;
                         projects.forEach( function( project ) { // compound name for impute-hours view
@@ -36,9 +36,9 @@
                 return dfd.promise;
             },
 
-            getUsersById: function ( projectID ) { // LEO WAS HERE                
+            getUsersByProjectId: function ( projectId ) { // LEO WAS HERE
                 var dfd = $q.defer();
-                $http.get( buildURL( 'getUsersById' ) + projectID )
+                $http.get( buildURL( 'getUsersByProjectId' ) + projectId )
                     .then( function ( response ) {
                         dfd.resolve( response.data );
                     })
@@ -52,10 +52,10 @@
 
 
 
-            // getUsersInProjectByID: function (projectID) {
+            // getUsersInProjectByID: function (projectId) {
             //     var dfd = $q.defer();
             //     $http
-            //         .post(buildURL('projectGetUsers'), {projectId: projectID})
+            //         .post(buildURL('projectGetUsers'), {projectId: projectId})
             //         .then(function (response) {
             //             if (response.data.success) {
             //                 dfd.resolve(response.data.users);
