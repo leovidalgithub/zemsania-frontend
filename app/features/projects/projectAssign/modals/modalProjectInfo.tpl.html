@@ -1,4 +1,4 @@
-<div id="modal-projectInfo">
+<div id="modal-info">
     <div class="modal-header">
         <h3 class="modal-title">{{'projects.projectAssign.projectGeneralInfo' | i18next}}</h3>
     </div>
@@ -6,35 +6,35 @@
         <table class="table table-striped">
             <tr>
                 <td class="tittle">{{'projects.projectAssign.code' | i18next}}</td>
-                <td>{{project.code}}</td>
+                <td>{{data.code}}</td>
             </tr>
             <tr>
-                <td class="tittle">{{'projects.projectAssign.projectName' | i18next}}</td>
-                <td>{{project.name}}</td>
+                <td class="tittle">{{'projects.projectAssign.name' | i18next}}</td>
+                <td>{{data.name}}</td>
             </tr>
             <tr>
                 <td class="tittle">{{'projects.projectAssign.description' | i18next}}</td>
-                <td>{{project.description}}</td>
+                <td>{{data.description}}</td>
             </tr>
             <tr>
                 <td class="tittle">{{'projects.projectAssign.alias' | i18next}}</td>
-                <td>{{project.alias}}</td>
+                <td>{{data.alias}}</td>
             </tr>
             <tr>
                 <td class="tittle">{{'words.enabled' | i18next}}</td>
-                <td>{{project.enabled ? ('words.yes' | i18next) : ('words.no' | i18next)}}</td>
+                <td>{{data.enabled ? ('words.yes' | i18next) : ('words.no' | i18next)}}</td>
             </tr>
             <tr>
                 <td class="tittle">{{'projects.projectAssign.initDate' | i18next}}</td>
-                <td>{{project.initDate | date : 'dd/MMMM/yyyy'}}</td>
+                <td>{{data.initDate | date : 'dd/MMMM/yyyy'}}</td>
             </tr>
             <tr>
                 <td class="tittle">{{'projects.projectAssign.idOrigen' | i18next}}</td>
-                <td>{{project.idOrigen}}</td>
+                <td>{{data.idOrigen}}</td>
             </tr>
             <tr>
                 <td class="tittle">{{'projects.projectAssign.origenTipo' | i18next}}</td>
-                <td>{{project.origenTipo}}</td>
+                <td>{{data.origenTipo}}</td>
             </tr>
         </table>
     </div>
@@ -46,26 +46,26 @@
 
 <!--             <tr>
                 <td>{{'projects.projectAssign.projectRef' | i18next}}</td>
-                <td>{{project.projectRef}}</td>
+                <td>{{data.projectRef}}</td>
             </tr>
             <tr>
                 <td>{{'projects.projectAssign.customerName' | i18next}}</td>
-                <td>{{project.customerName}}</td>
+                <td>{{data.customerName}}</td>
             </tr>
             <tr>
                 <td>{{'projects.projectAssign.customerRef' | i18next}}</td>
-                <td>{{project.customerRef}}</td>
+                <td>{{data.customerRef}}</td>
             </tr>
             <tr>
                 <td>{{'projects.projectAssign.emailSupervisor' | i18next}}</td>
-                <td>{{project.emailSupervisor}}</td>
+                <td>{{data.emailSupervisor}}</td>
             </tr>
             <tr>
                 <td>{{'projects.projectAssign.emailSupervisorDelivery' | i18next}}</td>
-                <td>{{project.emailSupervisorDelivery}}</td>
+                <td>{{data.emailSupervisorDelivery}}</td>
             </tr>
             <tr>
                 <td>{{'projects.projectAssign.endDate' | i18next}}</td>
-                <td>{{project.endDate | date : 'dd/MMMM/yyyy'}}</td>
+                <td>{{data.endDate | date : 'dd/MMMM/yyyy'}}</td>
             </tr>
  -->

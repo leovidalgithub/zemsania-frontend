@@ -29,13 +29,32 @@
 					font-size: 18px;
 				}
 			}
+			.item {
+				padding: 10px;
+				&:hover, &:hover * {
+					cursor: pointer;
+					.icon {
+						color: blue;
+					}
+				}
+
+			}
+			.activeItem {
+				// border: 1px solid orange;
+				background-color: #333;
+				color: white;
+				border-radius: 5px;
+				i.icon {
+					// color: blue;
+				}
+			}
 		}
 	}
 }
 
 // MODALS
 // MODAL PROJECT INFO
-#modal-projectInfo {
+#modal-info {
 	.modal-title {
 		font-family: monospace;		
 	}
@@ -52,6 +71,3 @@
 		padding: 0 20px 20px 20px;
 	}
 }
-	
-
-

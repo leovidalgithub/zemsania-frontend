@@ -59,6 +59,7 @@
             employee.timesheetDataModel[ projectId ].info.opened =  ( openStatus === 'true' );
             if ( openStatus ) { // if project content is opening, we have to reinitalize the slickTable to show corretly for the first time
                 var element = '#' + projectId + '_' + employeeId + ' .slickTable';
+                $( element ).hide();
                 initialSlick( element );
             }
         };
@@ -75,19 +76,23 @@
         function initialSlick( element ) {
             element = element ? element : '.slickTable';
             $timeout( function() {
-                  $( element ).slick({
-                    dots: true,
-                    infinite : false,
-                    slidesToShow: 5,
-                    slidesToScroll: 4,
-                    variableWidth : true,
-                    arrows : false
-                    // autoplay : true,
-                    // autoplaySpeed : 600,
-                    // adaptiveHeight : true,
-                    // speed : 300,
-                    // centerMode : true,
+                try { // when load slick twice on the same element it gives error: "cannot read property 'add' of null slick"
+                $( element ).slick( {
+                            dots: true,
+                            infinite : false,
+                            slidesToShow: 5,
+                            slidesToScroll: 4,
+                            variableWidth : true,
+                            arrows : false
+                            // autoplay : true,
+                            // autoplaySpeed : 600,
+                            // adaptiveHeight : true,
+                            // speed : 300,
+                            // centerMode : true,
                   });
+                } catch( e ) {
+                }
+                $( element ).show();
             }, 400 );
         }
 

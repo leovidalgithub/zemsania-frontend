@@ -48,9 +48,20 @@
                 return dfd.promise;
             },
 
+            // it adds an 'active' field to both employess and projects objects
+            // when users select an employee or project it is activated to true
+            toAddActiveField: function ( array ) {
+                array.forEach( function( element ) {
+                    element.active = false;
+                });
+            },
 
-
-
+            // it sets 'active = true' for the element id inside the array
+            setActiveItem: function ( array, id ) {
+                array.forEach( function( element ) {
+                    element.active = element._id == id ? true : false;
+                });
+            },
 
             // getUsersInProjectByID: function (projectId) {
             //     var dfd = $q.defer();

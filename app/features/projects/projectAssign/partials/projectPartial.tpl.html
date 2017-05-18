@@ -1,9 +1,9 @@
 <div ng-controller="ProjectAssignProjectController">
 
     <div class="simple-input no-margin">
-        <p class="contentTitle">{{'words.projects' | i18next}}</p>
-        
-        <!-- PROJECTS WAIT-SPINNER ANIMATED ICON --> <!-- fa fa-spinner fa-pulse fa-3x fa-fw -->
+        <p class="contentTitle">{{'words.projects' | i18next}} {{projects.length}}</p>
+
+        <!-- PROJECTS WAIT-SPINNER ANIMATED ICON -->
         <div ng-show="spinners.projects" class="waitSpinner">
             <i class="fa fa-refresh fa-spin"></i><span>&nbsp;&nbsp;{{'actions.loading' | i18next}}</span>
         </div>
@@ -11,19 +11,18 @@
         <!-- PROJECTS LIST -->
         <div ng-show="projects">
             <ul class="list-group">
-                <li ng-repeat="project in projects | orderBy: 'name'" class="list-group-item">
+                <li ng-class="{'activeItem':project.active}" ng-repeat="project in projects | orderBy: 'name'" class="list-group-item item"
+                    ng-click="activeThisProject(project)">
                     <div class="pull-left col-xs-8">
-                        <i class="fa fa-folder"></i>
+                        <i class="fa fa-folder icon"></i>
                             {{project.name}}
                     </div>
                     <div class="pull-right col-xs-4">
-
-                        <button class="btn btn-danger" ng-click="activeThisProject(project._id)"><i class="fa fa-filter"></i></button>
-
-
-                        <button class="btn btn-warning" ng-click="openInfo(project)" 
+                        <!-- <button class="btn btn-danger" ng-click="activeThisProject(project._id)"><i class="fa fa-filter"></i></button> -->
+                        <button class="btn btn-warning" ng-click="openProjectInfo(project,$event)" 
                                 title="{{'projects.projectAssign.projectGeneralInfo' | i18next}}"><i class="fa fa-info"></i></button>
-                        <button class="btn btn-success" ng-click="openThisProject(project)"><i class="fa fa-pencil"></i></button>
+                        <button ng-show="$parent.$parent.currentMode.type=='users'" class="btn btn-danger" 
+                                ng-click="removeThis(project,$event)"><i class="fa fa-minus"></i></button>
                     </div>
                 </li>
             </ul>

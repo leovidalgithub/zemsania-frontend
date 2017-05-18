@@ -1,8 +1,8 @@
 <div ng-controller="ProjectAssignUsersController">
 
     <div class="simple-input no-margin">
-        <p class="contentTitle">{{'words.users' | i18next}}</p>
-        
+        <p class="contentTitle">{{'words.users' | i18next}} {{employees.length}}</p>
+
          <!-- USER WAIT-SPINNER ANIMATED ICON -->
         <div ng-show="spinners.users" class="waitSpinner">
             <i class="fa fa-refresh fa-spin"></i><span>&nbsp;&nbsp;{{'actions.loading' | i18next}}</span>
@@ -11,18 +11,18 @@
         <!-- PROJECTS LIST -->
         <div ng-show="employees">
             <ul class="list-group">
-                <li ng-repeat="employee in employees | orderBy: ['name','surname']" class="list-group-item">
+                <li ng-class="{'activeItem':employee.active}" ng-repeat="employee in employees | orderBy: ['name','surname']"
+                     class="list-group-item item" ng-click="activeThisUser(employee)">
                     <div class="pull-left">
-                        <i class="fa fa-user"></i>
+                        <i class="fa fa-user icon"></i>
                         {{employee.name}} {{employee.surname}}
                     </div>
                     <div class="pull-right">
-
-                        <button class="btn btn-danger" ng-click="activeThisUser(employee._id)"><i class="fa fa-filter"></i></button>
-                    
-                        <button class="btn btn-warning" ng-click="openInfo(project)" 
+                        <!-- <button class="btn btn-danger" ng-click="activeThisUser(employee._id)"><i class="fa fa-filter"></i></button> -->
+                        <button class="btn btn-warning" ng-click="openUserInfo(employee,$event)"
                                 title="{{'projects.projectAssign.projectGeneralInfo' | i18next}}"><i class="fa fa-info"></i></button>
-                        <button class="btn btn-success" ng-click="openThisProject(project)"><i class="fa fa-pencil"></i></button>
+                        <button ng-show="$parent.$parent.currentMode.type=='projects'" class="btn btn-danger" 
+                                ng-click="removeThis(employee,$event)"><i class="fa fa-minus"></i></button>
                     </div>
                 </li>
             </ul>

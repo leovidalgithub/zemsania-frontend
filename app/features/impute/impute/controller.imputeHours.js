@@ -304,7 +304,7 @@
 
         // MODAL - WARNING PENDING CHANGES MODAL
         $scope.openPendingChangesModal = function() {
-            var modalPendingChangesInstance = $uibModal.open({
+            var modalPendingChangesInstance = $uibModal.open( {
             animation : true,
             ariaLabelledBy : 'modal-title',
             ariaDescribedBy : 'modal-body',

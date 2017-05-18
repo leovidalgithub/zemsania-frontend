@@ -1470,20 +1470,34 @@
 #projectAssign #section #mainContent .waitSpinner span {
   font-size: 18px;
 }
+#projectAssign #section #mainContent .item {
+  padding: 10px;
+}
+#projectAssign #section #mainContent .item:hover, #projectAssign #section #mainContent .item:hover * {
+  cursor: pointer;
+}
+#projectAssign #section #mainContent .item:hover .icon, #projectAssign #section #mainContent .item:hover * .icon {
+  color: blue;
+}
+#projectAssign #section #mainContent .activeItem {
+  background-color: #333;
+  color: white;
+  border-radius: 5px;
+}
 
-#modal-projectInfo .modal-title {
+#modal-info .modal-title {
   font-family: monospace;
 }
-#modal-projectInfo .modal-body {
+#modal-info .modal-body {
   margin-top: 10px;
   padding: 0 20px;
 }
-#modal-projectInfo .modal-body .tittle {
+#modal-info .modal-body .tittle {
   font-family: monospace;
   font-size: 17px;
   font-weight: bold;
 }
-#modal-projectInfo .modal-footer {
+#modal-info .modal-footer {
   padding: 0 20px 20px 20px;
 }
 

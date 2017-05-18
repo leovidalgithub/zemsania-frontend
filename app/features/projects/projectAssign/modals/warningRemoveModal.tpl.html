@@ -1,0 +1,20 @@
+<div class="modal-header border-b">
+    <h4 class="">Atención!</h4>
+</div>
+
+    <div class="modal-body set-padding-t-lg">
+        <!-- <section class="modal-body"> -->
+            <h4 class="text-primary modal-header border-b no-padding-l">{{data.user.name}} {{data.user.surname}}</h4>
+            <h4 class="text-primary modal-header border-b no-padding-l">{{data.project.name}}</h4>
+            <h5 class="text-primary modal-header border-b no-padding-l">¿Deslindar?</h5>
+        <!-- </section> -->        
+    </div>
+
+    <div class="modal-footer">
+        <div class="text-right form-buttons">
+            <button type="button" ng-click="doIt()" class="btn btn-primary no-margin">{{'words.yes' | i18next}}</button>
+            <!-- <button type="button" ng-click="notSave()" class="btn btn-primary no-margin">{{'words.no' | i18next}}</button> -->
+            <button type="button" ng-click="cancel()" class="btn btn-warning no-margin">{{'actions.cancel' | i18next}}</button>
+        </div>
+    </div>
+

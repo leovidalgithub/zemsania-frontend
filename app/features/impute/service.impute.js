@@ -133,13 +133,14 @@
                                                 status     : '' // (draft, sent, approved, rejected)
                                             };
                 }
+                console.log(showDaysObj);
                 return showDaysObj;
             }
         } // main return
 
         // INTERNAL FUNCTION ( getTimesheets() )
         // THIS FUNCTION REMOVES ALL PROJECTS INSIDE 'TIMESHEETMODEL' THAT DOES NOT EXIST IN 'USERPROJECTS'
-        // USER ONLY CAN BE ABLE TO IMPUTE IN PROJECTS THAT EXISTS IN PROJECT_USERS COLLECTION (many to many relationchip between users and projects)
+        // USER ONLY CAN BE ABLE TO IMPUTE IN PROJECTS THAT EXISTS IN PROJECT_USERS COLLECTION (many to many relationship between users and projects)
         function prepareTimesheetsData( userProjects, dfd, data ) {
             var timesheetDataModel = data.data.timesheetDataModel;
             for( var projectId in timesheetDataModel ) {

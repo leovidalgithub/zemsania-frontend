@@ -1,60 +1,40 @@
-<div class="modal-header">
-    <h3 class="modal-title">{{'projects.projectAssign.userInfo' | i18next}}</h3>
-</div>
-<div class="modal-body" id="modal-userInfo">
-    <div class="row simple-input">
-        <div class="col-md-4">
-            <h3>{{'dates.initDate' | i18next}}</h3>
-            <p class="input-group">
-                <button type="button" class="form-control button-text" ng-click="open('init')">{{user.implicationInit |
-                    date: 'dd/MM/yyyy'}}
-                </button>
-                <input type="hidden" class="form-control" max-date="user.implicationEnd"
-                       uib-datepicker-popup="dd/MM/yyyy"
-                       ng-model="user.implicationInit"
-                       is-open="status.opened.init" datepicker-options="dateOptions"
-                       close-text="{{'actions.close' | i18next}}"/>
-                <span class="input-group-btn">
-                    <button type="button" class="btn btn-default" ng-click="open('init')"><i class="fa fa-calendar"></i>
-                    </button>
-                </span>
-            </p>
-        </div>
-        <div class="col-md-4">
-            <h3>{{'dates.endDate' | i18next}}</h3>
-            <p class="input-group">
-                <button type="button" class="form-control button-text" ng-click="open('end')">{{user.implicationEnd |
-                    date:
-                    'dd/MM/yyyy'}}
-                </button>
-                <input type="hidden" class="form-control" uib-datepicker-popup="dd/MM/yyyy"
-                       ng-model="user.implicationEnd"
-                       is-open="status.opened.end" min-date="user.implicationInit" datepicker-options="dateOptions"
-                       close-text="{{'actions.close' | i18next}}"/>
-                <span class="input-group-btn">
-                    <button type="button" class="btn btn-default" ng-click="open('end')"><i class="fa fa-calendar"></i>
-                    </button>
-                </span>
-            </p>
-        </div>
-        <div class="col-md-4">
-            <h3>{{'dates.maxHours' | i18next}}</h3>
-            <input type="number" ng-model="user.maxHours" required placeholder="{{'dates.zeroIsUnlimited' | i18next}}">
-        </div>
-
-        <div class="col-md-12">
-            <hr class="invisible">
-            <div class="alert alert-danger">
-                <div class="pull-left ">{{'projects.projectAssign.removeUserFromProject' | i18next}}</div>
-                <div class="pull-right no-animate">
-                    <button ng-click="sureDelete = true" ng-hide="sureDelete" class="btn btn-danger">{{'actions.remove' | i18next}}</button>
-                    <button ng-show="sureDelete" ng-click="delete()" class="btn btn-danger">{{'actions.sure' | i18next}}</button>
-                </div>
-            </div>
-        </div>
+<div id="modal-info">
+    <div class="modal-header">
+        <h3 class="modal-title">{{'projects.projectAssign.userGeneralInfo' | i18next}}</h3>
     </div>
-</div>
-<div class="modal-footer">
-    <button class="btn btn-warning" type="button" ng-click="cancel()">{{'actions.close' | i18next}}</button>
-    <button class="btn btn-primary" type="button" ng-click="save()">{{'actions.save' | i18next}}</button>
+    <div class="modal-body"> 
+        <table class="table table-striped">
+            <tr>
+                <td class="tittle">{{'projects.projectAssign.name' | i18next}}</td>
+                <td>{{data.name}} {{data.surname}}</td>
+            </tr>
+            <tr>
+                <td class="tittle">{{'projects.projectAssign.nif' | i18next}}</td>
+                <td>{{data.nif}}</td>
+            </tr>
+            <tr>
+                <td class="tittle">{{'userProfile.user.birthdate' | i18next}}</td>
+                <td>{{data.birthdate | date : 'dd/MMM/yyyy'}}</td>
+            </tr>
+            <tr>
+                <td class="tittle">{{'projects.projectAssign.phone' | i18next}}</td>
+                <td>{{data.phone}}</td>
+            </tr>
+            <tr>
+                <td class="tittle">{{'projects.projectAssign.lastLoginDate' | i18next}}</td>
+                <td>{{data.lastLoginDate | date : 'dd/MMM/yyyy'}}</td>
+            </tr>
+            <tr>
+                <td class="tittle">{{'projects.projectAssign.personalManager' | i18next}}</td>
+                <td>{{data.superior.name}} {{data.superior.surname}}</td>
+            </tr>
+            <tr>
+                <td class="tittle">{{'projects.projectAssign.mainCalendar' | i18next}}</td>
+                <td>{{data.calendarID.name}}</td>
+            </tr>
+        </table>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-gray" type="button" ng-click="cancel()">{{'actions.close' | i18next}}</button>
+    </div>
 </div>
