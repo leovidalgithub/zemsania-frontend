@@ -1,4 +1,4 @@
-var API_base = 'http://' + location.hostname + ':4000/';
+var API_base = 'http://' + location.hostname + ':5000/';
 var API_paths = {
     login: 'authn/login',
     passwordRecovery: 'authn/password/remember',
@@ -29,6 +29,7 @@ var API_paths = {
     projectSearch: 'project/search',
     getProjectsByUserId: 'projectUsers/getProjectsByUserId/',
     getUsersByProjectId: 'projectUsers/getUsersByProjectId/',
+    demarcateUserProject: 'projectUsers/demarcateUserProject',
     // projectGetUsers: 'projectUsers/getUsersByProjectID',
     // projectUserSave: 'projectUsers/save',
     // getUsersBySupervisor: 'projectUsers/getUsersBySupervisor',

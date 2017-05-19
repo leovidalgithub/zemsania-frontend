@@ -1,7 +1,14 @@
 <div ng-controller="ProjectAssignProjectController">
 
     <div class="simple-input no-margin">
-        <p class="contentTitle">{{'words.projects' | i18next}} {{projects.length}}</p>
+        <p class="contentTitle">{{'words.projects' | i18next}}
+            <span ng-show="$parent.$parent.currentMode.type=='users'"> 
+                    {{'words.of' | i18next}} 
+                    <strong>{{(giveMeFirstWord($parent.$parent.currentMode.obj.name))}} 
+                    {{(giveMeFirstWord($parent.$parent.currentMode.obj.surname))}} </strong>
+                    ({{projects.length}})
+            </span>
+        </p>
 
         <!-- PROJECTS WAIT-SPINNER ANIMATED ICON -->
         <div ng-show="spinners.projects" class="waitSpinner">
@@ -13,16 +20,16 @@
             <ul class="list-group">
                 <li ng-class="{'activeItem':project.active}" ng-repeat="project in projects | orderBy: 'name'" class="list-group-item item"
                     ng-click="activeThisProject(project)">
-                    <div class="pull-left col-xs-8">
+                    <div class="pull-left col-xs-9 leftContent">
                         <i class="fa fa-folder icon"></i>
                             {{project.name}}
                     </div>
-                    <div class="pull-right col-xs-4">
-                        <!-- <button class="btn btn-danger" ng-click="activeThisProject(project._id)"><i class="fa fa-filter"></i></button> -->
+                    <div class="pull-right col-xs-3">
                         <button class="btn btn-warning" ng-click="openProjectInfo(project,$event)" 
                                 title="{{'projects.projectAssign.projectGeneralInfo' | i18next}}"><i class="fa fa-info"></i></button>
                         <button ng-show="$parent.$parent.currentMode.type=='users'" class="btn btn-danger" 
-                                ng-click="removeThis(project,$event)"><i class="fa fa-minus"></i></button>
+                                ng-click="removeThis(project,$event)"
+                                title="{{'projects.projectAssign.demarcateThisProject' | i18next}}"><i class="fa fa-minus"></i></button>
                     </div>
                 </li>
             </ul>

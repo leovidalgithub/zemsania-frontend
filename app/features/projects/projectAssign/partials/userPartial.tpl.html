@@ -1,7 +1,13 @@
 <div ng-controller="ProjectAssignUsersController">
 
     <div class="simple-input no-margin">
-        <p class="contentTitle">{{'words.users' | i18next}} {{employees.length}}</p>
+        <p class="contentTitle">{{'words.users' | i18next}}
+            <span ng-show="$parent.$parent.currentMode.type=='projects'"> 
+                    {{'words.of' | i18next}} 
+                    <strong>{{$parent.$parent.currentMode.obj.name}} </strong> 
+                    ({{employees.length}})
+            </span>
+        </p>
 
          <!-- USER WAIT-SPINNER ANIMATED ICON -->
         <div ng-show="spinners.users" class="waitSpinner">
@@ -13,16 +19,17 @@
             <ul class="list-group">
                 <li ng-class="{'activeItem':employee.active}" ng-repeat="employee in employees | orderBy: ['name','surname']"
                      class="list-group-item item" ng-click="activeThisUser(employee)">
-                    <div class="pull-left">
+                    <div class="pull-left col-xs-9 leftContent">
                         <i class="fa fa-user icon"></i>
                         {{employee.name}} {{employee.surname}}
                     </div>
-                    <div class="pull-right">
+                    <div class="pull-right col-xs-3">
                         <!-- <button class="btn btn-danger" ng-click="activeThisUser(employee._id)"><i class="fa fa-filter"></i></button> -->
                         <button class="btn btn-warning" ng-click="openUserInfo(employee,$event)"
-                                title="{{'projects.projectAssign.projectGeneralInfo' | i18next}}"><i class="fa fa-info"></i></button>
+                                title="{{'projects.projectAssign.userGeneralInfo' | i18next}}"><i class="fa fa-info"></i></button>
                         <button ng-show="$parent.$parent.currentMode.type=='projects'" class="btn btn-danger" 
-                                ng-click="removeThis(employee,$event)"><i class="fa fa-minus"></i></button>
+                                ng-click="removeThis(employee,$event)"
+                                title="{{'projects.projectAssign.demarcateThisUser' | i18next}}"><i class="fa fa-minus"></i></button>
                     </div>
                 </li>
             </ul>

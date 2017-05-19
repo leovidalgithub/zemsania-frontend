@@ -48,6 +48,18 @@
                 return dfd.promise;
             },
 
+            demarcateUserProject: function ( data ) { // LEO WAS HERE
+                var dfd = $q.defer();
+                $http.post( buildURL( 'demarcateUserProject' ), data )
+                    .then( function ( response ) {
+                        dfd.resolve( response.data );
+                    })
+                    .catch( function ( err ) {
+                        dfd.reject( err );
+                    });
+                return dfd.promise;
+            },
+
             // it adds an 'active' field to both employess and projects objects
             // when users select an employee or project it is activated to true
             toAddActiveField: function ( array ) {
@@ -61,6 +73,13 @@
                 array.forEach( function( element ) {
                     element.active = element._id == id ? true : false;
                 });
+            },
+
+            removeItemFromArray: function( array, id ) {
+                var index = array.findIndex( function( element ) {
+                    return element._id == id;
+                });
+                array.splice( index, 1 );
             },
 
             // getUsersInProjectByID: function (projectId) {

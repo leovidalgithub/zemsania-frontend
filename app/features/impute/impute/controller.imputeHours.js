@@ -306,8 +306,6 @@
         $scope.openPendingChangesModal = function() {
             var modalPendingChangesInstance = $uibModal.open( {
             animation : true,
-            ariaLabelledBy : 'modal-title',
-            ariaDescribedBy : 'modal-body',
             templateUrl : '/features/impute/modals/pendingChangesModal.tpl.html',
             controller : function( $scope, $uibModalInstance, $rootScope ) {
                 $scope.cancel = function() {
@@ -325,7 +323,7 @@
             },
             backdrop: 'static',
             size: 'md'
-            });
+            }).result.then( function() {}, function( res ) {} );
         }
         $rootScope.$on( 'modalToSave', function ( event, data ) { $scope.save() } );
         $rootScope.$on( 'modalNotToSave', function ( event, data ) { $scope.notSave() } );

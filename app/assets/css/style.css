@@ -1452,7 +1452,7 @@
 }
 #projectAssign #section #mainContent .contentTitle {
   font-family: monospace;
-  font-size: 22px;
+  font-size: 18px;
   text-align: center;
 }
 #projectAssign #section #mainContent .mainBoxes {
@@ -1479,8 +1479,12 @@
 #projectAssign #section #mainContent .item:hover .icon, #projectAssign #section #mainContent .item:hover * .icon {
   color: blue;
 }
+#projectAssign #section #mainContent .item .leftContent {
+  overflow: hidden;
+  white-space: nowrap;
+}
 #projectAssign #section #mainContent .activeItem {
-  background-color: #333;
+  background-color: #666;
   color: white;
   border-radius: 5px;
 }

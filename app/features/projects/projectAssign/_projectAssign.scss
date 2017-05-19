@@ -11,8 +11,9 @@
 
 			.contentTitle {
 				font-family: monospace;
-				font-size: 22px;
+				font-size: 18px;
 				text-align: center;
+				// font-weight: bold;
 			}
 			.mainBoxes {
 				min-height: 300px;
@@ -37,11 +38,15 @@
 						color: blue;
 					}
 				}
+				.leftContent {
+					overflow: hidden;
+	                white-space: nowrap;
+				}
 
 			}
 			.activeItem {
 				// border: 1px solid orange;
-				background-color: #333;
+				background-color: #666;
 				color: white;
 				border-radius: 5px;
 				i.icon {

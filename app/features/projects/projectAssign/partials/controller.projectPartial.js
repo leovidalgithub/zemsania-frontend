@@ -4,22 +4,25 @@
         .module( 'hours.projects' )
         .controller( 'ProjectAssignProjectController', ProjectAssignProjectController );
 
-    ProjectAssignProjectController.$invoke = [ '$scope', 'ProjectsFactory', '$uibModal' ];
-    function ProjectAssignProjectController( $scope, ProjectsFactory, $uibModal  ) {
+    ProjectAssignProjectController.$invoke = [ '$scope', 'ProjectsFactory', '$uibModal', '$rootScope', '$filter' ];
+    function ProjectAssignProjectController( $scope, ProjectsFactory, $uibModal, $rootScope, $filter ) {
 
         $scope.openProjectInfo = function ( project, event ) {
             event.preventDefault();
-            event.stopPropagation();
+            event.stopPropagation(); // to avoid continue to select item
             var modalInstance = $uibModal.open( {
                 animation: true,
                 templateUrl: '/features/projects/projectAssign/modals/modalProjectInfo.tpl.html',
                 controller : 'ModalInfo',
                 resolve : {
                     data : project
-                }
+                },
+                backdrop: 'static',
+                size: 'md',
             }).result.then( function() {}, function( res ) {} ); // to avoid: 'Possibly unhandled rejection: backdrop click'
         };
 
+        // receiving event from controller.projectAssign when search is done
         $scope.$on( 'toSearchEvent', function( event, data ) {
             $scope.spinners.projects = true;
             ProjectsFactory.advancedProjectSearch( data.searchText )
@@ -28,6 +31,9 @@
                     $scope.projects = data.projects;
                 })
                 .catch( function ( err ) {
+                    $rootScope.$broadcast( 'messageAlert', {
+                                        error : true,
+                                        message : $filter( 'i18next' )( 'projects.projectAssign.errorData' ) } );
                 })
                 .finally( function() {
                     $scope.spinners.projects = false;
@@ -35,7 +41,8 @@
         });
 
         $scope.activeThisProject = function( project ) {
-            $scope.$parent.$parent.currentMode.obj = project;
+            $scope.spinners.users = true;
+            $scope.$parent.$parent.currentMode.obj  = project;
             $scope.$parent.$parent.currentMode.type = 'projects';
             // set active to true for selected item
             ProjectsFactory.setActiveItem( $scope.projects, project._id );
@@ -47,14 +54,25 @@
                     $scope.$emit( 'sendFilteredUsers', { users : users } );
                 })
                 .catch( function ( err ) {
+                    $rootScope.$broadcast( 'messageAlert', {
+                                        error : true,
+                                        message : $filter( 'i18next' )( 'projects.projectAssign.errorData' ) } );
                 })
                 .finally( function() {
+                    $scope.spinners.users = false;
                 });
         };
 
+        // receiving event from controller.user when one user is clicked
         $scope.$on( 'sendFilteredProjects', function( event, filteredProjects ) {
             $scope.projects = filteredProjects.projects;
         });
+
+        // when a relationship was erased, we proceed to remove that item from $scope.projects
+        $rootScope.$on( 'removeProjectItem', function( event, data ) {
+            ProjectsFactory.removeItemFromArray( $scope.projects, data.id );
+        });
+
 
     }
 

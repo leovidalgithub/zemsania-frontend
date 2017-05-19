@@ -9,6 +9,14 @@
     ProjectAssignController.$invoke = [ '$scope', 'ProjectsFactory', '$uibModal', '$timeout' ];
     function ProjectAssignController( $scope, ProjectsFactory, $uibModal, $timeout ) {
 
+        // GET NUMBER OF OCURRENCES OF PROJECT OR USER IN PROJECTUSERS ENTITY
+        // GET NUMBER OF OCURRENCES OF PROJECT OR USER IN PROJECTUSERS ENTITY
+        // GET NUMBER OF OCURRENCES OF PROJECT OR USER IN PROJECTUSERS ENTITY
+        // GET NUMBER OF OCURRENCES OF PROJECT OR USER IN PROJECTUSERS ENTITY
+        // GET NUMBER OF OCURRENCES OF PROJECT OR USER IN PROJECTUSERS ENTITY
+        // GET NUMBER OF OCURRENCES OF PROJECT OR USER IN PROJECTUSERS ENTITY
+        // GET projectUsers/countOcurrences/59147b6efa92a507d4d99c04
+
         $scope.spinners = {
                     projects : false,
                     users    : false
@@ -31,22 +39,20 @@
 
         $scope.removeThis = function( obj, event ) {
             event.preventDefault();
-            event.stopPropagation();
+            event.stopPropagation(); // to avoid continue to select item
             var user    = $scope.currentMode.type == 'users' ? $scope.currentMode.obj : obj;
             var project = $scope.currentMode.type == 'projects' ? $scope.currentMode.obj : obj;
-            var pepe = angular.copy( $scope.currentMode );
 
             // MODAL - WARNING BEFORE REMOVING PROJECT-USER RELATIONSHIP
             var modalPendingChangesInstance = $uibModal.open( {
             animation : true,
-            ariaLabelledBy : 'modal-title',
-            ariaDescribedBy : 'modal-body',
             templateUrl : '/features/projects/projectAssign/modals/warningRemoveModal.tpl.html',
             controller : 'ModalInfo',
             resolve : {
                 data : {
-                    user    : user,
-                    project : project
+                    user        : user,
+                    project     : project,
+                    currentMode : $scope.currentMode
                 }
             },
             backdrop: 'static',
@@ -54,6 +60,15 @@
             }).result.then( function() {}, function( res ) {} ); // to avoid: 'Possibly unhandled rejection: backdrop click'
         };
 
+        $scope.$on( 'messageAlert', function( event, data ) {
+            $scope.alerts.error   = data.error;
+            $scope.alerts.message = data.message;
+        });
+
+        // please, just one name and one surname
+        $scope.giveMeFirstWord = function( string ) {
+            return string ? string.toString().split( ' ' )[0] : '';
+        };
     }
 
     // ModalUserInfo.$invoke = ['$scope', '$uibModalInstance', 'user'];

@@ -4,30 +4,36 @@
         .module( 'hours.projects' )
         .controller( 'ProjectAssignUsersController', ProjectAssignUsersController );
 
-    ProjectAssignUsersController.$invoke = [ '$scope', '$rootScope', 'EmployeeManagerFactory', 'ProjectsFactory', '$uibModal' ];
-    function ProjectAssignUsersController( $scope, $rootScope, EmployeeManagerFactory, ProjectsFactory, $uibModal )  {
+    ProjectAssignUsersController.$invoke = [ '$scope', '$rootScope', 'EmployeeManagerFactory', 'ProjectsFactory', '$uibModal', '$filter' ];
+    function ProjectAssignUsersController( $scope, $rootScope, EmployeeManagerFactory, ProjectsFactory, $uibModal, $filter )  {
 
         $scope.openUserInfo = function ( user , event ) {
             event.preventDefault();
-            event.stopPropagation();
+            event.stopPropagation(); // to avoid continue to select item
             var modalInstance = $uibModal.open( {
                 animation: true,
                 templateUrl: '/features/projects/projectAssign/modals/modalUserInfo.tpl.html',
                 controller : 'ModalInfo',
                 resolve : {
                     data : user 
-                }
-            }).result.then( function() {}, function( res ) {} ); // to avoid: 'Possibly unhandled rejection: backdrop click'
+                },
+                backdrop: 'static',
+                size: 'md',
+            }).result.then( function() {}, function( res ) {} ); // to avoid this error: 'Possibly unhandled rejection: backdrop click'
         };
 
+        // receiving event from controller.projectAssign when search is done
         $scope.$on( 'toSearchEvent', function( event, data ) {
             $scope.spinners.users = true;
             EmployeeManagerFactory.advancedUserSearch( { textToFind : data.searchText } )
                 .then( function ( data ) {
                     ProjectsFactory.toAddActiveField( data );
-                    $scope.employees = data;
+                    $scope.employees = data;                    
                 })
                 .catch( function ( err ) {
+                    $rootScope.$broadcast( 'messageAlert', {
+                                        error : true,
+                                        message : $filter( 'i18next' )( 'projects.projectAssign.errorData' ) } );
                 })
                 .finally( function() {
                     $scope.spinners.users = false;
@@ -35,7 +41,8 @@
         });
 
         $scope.activeThisUser = function( user ) {
-            $scope.$parent.$parent.currentMode.obj = user;
+            $scope.spinners.projects = true;
+            $scope.$parent.$parent.currentMode.obj  = user;
             $scope.$parent.$parent.currentMode.type = 'users';
             // set active to true for selected item
             ProjectsFactory.setActiveItem( $scope.employees, user._id );
@@ -47,17 +54,25 @@
                     $rootScope.$broadcast( 'sendFilteredProjects', { projects : projects } );
                 })
                 .catch( function ( err ) {
+                    $rootScope.$broadcast( 'messageAlert', {
+                                        error : true,
+                                        message : $filter( 'i18next' )( 'projects.projectAssign.errorData' ) } );
                 })
                 .finally( function() {
+                    $scope.spinners.projects = false;
                 });
         };
 
+        // receiving event from controller.project when one project is clicked
         $rootScope.$on( 'sendFilteredUsers', function( event, filteredUsers ) {
             $scope.employees = filteredUsers.users.users;
+        });
+
+        // when a relationship was erased, we proceed to remove that item from $scope.employees
+        $rootScope.$on( 'removeUserItem', function( event, data ) {
+            ProjectsFactory.removeItemFromArray( $scope.employees, data.id );
         });
 
     }
 
 }());
-
-
