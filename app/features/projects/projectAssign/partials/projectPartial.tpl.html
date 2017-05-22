@@ -1,7 +1,7 @@
 <div ng-controller="ProjectAssignProjectController">
 
     <div class="simple-input no-margin">
-        <p class="contentTitle">{{'words.projects' | i18next}}
+        <p class="contentHead">{{'words.projects' | i18next}}
             <span ng-show="$parent.$parent.currentMode.type=='users'"> 
                     {{'words.of' | i18next}} 
                     <strong>{{(giveMeFirstWord($parent.$parent.currentMode.obj.name))}} 
@@ -9,6 +9,11 @@
                     ({{projects.length}})
             </span>
         </p>
+        <div class="contentHead">
+            <button ng-show="$parent.$parent.currentMode.type=='users'" class="btn btn-success" 
+                    ng-click="newMarcate()"
+                    title="{{'projects.projectAssign.marcateAProject' | i18next}}"><i class="fa fa-plus"></i></button>
+        </div>
 
         <!-- PROJECTS WAIT-SPINNER ANIMATED ICON -->
         <div ng-show="spinners.projects" class="waitSpinner">

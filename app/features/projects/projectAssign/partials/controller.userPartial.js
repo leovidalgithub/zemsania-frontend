@@ -15,7 +15,7 @@
                 templateUrl: '/features/projects/projectAssign/modals/modalUserInfo.tpl.html',
                 controller : 'ModalInfo',
                 resolve : {
-                    data : user 
+                    data : user
                 },
                 backdrop: 'static',
                 size: 'md',
@@ -41,6 +41,7 @@
         });
 
         $scope.activeThisUser = function( user ) {
+            console.log('activeThisUser');
             $scope.spinners.projects = true;
             $scope.$parent.$parent.currentMode.obj  = user;
             $scope.$parent.$parent.currentMode.type = 'users';
@@ -68,9 +69,14 @@
             $scope.employees = filteredUsers.users.users;
         });
 
-        // when a relationship was erased, we proceed to remove that item from $scope.employees
-        $rootScope.$on( 'removeUserItem', function( event, data ) {
-            ProjectsFactory.removeItemFromArray( $scope.employees, data.id );
+        // // when a relationship was erased, we proceed to remove that item from $scope.employees
+        // $rootScope.$on( 'removeUserItem', function( event, data ) {
+        //     ProjectsFactory.removeItemFromArray( $scope.employees, data.id );
+        // });
+
+        // when a relationship is added or erased, we need to refresh the Project view list. It comes from controller.marcate
+        $rootScope.$on( 'refreshactiveThisUser', function( event, data ) {
+            $scope.activeThisUser( $scope.$parent.$parent.currentMode.obj );
         });
 
     }

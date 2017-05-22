@@ -146,6 +146,8 @@
         "previous": "Anterior",
         "from": "De:",
         "of": "de",
+        "to1": "a",
+        "to2": "para",
         "enabled": "Activo",
         "disabled": "No Activo",
         "toConfirm": "Confirmar!"
@@ -367,10 +369,13 @@
             "personalManager": "Gestor Personal",
             "mainCalendar": "Calendario principal",
             "searchPlaceholder": "Nombre, descripción, NIF, CP, código, alias...",
+            "marcateAProject": "Vincular proyecto",
+            "marcateAUser": "Vincular empleado",
             "demarcateThisProject": "Desvincular proyecto",
             "demarcateThisUser": "Desvincular usuario",
             "demarcateProject": "¿Desvincular proyecto?",
-            "errorDemarcate": "Ocurrió un error durante la operación",
+            "errorDemarcate": "Ocurrió un error durante la desvinculación",
+            "errorMarcate": "Ocurrió un error durante la vinculación",
             "errorData": "Ocurrió un error cargando los datos",
             "activeUsers": "Empleados asignados",
             "removeUserFromProject": "¿Eliminar empleado de este proyecto?",
@@ -394,7 +399,7 @@
         "initDate": "Fecha inicial",
         "endDate": "Fecha final",
         "maxHours": "Horas máx.",
-        "zeroIsUnlimited": "0h para ilimitado"
+        "zeroIsUnlimited": "( 0h para ilimitado )"
     },
     "notifications": {
         "title": "Notificaciones",

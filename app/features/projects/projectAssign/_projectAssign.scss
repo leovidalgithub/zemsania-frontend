@@ -9,11 +9,10 @@
 		#mainContent {
 			clear: both;
 
-			.contentTitle {
+			.contentHead {
 				font-family: monospace;
 				font-size: 18px;
 				text-align: center;
-				// font-weight: bold;
 			}
 			.mainBoxes {
 				min-height: 300px;
@@ -42,10 +41,8 @@
 					overflow: hidden;
 	                white-space: nowrap;
 				}
-
 			}
 			.activeItem {
-				// border: 1px solid orange;
 				background-color: #666;
 				color: white;
 				border-radius: 5px;
@@ -57,7 +54,6 @@
 	}
 }
 
-// MODALS
 // MODAL PROJECT INFO
 #modal-info {
 	.modal-title {
@@ -74,5 +70,49 @@
 	}
 	.modal-footer {
 		padding: 0 20px 20px 20px;
+	}	
+}
+
+
+// MODAL MARCATE PROJECTS OR USERS
+#marcate {
+	font-size: 17px;
+	font-family: monospace;
+	.waitSpinner {
+		text-align: center;
+		margin-top: 25px;
+		i {
+			font-size: 24px;
+		}
+		span {
+			font-size: 18px;
+		}
 	}
+
+	#maxHoursContent {
+		margin-top: 15px;
+	}
+
+	#mainContent {
+		min-height: 200px;
+		max-height: 350px;
+		overflow-y: auto;
+		overflow-x: hidden;
+		margin-top: 15px;
+		padding: 15px 0 10px 0;
+			ul  {
+				list-style-type: none;
+			}
+			li {
+				margin-bottom: 10px;
+			}
+			.leftContent {
+				overflow: hidden;
+	            white-space: nowrap;
+	            text-align: left;
+				}
+			.rightContent {
+				text-align: center;				
+			}
+		}	
 }

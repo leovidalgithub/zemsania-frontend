@@ -68,11 +68,15 @@
             $scope.projects = filteredProjects.projects;
         });
 
-        // when a relationship was erased, we proceed to remove that item from $scope.projects
-        $rootScope.$on( 'removeProjectItem', function( event, data ) {
-            ProjectsFactory.removeItemFromArray( $scope.projects, data.id );
-        });
+        // // when a relationship was erased, we proceed to remove that item from $scope.projects
+        // $rootScope.$on( 'removeProjectItem', function( event, data ) {
+        //     ProjectsFactory.removeItemFromArray( $scope.projects, data.id );
+        // });
 
+        // when a relationship is added or erased, we need to refresh the User view list. It comes from controller.marcate
+        $rootScope.$on( 'refreshactiveThisProject', function( event, data ) {
+            $scope.activeThisProject( $scope.$parent.$parent.currentMode.obj );
+        });
 
     }
 

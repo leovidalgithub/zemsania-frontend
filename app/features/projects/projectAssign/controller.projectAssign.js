@@ -10,11 +10,6 @@
     function ProjectAssignController( $scope, ProjectsFactory, $uibModal, $timeout ) {
 
         // GET NUMBER OF OCURRENCES OF PROJECT OR USER IN PROJECTUSERS ENTITY
-        // GET NUMBER OF OCURRENCES OF PROJECT OR USER IN PROJECTUSERS ENTITY
-        // GET NUMBER OF OCURRENCES OF PROJECT OR USER IN PROJECTUSERS ENTITY
-        // GET NUMBER OF OCURRENCES OF PROJECT OR USER IN PROJECTUSERS ENTITY
-        // GET NUMBER OF OCURRENCES OF PROJECT OR USER IN PROJECTUSERS ENTITY
-        // GET NUMBER OF OCURRENCES OF PROJECT OR USER IN PROJECTUSERS ENTITY
         // GET projectUsers/countOcurrences/59147b6efa92a507d4d99c04
 
         $scope.spinners = {
@@ -60,6 +55,24 @@
             }).result.then( function() {}, function( res ) {} ); // to avoid: 'Possibly unhandled rejection: backdrop click'
         };
 
+        $scope.newMarcate = function() {
+            // var user    = $scope.currentMode.type == 'users' ? $scope.currentMode.obj : obj;
+            // var project = $scope.currentMode.type == 'projects' ? $scope.currentMode.obj : obj;
+
+            // MODAL - WARNING BEFORE REMOVING PROJECT-USER RELATIONSHIP
+            var modalPendingChangesInstance = $uibModal.open( {
+            animation : true,
+            templateUrl : '/features/projects/projectAssign/modals/modalMarcate.tpl.html',
+            controller : 'ModalMarcate',
+            resolve : {
+                data : { currentMode : $scope.currentMode }
+            },
+            backdrop: 'static',
+            size: 'md',
+            }).result.then( function() {}, function( res ) {} ); // to avoid: 'Possibly unhandled rejection: backdrop click'
+        };
+
+        // MESSAGES ALERT RECEIVE EVENT
         $scope.$on( 'messageAlert', function( event, data ) {
             $scope.alerts.error   = data.error;
             $scope.alerts.message = data.message;

@@ -60,6 +60,18 @@
                 return dfd.promise;
             },
 
+            marcateUserProject: function ( data ) { // LEO WAS HERE
+                var dfd = $q.defer();
+                $http.post( buildURL( 'marcateUserProject' ), data )
+                    .then( function ( response ) {
+                        dfd.resolve( response.data );
+                    })
+                    .catch( function ( err ) {
+                        dfd.reject( err );
+                    });
+                return dfd.promise;
+            },
+
             // it adds an 'active' field to both employess and projects objects
             // when users select an employee or project it is activated to true
             toAddActiveField: function ( array ) {

@@ -30,6 +30,7 @@ var API_paths = {
     getProjectsByUserId: 'projectUsers/getProjectsByUserId/',
     getUsersByProjectId: 'projectUsers/getUsersByProjectId/',
     demarcateUserProject: 'projectUsers/demarcateUserProject',
+    marcateUserProject: 'projectUsers/marcateUserProject',
     // projectGetUsers: 'projectUsers/getUsersByProjectID',
     // projectUserSave: 'projectUsers/save',
     // getUsersBySupervisor: 'projectUsers/getUsersBySupervisor',

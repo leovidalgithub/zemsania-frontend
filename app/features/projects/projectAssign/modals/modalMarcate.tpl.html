@@ -1,0 +1,69 @@
+<div id="marcate">
+    <div class="modal-header border-b">
+        <h4>
+            <span ng-show="data.currentMode.type=='users'">{{'projects.projectAssign.marcateAProject' | i18next}}</span>
+            <span ng-show="data.currentMode.type=='projects'">{{'projects.projectAssign.marcateAUser' | i18next}}</span>
+            <span> {{'words.to1' | i18next}} </span>
+            <span>{{data.currentMode.obj.name}}</span>
+        </h4>
+    </div>
+
+    <div class="modal-body set-padding-t-lg">
+        <!-- ADVANCED SEARCH -->
+        <div class="advanced-search">
+            <!-- <h4>{{'employeeManager.list.advancedSearch' | i18next}}</h4> -->
+            <form class="row form-inline simple-input" ng-submit="search(data.searchText)">       
+                <div class="col-md-9 form-elements">
+                    <div style="width: 100%;" class="form-group">
+                        <input style="width: 100%;" id="searchInput" ng-model="data.searchText" type="text" class="form-control" 
+                                placeholder="{{'projects.projectAssign.searchPlaceholder' | i18next}}" autocomplete="off" autofocus />
+                    </div>
+                </div>
+                <div class="col-md-3 form-actions">
+                    <!-- <button type="reset" class="btn btn-warning">{{'actions.reset' | i18next}}</button> -->
+                    <button type="submit" class="btn btn-primary">{{'actions.toSearch' | i18next}}</button>
+                </div>
+
+                <!-- MAX-HOURS INPUT -->
+                <div id="maxHoursContent" class="col-xs-12">
+                    <label for="maxhours">{{'dates.maxHours' | i18next}} </label>
+                    <input id="maxhours" type="number" min="0" max="24" ng-model="data.maxHours" placeholder="0h" />
+                    <span> {{'dates.zeroIsUnlimited' | i18next}}</span>
+                </div>
+            </form>
+        </div>
+
+         <!-- WAIT-SPINNER ANIMATED ICON -->
+        <div ng-show="data.spinners" class="waitSpinner">
+            <i class="fa fa-refresh fa-spin"></i><span>&nbsp;&nbsp;{{'actions.loading' | i18next}}</span>
+        </div>
+
+        <!-- ITEMS LIST (PROJECTS OR USERS) -->
+        <div id="mainContent">
+            <ul>
+                <li ng-repeat="item in data.items">
+                    <div class="row">
+                        <div class="pull-left col-xs-10 leftContent">                            
+                            <i ng-class="{true : 'fa-folder', false : 'fa-user' }[data.currentMode.type=='users']" accesskey=""
+                               class="fa icon"></i>
+                            <span ng-show="data.currentMode.type=='users'">{{item.name}}</span>
+                            <span ng-show="data.currentMode.type=='projects'">{{item.fullName}}</span>
+                        </div>
+                        <div class="pull-right col-xs-2 rightContent">
+                            <button class="btn btn-success" ng-click="marcateThis(item)" 
+                                    title="{{data.currentMode.type=='users' ? ('projects.projectAssign.marcateAProject' | i18next) : ('projects.projectAssign.marcateAUser' | i18next)}}">
+                                    <i class="fa fa-plus"></i></button>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <div class="text-right form-buttons">
+            <button class="btn btn-gray" type="button" ng-click="cancel()">{{'actions.close' | i18next}}</button>
+        </div>
+    </div>
+
+</div>

@@ -1450,7 +1450,7 @@
 #projectAssign #section #mainContent {
   clear: both;
 }
-#projectAssign #section #mainContent .contentTitle {
+#projectAssign #section #mainContent .contentHead {
   font-family: monospace;
   font-size: 18px;
   text-align: center;
@@ -1503,6 +1503,46 @@
 }
 #modal-info .modal-footer {
   padding: 0 20px 20px 20px;
+}
+
+#marcate {
+  font-size: 17px;
+  font-family: monospace;
+}
+#marcate .waitSpinner {
+  text-align: center;
+  margin-top: 25px;
+}
+#marcate .waitSpinner i {
+  font-size: 24px;
+}
+#marcate .waitSpinner span {
+  font-size: 18px;
+}
+#marcate #maxHoursContent {
+  margin-top: 15px;
+}
+#marcate #mainContent {
+  min-height: 200px;
+  max-height: 350px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin-top: 15px;
+  padding: 15px 0 10px 0;
+}
+#marcate #mainContent ul {
+  list-style-type: none;
+}
+#marcate #mainContent li {
+  margin-bottom: 10px;
+}
+#marcate #mainContent .leftContent {
+  overflow: hidden;
+  white-space: nowrap;
+  text-align: left;
+}
+#marcate #mainContent .rightContent {
+  text-align: center;
 }
 
 html, body, body > div, div[ui-view] {

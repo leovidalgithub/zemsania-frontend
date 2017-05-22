@@ -14,12 +14,12 @@
             ProjectsFactory.demarcateUserProject( data )
                 .then( function ( result ) {
                     // once relationship was erased from ProjectUsers entity
-                    // we proceed to remove the item from either $scope.employess or $scope.projects
-                    if( data.currentMode.type == 'users' ) {
-                        $rootScope.$broadcast( 'removeProjectItem', { id : data.project._id } );
+                    // we proceed to refresh the projects or users list view calling to ActiveThisUser or ActiveThisProject
+                    if( $scope.data.currentMode.type == 'users' ) {
+                        $rootScope.$broadcast( 'refreshactiveThisUser', { data : null } );
                     } else {
-                        $rootScope.$broadcast( 'removeUserItem', { id : data.user._id } );
-                    }
+                        $rootScope.$broadcast( 'refreshactiveThisProject', { data : null } ); 
+                    };
                 })
                 .catch( function ( err ) {
                     $rootScope.$broadcast( 'messageAlert', { 

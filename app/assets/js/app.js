@@ -212,6 +212,7 @@ var API_paths = {
     getProjectsByUserId: 'projectUsers/getProjectsByUserId/',
     getUsersByProjectId: 'projectUsers/getUsersByProjectId/',
     demarcateUserProject: 'projectUsers/demarcateUserProject',
+    marcateUserProject: 'projectUsers/marcateUserProject',
     // projectGetUsers: 'projectUsers/getUsersByProjectID',
     // projectUserSave: 'projectUsers/save',
     // getUsersBySupervisor: 'projectUsers/getUsersBySupervisor',
@@ -1950,6 +1951,18 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
                 return dfd.promise;
             },
 
+            marcateUserProject: function ( data ) { // LEO WAS HERE
+                var dfd = $q.defer();
+                $http.post( buildURL( 'marcateUserProject' ), data )
+                    .then( function ( response ) {
+                        dfd.resolve( response.data );
+                    })
+                    .catch( function ( err ) {
+                        dfd.reject( err );
+                    });
+                return dfd.promise;
+            },
+
             // it adds an 'active' field to both employess and projects objects
             // when users select an employee or project it is activated to true
             toAddActiveField: function ( array ) {
@@ -2276,6 +2289,55 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
 
 }());
 
+( function () {
+    'use strict';
+    angular
+        .module( 'hours.auth' )
+        .controller( 'ChangePasswordController', ChangePasswordController );
+
+    ChangePasswordController.$invoke = [ '$scope', 'UserFactory', '$state', '$timeout' ];
+    function ChangePasswordController( $scope, UserFactory, $state, $timeout ) {
+        initialVertex();
+        $scope.passwordForm = {
+                current : null,
+                new     : null,
+                confirm : null
+        };
+
+        $scope.changePassword = function () {
+            $scope.passwordForm.success = false;
+            $scope.passwordForm.error = false;
+
+            UserFactory.doChangePassword( $scope.passwordForm )
+                .then( function ( data ) {
+                    if ( data.data.success ) {
+                        $scope.passwordForm.success = true;
+                        $scope.changePassword.messageToDisplay = 'success';
+                        $timeout( function () {
+                            $state.go( 'login' );
+                        }, 2500 );
+                    } else {
+                        $scope.passwordForm.error = true;
+                        switch( data.data.code ) {
+                            case 101:
+                                $scope.changePassword.messageToDisplay = 'userNotFound';
+                                break;
+                            case 102:
+                                $scope.changePassword.messageToDisplay = 'currentPassIncorrect';
+                        }
+                    }
+                })
+                .catch( function ( err ) {
+                        $scope.passwordForm.error = true;
+                        $scope.changePassword.messageToDisplay = 'error';
+                });
+        };
+
+        $scope.$on( '$destroy', function () {
+            window.continueVertexPlay = false;
+        });
+    }
+}());
 ( function () {
 'use strict';
     angular
@@ -3548,11 +3610,6 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
     function ProjectAssignController( $scope, ProjectsFactory, $uibModal, $timeout ) {
 
         // GET NUMBER OF OCURRENCES OF PROJECT OR USER IN PROJECTUSERS ENTITY
-        // GET NUMBER OF OCURRENCES OF PROJECT OR USER IN PROJECTUSERS ENTITY
-        // GET NUMBER OF OCURRENCES OF PROJECT OR USER IN PROJECTUSERS ENTITY
-        // GET NUMBER OF OCURRENCES OF PROJECT OR USER IN PROJECTUSERS ENTITY
-        // GET NUMBER OF OCURRENCES OF PROJECT OR USER IN PROJECTUSERS ENTITY
-        // GET NUMBER OF OCURRENCES OF PROJECT OR USER IN PROJECTUSERS ENTITY
         // GET projectUsers/countOcurrences/59147b6efa92a507d4d99c04
 
         $scope.spinners = {
@@ -3598,6 +3655,24 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
             }).result.then( function() {}, function( res ) {} ); // to avoid: 'Possibly unhandled rejection: backdrop click'
         };
 
+        $scope.newMarcate = function() {
+            // var user    = $scope.currentMode.type == 'users' ? $scope.currentMode.obj : obj;
+            // var project = $scope.currentMode.type == 'projects' ? $scope.currentMode.obj : obj;
+
+            // MODAL - WARNING BEFORE REMOVING PROJECT-USER RELATIONSHIP
+            var modalPendingChangesInstance = $uibModal.open( {
+            animation : true,
+            templateUrl : '/features/projects/projectAssign/modals/modalMarcate.tpl.html',
+            controller : 'ModalMarcate',
+            resolve : {
+                data : { currentMode : $scope.currentMode }
+            },
+            backdrop: 'static',
+            size: 'md',
+            }).result.then( function() {}, function( res ) {} ); // to avoid: 'Possibly unhandled rejection: backdrop click'
+        };
+
+        // MESSAGES ALERT RECEIVE EVENT
         $scope.$on( 'messageAlert', function( event, data ) {
             $scope.alerts.error   = data.error;
             $scope.alerts.message = data.message;
@@ -3902,12 +3977,12 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
             ProjectsFactory.demarcateUserProject( data )
                 .then( function ( result ) {
                     // once relationship was erased from ProjectUsers entity
-                    // we proceed to remove the item from either $scope.employess or $scope.projects
-                    if( data.currentMode.type == 'users' ) {
-                        $rootScope.$broadcast( 'removeProjectItem', { id : data.project._id } );
+                    // we proceed to refresh the projects or users list view calling to ActiveThisUser or ActiveThisProject
+                    if( $scope.data.currentMode.type == 'users' ) {
+                        $rootScope.$broadcast( 'refreshactiveThisUser', { data : null } );
                     } else {
-                        $rootScope.$broadcast( 'removeUserItem', { id : data.user._id } );
-                    }
+                        $rootScope.$broadcast( 'refreshactiveThisProject', { data : null } ); 
+                    };
                 })
                 .catch( function ( err ) {
                     $rootScope.$broadcast( 'messageAlert', { 
@@ -3918,6 +3993,90 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
 
         $scope.cancel = function () {
             $uibModalInstance.dismiss( 'cancel' );
+        };
+
+    }
+
+}());
+
+;( function () {
+    'use strict';
+    angular
+        .module( 'hours.projects' )
+        .controller( 'ModalMarcate', ModalMarcate );
+
+    ModalMarcate.$invoke = [ '$scope', '$rootScope', '$uibModalInstance', 'data', 'ProjectsFactory', 'EmployeeManagerFactory', '$filter' ];
+    function ModalMarcate( $scope, $rootScope, $uibModalInstance, data, ProjectsFactory, EmployeeManagerFactory, $filter ) {
+
+        $scope.data = {
+                spinners    : false,
+                maxHours    : 0,
+                searchText  : '',
+                currentMode : data.currentMode
+        };
+
+        $scope.search = function( searchText ) {
+            $scope.data.spinners = true;
+            var thisPromise      = [];
+            if( $scope.data.currentMode.type == 'users' ) {
+                thisPromise.push( ProjectsFactory.advancedProjectSearch( searchText ) );
+            } else {
+                thisPromise.push( EmployeeManagerFactory.advancedUserSearch( { textToFind : searchText } ) );                
+            }
+            Promise.all( thisPromise )
+                .then( function ( data ) {
+                    if( $scope.data.currentMode.type == 'users' ) {
+                        $scope.data.items = data[0].projects;
+                    } else {
+                        $scope.data.items = data[0];
+                    }
+                })
+                .catch( function ( err ) {
+                   $rootScope.$broadcast( 'messageAlert', {
+                                        error : true,
+                                        message : $filter( 'i18next' )( 'projects.projectAssign.errorData' ) } );
+                })
+                .then( function() { // functionallity as finally
+                    $scope.data.spinners = false;
+                });
+        };
+
+        $scope.marcateThis = function( item ) {
+            var userId    = '';
+            var projectId = '';
+            if( $scope.data.currentMode.type == 'users' ) {
+                userId    = $scope.data.currentMode.obj._id;
+                projectId = item._id;
+            } else {
+                projectId = $scope.data.currentMode.obj._id;
+                userId    = item._id;
+            }
+            var data = {
+                projectId : projectId,
+                userId    : userId,
+                maxHours  : $scope.data.maxHours
+            };
+            ProjectsFactory.marcateUserProject( data )
+                .then( function ( result ) {
+                    // once the new ProjectUser document was inserted, we proceed to delete that item from list
+                    ProjectsFactory.removeItemFromArray( $scope.data.items, item._id );
+                })
+                .catch( function ( err ) {
+                    $uibModalInstance.dismiss( 'cancel' );
+                    $rootScope.$broadcast( 'messageAlert', { 
+                                        error : true,
+                                        message : $filter( 'i18next' )( 'projects.projectAssign.errorMarcate' ) } );
+                });
+        };
+
+        $scope.cancel = function () {
+            $uibModalInstance.dismiss( 'cancel' );
+            // at modal exit, we proceed to refresh the projects or users list view calling to ActiveThisUser or ActiveThisProject
+            if( $scope.data.currentMode.type == 'users' ) {
+                $scope.$emit( 'refreshactiveThisUser', { data : null } );
+            } else {
+                $scope.$emit( 'refreshactiveThisProject', { data : null } ); 
+            }
         };
 
     }
@@ -3994,11 +4153,15 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
             $scope.projects = filteredProjects.projects;
         });
 
-        // when a relationship was erased, we proceed to remove that item from $scope.projects
-        $rootScope.$on( 'removeProjectItem', function( event, data ) {
-            ProjectsFactory.removeItemFromArray( $scope.projects, data.id );
-        });
+        // // when a relationship was erased, we proceed to remove that item from $scope.projects
+        // $rootScope.$on( 'removeProjectItem', function( event, data ) {
+        //     ProjectsFactory.removeItemFromArray( $scope.projects, data.id );
+        // });
 
+        // when a relationship is added or erased, we need to refresh the User view list. It comes from controller.marcate
+        $rootScope.$on( 'refreshactiveThisProject', function( event, data ) {
+            $scope.activeThisProject( $scope.$parent.$parent.currentMode.obj );
+        });
 
     }
 
@@ -4021,7 +4184,7 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
                 templateUrl: '/features/projects/projectAssign/modals/modalUserInfo.tpl.html',
                 controller : 'ModalInfo',
                 resolve : {
-                    data : user 
+                    data : user
                 },
                 backdrop: 'static',
                 size: 'md',
@@ -4047,6 +4210,7 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
         });
 
         $scope.activeThisUser = function( user ) {
+            console.log('activeThisUser');
             $scope.spinners.projects = true;
             $scope.$parent.$parent.currentMode.obj  = user;
             $scope.$parent.$parent.currentMode.type = 'users';
@@ -4074,64 +4238,20 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
             $scope.employees = filteredUsers.users.users;
         });
 
-        // when a relationship was erased, we proceed to remove that item from $scope.employees
-        $rootScope.$on( 'removeUserItem', function( event, data ) {
-            ProjectsFactory.removeItemFromArray( $scope.employees, data.id );
+        // // when a relationship was erased, we proceed to remove that item from $scope.employees
+        // $rootScope.$on( 'removeUserItem', function( event, data ) {
+        //     ProjectsFactory.removeItemFromArray( $scope.employees, data.id );
+        // });
+
+        // when a relationship is added or erased, we need to refresh the Project view list. It comes from controller.marcate
+        $rootScope.$on( 'refreshactiveThisUser', function( event, data ) {
+            $scope.activeThisUser( $scope.$parent.$parent.currentMode.obj );
         });
 
     }
 
 }());
 
-( function () {
-    'use strict';
-    angular
-        .module( 'hours.auth' )
-        .controller( 'ChangePasswordController', ChangePasswordController );
-
-    ChangePasswordController.$invoke = [ '$scope', 'UserFactory', '$state', '$timeout' ];
-    function ChangePasswordController( $scope, UserFactory, $state, $timeout ) {
-        initialVertex();
-        $scope.passwordForm = {
-                current : null,
-                new     : null,
-                confirm : null
-        };
-
-        $scope.changePassword = function () {
-            $scope.passwordForm.success = false;
-            $scope.passwordForm.error = false;
-
-            UserFactory.doChangePassword( $scope.passwordForm )
-                .then( function ( data ) {
-                    if ( data.data.success ) {
-                        $scope.passwordForm.success = true;
-                        $scope.changePassword.messageToDisplay = 'success';
-                        $timeout( function () {
-                            $state.go( 'login' );
-                        }, 2500 );
-                    } else {
-                        $scope.passwordForm.error = true;
-                        switch( data.data.code ) {
-                            case 101:
-                                $scope.changePassword.messageToDisplay = 'userNotFound';
-                                break;
-                            case 102:
-                                $scope.changePassword.messageToDisplay = 'currentPassIncorrect';
-                        }
-                    }
-                })
-                .catch( function ( err ) {
-                        $scope.passwordForm.error = true;
-                        $scope.changePassword.messageToDisplay = 'error';
-                });
-        };
-
-        $scope.$on( '$destroy', function () {
-            window.continueVertexPlay = false;
-        });
-    }
-}());
 var TAU = 2 * Math.PI;
 var canvas;
 var ctx;
