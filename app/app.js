@@ -38,8 +38,8 @@
         .config( appConfig )
         .run( appRun );
 
-    appConfig.$invoke = [ '$locationProvider', '$i18nextProvider', 'cfpLoadingBarProvider', '$urlRouterProvider' ];
-    function appConfig( $locationProvider, $i18nextProvider, cfpLoadingBarProvider, $urlRouterProvider ) {
+    appConfig.$invoke = [ '$locationProvider', '$i18nextProvider', 'cfpLoadingBarProvider', '$urlRouterProvider', '$qProvider' ];
+    function appConfig( $locationProvider, $i18nextProvider, cfpLoadingBarProvider, $urlRouterProvider, $qProvider ) {
         $urlRouterProvider.otherwise( function( $injector ) {
             var $state = $injector.get( "$state" );
             $state.transitionTo( 'login' );
@@ -48,6 +48,9 @@
 
         $locationProvider.html5Mode( true );
         $locationProvider.hashPrefix( '!' );
+
+        // this is for '$uibModalInstance' modal unhandled error when close modal: 'possibly unhandled rejection cancel modal'
+        $qProvider.errorOnUnhandledRejections(false);
     }
 
     appRun.$invoke = [ 'PermRoleStore', 'UserFactory', '$rootScope', '$http', 'formlyConfig', '$i18next' ];

@@ -3,14 +3,9 @@
     angular
         .module( 'hours.projects' )
         .controller( 'ProjectAssignController', ProjectAssignController );
-        // .controller( 'ModalAddUserToProject',   ModalAddUserToProject )
-        // .controller( 'ModalUserInfo',           ModalUserInfo );
 
     ProjectAssignController.$invoke = [ '$scope', 'ProjectsFactory', '$uibModal', '$timeout' ];
     function ProjectAssignController( $scope, ProjectsFactory, $uibModal, $timeout ) {
-
-        // GET NUMBER OF OCURRENCES OF PROJECT OR USER IN PROJECTUSERS ENTITY
-        // GET projectUsers/countOcurrences/59147b6efa92a507d4d99c04
 
         $scope.spinners = {
                     projects : false,
@@ -21,16 +16,19 @@
                     type : 'none', // it can be: 'none', 'projects' or 'users'
         };
 
+        ( function Init() {
+            $timeout( function() { // search input set_focus
+                // $scope.$broadcast( 'toSearchEvent', { searchText : '12' } );
+                setMainBoxesHeight();
+                document.getElementById( 'searchInput' ).focus();
+            }, 400 );
+        })();
+
         $scope.searchProject = function ( searchText ) {
             $scope.currentMode.type = 'none';
             $scope.currentMode.obj  = {};
             $scope.$broadcast( 'toSearchEvent', { searchText : searchText } );
         };
-
-        $timeout( function() { // search input set_focus
-            $scope.$broadcast( 'toSearchEvent', { searchText : '1' } );
-            document.getElementById( 'searchInput' ).focus();
-        }, 900 );
 
         $scope.removeThis = function( obj, event ) {
             event.preventDefault();
@@ -56,10 +54,6 @@
         };
 
         $scope.newMarcate = function() {
-            // var user    = $scope.currentMode.type == 'users' ? $scope.currentMode.obj : obj;
-            // var project = $scope.currentMode.type == 'projects' ? $scope.currentMode.obj : obj;
-
-            // MODAL - WARNING BEFORE REMOVING PROJECT-USER RELATIONSHIP
             var modalPendingChangesInstance = $uibModal.open( {
             animation : true,
             templateUrl : '/features/projects/projectAssign/modals/modalMarcate.tpl.html',
@@ -78,18 +72,15 @@
             $scope.alerts.message = data.message;
         });
 
-        // please, just one name and one surname
+        // please, back to me just one word (one name, one surname)
         $scope.giveMeFirstWord = function( string ) {
             return string ? string.toString().split( ' ' )[0] : '';
         };
+
+        function setMainBoxesHeight() {
+            var sectionHeight = document.getElementById( 'section' ).offsetHeight;
+            $( '#projectAssign #section .mainBoxes' ).height( sectionHeight - 185 );
+        }
     }
-
-    // ModalUserInfo.$invoke = ['$scope', '$uibModalInstance', 'user'];
-    // function ModalUserInfo($scope, $uibModalInstance, user) {
-    // }
-
-    // ModalAddUserToProject.$invoke = ['$scope', '$uibModalInstance', 'user', 'project'];
-    // function ModalAddUserToProject($scope, $uibModalInstance, user, project) {
-    // }
 
 }());

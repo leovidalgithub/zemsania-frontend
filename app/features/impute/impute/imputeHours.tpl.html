@@ -49,14 +49,23 @@
                     <!-- TYPES -->
                     <div class="col-xs-12 col-md-3">
                         <label for="imputeTypes">{{'words.type' | i18next}}</label>
-                        <select ng-options="type for type in imputeTypes" ng-model="typesModel" ng-change="imputeTypeChanged()"
-                                 id="imputeTypes"></select>
+     
+                        <select ng-options="obj.value as obj.text for obj in imputeTypes" ng-model="typesModel" 
+                                ng-change="imputeTypeChanged()" id="imputeTypes"></select>
+<!--                         <select ng-options="type for type in imputeTypes | orderBy : type" ng-model="typesModel" 
+                                ng-change="imputeTypeChanged()" id="imputeTypes"></select>
+ -->
+
+
                     </div>
                     <!-- SUBTYPES -->
-                    <div class="col-xs-12 col-md-4">
+<!--                     <div class="col-xs-12 col-md-4">
                         <label for="imputeSubTypes">{{'words.subType' | i18next}}</label>
-                        <select ng-options="subType for subType in imputeTypes[typesModel]" ng-disabled="!typesModel" ng-model="subtypesModel" ng-change="imputeSubTypeChanged()" id="imputeSubTypes"></select>
+                        <select ng-options="subType for subType in imputeTypes[typesModel] | orderBy : subType" ng-disabled="!typesModel" ng-model="subtypesModel" ng-change="imputeSubTypeChanged()" id="imputeSubTypes"></select>
                     </div>
+ -->
+
+                    
                     <!-- MOVING-DATE BUTTONS -->
                     <div class="col-xs-12 col-md-5">
                         <button class="btn btn-primary" ng-click="moveDate(-1)" title="{{'words.previous' | i18next}}">
@@ -84,20 +93,16 @@
             </div>
 
             <!-- MONTH DAYS -->
-            <div id="daysDiv"> 
+            <div id="daysDiv">
                 <div class="myWeek" ng-repeat="(keyWeek, week) in showDaysObj.weeks">
-                    <div class="myDay {{day.dayType}}" ng-repeat="(keyDay, day) in week"
+                    <div id="{{day.timeStamp}}" class="myDay {{day.dayType}}" ng-repeat="(keyDay, day) in week" 
                          ng-class="{'desactivedNotCurrentMonth': showDaysObj.currentMonth!=day.thisMonth,
                                     'desactivedByStatus': day.status=='approved' || day.status=='sent'}"
                          ng-hide="((weekViewMode == true) && (showDaysObj.currentWeek != day.week))">
 
                         <!-- LEFT CORNER INFO TAG -->
-                        <div ng-hide="showDaysObj.currentMonth!=day.thisMonth" class="infoTag" ng-switch on="day.status"
-                                ng-class="{'draft':day.status=='draft','approved':day.status=='approved',
-                                            'rejected':day.status=='rejected','sent':day.status=='sent',
-                                            'friday':day.dayType=='friday','working':day.dayType=='working',
-                                            'intensive':day.dayType=='intensive','special':day.dayType=='special',
-                                            'holidays':day.dayType=='holidays','non_working':day.dayType=='non_working'}">
+                        <div ng-hide="showDaysObj.currentMonth!=day.thisMonth" class="infoTag {{day.status}} {{day.dayType}}" 
+                                ng-switch on="day.status">
                             <i ng-switch-when="approved" class="fa fa-thumbs-up" title="{{'calendar.imputeHours.approved' | i18next}}!"></i>
                             <i ng-switch-when="rejected" class="fa fa-thumbs-down" title="{{'calendar.imputeHours.rejected' | i18next}}!"></i>
                             <i ng-switch-when="sent" class="fa fa-paper-plane" title="{{'calendar.imputeHours.sent' | i18next}}"></i>
@@ -110,20 +115,34 @@
                         </div>
 
                         <div class="myInput">
-                            <input ng-disabled="day.status=='approved' || day.status=='sent'" ng-show="(day.inputType == 'number') && (showDaysObj.currentMonth==day.thisMonth)" 
+                            <input ng-disabled="day.status=='approved' || day.status=='sent'" ng-focus="gotFocus(day.timeStamp)"
+                                    ng-show="(day.inputType == 'number') && (showDaysObj.currentMonth==day.thisMonth)" 
                                     class="form-control input-sm" type="number" step="0.5" min="0" max="24" 
                                     ng-change="inputChanged(day)" ng-model="day.value" />
-                            <input ng-disabled="day.status=='approved' || day.status=='sent'" ng-show="(day.inputType == 'checkbox') && (showDaysObj.currentMonth==day.thisMonth)" 
+                            <input ng-disabled="day.status=='approved' || day.status=='sent'" ng-focus="gotFocus(day.timeStamp)"
+                                    ng-show="(day.inputType == 'checkbox') && (showDaysObj.currentMonth==day.thisMonth)" 
                                     class="form-control input-sm" type="checkbox" value="{{day.checkValue}}"
                                     ng-model="day.checkValue" ng-change="inputChanged(day)">
                         </div>
 
-                        <div class="myFooter" ng-show="showDaysObj.currentMonth==day.thisMonth">
+                        <!-- IMPUTE TYPE SUMMARY -->
+                        <div ng-repeat="(imputeTypeKey, value) in day.imputeTypesSummary" class="imputeTypesSummary {{day.dayType}}" 
+                             ng-class="{'desactivedByStatus': day.status=='approved' || day.status=='sent',
+                             'highlightValue': value,'totalHours':imputeTypeKey=='totalHours'}"
+                             ng-click="openImputeTypeSummaryModal(day.timeStamp,day.imputeTypesSummary,day.dayType,day)">
+                            <span>{{giveMeAbbreviation(imputeTypeKey)}}</span>
+                            <span>{{value}}</span>
+                        </div>
+
+
+                            <!-- DAY FOOTER -->
+<!--                         <div class="myFooter" ng-show="showDaysObj.currentMonth==day.thisMonth">
                             <button ng-disabled="day.status=='approved' || day.status=='sent'" class="btn btn-xs btn-warning" title="{{'calendar.imputeHours.expenses' | i18next}}" tabindex="-1">
                                 <i class="fa fa-eur"></i></button>
                             <button ng-disabled="day.status=='approved' || day.status=='sent'" class="btn btn-xs btn-danger" title="{{'words.comments' | i18next}}" tabindex="-1">
                                 <i class="fa fa-comment"></i></button>
                         </div>
+ -->                        
                     </div>
                 </div>
             </div>

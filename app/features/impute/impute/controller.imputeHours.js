@@ -11,24 +11,42 @@
         var currentMonth     = currentDate.getMonth();
         var currentYear      = currentDate.getFullYear();
         var calendarID       = UserFactory.getcalendarID(); // get user calendar
-        var goToState        = null; // when sidebar option is required by user and there are pending-changes
-        var generalDataModel = {}; // object with all calendars and timesheet classified by month
+        var goToState        = null; // when sidebar option is clicked by user and there are pending-changes to save
+        var generalDataModel = {}; // object with all calendars and timesheets classified by month/year
         $scope.changes = {};
         $scope.changes.pendingChanges = false;
         $scope.changes.originalGeneralDataModel = {}; // to get back pending changes
         $rootScope.pendingChanges = false; // pending-changes for sidebar options
-        $scope.weekViewMode       = true; // week/month view switch flag
+        $scope.weekViewMode       = true; // week/month view switch flag / it starts on week mode
         // ALERT MESSAGES
         $scope.alerts = {};
         $scope.alerts.permanentError = true;
 
+        const IMPUTETYPES = { // it contains the index posisition inside imputeTypes array ## DO NOT CHANGE THE ARRAY ELEMENTS ORDER ##
+                    Horas      : 0,
+                    Guardias   : 1,
+                    Variables  : 2,
+                    Vacaciones : 3,
+                    Ausencias  : 4
+                };
+        Object.freeze( IMPUTETYPES );
         // IMPUTE TYPES AND SUBTYPES INFO
-        $scope.imputeTypes                = [ 'Horas', 'Guardias', 'Variables' ];
-        $scope.imputeTypes[ 'Horas'     ] = [ 'Hora' ];
-        $scope.imputeTypes[ 'Guardias'  ] = [ 'Turnicidad', 'Guardia', 'Varios' ];
-        $scope.imputeTypes[ 'Variables' ] = [ 'Hora extra', 'Hora extra festivo', 'Horas nocturnas', 'Formación', 'Intervenciones', 'Varios' ];
-        $scope.typesModel    = $scope.imputeTypes[0];
-        $scope.subtypesModel = $scope.imputeTypes[$scope.typesModel][0];
+        var imputeTypesAbbreviation        = [ 'Hor', 'Gua', 'Var', 'Vac', 'Aus' ]; // abbreviations are stored with the same order
+
+        // $scope.imputeTypes                 = [ 'Horas', 'Guardias', 'Variables', 'Vacaciones', 'Ausencias' ];
+
+        $scope.imputeTypes                 = [ {value:0,text:'Horas'},{value:1,text:'Guardias'},{value:2,text:'Variables'},{value:3,text:'Vacaciones'},{value:4,text:'Ausencias'}, ];
+
+        $scope.imputeTypes[ 'Horas'      ] = [ 'Hora' ];
+        $scope.imputeTypes[ 'Guardias'   ] = [ 'Turnicidad', 'Guardia', 'Varios' ];
+        $scope.imputeTypes[ 'Variables'  ] = [ 'Hora extra', 'Hora extra festivo', 'Horas nocturnas', 'Formación', 'Intervenciones', 'Varios' ];
+        $scope.imputeTypes[ 'Vacaciones' ] = [ 'Vacaciones' ];
+        $scope.imputeTypes[ 'Ausencias'  ] = [ 'BM-Baja-Médica', 'BT-Baja-Maternidad', 'EF-Enfermedad', 'EX-Examen', 'FF-Fallecimiento-Familiar',
+                                               'MA-Matrimonio', 'MU-Mudanza', 'NH-Nacimiento-Hijos', 'OF-Operación-Familiar', 'OT-Otros',
+                                               'VM-Visita-Médica', 'LB-Libranza' ];
+        // $scope.typesModel    = $scope.imputeTypes = 0;
+        // $scope.typesModel    = $scope.imputeTypes[0];
+        // $scope.subtypesModel = $scope.imputeTypes[$scope.typesModel][0];
 
         ( function Init() {
             // VERIFIES USER PROJECTS LENGTH
@@ -42,6 +60,7 @@
             } else { // userProjects OK cotinues to getData()
                 $scope.userProjects = userProjects;
                 $scope.projectModel = $scope.userProjects[0];
+                //once we have all user projects we proceed to get calendar info and timesheets
                 getData();
             }
         })();
@@ -93,6 +112,10 @@
             refreshShowDaysObj();
         };
         $scope.imputeTypeChanged = function() {
+            console.log($scope.typesModel);
+            return;
+
+
             $scope.subtypesModel = $scope.imputeTypes[$scope.typesModel][0];
             refreshShowDaysObj();
         };
@@ -141,6 +164,7 @@
             var ts              = generalDataModel[ currentFirstDay ].timesheetDataModel;
 
             for( var day = 1; day < totalMonthDays + 1; day++ ) {
+                var imputeTypesSummary = initializeImputeTypesSummary(); // initialize 'imputeTypesSummary' on each day
                 var thisDate = new Date( currentYear, currentMonth, day, 0, 0, 0, 0 ).getTime(); // to timestamp format
 
                 // GET CALENDAR DAYTYPE (working, holidays, etc.)
@@ -153,6 +177,9 @@
                 var status = '';
                 if( ts[ currentProject ] ) {
                     if( ts[ currentProject ][ thisDate ] ) {
+
+                        getImputeTypesSummaryDay( thisDate );
+
                         if( ts[ currentProject ][ thisDate ][ currentType ] ) {
                             if( ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ] ) {
                                 value = parseFloat( ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ].value );
@@ -168,8 +195,11 @@
                         $scope.showDaysObj.weeks[ week ][ thisDate ].dayType = dayType;
                         $scope.showDaysObj.weeks[ week ][ thisDate ].value   = value;
                         $scope.showDaysObj.weeks[ week ][ thisDate ].status  = status;
+                        $scope.showDaysObj.weeks[ week ][ thisDate ].imputeTypesSummary  = imputeTypesSummary;
+
                         // INPUTTYPE AND CHECKVALUE
-                        if( currentType == 'Guardias' ) {
+                        // ********************************** if( currentType  'Guardias' || currentType == 'Vacaciones' ) {
+                        if( currentType == 'Guardias' || currentType == 'Vacaciones' ) {
                             $scope.showDaysObj.weeks[ week ][ thisDate ].inputType = 'checkbox';
                             $scope.showDaysObj.weeks[ week ][ thisDate ].checkValue = $scope.showDaysObj.weeks[ week ][ thisDate ].value == 0 ? false : true;
                         } else {
@@ -178,17 +208,46 @@
                     }
                 }
             }
+
+            // 'imputeTypesSummary' stores a summary of each imputeType (hours or checks)
+            // inside of every day in 'showDaysObj'
+            function initializeImputeTypesSummary() {
+                var imputeTypesSummary = {};
+                $scope.imputeTypes.forEach( function( type ) {
+                    imputeTypesSummary[ type ] = 0;
+                });
+                imputeTypesSummary.totalHours = 0; // great hours total
+                return imputeTypesSummary;
+            }
+
+            function getImputeTypesSummaryDay( thisDate ) {
+                var totalHours = 0;
+                for( var imputeType in imputeTypesSummary ) {
+                    if( ts[ currentProject ][ thisDate ][ imputeType ] ) {
+                        for( var imputeSubType in ts[ currentProject ][ thisDate ][ imputeType ] ) {
+                            var value = parseFloat( ts[ currentProject ][ thisDate ][ imputeType ][imputeSubType].value );
+                            imputeTypesSummary[ imputeType ] += value;
+                            if( imputeType == 'Ausencias' || imputeType == 'Horas' || imputeType == 'Variables' ) {
+                                totalHours += value;
+                            }
+                        }
+                    }
+                }
+                imputeTypesSummary.totalHours = totalHours;
+            }
+
             slideContent( false );
             $scope.$broadcast( 'refreshStats', { generalDataModel : generalDataModel } );
             $scope.pendingDrafts = findDrafts( false ); // there is some pending draft? (for 'SEND' button)
         }
 
         $scope.inputChanged = function( value ) {
+            return;
             // verifies if entered value is null or NaN
             if( value.value === null || isNaN( value.value ) ) { // (NaN is a number)
                 value.value = 0;
             } else {
-                value.value = parseFloat( value.value );             
+                value.value = parseFloat( value.value );
             }
 
             $scope.changes.pendingChanges = true;
@@ -196,10 +255,12 @@
 
             var currentType     = $scope.typesModel;
             var currentSubType  = $scope.subtypesModel;
-            var currentProject  = $scope.projectModel._id; 
+            var currentProject  = $scope.projectModel._id;
             var currentFirstDay = $scope.showDaysObj.currentFirstDay;          
             var ts              = generalDataModel[ currentFirstDay ].timesheetDataModel;
             var thisDate        = value.day.getTime();
+
+            console.log(currentType);
 
             // creating associative data if it not exists
             if( !ts[ currentProject ] ) ts[ currentProject ] = {};
@@ -208,7 +269,7 @@
             if( !ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ] ) ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ] = {};
 
             // stores values
-            if( currentType == 'Guardias' ) {
+            if( currentType == 'Guardias' || currentType == 'Vacaciones' ) {
                 var newValue = value.checkValue ? 1 : 0;
                 ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ].value = newValue;    
             } else {
@@ -342,6 +403,54 @@
                 $( '#daysDiv' ).slideDown( 850 );
             }
         };
+
+        // to display the imputeType abbreviation
+        $scope.giveMeAbbreviation = function( imputeType ) {
+            var index = $scope.imputeTypes.indexOf( imputeType );
+            return index < 0 ? 'TH' : imputeTypesAbbreviation[ index ];
+        };
+
+        // when a input day get focus
+        $scope.gotFocus = function( myDayId ) {
+            $( '#daysDiv .myWeek .myDay' ).each(function( index ) {
+                $( this ).removeClass( 'gotFocus' );
+            });
+            $( '#' + myDayId ).addClass( 'gotFocus' );
+        };
+
+        // modal: imputeType Summary info
+        $scope.openImputeTypeSummaryModal = function( myDayId, imputeTypesSummary, dayType, day ) {
+            $scope.gotFocus( myDayId );
+
+            var currentFirstDay = $scope.showDaysObj.currentFirstDay;
+            var currentProject  = $scope.projectModel._id;
+            var ts              = generalDataModel[ currentFirstDay ].timesheetDataModel[currentProject];
+
+            var modalPendingChangesInstance = $uibModal.open( {
+                animation : true,
+                templateUrl : '/features/impute/modals/imputeTypeSummaryModal.tpl.html',
+                controller : 'imputeTypeSummaryController',
+                backdrop: 'static',
+                size: 'sm',
+                resolve: {
+                    data : {
+                        myDayId : myDayId,
+                        imputeTypesSummary : imputeTypesSummary,
+                        dayType : dayType,
+                        day : day,
+                        ts : ts
+                    }
+                },
+            }).rendered.then(function ( modal ) {
+                var element = document.getElementById( myDayId ),
+                    rect = element.getBoundingClientRect(),
+                    modal = document.querySelector( '.modal-dialog' );
+                modal.style.margin = 0;
+                modal.style.left   = rect.left + 'px';
+                modal.style.top    = rect.top + 'px';
+            });
+        };
+
 
 }
 

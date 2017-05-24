@@ -27,7 +27,7 @@
                     ng-click="activeThisProject(project)">
                     <div class="pull-left col-xs-9 leftContent">
                         <i class="fa fa-folder icon"></i>
-                            {{project.name}}
+                            ({{project.ocurrences}}) {{project.name}}
                     </div>
                     <div class="pull-right col-xs-3">
                         <button class="btn btn-warning" ng-click="openProjectInfo(project,$event)" 
@@ -42,5 +42,3 @@
     </div>
 
 </div>
-
-<!-- ng-class="{true : 'fa-folder-open', false : 'fa-folder' }[openProject._id === project._id]" -->

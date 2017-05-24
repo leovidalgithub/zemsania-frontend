@@ -44,7 +44,7 @@
                 <li ng-repeat="item in data.items">
                     <div class="row">
                         <div class="pull-left col-xs-10 leftContent">                            
-                            <i ng-class="{true : 'fa-folder', false : 'fa-user' }[data.currentMode.type=='users']" accesskey=""
+                            <i ng-class="{true : 'fa-folder', false : 'fa-user' }[data.currentMode.type=='users']" 
                                class="fa icon"></i>
                             <span ng-show="data.currentMode.type=='users'">{{item.name}}</span>
                             <span ng-show="data.currentMode.type=='projects'">{{item.fullName}}</span>

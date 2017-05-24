@@ -73,7 +73,7 @@
                 showDaysObj.weeks           = {};
 
                 while( true ) {
-                    if( currentDay.getDate() == 1 && currentDay.getDay() != 1 ) { // just in case of last-month-final-days (to complete the week view)
+                    if( currentDay.getDate() == 1 && currentDay.getDay() != 1 ) { // just in case of last-month-final 7 days (to complete the week view)
                         var lastMonthFinalsDays = angular.copy( currentDay );
                         var tempArray = [];
                         while( true ) {
@@ -94,7 +94,7 @@
                     addNewDay( day, week );
 
                     if( currentDay.getDate() == totalMonthDays ) { // when gets at last day
-                        if( currentDay.getDay() != 0 ) { // just in case of next-month-inital-days (to complete the days view)
+                        if( currentDay.getDay() != 0 ) { // just in case of next-month-inital-days (to complete the 7 days view (a week))
                             while( true ) {
                                 currentDay.setDate( currentDay.getDate() + 1 );
 
@@ -125,15 +125,14 @@
                                                 day        : day,
                                                 timeStamp  : timeStamp,
                                                 value      : 0, // it stores 'Horas/Variables' text value
-                                                week       : week,
-                                                thisMonth  : day.getMonth(),
+                                                week       : week, // at what week this day belongs
+                                                thisMonth  : day.getMonth(), // at what month this day belongs
                                                 inputType  : 'number', // 'number' for 'Horas' and 'Variables', and 'checkbox' for 'Guardias'
                                                 checkValue : false, // it stores 'Guardias' checkbox value
                                                 projectId  : '', // to know this day belongs to what project (for showStatsObj)
-                                                status     : '' // (draft, sent, approved, rejected)
+                                                status     : '' // draft, sent, approved or rejected
                                             };
                 }
-                console.log(showDaysObj);
                 return showDaysObj;
             }
         } // main return

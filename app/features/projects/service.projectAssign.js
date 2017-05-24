@@ -72,6 +72,23 @@
                 return dfd.promise;
             },
 
+            // GET AND SET THE NUMBER OF OCURRENCES OF PROJECT OR USER IN PROJECTUSERS ENTITY
+            setItemsOcurrences: function ( array ) { // LEO WAS HERE
+                var idObj = {};
+                array.forEach( function( item ) {
+                    idObj[ item._id ] = {};
+                });
+                $http.post( buildURL( 'countOcurrences' ), idObj )
+                    .then( function ( data ) {
+                        let idObj = data.data.idObj;
+                        array.forEach( function( item ) {
+                            item.ocurrences = idObj[ item._id ].ocurrences;
+                        });
+                    })
+                    .catch( function ( err ) {
+                    });
+            },
+
             // it adds an 'active' field to both employess and projects objects
             // when users select an employee or project it is activated to true
             toAddActiveField: function ( array ) {

@@ -27,8 +27,9 @@
             $scope.spinners.users = true;
             EmployeeManagerFactory.advancedUserSearch( { textToFind : data.searchText } )
                 .then( function ( data ) {
-                    ProjectsFactory.toAddActiveField( data );
-                    $scope.employees = data;                    
+                    ProjectsFactory.toAddActiveField( data ); // create and set all users items with 'active = false' field
+                    $scope.employees = data;
+                    ProjectsFactory.setItemsOcurrences( $scope.employees ); // get and set number of ocurrences on ProjectUser entity
                 })
                 .catch( function ( err ) {
                     $rootScope.$broadcast( 'messageAlert', {
@@ -41,7 +42,6 @@
         });
 
         $scope.activeThisUser = function( user ) {
-            console.log('activeThisUser');
             $scope.spinners.projects = true;
             $scope.$parent.$parent.currentMode.obj  = user;
             $scope.$parent.$parent.currentMode.type = 'users';
@@ -50,8 +50,7 @@
             // get all projects that belong to selected user
             ProjectsFactory.getProjectsByUserId( user._id )
                 .then( function ( projects ) {
-                    // create and set all projects items with 'active = false' field 
-                    ProjectsFactory.toAddActiveField( projects );
+                    ProjectsFactory.toAddActiveField( projects ); // create and set all users items with 'active = false' field
                     $rootScope.$broadcast( 'sendFilteredProjects', { projects : projects } );
                 })
                 .catch( function ( err ) {
@@ -64,19 +63,16 @@
                 });
         };
 
-        // receiving event from controller.project when one project is clicked
+        // receiving event from controller.project when a project is clicked
         $rootScope.$on( 'sendFilteredUsers', function( event, filteredUsers ) {
             $scope.employees = filteredUsers.users.users;
+            ProjectsFactory.setItemsOcurrences( $scope.employees ); // get and set number of ocurrences on ProjectUser entity
         });
-
-        // // when a relationship was erased, we proceed to remove that item from $scope.employees
-        // $rootScope.$on( 'removeUserItem', function( event, data ) {
-        //     ProjectsFactory.removeItemFromArray( $scope.employees, data.id );
-        // });
 
         // when a relationship is added or erased, we need to refresh the Project view list. It comes from controller.marcate
         $rootScope.$on( 'refreshactiveThisUser', function( event, data ) {
-            $scope.activeThisUser( $scope.$parent.$parent.currentMode.obj );
+            $scope.activeThisUser( $scope.$parent.$parent.currentMode.obj ); // to refresh projects items list view
+            ProjectsFactory.setItemsOcurrences( $scope.employees ); // get and set number of ocurrences on ProjectUser entity
         });
 
     }
