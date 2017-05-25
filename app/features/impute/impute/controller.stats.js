@@ -8,12 +8,15 @@
 
         var generalDataModel;
         var millisecondsByDayType;
+        var IMPUTETYPES;
         $scope.showStatsObj = {};
 
         $scope.$on( 'refreshStats', function( event, data ) {
             generalDataModel = data.generalDataModel;
+            IMPUTETYPES = data.IMPUTETYPES;
             if( !millisecondsByDayType ) getMillisecondsByDayType();
             buildStatsObj();
+            console.log(IMPUTETYPES.Guardias);
         });
 
         function buildStatsObj() {
@@ -23,6 +26,8 @@
             temp.summary        = getsummary( temp.projectsInfo );
             temp.calendarInfo   = getcalendarInfo();
             $scope.showStatsObj = angular.copy( temp );
+            // console.log(temp.projectsInfo);
+            // console.log($scope.showStatsObj);
         }
 
         function getProjectsInfo() {
@@ -34,6 +39,7 @@
             for( var projectId in ts ) {
                 var projectName = '';
                 var totalGuards = 0;
+                var totalHolidays = 0;
                 var totalHours  = 0;
                 var dailyWork   = 0;
                 if( !projectsInfoTemp[ projectId ] ) projectsInfoTemp[ projectId ] = {};
@@ -43,8 +49,11 @@
                             // accumulating totalGuards, totalHours and dailyWork
                             var imputeValue = ts[ projectId ][ day ][ imputeType ][ imputeSubType ].value; // getting value
                             dailyWork += dailyWorkCalculate( day, imputeType, imputeValue ); // calculating dailyWork
-                            if( imputeType == 'Guardias' ) {
+                            console.log(imputeType + ' yyyy ' + IMPUTETYPES.Guardias);
+                            if( imputeType == IMPUTETYPES.Guardias ) {
                                 totalGuards += imputeValue;
+                            } else if ( imputeType == IMPUTETYPES.Vacaciones ) {
+                                totalHolidays += imputeValue;
                             } else {
                                 totalHours  += imputeValue;
                             }
@@ -139,12 +148,12 @@
                     for( var imputeType in ts[ projectId ][ day ] ) {
                         for( var imputeSubType in ts[ projectId ][ day ][ imputeType ] ) {
                             var imputeValue = ts[ projectId ][ day ][ imputeType ][ imputeSubType ].value; // getting value
-                            if( imputeType == 'Guardias' ) {
-                                if( imputeSubType == 'Turnicidad' ) {
+                            if( imputeType == IMPUTETYPES.Guardias ) {
+                                if( imputeSubType == 0 ) { // Turnicidad
                                     totalTurns   += imputeValue;
-                                } else if ( imputeSubType == 'Guardia' ) {
+                                } else if ( imputeSubType == 1 ) { // Guardia
                                     totalGuards  += imputeValue;
-                                } else if ( imputeSubType == 'Varios' ) {
+                                } else if ( imputeSubType == 2 ) { // Varios
                                     totalVarious += imputeValue;
                                 }
                             }

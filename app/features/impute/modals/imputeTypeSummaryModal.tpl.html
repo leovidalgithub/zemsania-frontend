@@ -1,24 +1,34 @@
-<div id="myModal" style="background-color: #FA8282;">
+<div id="imputeSummaryModal" class="{{dayInfo.dayType}}">
 
-    <div class="modal-header border-b">
-        <h4 class="">Atención!</h4>
+    <div id="modalTitle" class="modal-header border-b">
+        <p>
+            {{'days.' + (dayInfo.day | amDateFormat:'ddd') | i18next}}
+            {{dayInfo.day | amDateFormat:'DD MMMM YYYY'}}            
+        </p>
     </div>
 
-    <p>dlkemdlkemdelkdmekm</p>
-    <p>dlkemdlkemdelkdmekm</p>
-    <p>dlkemdlkemdelkdmekm</p>
-
     <div class="modal-body set-padding-t-lg">
-        <!-- <section class="modal-body"> -->
-            <!-- <h4 class="text-primary modal-header border-b no-padding-l">Existen cambios pendientes de guardar</h4> -->
-            <!-- <h5 class="text-primary modal-header border-b no-padding-l">¿Desea guardar los cambios?</h5> -->
-        <!-- </section> -->
+        <div class="typeGroup {{dayInfo.dayType}}" ng-repeat="(imputeTypeKey, imputeTypeValue) in dayInfo.imputeTypesInfo">
+            <p class="imputeType">
+                {{imputeTypeKey}}
+            </p>
+            <div class="subTypeGroup {{dayInfo.dayType}}" ng-repeat="(imputeSubTypeKey, imputeSubTypeValue) in imputeTypeValue" 
+                 ng-click="goTo(imputeTypeKey,imputeSubTypeValue.subType)">
+                <p class="subType">
+                    <span>{{imputeSubTypeValue.subType}}</span>
+                    <span>{{imputeSubTypeValue.value}}</span>
+                </p>
+            </div>
+        </div>
+
+        <div class="totalHours">
+            {{'calendar.imputeHours.totalHours' | i18next}} <span> {{dayInfo.totalHours}}</span>
+        </div>
+
     </div>
 
     <div class="modal-footer">
         <div class="text-right form-buttons">
-            <!-- <button type="button" ng-click="save()" class="btn btn-primary no-margin">{{'words.yes' | i18next}}</button> -->
-            <!-- <button type="button" ng-click="notSave()" class="btn btn-primary no-margin">{{'words.no' | i18next}}</button> -->
             <button type="button" ng-click="cancel()" class="btn btn-warning no-margin">{{'actions.cancel' | i18next}}</button>
         </div>
     </div>

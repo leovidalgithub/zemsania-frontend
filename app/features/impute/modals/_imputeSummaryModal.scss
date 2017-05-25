@@ -1,0 +1,101 @@
+	#imputeSummaryModal {
+		color: white;
+		font-family: monospace;
+		padding-top: 10px;
+	    &.friday {
+	       background-color: $fridayColor;
+	    }
+	    &.working {
+	       background-color: $workingColor;
+	    }
+	    &.intensive {
+	       background-color: $intensiveColor;
+	    }
+	    &.special {
+	       background-color: $specialColor;
+	    }
+	    &.holidays {
+	       background-color: $holidaysColor;
+	    }
+	    &.non_working {
+	       background-color: $non_workingColor;
+	    }
+
+		#modalTitle {
+			text-align: center;
+			font-weight: bold;
+			font-size: 16px;
+			padding: 0;
+			p {
+				margin-bottom: 5px;
+			}
+		}
+		.typeGroup {
+			padding: 5px;
+			margin-bottom: 2px;
+			border-radius: 5px;
+            &.friday {
+                background-color: darken( $fridayColor, 5% );
+            }
+            &.working {
+                background-color: darken( $workingColor, 5% );
+            }
+            &.intensive {
+                background-color: darken( $intensiveColor, 5% );
+            }
+            &.special {
+                background-color: darken( $specialColor, 5% );
+            }
+            &.holidays {
+                background-color: darken( $holidaysColor, 5% );
+            }
+            &.non_working {
+                background-color: darken( $non_workingColor, 5% );
+            }
+			.imputeType {
+				text-transform: uppercase;
+				font-weight: bold;
+				margin: 0;
+			}
+			.subTypeGroup {
+				padding: 5px;
+				margin-bottom: 2px;
+				border-radius: 5px;
+				cursor: pointer;
+	            &.friday {
+	                background-color: darken( $fridayColor, 10% );
+	            }
+	            &.working {
+	                background-color: darken( $workingColor, 10% );
+	            }
+	            &.intensive {
+	                background-color: darken( $intensiveColor, 10% );
+	            }
+	            &.special {
+	                background-color: darken( $specialColor, 10% );
+	            }
+	            &.holidays {
+	                background-color: darken( $holidaysColor, 10% );
+	            }
+	            &.non_working {
+	                background-color: darken( $non_workingColor, 10% );
+	            }				
+				.subType {
+					margin: 0 20px;
+			        display: flex;
+			        flex-flow: row nowrap;
+			        justify-content: space-between;
+			        align-items: center;
+				}
+			}
+		}
+		.totalHours {
+			margin-top: 8px;
+			font-size: 16px;
+			text-transform: uppercase;
+			span {
+				font-weight: bold;
+				font-size: 16.5px;
+			}
+		}
+	}

@@ -11,6 +11,7 @@ $tablet: "(max-width: 1023px)";
 @import "../../features/calendar/calendars/calendars";
 @import "../../features/impute/impute/impute";
 @import "../../features/impute/impute/stats";
+@import "../../features/impute/modals/imputeSummaryModal";
 @import "../../features/dashboard/notifications/notifications";
 @import "../../features/approval/approval/approvalhours";
 @import "../../features/projects/projectAssign/projectAssign";

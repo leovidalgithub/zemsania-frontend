@@ -789,7 +789,7 @@
   margin: 3px 10px 5px 3px;
 }
 #calendars #section #options #leyend #fridayLeyend div {
-  background-color: #286ABA;
+  background-color: #0F8DCF;
   margin: 5px 10px 7px 3px;
 }
 #calendars #section #options #leyend #intensiveLeyend div {
@@ -840,7 +840,7 @@
   background-color: #85AC0C !important;
 }
 #calendars #section .showFriday a {
-  background-color: #286ABA !important;
+  background-color: #0F8DCF !important;
 }
 #calendars #section .showIntensive a {
   background-color: #EBC21C !important;
@@ -886,7 +886,7 @@
   border: solid .5px white;
 }
 #imputeHours #section #daysDiv .myWeek .myDay.friday {
-  background-color: #286ABA;
+  background-color: #0F8DCF;
 }
 #imputeHours #section #daysDiv .myWeek .myDay.working {
   background-color: #85AC0C;
@@ -930,8 +930,8 @@
   align-items: center;
 }
 #imputeHours #section #daysDiv .myWeek .myDay .imputeTypesSummary.friday {
-  background-color: #235ea5;
-  color: #1a467b;
+  background-color: #0d7db7;
+  color: #0a5c88;
 }
 #imputeHours #section #daysDiv .myWeek .myDay .imputeTypesSummary.working {
   background-color: #73940a;
@@ -982,7 +982,7 @@
   align-items: center;
 }
 #imputeHours #section #daysDiv .myWeek .myDay .infoTag.friday {
-  border: 3px solid #286ABA;
+  border: 3px solid #0F8DCF;
 }
 #imputeHours #section #daysDiv .myWeek .myDay .infoTag.working {
   border: 3px solid #85AC0C;
@@ -1132,7 +1132,7 @@
   margin: 3px 10px 5px 3px;
 }
 #imputeHours #section #statistics #leyend #fridayLeyend div {
-  background-color: #286ABA;
+  background-color: #0F8DCF;
   margin: 5px 10px 7px 3px;
 }
 #imputeHours #section #statistics #leyend #intensiveLeyend div {
@@ -1156,6 +1156,107 @@
   text-align: right;
   font-size: 15px;
   margin-top: -6px;
+}
+
+#imputeSummaryModal {
+  color: white;
+  font-family: monospace;
+  padding-top: 10px;
+}
+#imputeSummaryModal.friday {
+  background-color: #0F8DCF;
+}
+#imputeSummaryModal.working {
+  background-color: #85AC0C;
+}
+#imputeSummaryModal.intensive {
+  background-color: #EBC21C;
+}
+#imputeSummaryModal.special {
+  background-color: #FF831C;
+}
+#imputeSummaryModal.holidays {
+  background-color: #ff0000;
+}
+#imputeSummaryModal.non_working {
+  background-color: #808080;
+}
+#imputeSummaryModal #modalTitle {
+  text-align: center;
+  font-weight: bold;
+  font-size: 16px;
+  padding: 0;
+}
+#imputeSummaryModal #modalTitle p {
+  margin-bottom: 5px;
+}
+#imputeSummaryModal .typeGroup {
+  padding: 5px;
+  margin-bottom: 2px;
+  border-radius: 5px;
+}
+#imputeSummaryModal .typeGroup.friday {
+  background-color: #0d7db7;
+}
+#imputeSummaryModal .typeGroup.working {
+  background-color: #73940a;
+}
+#imputeSummaryModal .typeGroup.intensive {
+  background-color: #dab313;
+}
+#imputeSummaryModal .typeGroup.special {
+  background-color: #ff7503;
+}
+#imputeSummaryModal .typeGroup.holidays {
+  background-color: #e60000;
+}
+#imputeSummaryModal .typeGroup.non_working {
+  background-color: #737373;
+}
+#imputeSummaryModal .typeGroup .imputeType {
+  text-transform: uppercase;
+  font-weight: bold;
+  margin: 0;
+}
+#imputeSummaryModal .typeGroup .subTypeGroup {
+  padding: 5px;
+  margin-bottom: 2px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+#imputeSummaryModal .typeGroup .subTypeGroup.friday {
+  background-color: #0c6d9f;
+}
+#imputeSummaryModal .typeGroup .subTypeGroup.working {
+  background-color: #607c09;
+}
+#imputeSummaryModal .typeGroup .subTypeGroup.intensive {
+  background-color: #c3a011;
+}
+#imputeSummaryModal .typeGroup .subTypeGroup.special {
+  background-color: #e86900;
+}
+#imputeSummaryModal .typeGroup .subTypeGroup.holidays {
+  background-color: #cc0000;
+}
+#imputeSummaryModal .typeGroup .subTypeGroup.non_working {
+  background-color: #676767;
+}
+#imputeSummaryModal .typeGroup .subTypeGroup .subType {
+  margin: 0 20px;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: center;
+}
+#imputeSummaryModal .totalHours {
+  margin-top: 8px;
+  font-size: 16px;
+  text-transform: uppercase;
+}
+#imputeSummaryModal .totalHours span {
+  font-weight: bold;
+  font-size: 16.5px;
 }
 
 #notifications #header #headerContent .rightMargin span {
@@ -1416,7 +1517,7 @@
   color: white;
 }
 #approvalHours #section #mainContent .tableContainer .slickTable .dayBox .dayContent.day.friday {
-  background-color: #286ABA;
+  background-color: #0F8DCF;
 }
 #approvalHours #section #mainContent .tableContainer .slickTable .dayBox .dayContent.day.working {
   background-color: #85AC0C;
@@ -1475,7 +1576,7 @@
   margin: 3px 10px 5px 3px;
 }
 #approvalHours #section #leyend #fridayLeyend div {
-  background-color: #286ABA;
+  background-color: #0F8DCF;
   margin: 5px 10px 7px 3px;
 }
 #approvalHours #section #leyend #intensiveLeyend div {
