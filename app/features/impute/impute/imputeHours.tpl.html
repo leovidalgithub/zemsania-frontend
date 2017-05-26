@@ -158,20 +158,26 @@
                         <div id="non_workingLeyend"><div class="leyendBox"></div><span>{{'calendars.non_workingDays' | i18next}}</span></div>
                     </div>
 
-                    <!-- PROJECTS TABLE -->
-                    <div id="projectsTable" class="tableContainer">
-                        <table style="table-layout: fixed; width: 500px;">
+                    <!-- PROJECTS DETAILS INFO TABLE -->
+                    <div class="tableContainer">
+                        <table style="table-layout: fixed; width: 700px;">
                             <tr class="notHoverPlease">
-                                <th style="width: 46%;">{{'calendar.imputeHours.project' | i18next}}</th>
-                                <th style="width: 18%;">{{'calendar.imputeHours.hours' | i18next}}</th>
-                                <th style="width: 18%;">{{'calendar.imputeHours.guards' | i18next}}</th>
-                                <th style="width: 18%;">{{'calendar.imputeHours.dailywork' | i18next}}</th>
+                                <th style="width: 28%;">{{'calendar.imputeHours.project' | i18next}}</th>
+                                <th style="width: 12%;">{{'calendar.imputeHours.THI' | i18next}}</th>
+                                <th style="width: 12%;">{{'calendar.imputeHours.THT' | i18next}}</th>
+                                <th style="width: 12%;">{{'calendar.imputeHours.TJT' | i18next}}</th>
+                                <th style="width: 12%;">{{'calendar.imputeHours.TJA' | i18next}}</th>
+                                <th style="width: 12%;">{{'calendar.imputeHours.TJV' | i18next}}</th>
+                                <th style="width: 12%;">{{'calendar.imputeHours.TJG' | i18next}}</th>
                             </tr>
                             <tr ng-class="{'odd':$odd}" ng-repeat="(key, project) in showStatsObj.projectsInfo">
                                 <td>{{project.projectName}}</td>
-                                <td>{{project.totalHours}}</td>
-                                <td>{{project.totalGuards}}</td>
-                                <td>{{project.dailyWork}}</td>
+                                <td>{{project.THI}}</td>
+                                <td>{{project.THT}}</td>
+                                <td>{{project.TJT}}</td>
+                                <td>{{project.TJA}}</td>
+                                <td>{{project.TJV}}</td>
+                                <td>{{project.TJG}}</td>
                             </tr>
                         </table>
                     </div>
@@ -180,35 +186,57 @@
                     <div class="tableContainer">
                         <table style="table-layout: fixed; width: 330px;">
                             <tr class="notHoverPlease">
-                                <th style="width: 60%;">{{'calendar.imputeHours.summary' | i18next}}</th>
-                                <th style="width: 20%;"></th>
-                                <th style="width: 20%;">{{'calendar.imputeHours.media' | i18next}}</th>
+                                <th style="width: 50%;">{{'calendar.imputeHours.summary' | i18next}}</th>
+                                <th style="width: 22%;"></th>
+                                <th style="width: 28%;">{{'words.calendar' | i18next}}</th>
                             </tr>
                             <tr>
-                                <td>{{'calendar.imputeHours.totalHours' | i18next}}</td>
-                                <td ng-class="{'imputeHoursOnRed':showStatsObj.summary.totalImputeHours > 
-                                showStatsObj.calendarInfo.totalHoursByMonth}">{{showStatsObj.summary.totalImputeHours}}</td>
-                                <td>{{showStatsObj.calendarInfo.totalHoursByMonth}}</td>
+                                <td>{{'calendar.imputeHours.THI' | i18next}}</td>
+                                <td ng-class="{'THIonRed':showStatsObj.summary.totalTHI > showStatsObj.calendarInfo.totalTHTmonth,
+                                    'THIonGreen':showStatsObj.summary.totalTHI == showStatsObj.calendarInfo.totalTHTmonth}">
+                                    {{showStatsObj.summary.totalTHI}}</td>
+                                <td ng-class="{'THIonRed':showStatsObj.summary.totalTHI > showStatsObj.calendarInfo.totalTHTmonth,
+                                    'THIonGreen':showStatsObj.summary.totalTHI == showStatsObj.calendarInfo.totalTHTmonth}">
+                                    {{showStatsObj.calendarInfo.totalTHTmonth}}</td>
                             </tr>
                             <tr class="odd">
-                                <td>{{'calendar.imputeHours.totalGuards' | i18next}}</td>
-                                <td>{{showStatsObj.summary.totalImputeGuards}}</td>
-                                <td>0</td>
+                                <td>{{'calendar.imputeHours.THT' | i18next}}</td>
+                                <td>{{showStatsObj.summary.totalTHT}}</td>
+                                <td>{{showStatsObj.calendarInfo.totalTHTmonth}}</td>
                             </tr>
                             <tr>
-                                <td>{{'calendar.imputeHours.totalDailywork' | i18next}}</td>
-                                <td>{{showStatsObj.summary.totalDailyWork}}</td>
-                                <td>0</td>
+                                <td>{{'calendar.imputeHours.TJT' | i18next}}</td>
+                                <td ng-class="{'THIonRed':showStatsObj.summary.totalTJT > showStatsObj.calendarInfo.totalTJTmonth,
+                                'THIonGreen':showStatsObj.summary.totalTJT == showStatsObj.calendarInfo.totalTJTmonth}">
+                                    {{showStatsObj.summary.totalTJT}}</td>
+                                <td ng-class="{'THIonRed':showStatsObj.summary.totalTJT > showStatsObj.calendarInfo.totalTJTmonth,
+                                'THIonGreen':showStatsObj.summary.totalTJT == showStatsObj.calendarInfo.totalTJTmonth}">
+                                    {{showStatsObj.calendarInfo.totalTJTmonth}}</td>
+                            </tr>
+                            <tr class="odd">
+                                <td>{{'calendar.imputeHours.TJA' | i18next}}</td>
+                                <td>{{showStatsObj.summary.totalTJA}}</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>{{'calendar.imputeHours.TJV' | i18next}}</td>
+                                <td>{{showStatsObj.summary.totalTJV}}</td>
+                                <td>-</td>
+                            </tr>
+                            <tr class="odd">
+                                <td>{{'calendar.imputeHours.TJG' | i18next}}</td>
+                                <td>{{showStatsObj.summary.totalTJG}}</td>
+                                <td>-</td>
                             </tr>
                         </table>
                     </div>
 
-                    <!-- DAILYWORK TABLE -->
+                    <!-- GUARDS TABLE -->
                     <div class="tableContainer">
                         <table style="table-layout: fixed; width: 230px;">
                             <tr class="notHoverPlease">
                                 <th style="width: 60%;">{{'calendar.imputeHours.guards' | i18next}}</th>
-                                <th style="width: 40%;">{{'calendar.imputeHours.dailywork' | i18next}}</th>
+                                <th style="width: 40%;">{{'words.journey' | i18next}}</th>
                             </tr>
                             <tr>
                                 <td>{{'calendar.imputeHours.turns' | i18next}}</td>

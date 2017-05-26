@@ -33,7 +33,7 @@
         // IMPUTE TYPES AND SUBTYPES INFO ## DO NOT CHANGE THE ARRAY ELEMENTS ORDER ##
         var imputeTypesAbbreviation        = [ 'Hor', 'Gua', 'Var', 'Vac', 'Aus' ]; // abbreviations are stored with the same order
         $scope.imputeTypes                 = [ 'Horas', 'Guardias', 'Variables', 'Vacaciones', 'Ausencias' ];
-        $scope.imputeTypes[ 'Horas'      ] = [ 'Hora' ];
+        $scope.imputeTypes[ 'Horas'      ] = [ 'Horas' ];
         $scope.imputeTypes[ 'Guardias'   ] = [ 'Turnicidad', 'Guardia', 'Varios' ];
         $scope.imputeTypes[ 'Variables'  ] = [ 'Hora extra', 'Hora extra festivo', 'Horas nocturnas', 'Formación', 'Intervenciones', 'Varios' ];
         $scope.imputeTypes[ 'Vacaciones' ] = [ 'Vacaciones' ];
@@ -267,7 +267,7 @@
             ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ].status   = 'draft';
             ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ].modified = true;
             
-            $scope.$broadcast( 'refreshStats', { generalDataModel : generalDataModel } );
+            $scope.$broadcast( 'refreshStats', { generalDataModel : generalDataModel, IMPUTETYPES : IMPUTETYPES } );
             refreshShowDaysObj();
         };
 
@@ -437,8 +437,8 @@
                     rect = element.getBoundingClientRect(),
                     modal = document.querySelector( '.modal-dialog' );
                 modal.style.margin = 0;
-                modal.style.left   = rect.left + 'px';
-                modal.style.top    = rect.top + 'px';
+                modal.style.left   = ( rect.left - 80  ) + 'px';
+                modal.style.top    = ( rect.top  - 120 ) + 'px';
             });
         };
 

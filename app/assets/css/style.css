@@ -1076,12 +1076,13 @@
 }
 
 #imputeHours #section #statistics {
-  width: 95%;
+  width: 98%;
   margin: auto;
   display: flex;
   flex-flow: row wrap;
   justify-content: space-around;
   align-items: flex-start;
+  font-size: 14px;
   /***** LEYEND *****/
 }
 #imputeHours #section #statistics .tableContainer {
@@ -1098,6 +1099,7 @@
 #imputeHours #section #statistics .tableContainer th {
   background-color: #333;
   color: white;
+  font-weight: normal;
 }
 #imputeHours #section #statistics .tableContainer tr.odd {
   background-color: #999999;
@@ -1107,11 +1109,18 @@
   border-bottom: 1px solid #F15A29;
   border-left: 1px solid #F15A29;
 }
-#imputeHours #section #statistics .tableContainer .imputeHoursOnRed {
+#imputeHours #section #statistics .tableContainer .THIonRed {
   background-color: #E54343;
   color: white;
+  font-size: 16px;
+}
+#imputeHours #section #statistics .tableContainer .THIonGreen {
+  background-color: #5CB72A;
+  color: white;
+  font-size: 16px;
 }
 #imputeHours #section #statistics #leyend {
+  margin: 0;
   border: solid 1px #6C6C6C;
   border-radius: 5px;
   background-color: #FBFBFB;

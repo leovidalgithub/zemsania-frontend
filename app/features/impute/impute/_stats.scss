@@ -2,13 +2,13 @@
 
         #statistics {
 
-            width: 95%;
+            width: 98%;
             margin: auto;
             display: flex;
             flex-flow: row wrap;
             justify-content: space-around;
             align-items: flex-start;
-            // font-size: 16px;
+            font-size: 14px;
 
             .tableContainer {
                 overflow-x:auto;
@@ -24,6 +24,8 @@
                 th {
                     background-color: #333;
                     color: white;
+                    // font-size: 13px;
+                    font-weight: normal;
                 }
                 tr.odd {
                     background-color:#999999;
@@ -33,13 +35,21 @@
                     border-bottom: 1px solid $zemsania;
                     border-left: 1px solid $zemsania;
                 }
-                .imputeHoursOnRed {
+
+                .THIonRed {
                     background-color: #E54343;
                     color: white;
+                    font-size: 16px;
+                }
+                .THIonGreen {
+                    background-color: #5CB72A;
+                    color: white;
+                    font-size: 16px;
                 }
             }
             /***** LEYEND *****/
             #leyend {
+                margin: 0;
                     @include myLeyend( 220px, 1px );
                 .leyendBox {
                     @include myLeyendBox( 20px, 60px );
