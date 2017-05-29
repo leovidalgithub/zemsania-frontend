@@ -878,7 +878,7 @@
 #imputeHours #section #daysDiv .myWeek .myDay {
   position: relative;
   border-radius: 5px;
-  height: 208px;
+  height: 228px;
   width: 124px;
   margin: 7px;
 }
@@ -963,9 +963,12 @@
 #imputeHours #section #daysDiv .myWeek .myDay .imputeTypesSummary.desactivedByStatus.highlightValue {
   color: #333;
 }
-#imputeHours #section #daysDiv .myWeek .myDay .imputeTypesSummary.totalHours {
+#imputeHours #section #daysDiv .myWeek .myDay .imputeTypesSummary.totalHours, #imputeHours #section #daysDiv .myWeek .myDay .imputeTypesSummary.totalGlobalHours {
   font-weight: bold;
   font-size: 16px;
+}
+#imputeHours #section #daysDiv .myWeek .myDay .imputeTypesSummary.totalGlobalHours {
+  text-shadow: 1.5px 1.5px #333;
 }
 #imputeHours #section #daysDiv .myWeek .myDay .infoTag {
   z-index: 999;
@@ -1012,7 +1015,7 @@
   color: #D10000;
 }
 #imputeHours #section #daysDiv .myWeek .myDay.gotFocus {
-  border: 4px dashed #333;
+  border: 3px dashed #333;
 }
 #imputeHours #section #daysDiv .myHeader {
   height: 25px;
@@ -1031,13 +1034,13 @@
 #imputeHours #section #daysDiv .myInput input {
   cursor: pointer;
   text-align: center;
-  font-size: 19px;
-  color: red;
+  font-size: 24px;
+  color: #666;
   transition: all .8s ease;
 }
 #imputeHours #section #daysDiv .myInput input:focus {
-  font-size: 20px;
-  color: #D70303;
+  font-size: 22px;
+  color: black;
 }
 #imputeHours #section #daysDiv .myFooter {
   display: flex;
@@ -1118,6 +1121,12 @@
   background-color: #5CB72A;
   color: white;
   font-size: 16px;
+}
+#imputeHours #section #statistics .tableContainer .thisProject {
+  cursor: pointer;
+}
+#imputeHours #section #statistics .tableContainer .thisProject:hover {
+  font-weight: bold;
 }
 #imputeHours #section #statistics #leyend {
   margin: 0;

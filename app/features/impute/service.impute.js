@@ -8,6 +8,31 @@
     function imputeHoursFactory( $http, $q, UserFactory, $filter ) {
         return {
 
+            getImputeTypes: function() {
+                // IMPUTE TYPES AND SUBTYPES INFO ## DO NOT CHANGE THE ARRAY ELEMENTS ORDER ##
+                var imputeTypes;
+                imputeTypes                 = [ 'Horas', 'Guardias', 'Variables', 'Vacaciones', 'Ausencias' ];
+                imputeTypes[ 'Horas'      ] = [ 'Horas' ];
+                imputeTypes[ 'Guardias'   ] = [ 'Turnicidad', 'Guardia', 'Varios' ];
+                imputeTypes[ 'Variables'  ] = [ 'Hora extra', 'Hora extra festivo', 'Horas nocturnas', 'Formación', 'Intervenciones', 'Varios' ];
+                imputeTypes[ 'Vacaciones' ] = [ 'Vacaciones' ];
+                imputeTypes[ 'Ausencias'  ] = [ 'BM-Baja-Médica', 'BT-Baja-Maternidad', 'EF-Enfermedad', 'EX-Examen', 'FF-Fallecimiento-Familiar',
+                                                'MA-Matrimonio', 'MU-Mudanza', 'NH-Nacimiento-Hijos', 'OF-Operación-Familiar', 'OT-Otros',
+                                                'VM-Visita-Médica', 'LB-Libranza' ];
+                imputeTypes.abbreviation    = [ 'Hor', 'Gua', 'Var', 'Vac', 'Aus' ]; // abbreviations are stored with the same order
+                return imputeTypes;
+            },
+
+            getImputeTypesIndexConst: function() {
+                return { // it contains the index posisition inside imputeTypes array ## DO NOT CHANGE THE ARRAY ELEMENTS ORDER ##
+                    Horas      : 0,
+                    Guardias   : 1,
+                    Variables  : 2,
+                    Vacaciones : 3,
+                    Ausencias  : 4
+                }
+            },
+
             getTimesheets: function ( year, month, userProjects ) { // LEO WAS HERE
                 var userID = UserFactory.getUserID();
                 var dfd    = $q.defer();

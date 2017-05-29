@@ -15,7 +15,6 @@
 
     <!-- SECTION MAIN CONTENT -->
     <section id="section" class="box-shadow p20">
-<!-- <button class="btn btn-success" ng-click="fn()">Go!</button> -->
 
         <!-- ALERTS MESSAGES -->
         <alert-message error="alerts.error" msg="alerts.message"></alert-message>
@@ -142,7 +141,8 @@
                                     <div id="{{projectId}}_{{employee.employeeId}}" class="collapse">
                                         <div ng-repeat="(tableName, table) in project.info.tables">
                          
-                                            <p style="font-size: 18px;font-family: monospace;">{{tableName}}</p>
+                                            <!-- <p style="font-size: 18px;font-family: monospace;">{{tableName}}</p> -->
+                                            <p style="font-size: 18px;font-family: monospace;">{{giveMeImputeNames(table.imputeType,table.imputeSubType)}}</p>
                                             <div id="tableContent">
                                                 <div class="leyend">
                                                     <code>
@@ -152,7 +152,8 @@
                                                     </code>
                                                 </div>
                                                 <div class="slickTable">
-                                                    <div ng-class="{'desactivated':!day.enabled}" class="dayBox" ng-repeat="(dayKey, day) in table.days">
+                                                    <div ng-class="{'desactivated':!day.enabled}" class="dayBox" 
+                                                         ng-repeat="(dayKey, day) in table.days">
                                                         <div class="dayContent day {{day.dayType}}">{{day.day}}</div>
                                                         <div class="dayContent value">{{day.value}}</div>
                                                         <div class="dayContent approved" 

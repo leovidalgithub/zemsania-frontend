@@ -7,6 +7,8 @@
     approvalHoursController.$invoke = [ '$scope', '$rootScope', 'approvalHoursFactory', '$timeout', 'imputeHoursFactory', '$filter' ];
     function approvalHoursController( $scope, $rootScope, approvalHoursFactory, $timeout, imputeHoursFactory, $filter ) {
 
+        const IMPUTETYPES = imputeHoursFactory.getImputeTypes();
+
         ( function init() {
             var currentDate;
             if( $rootScope.notification ) { // if it comes from notification it takes the date from that notification
@@ -36,6 +38,7 @@
             approvalHoursFactory.getEmployeesTimesheets( $scope.mainOBJ )
                 .then( function ( data ) {
                     $scope.employees = data;
+                    console.log($scope.employees);
                     imputesCount();
                     if( $rootScope.notification ) showNotificationData();
                     initialSlick();
@@ -224,6 +227,12 @@
                 return employee.employeeId === id;
             });
         }
+
+        $scope.giveMeImputeNames = function( imputeType, imputeSubTypes ) {
+            var type = IMPUTETYPES[ imputeType ];
+            var subType = IMPUTETYPES[ IMPUTETYPES[ imputeType ] ][ imputeSubTypes ];
+            return type + ' - ' + subType;
+        };
 
     }
 

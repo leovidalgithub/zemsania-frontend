@@ -118,15 +118,15 @@
                                     ng-model="day.checkValue" ng-change="inputChanged(day)">
                         </div>
 
-                        <!-- IMPUTE TYPE SUMMARY -->
+                        <!-- IMPUTE TYPES SUMMARY -->
                         <div ng-repeat="(imputeTypeKey, value) in day.imputeTypesSummary" class="imputeTypesSummary {{day.dayType}}" 
                              ng-class="{'desactivedByStatus': day.status=='approved' || day.status=='sent',
-                             'highlightValue': value,'totalHours':imputeTypeKey=='totalHours'}"
+                             'highlightValue': value,'totalHours':imputeTypeKey=='totalHours',
+                             'totalGlobalHours':imputeTypeKey=='totalGlobalHours'}"
                              ng-click="openImputeTypeSummaryModal(day.timeStamp,day,day.imputeTypesSummary)">
                             <span>{{giveMeAbbreviation(imputeTypeKey)}}</span>
                             <span>{{value}}</span>
                         </div>
-
 
                             <!-- DAY FOOTER -->
 <!--                         <div class="myFooter" ng-show="showDaysObj.currentMonth==day.thisMonth">
@@ -140,7 +140,7 @@
                 </div>
             </div>
 
-    <hr><!-- STATISTICS CONTROLLER **************************************************************************************************** -->
+    <hr><!-- STATISTICS CONTROLLER *********************************************** *********************************************** -->
             <div ng-controller="imputeHoursStatsController">
                 <div id="statistics">
 
@@ -171,7 +171,7 @@
                                 <th style="width: 12%;">{{'calendar.imputeHours.TJG' | i18next}}</th>
                             </tr>
                             <tr ng-class="{'odd':$odd}" ng-repeat="(key, project) in showStatsObj.projectsInfo">
-                                <td>{{project.projectName}}</td>
+                                <td class="thisProject" ng-click="goToThisProject(project.projectId)">{{project.projectName}}</td>
                                 <td>{{project.THI}}</td>
                                 <td>{{project.THT}}</td>
                                 <td>{{project.TJT}}</td>
@@ -194,38 +194,38 @@
                                 <td>{{'calendar.imputeHours.THI' | i18next}}</td>
                                 <td ng-class="{'THIonRed':showStatsObj.summary.totalTHI > showStatsObj.calendarInfo.totalTHTmonth,
                                     'THIonGreen':showStatsObj.summary.totalTHI == showStatsObj.calendarInfo.totalTHTmonth}">
-                                    {{showStatsObj.summary.totalTHI}}</td>
+                                    {{showStatsObj.projectsInfo.summary.THIGlobal}}</td>
                                 <td ng-class="{'THIonRed':showStatsObj.summary.totalTHI > showStatsObj.calendarInfo.totalTHTmonth,
                                     'THIonGreen':showStatsObj.summary.totalTHI == showStatsObj.calendarInfo.totalTHTmonth}">
                                     {{showStatsObj.calendarInfo.totalTHTmonth}}</td>
                             </tr>
                             <tr class="odd">
                                 <td>{{'calendar.imputeHours.THT' | i18next}}</td>
-                                <td>{{showStatsObj.summary.totalTHT}}</td>
+                                <td>{{showStatsObj.projectsInfo.summary.THTGlobal}}</td>
                                 <td>{{showStatsObj.calendarInfo.totalTHTmonth}}</td>
                             </tr>
                             <tr>
                                 <td>{{'calendar.imputeHours.TJT' | i18next}}</td>
                                 <td ng-class="{'THIonRed':showStatsObj.summary.totalTJT > showStatsObj.calendarInfo.totalTJTmonth,
                                 'THIonGreen':showStatsObj.summary.totalTJT == showStatsObj.calendarInfo.totalTJTmonth}">
-                                    {{showStatsObj.summary.totalTJT}}</td>
+                                    {{showStatsObj.projectsInfo.summary.TJTGlobal}}</td>
                                 <td ng-class="{'THIonRed':showStatsObj.summary.totalTJT > showStatsObj.calendarInfo.totalTJTmonth,
                                 'THIonGreen':showStatsObj.summary.totalTJT == showStatsObj.calendarInfo.totalTJTmonth}">
                                     {{showStatsObj.calendarInfo.totalTJTmonth}}</td>
                             </tr>
                             <tr class="odd">
                                 <td>{{'calendar.imputeHours.TJA' | i18next}}</td>
-                                <td>{{showStatsObj.summary.totalTJA}}</td>
+                                <td>{{showStatsObj.projectsInfo.summary.TJAGlobal}}</td>
                                 <td>-</td>
                             </tr>
                             <tr>
                                 <td>{{'calendar.imputeHours.TJV' | i18next}}</td>
-                                <td>{{showStatsObj.summary.totalTJV}}</td>
+                                <td>{{showStatsObj.projectsInfo.summary.TJVGlobal}}</td>
                                 <td>-</td>
                             </tr>
                             <tr class="odd">
                                 <td>{{'calendar.imputeHours.TJG' | i18next}}</td>
-                                <td>{{showStatsObj.summary.totalTJG}}</td>
+                                <td>{{showStatsObj.projectsInfo.summary.TJGGlobal}}</td>
                                 <td>-</td>
                             </tr>
                         </table>

@@ -4,9 +4,10 @@
         .module( 'hours.approvalHours' )
         .factory( 'approvalHoursFactory', approvalHoursFactory )
 
-    approvalHoursFactory.$invoke = [ '$http', '$q', 'UserFactory' ];
-
-    function approvalHoursFactory( $http, $q, UserFactory ) {
+    approvalHoursFactory.$invoke = [ '$http', '$q', 'UserFactory', 'imputeHoursFactory' ];
+    function approvalHoursFactory( $http, $q, UserFactory, imputeHoursFactory ) {
+    
+        const IMPUTETYPES = imputeHoursFactory.getImputeTypesIndexConst();
         var mainOBJ;
         var data;
 
@@ -49,9 +50,8 @@
                         var dayTypeMilliseconds = getDayTypeMilliseconds( calendars, employee.calendarID, dayType );
 
                         for( var imputeType in employee.timesheetDataModel[ projectId ][ day ] ) {
-
                             
-                            if( imputeType != 'Guardias' ) { // calculate just 'Hours'. 'Guardias' are not taken in account here.
+                            if( imputeType != IMPUTETYPES.Guardias ) { // calculate just 'Hours'. 'Guardias' are not taken in account here.
                                 for( var imputeSubType in employee.timesheetDataModel[ projectId ][ day ][ imputeType ] ) {
                                     
 
@@ -166,12 +166,10 @@
                         });
                     }
                 }
-                // statements
             });
 
             return dfd.resolve( data.data.employees );
         }
-
     }
 
 }());

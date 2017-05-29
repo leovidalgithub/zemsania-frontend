@@ -103,9 +103,9 @@ function loadPermissions( Permission, UserFactory ) { // Permission -> PermRoleS
         return isEmployee;
     });
 
-    Permission.defineRole('delivery', function () {
+    Permission.defineRole( 'delivery', function () {
         var isEmployee = false;
-        if (angular.isDefined(UserFactory.getUser())) {
+        if (angular.isDefined( UserFactory.getUser() ) ) {
             if (UserFactory.getUser().role === 'delivery') {
                 isEmployee = true;
             }
@@ -113,19 +113,19 @@ function loadPermissions( Permission, UserFactory ) { // Permission -> PermRoleS
         return isEmployee;
     });
 
-    Permission.defineRole('manager', function () {
+    Permission.defineRole( 'manager', function () {
         var isEmployee = false;
-        if (angular.isDefined(UserFactory.getUser())) {
-            if (UserFactory.getUser().role === 'manager') {
+        if (angular.isDefined( UserFactory.getUser() ) ) {
+            if ( UserFactory.getUser().role === 'manager' ) {
                 isEmployee = true;
             }
         }
         return isEmployee;
     });
 
-    Permission.defineRole('administrator', function () {
+    Permission.defineRole( 'administrator', function () {
         var isEmployee = false;
-        if (angular.isDefined(UserFactory.getUser())) {
+        if ( angular.isDefined( UserFactory.getUser() ) ) {
             if (UserFactory.getUser().role === 'administrator') {
                 isEmployee = true;
             }
@@ -188,12 +188,11 @@ function getItemsPerPage( value ) {
 function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
     var dailyWork = 0;
     if( dayTypeMilliseconds != 0 ) { // if no milliseconds (holiday or non-working), no dailyWork is computed
-        if( imputeType == 'Guardias' ) {
-            dailyWork = imputeValue; 
-        } else {
+        if( imputeType != 1 && imputeType != 3 ) { // Guardias and Vacaciones not count
             var imputedMilliseconds = ( imputeValue * 3600000 );
             dailyWork = ( imputedMilliseconds / dayTypeMilliseconds );
         }
     }
     return dailyWork;
 }
+

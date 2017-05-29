@@ -22,24 +22,9 @@
         $scope.alerts = {};
         $scope.alerts.permanentError = true;
 
-        const IMPUTETYPES = { // it contains the index posisition inside imputeTypes array ## DO NOT CHANGE THE ARRAY ELEMENTS ORDER ##
-                    Horas      : 0,
-                    Guardias   : 1,
-                    Variables  : 2,
-                    Vacaciones : 3,
-                    Ausencias  : 4
-                };
+        const IMPUTETYPES = imputeHoursFactory.getImputeTypesIndexConst();
         Object.freeze( IMPUTETYPES );
-        // IMPUTE TYPES AND SUBTYPES INFO ## DO NOT CHANGE THE ARRAY ELEMENTS ORDER ##
-        var imputeTypesAbbreviation        = [ 'Hor', 'Gua', 'Var', 'Vac', 'Aus' ]; // abbreviations are stored with the same order
-        $scope.imputeTypes                 = [ 'Horas', 'Guardias', 'Variables', 'Vacaciones', 'Ausencias' ];
-        $scope.imputeTypes[ 'Horas'      ] = [ 'Horas' ];
-        $scope.imputeTypes[ 'Guardias'   ] = [ 'Turnicidad', 'Guardia', 'Varios' ];
-        $scope.imputeTypes[ 'Variables'  ] = [ 'Hora extra', 'Hora extra festivo', 'Horas nocturnas', 'Formación', 'Intervenciones', 'Varios' ];
-        $scope.imputeTypes[ 'Vacaciones' ] = [ 'Vacaciones' ];
-        $scope.imputeTypes[ 'Ausencias'  ] = [ 'BM-Baja-Médica', 'BT-Baja-Maternidad', 'EF-Enfermedad', 'EX-Examen', 'FF-Fallecimiento-Familiar',
-                                               'MA-Matrimonio', 'MU-Mudanza', 'NH-Nacimiento-Hijos', 'OF-Operación-Familiar', 'OT-Otros',
-                                               'VM-Visita-Médica', 'LB-Libranza' ];
+        $scope.imputeTypes   = imputeHoursFactory.getImputeTypes();
         $scope.typesModel    = $scope.imputeTypes[0];
         $scope.subtypesModel = $scope.imputeTypes[$scope.typesModel][0];
 
@@ -96,6 +81,7 @@
                     $scope.alerts.permanentError = false;
                 })
                 .catch( function( err ) {
+                    console.log(err);
                     // error loading data message alert
                     $scope.alerts.error = true; // error code alert
                     $scope.alerts.permanentError = true;
@@ -103,7 +89,7 @@
                 });
         }
 
-        $scope.projectChanged = function() {            
+        $scope.projectChanged = function() {
             refreshShowDaysObj();
         };
         $scope.imputeTypeChanged = function() {
@@ -205,7 +191,6 @@
             function initializeImputeTypesSummary() {
                 var imputeTypesSummary = {};
                 $scope.imputeTypes.forEach( function( type, index ) {
-                    // imputeTypesSummary[ type ] = 0;
                     imputeTypesSummary[ index ] = 0;
                 });
                 imputeTypesSummary.totalHours = 0; // great hours total
@@ -217,7 +202,7 @@
                 for( var imputeType in imputeTypesSummary ) {
                     if( ts[ currentProject ][ thisDate ][ imputeType ] ) {
                         for( var imputeSubType in ts[ currentProject ][ thisDate ][ imputeType ] ) {
-                            var value = parseFloat( ts[ currentProject ][ thisDate ][ imputeType ][imputeSubType].value );
+                            var value = parseFloat( ts[ currentProject ][ thisDate ][ imputeType ][ imputeSubType ].value );
                             imputeTypesSummary[ imputeType ] += value;
                             if( imputeType == IMPUTETYPES.Ausencias || imputeType == IMPUTETYPES.Horas || imputeType == IMPUTETYPES.Variables ) {
                                 totalHours += value;
@@ -227,6 +212,37 @@
                 }
                 imputeTypesSummary.totalHours = totalHours;
             }
+
+            // getting totalGlobalHours
+            // here, we proceed to add all imputaHours from the same day in all projects in order to show 'totalGlobalHours'
+            var totalGlobalHoursObj = {};
+            for( var project in ts ) {
+                for( var day in ts[ project ] ) {
+                    for( var imputeType in ts[ project ][ day ] ) {
+                        for( var imputeSubType in ts[ project ][ day ][ imputeType ] ) {
+                            if( imputeType == IMPUTETYPES.Ausencias || imputeType == IMPUTETYPES.Horas || imputeType == IMPUTETYPES.Variables ) {
+                                var value = parseFloat( ts[ project ][ day ][ imputeType ][ imputeSubType ].value );
+                                if( !totalGlobalHoursObj[ day ] ) {
+                                    totalGlobalHoursObj[ day ] = {};
+                                    totalGlobalHoursObj[ day ].totalGlobalHours = 0;
+                                }
+                                totalGlobalHoursObj[ day ].totalGlobalHours += value;
+                            }
+                        }
+                    }                    
+                }
+            }
+            //store 'totalGlobalHours' value inside 'showDaysObj'
+            for( var week in $scope.showDaysObj.weeks ) {
+                for( var day in $scope.showDaysObj.weeks[ week ] ) {
+                    if( $scope.showDaysObj.weeks[ week ][ day ].imputeTypesSummary ) {
+                        $scope.showDaysObj.weeks[ week ][ day ].imputeTypesSummary.totalGlobalHours = 0; // initializating 'totalGlobalHours'
+                        if( totalGlobalHoursObj[ day ] ) {
+                            $scope.showDaysObj.weeks[ week ][ day ].imputeTypesSummary.totalGlobalHours = totalGlobalHoursObj[ day ].totalGlobalHours;
+                        }
+                    }
+                }
+            };
 
             slideContent( false );
             $scope.$broadcast( 'refreshStats', { generalDataModel : generalDataModel, IMPUTETYPES : IMPUTETYPES } );
@@ -395,7 +411,16 @@
 
         // to display the imputeType abbreviation
         $scope.giveMeAbbreviation = function( imputeType ) {
-            return imputeTypesAbbreviation[ imputeType ] ? imputeTypesAbbreviation[ imputeType ] : 'TH';
+            switch ( imputeType ) {
+                case 'totalHours':
+                    return 'TH';
+                    break;
+                case 'totalGlobalHours':
+                    return 'GT';
+                    break;
+                default:
+                    return $scope.imputeTypes.abbreviation[ imputeType ];
+            }
         };
 
         // when a input day get focus
@@ -456,6 +481,15 @@
                 thisDayInput.focus();
                 thisDayInput.select();
             });
+        });
+
+        // when user click on a project at Project summary table
+        $scope.$on( 'goToThisProject', function( event, data ) {
+            var project = $scope.userProjects.find( function( project ) {
+                return project._id == data.projectId;
+            });
+            $scope.projectModel = project;
+            refreshShowDaysObj();
         });
 
 }

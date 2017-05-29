@@ -22,7 +22,7 @@
                     .myDay {
                         position: relative;
                         border-radius: 5px;
-                        height: 208px; // 95
+                        height: 228px; // 95
                         width: 124px; // 85
                         margin: 7px;
                         &:hover {
@@ -105,9 +105,13 @@
                                     color: #333;
                                 }
                             }
-                            &.totalHours {
+                            &.totalHours, &.totalGlobalHours {
                                 font-weight: bold;
                                 font-size: 16px;
+                            }
+                            &.totalGlobalHours {
+                                // font-size: 16.5px;
+                                text-shadow: 1.5px 1.5px #333;
                             }
                         }
 
@@ -157,7 +161,7 @@
                             }
                         }
                         &.gotFocus { // myDay got focus
-                            border: 4px dashed #333;
+                            border: 3px dashed #333;
                         }
                     } // myDay
                 } // myWeek
@@ -178,12 +182,12 @@
                     input {
                         cursor: pointer;
                         text-align: center;
-                        font-size: 19px;
-                        color: red;
+                        font-size: 24px;
+                        color: #666;
                         transition: all .8s ease;
                         &:focus {
-                            font-size: 20px;
-                            color: #D70303; 
+                            font-size: 22px;
+                            color: black;
                         }
                     }
                 }
