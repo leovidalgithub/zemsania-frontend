@@ -4,32 +4,34 @@
         .module( 'hours.approvalHours' )
         .factory( 'projectInfoFactory', projectInfoFactory )
 
-    projectInfoFactory.$invoke = [ ];
-    function projectInfoFactory( ) {
-
+    projectInfoFactory.$invoke = [ 'imputeHoursFactory' ];
+    function projectInfoFactory( imputeHoursFactory ) {
+        
+        const IMPUTETYPES = imputeHoursFactory.getImputeTypesIndexConst();
+        
         return {
 
-            getProjectsInfo2: function( ts, IMPUTETYPES, calendar, _userProjects ) {
+            // it returns the 'projectInfo' object with total of hours and journeys for each project
+            // and global total as summary too
+            getProjectsInfo: function( ts, calendar, userProjects ) {
 
-                var projectsInfoTemp = {};
+                var projectsInfo = {};
                 var millisecondsByDayType;
-                var userProjects = _userProjects;
                 if( !millisecondsByDayType ) millisecondsByDayType = calendar.eventHours[0].totalPerType;
 
-                // getting total of hours, guards and holidays
                 for( var projectId in ts ) {
                     var projectName = '';
-                    var THI = 0;
-                    var THT = 0;
-                    var TJT = 0;
-                    var TJA = 0;
-                    var TJV = 0;
-                    var TJG = 0;
+                    var THI = 0; // Total Horas Imputadas
+                    var THT = 0; // Total Horas Trabajadas
+                    var TJT = 0; // Total Jornadas Trabajadas
+                    var TJA = 0; // Total Jornadas Ausencias
+                    var TJV = 0; // Total Jornadas Vacaciones
+                    var TJG = 0; // Total Jornadas Guradias
 
-                    if( !projectsInfoTemp[ projectId ] ) projectsInfoTemp[ projectId ] = {}; // creates projectId object
-                    for( var day in ts[ projectId ] ) { // throughting by each day of project
-                        for( var imputeType in ts[ projectId ][ day ] ) { // throughting by each imputeType of day
-                            for( var imputeSubType in ts[ projectId ][ day ][ imputeType ] ) { // throughting by each imputeSubType of imputeType
+                    if( !projectsInfo[ projectId ] ) projectsInfo[ projectId ] = {}; // creates projectId object
+                    for( var day in ts[ projectId ] ) { // throughout by each day of project
+                        for( var imputeType in ts[ projectId ][ day ] ) { // throughout by each imputeType of day
+                            for( var imputeSubType in ts[ projectId ][ day ][ imputeType ] ) { // throughout by each imputeSubType of imputeType
                                 var imputeValue = ts[ projectId ][ day ][ imputeType ][ imputeSubType ].value; // getting value
                                 if( imputeType == IMPUTETYPES.Horas || imputeType == IMPUTETYPES.Variables || imputeType == IMPUTETYPES.Ausencias ) {
                                     THI += imputeValue;
@@ -51,14 +53,14 @@
                     projectName = getProjectName( projectId ); // getting project name
                     TJT = Number( TJT.toFixed( 1 ) ); // round to one decimal
                     TJA = Number( TJA.toFixed( 1 ) ); // round to one decimal
-                    projectsInfoTemp[ projectId ].projectId   = projectId;
-                    projectsInfoTemp[ projectId ].projectName = projectName;
-                    projectsInfoTemp[ projectId ].THI = THI;
-                    projectsInfoTemp[ projectId ].THT = THT;
-                    projectsInfoTemp[ projectId ].TJT = TJT;
-                    projectsInfoTemp[ projectId ].TJA = TJA;
-                    projectsInfoTemp[ projectId ].TJG = TJG;
-                    projectsInfoTemp[ projectId ].TJV = TJV;
+                    projectsInfo[ projectId ].projectId   = projectId;
+                    projectsInfo[ projectId ].projectName = projectName;
+                    projectsInfo[ projectId ].THI = THI;
+                    projectsInfo[ projectId ].THT = THT;
+                    projectsInfo[ projectId ].TJT = TJT;
+                    projectsInfo[ projectId ].TJA = TJA;
+                    projectsInfo[ projectId ].TJG = TJG;
+                    projectsInfo[ projectId ].TJV = TJV;
                 }
 
                 // calculates dailyWork according to dayType milliseconds and imputed-hours
@@ -71,23 +73,26 @@
                     }
                     // getting dayType milliseconds
                     if( millisecondsByDayType[ dayType ] ) dayTypeMilliseconds = millisecondsByDayType[ dayType ].milliseconds;
-                    // // calculating dailyWork
+                    // calculating dailyWork
                     return calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  );
                 }
 
                 function getProjectName( projectId ) {
+                    if( !userProjects ) return '';
                     return userProjects.find( function( project ) {
                         return project._id == projectId;
                     }).nameToShow;
                 }
 
-                var summary = getThisSummary( projectsInfoTemp );
-                projectsInfoTemp.summary = summary;
-                return projectsInfoTemp;
+                var summary = getThisSummary( projectsInfo );
+                summary.TJTGlobal = Number( summary.TJTGlobal.toFixed( 1 ) );
+                summary.TJAGlobal = Number( summary.TJAGlobal.toFixed( 1 ) );
+                projectsInfo.summary = summary;
+                return projectsInfo;
             }
         }
 
-        // RETURNS SUMMARY INFO. GLOBAL TOTAL OF IMPUTED AND DAILYWORK
+        // RETURNS SUMMARY INFO. GLOBAL TOTAL OF IMPUTED AND JOURNEYS
         function getThisSummary( projectsInfoObj ) {
             var THIGlobal  = 0;
             var THTGlobal  = 0;

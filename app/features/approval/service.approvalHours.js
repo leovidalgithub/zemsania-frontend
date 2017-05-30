@@ -4,8 +4,8 @@
         .module( 'hours.approvalHours' )
         .factory( 'approvalHoursFactory', approvalHoursFactory )
 
-    approvalHoursFactory.$invoke = [ '$http', '$q', 'UserFactory', 'imputeHoursFactory' ];
-    function approvalHoursFactory( $http, $q, UserFactory, imputeHoursFactory ) {
+    approvalHoursFactory.$invoke = [ '$http', '$q', 'UserFactory', 'imputeHoursFactory', 'projectInfoFactory' ];
+    function approvalHoursFactory( $http, $q, UserFactory, imputeHoursFactory, projectInfoFactory ) {
     
         const IMPUTETYPES = imputeHoursFactory.getImputeTypesIndexConst();
         var mainOBJ;
@@ -26,77 +26,29 @@
                     });
                 return dfd.promise;
             }
-        }
+        };
 
+        // getting projects summary info and set opened fields
         function prepareData( dfd, _data ) {
             data = _data;
             var calendars = data.data.calendars;
             var employees = data.data.employees;
-            employees.forEach( function( employee ) {
+
+            employees.forEach( function( employee, index, thisArray ) {
+                var projectsInfo = {};
+                var ts = employee.timesheetDataModel;
+                var calendarId = employee.calendarID;
+                var calendar = calendars[ calendarId ];
                 employee.opened = false;
-                var totalImputeHours = 0;
-                var totalDailyWork   = 0;
+                // getting projects summary info
+                projectsInfo = projectInfoFactory.getProjectsInfo( ts, calendar );
+                employee.projectInfoSummary = projectsInfo.summary;
                 for( var projectId in employee.timesheetDataModel ) {
-                    employee.timesheetDataModel[ projectId ].info.opened = false;
-                    var imputeHours = 0;
-                    var dailyWork   = 0;
-                    for( var day in employee.timesheetDataModel[ projectId ] ) {
-                        if( day == 'info' ) continue; // 'info' is where all project info is stored, so, it is necessary to skip it
-
-                        // getting dayType
-                        var dayType = getDayTypeByDay( calendars, employee.calendarID, day );
-
-                        // getting dayType milliseconds
-                        var dayTypeMilliseconds = getDayTypeMilliseconds( calendars, employee.calendarID, dayType );
-
-                        for( var imputeType in employee.timesheetDataModel[ projectId ][ day ] ) {
-                            
-                            if( imputeType != IMPUTETYPES.Guardias ) { // calculate just 'Hours'. 'Guardias' are not taken in account here.
-                                for( var imputeSubType in employee.timesheetDataModel[ projectId ][ day ][ imputeType ] ) {
-                                    
-
-                                    var imputeValue = employee.timesheetDataModel[ projectId ][ day ][ imputeType ][ imputeSubType ].value;
-                                    var dailyWorkValue = calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  );
-
-                                    totalImputeHours+= imputeValue;
-                                    imputeHours+= imputeValue;
-                                    totalDailyWork+= dailyWorkValue;
-                                    dailyWork+= dailyWorkValue;
-                                }
-                            }
-                        }
-                    }
-                    employee.timesheetDataModel[ projectId ].info.imputeHours = imputeHours;
-                    employee.timesheetDataModel[ projectId ].info.dailyWork   = Number( dailyWork.toFixed( 1 ) ); // round to 1 decimal
+                    employee.timesheetDataModel[ projectId ].info.summary = projectsInfo[ projectId ];
+                    employee.timesheetDataModel[ projectId ].info.opened  = false;
                 }
-                employee.totalImputeHours = totalImputeHours;
-                employee.totalDailyWork   = Number( totalDailyWork.toFixed( 1 ) ); // round to 1 decimal
             });
             prepareTableDaysData( dfd );
-        }
-
-        // getting dayType acoording to day and calendarID
-        function getDayTypeByDay( calendars, calendarID, day ) {
-            var dayType = '';
-            if( calendars[ calendarID ] ) {
-                var calendar = calendars[ calendarID ];
-                if( calendar.eventHours[0].eventDates[ day ] ) {
-                    dayType = calendar.eventHours[0].eventDates[ day ].type;
-                }
-            }
-            return dayType;
-        }
-
-        // getting millisecons acoording to dayType and calendarID
-        function getDayTypeMilliseconds( calendars, calendarID, dayType ) {
-            var milliseconds = 0;
-            if( calendars[ calendarID ] ) {
-                var calendar = calendars[ calendarID ];
-                if( calendar.eventHours[0].totalPerType[ dayType ] ) {
-                    milliseconds = calendar.eventHours[0].totalPerType[ dayType ].milliseconds;
-                }
-            }
-            return milliseconds;
         }
 
         function prepareTableDaysData( dfd ) {
@@ -112,45 +64,48 @@
                                 for( var imputeSubType in employee.timesheetDataModel[ projectId ][ day ][ imputeType ] ) {
 
                                     var tableName = imputeType + '_' + imputeSubType;
-                                    if( !employee.timesheetDataModel[ projectId ].info.tables[tableName]) {
-                                        employee.timesheetDataModel[ projectId ].info.tables[tableName] = {};
-                                        var newTable = employee.timesheetDataModel[ projectId ].info.tables[tableName];
+                                    if( !employee.timesheetDataModel[ projectId ].info.tables[ tableName ] ) {
+                                        employee.timesheetDataModel[ projectId ].info.tables[ tableName ] = {};
+                                        var newTable = employee.timesheetDataModel[ projectId ].info.tables[ tableName ];
                                         newTable.name = tableName;
                                         newTable.imputeType = imputeType;
                                         newTable.imputeSubType = imputeSubType;
                                         newTable.days = [];
                                         createTable( newTable );
                                     }
-                                    var table     = employee.timesheetDataModel[ projectId ].info.tables[tableName];
-                                    var value     = employee.timesheetDataModel[ projectId ][ day ][ imputeType ][imputeSubType].value;
-                                    var status    = employee.timesheetDataModel[ projectId ][ day ][ imputeType ][imputeSubType].status;
+                                    var table     = employee.timesheetDataModel[ projectId ].info.tables[ tableName ];
+                                    var value     = employee.timesheetDataModel[ projectId ][ day ][ imputeType ][ imputeSubType ].value;
+                                    var status    = employee.timesheetDataModel[ projectId ][ day ][ imputeType ][ imputeSubType ].status;
                                     var isEnabled = status == 'sent' ? true : false;
                                     
                                     if( !employee.isPending && isEnabled ) employee.isPending = true;
 
-                                    var currentDay = new Date( parseInt( day,10 ) ).getDate();
+                                    var currentDay = new Date( parseInt( day, 10 ) ).getDate();
 
                                     var dayToSet = table.days.find( function( dayObj ) {
                                         return dayObj.day == currentDay;
                                     });
                                     dayToSet.value   = value;
+                                    dayToSet.status  = status;
                                     dayToSet.enabled = isEnabled;
-                                    employee.timesheetDataModel[ projectId ][ day ][ imputeType ][imputeSubType].enabled = isEnabled;
+                                    employee.timesheetDataModel[ projectId ][ day ][ imputeType ][ imputeSubType ].enabled = isEnabled;
                                 }
                             }
                         }
                     }
             });
 
+            // insert standar days content for the new table
             function createTable( newTable ) {
                 for( var day = 1; day <= mainOBJ.totalMonthDays; day++ ) {
                     var dayTimestamp = new Date( mainOBJ.currentYear, mainOBJ.currentMonth, day ).getTime();
-                    newTable.days.push( { day : day, dayTimestamp : dayTimestamp, value : 0, approved : 'NA', enabled : false } );
+                    newTable.days.push( { day : day, dayTimestamp : dayTimestamp, value : 0, approved : 'NA', enabled : false, status : 'draft' } );
                 }
             }
             prepareDayType( dfd );
         }
 
+        // setting 'dayType' of each day inside each table
         function prepareDayType( dfd ) {
             var employees = data.data.employees;
             var calendars = data.data.calendars;
@@ -161,7 +116,7 @@
                         var currentTable =  employee.timesheetDataModel[ projectId ].info.tables[ table ];
                         currentTable.days.forEach( function( day ) {
                             var currentDay = new Date( mainOBJ.currentYear, mainOBJ.currentMonth,  parseInt( day.day, 10) ).getTime();
-                            var dayType = calendars[calendarID].eventHours[0].eventDates[currentDay].type;
+                            var dayType = calendars[ calendarID ].eventHours[ 0 ].eventDates[ currentDay ].type;
                             day.dayType = dayType;
                         });
                     }

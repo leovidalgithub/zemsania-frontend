@@ -5,40 +5,49 @@
         .directive( 'alertMessage', alertMessage )
         .controller( 'alertMessageController', alertMessageController );
 
-    alertMessageController.$invoke = [ '$scope', '$interval', '$window' ];
-    function alertMessageController( $scope, $interval, $window ) {
-            var $alertSome = $( '#alertMessage .msgAlert' );
-            var promiseInterval;
-            $scope.$watch( 'error', function( value ) {
+    alertMessageController.$invoke = [ '$scope', '$timeout' ];
+    function alertMessageController( $scope, $timeout ) {
+
+                    $scope.alertMessage = 'Ocurrió un error cargando los datos. Inténtelo de nuevo más tarde.';
+            $scope.$watch( 'showme', function( value ) {
                 if ( value !== null ) {
-                    $interval.cancel( promiseInterval );
-                    $scope.horizontalMode = true;
-                    // $scope.horizontalMode = ( $window.innerWidth >= 600 ) ? true : false;
+                    $timeout( function() { $scope.showme = null });
                     $scope.alertMessage = $scope.msg;
-                    $alertSome.collapse( 'show' );
-                    promiseInterval = $interval( function() {
-                        $scope.error = null;
-                        $alertSome.collapse( 'hide' );
-                    }, $scope.error ? 6000 : 2500 );
+
+                    moveThis( 70, .95 );
+                    $timeout( function() {
+                        moveThis( -200, .05 );
+                    }, $scope.iserror ? 4000 : 2000 ); // 6000 : 2500
                 }
             });
+            function moveThis( YP, OP ) {
+                $( "#alertMessage .thisAlertBox" ).animate({
+                    opacity: OP,
+                    bottom : YP + 'px'
+                }, 700, function() {
+                });
+            }
+
         }
 
     function alertMessage() {
         return {
             restrict: 'E',
             scope: {
-                error : '=',
-                msg   : '='
+                msg     : '=',
+                showme  : '=',
+                iserror : '='
             },
             transclude: false,
             templateUrl: 'features/components/alertMsg/alertmsg.tpl.html',
             controller : alertMessageController,
             link : function( scope, elem, attrs ) {
-                scope.error = null;
-                scope.msg = '';
+                scope.msg     = '';
+                scope.showme  = null;
+                scope.iserror = null;
             }
         };
     }
-
 }());
+
+// $window.innerWidth >= 600

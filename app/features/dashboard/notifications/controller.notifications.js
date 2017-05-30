@@ -76,8 +76,9 @@
                     notification.status = 'read';
                 })
                 .catch( function ( err ) {
+                    $scope.alerts.showme  = true;
                     $scope.alerts.error   = true; // error code alert
-                    $scope.alerts.message = $filter( 'i18next' )( 'notifications.errorMarkRead' );; // error message alert
+                    $scope.alerts.message = $filter( 'i18next' )( 'notifications.errorMarkRead' ); // error message alert
                 })
                 .finally( function() {
                     getUnreadLength();
@@ -110,6 +111,18 @@
         });
 
         console.clear();
+// ********************************************************* *************************************************************
+        $scope.fn1 = function() {
+            $scope.alerts.showme  = true;
+            $scope.alerts.error   = true;
+            $scope.alerts.message = 'Ocurrió un error cargando los datos. Inténtelo de nuevo más tarde.';
+        };
+        $scope.fn2 = function() {
+            $scope.alerts.showme  = true;
+            $scope.alerts.error   = false;
+            $scope.alerts.message = 'Los datos fueron enviados correctamente!';
+        };
+// ********************************************************* *************************************************************
 
     }
 }());

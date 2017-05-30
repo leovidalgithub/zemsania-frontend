@@ -16,8 +16,8 @@
     <!-- SECTION MAIN CONTENT -->
     <section id="section" class="box-shadow p20">
 
-        <!-- ALERTS MESSAGES -->
-        <alert-message error="alerts.error" msg="alerts.message"></alert-message>
+        <!-- ALERTS MESSAGES2 -->
+        <alert-message showme="alerts.showme" iserror="alerts.error" msg="alerts.message"></alert-message>
 
         <!-- MOVING-DATE BUTTONS -->
         <div class="row">
@@ -60,31 +60,34 @@
                     <!-- EMPLOYEES TABLE SECTION -->
                     <table>
                         <tr class="notHoverPlease">
-                            <th style="width: 30%;">{{'approvalHours.employee' | i18next}}</th>
-                            <th style="width: 8%;">{{'approvalHours.imputeHours' | i18next}}</th>
-                            <th style="width: 8%;">{{'approvalHours.workingHours' | i18next}}</th>
-                            <th style="width: 8%;">{{'approvalHours.dailywork' | i18next}}</th>
-                            <th style="width: 8%;">{{'approvalHours.dailyworkabsence' | i18next}}</th>
-                            <th style="width: 8%;">{{'approvalHours.dailyworkHoliday' | i18next}}</th>
-                            <th style="width: 30%;"></th>
+                            <th style="width: 26%;">{{'approvalHours.employee' | i18next}}</th>
+                            <th style="width: 8%;">{{'calendar.imputeHours.THI' | i18next}}</th>
+                            <th style="width: 8%;">{{'calendar.imputeHours.THT' | i18next}}</th>
+                            <th style="width: 8%;">{{'calendar.imputeHours.TJT' | i18next}}</th>
+                            <th style="width: 8%;">{{'calendar.imputeHours.TJA' | i18next}}</th>
+                            <th style="width: 8%;">{{'calendar.imputeHours.TJV' | i18next}}</th>
+                            <th style="width: 8%;">{{'calendar.imputeHours.TJG' | i18next}}</th>
+                            <th style="width: 26%;"></th>
                         </tr>
                     </table>
 
-                    <div ng-show="showEmployee(employee.isPending)" ng-repeat="(key, employee) in employees | orderBy: 'name' | filter: mainOBJ.searchText">
+                    <div ng-show="showEmployee(employee.isPending)" 
+                         ng-repeat="(key, employee) in employees | orderBy: 'name' | filter: mainOBJ.searchText">
                         <table>
                             <tr>
-                                <td style="width: 30%;"><button ng-class="{'opened':employee.opened}" 
+                                <td style="width: 26%;"><button ng-class="{'opened':employee.opened}" 
                                                                 ng-click="myEmployeeClick(employee.employeeId)" class="btn btn-primary">
                                     <i ng-hide="employee.opened" class="fa fa-chevron-right"></i>
                                     <i ng-show="employee.opened" class="fa fa-chevron-down"></i></button>
                                     {{employee.name}} {{employee.surname}}
                                 </td>
-                                <td style="width: 8%;">{{employee.totalImputeHours}}</td>
-                                <td style="width: 8%;">-</td>
-                                <td style="width: 8%;">{{employee.totalDailyWork}}</td>
-                                <td style="width: 8%;">-</td>
-                                <td style="width: 8%;">-</td>
-                                <td class="notForMePlease" style="width: 30%;">
+                                <td style="width: 8%;">{{employee.projectInfoSummary.THIGlobal}}</td>
+                                <td style="width: 8%;">{{employee.projectInfoSummary.THTGlobal}}</td>
+                                <td style="width: 8%;">{{employee.projectInfoSummary.TJTGlobal}}</td>
+                                <td style="width: 8%;">{{employee.projectInfoSummary.TJAGlobal}}</td>
+                                <td style="width: 8%;">{{employee.projectInfoSummary.TJVGlobal}}</td>
+                                <td style="width: 8%;">{{employee.projectInfoSummary.TJGGlobal}}</td>
+                                <td class="notForMePlease" style="width: 26%;">
                                     <button ng-disabled="!employee.isPending" class="btn no-margin mainButtons" 
                                             ng-click="setDays(true, employee.employeeId)"
                                             ng-class="{'btn-primary':employee.isPending,'btnDesactivated':!employee.isPending}">
@@ -104,25 +107,32 @@
                             <div class="projectTable">
                                 <table>
                                     <tr class="notHoverPlease">
-                                        <th style="width: 44%;">{{'calendar.imputeHours.project' | i18next}}</th>
-                                        <th style="width: 12%;">{{'approvalHours.imputeHours' | i18next}}</th>
-                                        <th style="width: 12%;">{{'approvalHours.dailywork' | i18next}}</th>
-                                        <th style="width: 32%;"></th>
+                                        <th style="width: 26%;">{{'calendar.imputeHours.project' | i18next}}</th>
+                                        <th style="width: 8%;"></th>
+                                        <th style="width: 8%;"></th>
+                                        <th style="width: 8%;"></th>
+                                        <th style="width: 8%;"></th>
+                                        <th style="width: 8%;"></th>
+                                        <th style="width: 8%;"></th>
                                     </tr>
                                 </table>
                                 <div ng-repeat="(projectId, project) in employee.timesheetDataModel">
                                     <table>
                                         <tr>
-                                            <td style="width: 44%;"><button ng-class="{'opened':project.info.opened}" 
+                                            <td style="width: 26%;"><button ng-class="{'opened':project.info.opened}" 
                                                                             ng-click="myProjectClick(employee.employeeId, projectId)" 
                                                                             class="btn btn-primary">
                                                 <i ng-hide="project.info.opened" class="fa fa-chevron-right"></i>
                                                 <i ng-show="project.info.opened" class="fa fa-chevron-down"></i></button>
                                                 {{project.info.name}}
                                             </td>
-                                            <td style="width: 12%;">{{project.info.imputeHours}}</td>
-                                            <td style="width: 12%;">{{project.info.dailyWork}}</td>
-                                            <td class="notForMePlease" style="width: 32%;">
+                                            <td style="width: 8%;">{{project.info.summary.THI}}</td>
+                                            <td style="width: 8%;">{{project.info.summary.THT}}</td>
+                                            <td style="width: 8%;">{{project.info.summary.TJT}}</td>
+                                            <td style="width: 8%;">{{project.info.summary.TJA}}</td>
+                                            <td style="width: 8%;">{{project.info.summary.TJV}}</td>
+                                            <td style="width: 8%;">{{project.info.summary.TJG}}</td>
+                                            <td class="notForMePlease" style="width: 26%;">
                                                 <button ng-disabled="!employee.isPending" class="btn no-margin mainButtons" 
                                                         ng-click="setDays(true, employee.employeeId, projectId)"
                                                         ng-class="{'btn-primary':employee.isPending,'btnDesactivated':!employee.isPending}">

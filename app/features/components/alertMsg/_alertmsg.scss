@@ -1,0 +1,32 @@
+
+    #alertMessage {
+        .thisAlertBox {
+            border-radius: 7px;
+            min-height: 130px;
+            width: 320px;
+            position: fixed;
+            padding: 5px 20px;
+            color: white;
+            font-size: 19px;
+            font-family: monospace;
+            bottom: -200px;
+            right: 20px;
+            opacity: .05;
+            display: flex;
+            flex-flow: row nowrap;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            p {
+                margin: 0;
+                text-align:center;
+            }
+
+            &.redAlert {
+                background-color: #C92D28;
+            }
+            &.greenAlert {
+                background-color: #88AC16;
+            }
+        }
+    } 

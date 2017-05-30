@@ -33,6 +33,7 @@
             if( !userProjects.length ) { // no user Projects available
                 // error: NO userProjects available message alert
                 $timeout( function() {
+                    $scope.alerts.showme  = true;
                     $scope.alerts.error = true; // error code alert
                     $scope.alerts.permanentError = true;
                     $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorNoProjects' ); // error message alert
@@ -61,6 +62,7 @@
                     var timesheetDataModel = data[1];
 
                     if ( calendar.success == false ) { // error: calendar not found
+                        $scope.alerts.showme  = true;
                         $scope.alerts.error = true; // error code alert
                         $scope.alerts.permanentError = true;
                         $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorNoCalendar' ); // error message alert
@@ -82,7 +84,7 @@
                 })
                 .catch( function( err ) {
                     console.log(err);
-                    // error loading data message alert
+                    $scope.alerts.showme  = true;
                     $scope.alerts.error = true; // error code alert
                     $scope.alerts.permanentError = true;
                     $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorLoading' ); // error message alert
@@ -175,7 +177,6 @@
                         $scope.showDaysObj.weeks[ week ][ thisDate ].imputeTypesSummary  = imputeTypesSummary;
 
                         // INPUTTYPE AND CHECKVALUE
-                        // ********************************** if( currentType  'Guardias' || currentType == 'Vacaciones' ) {
                         if( currentType == IMPUTETYPES.Guardias || currentType == IMPUTETYPES.Vacaciones ) {
                             $scope.showDaysObj.weeks[ week ][ thisDate ].inputType = 'checkbox';
                             $scope.showDaysObj.weeks[ week ][ thisDate ].checkValue = $scope.showDaysObj.weeks[ week ][ thisDate ].value == 0 ? false : true;
@@ -343,12 +344,14 @@
                     } else {
                         $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.savingSuccess' ); // ok message alert
                     }
-                    $scope.alerts.error = false; // ok code alert
+                    $scope.alerts.showme  = true;
+                    $scope.alerts.error   = false; // ok code alert
                 })
                 .catch( function( err ) {
                     // error saving message alert
+                    $scope.alerts.showme  = true;
+                    $scope.alerts.error   = true; // error code alert
                     $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorSaving' ); // error message alert
-                    $scope.alerts.error = true; // error code alert
                 })
                 .then( function() { //(.then is .finally for Promise.all)
                     if( goToState ) {

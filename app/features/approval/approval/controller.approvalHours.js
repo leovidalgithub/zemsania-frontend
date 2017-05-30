@@ -38,13 +38,12 @@
             approvalHoursFactory.getEmployeesTimesheets( $scope.mainOBJ )
                 .then( function ( data ) {
                     $scope.employees = data;
-                    console.log($scope.employees);
                     imputesCount();
                     if( $rootScope.notification ) showNotificationData();
                     initialSlick();
                 })
                 .catch( function ( err ) {
-                    console.log('err');
+                    $scope.alerts.showme  = true;
                     $scope.alerts.error = true; // error code alert
                     $scope.alerts.message = $filter( 'i18next' )( 'approvalHours.errorLoading' ); // error message alert
                 });
@@ -74,8 +73,8 @@
             return element.attr( 'aria-expanded' ); // to know if tab content is collapsed or not
         }
 
-        // SLICKTABLE ISSUE: when it comes from notifications, for some reason, all hidden slickTables do not show corretly. So, every time a 
-        // project table is open, we have to initialize or reinitialize the slick element to show properly
+        // SLICKTABLE ISSUE: when it comes from notifications, for some reason, all hidden slickTables do not show corretly.
+        // So, every time a project is open, we have to initialize or reinitialize the slick element to show properly
         function initialSlick( element ) {
             element = element ? element : '.slickTable';
             $timeout( function() {
@@ -165,11 +164,13 @@
             var wrapProjectsObj = [ projectsObj ];
             imputeHoursFactory.setAllTimesheets( wrapProjectsObj, _employeeId )
                 .then( function( data ) {
-                    $scope.alerts.error = false; // ok code alert
+                    $scope.alerts.showme  = true;
+                    $scope.alerts.error   = false; // ok code alert
                     $scope.alerts.message = $filter( 'i18next' )( 'approvalHours.okSaving' ); // ok message alert
                 })
                 .catch( function( err ) {
-                    $scope.alerts.error = true; // error code alert
+                    $scope.alerts.showme  = true;
+                    $scope.alerts.error   = true; // error code alert
                     $scope.alerts.message = $filter( 'i18next' )( 'approvalHours.errorSaving' ); // error message alert
                 });
         };
