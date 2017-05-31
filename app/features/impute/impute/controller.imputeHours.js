@@ -4,10 +4,16 @@
         .module( 'hours.impute' )
         .controller( 'imputeHoursController', imputeHoursController );
 
-    imputeHoursController.$invoke = [ '$scope', 'UserFactory', 'imputeHoursFactory', 'userProjects', 'CalendarFactory', '$q', '$uibModal', '$rootScope', '$state', '$timeout', '$filter' ];
-    function imputeHoursController( $scope, UserFactory, imputeHoursFactory, userProjects, CalendarFactory, $q, $uibModal, $rootScope, $state, $timeout, $filter ) {
+    imputeHoursController.$invoke = [ '$scope', 'UserFactory', 'imputeHoursFactory', 'DashboardFactory', 'userProjects', 'CalendarFactory', '$q', '$uibModal', '$rootScope', '$state', '$timeout', '$filter' ];
+    function imputeHoursController( $scope, UserFactory, imputeHoursFactory, DashboardFactory, userProjects, CalendarFactory, $q, $uibModal, $rootScope, $state, $timeout, $filter ) {
 
-        var currentDate      = new Date();
+        var currentDate;
+        if( $rootScope.notification ) { // if it comes from notification it takes the date from that notification
+            currentDate = new Date( $rootScope.notification.issueDate.year, $rootScope.notification.issueDate.month, 1 );
+            $rootScope.notification = null;
+        } else { // otherwise it will show the data from current month and year
+            currentDate = new Date();
+        }
         var currentMonth     = currentDate.getMonth();
         var currentYear      = currentDate.getFullYear();
         var calendarID       = UserFactory.getcalendarID(); // get user calendar
@@ -33,7 +39,6 @@
             if( !userProjects.length ) { // no user Projects available
                 // error: NO userProjects available message alert
                 $timeout( function() {
-                    $scope.alerts.showme  = true;
                     $scope.alerts.error = true; // error code alert
                     $scope.alerts.permanentError = true;
                     $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorNoProjects' ); // error message alert
@@ -62,7 +67,6 @@
                     var timesheetDataModel = data[1];
 
                     if ( calendar.success == false ) { // error: calendar not found
-                        $scope.alerts.showme  = true;
                         $scope.alerts.error = true; // error code alert
                         $scope.alerts.permanentError = true;
                         $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorNoCalendar' ); // error message alert
@@ -83,8 +87,6 @@
                     $scope.alerts.permanentError = false;
                 })
                 .catch( function( err ) {
-                    console.log(err);
-                    $scope.alerts.showme  = true;
                     $scope.alerts.error = true; // error code alert
                     $scope.alerts.permanentError = true;
                     $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorLoading' ); // error message alert
@@ -288,6 +290,9 @@
             refreshShowDaysObj();
         };
 
+        // When toSend, it sets status to 'sent' and modified to 'true' to all items with status on 'draft' and
+        // to set 'issueDate' notification field
+        // When !toSend it's just to know if there is some item on 'draft'
         function findDrafts( toSend, issueDate ) {
             for( var date in generalDataModel ) {
                 for( var projectId in generalDataModel[date].timesheetDataModel ) {
@@ -296,12 +301,12 @@
                             for( var subType in generalDataModel[date].timesheetDataModel[projectId][day][type] ) {
                                 if( generalDataModel[date].timesheetDataModel[projectId][day][type][subType].status == 'draft' ) {
                                     if( !toSend ) { // just to know if there is some 'draft'
-                                        return true;
+                                        return true; // at least one 'draft' found
                                     }
                                     generalDataModel[date].timesheetDataModel[projectId][day][type][subType].status = 'sent';
                                     generalDataModel[date].timesheetDataModel[projectId][day][type][subType].modified = true;
 
-                                    // before send to manager, it stores all month/year related. This is for 'issueDate' field
+                                    // it stores all month/year related. This is for 'issueDate' notification field
                                     var thisDay = new Date( parseInt( day, 10 ) );
                                     var obj = { month : thisDay.getMonth(), year : thisDay.getFullYear() };
                                     var isRepited = issueDate.some( function( date ) {
@@ -318,38 +323,42 @@
         }
 
         $scope.save = function( send ) {
+            var myPromises = [];
+
+            var ts_data = []; // to send an array of just 'timesheetDataModel' objects
+            for( var date in generalDataModel ) {
+                ts_data.push( generalDataModel[ date ].timesheetDataModel );
+            }
+            myPromises.push( imputeHoursFactory.setAllTimesheets( ts_data ) );
+
             // if send: all 'draft' gonna be change to 'sent' and 'modified' to true ( findDrafts() )
-            var issueDate = [];
+            // and sets issueDate for notification
             if( send ) {
+                var issueDate = [];
                 findDrafts( true, issueDate );
                 refreshShowDaysObj();
+                var notification_data = {
+                                    senderId   : UserFactory.getUserID(),
+                                    receiverId : UserFactory.getSuperior(),
+                                    type       : 'hours_req',
+                                    text       : $filter( 'i18next' )( 'calendar.imputeHours.message.hours_req' ),
+                                    issueDate  : issueDate
+                };
+                myPromises.push( DashboardFactory.insertNewNotification( notification_data ) );
             }
-
-            var myPromises = [];
-            var data       = []; // to send an array of just 'timesheetDataModel' objects
-            for( var date in generalDataModel ) {
-                data.push( generalDataModel[ date ].timesheetDataModel );
-            }
-
-            myPromises.push( imputeHoursFactory.setAllTimesheets( data ) );
-            if( send ) myPromises.push( imputeHoursFactory.insertNewNotification( issueDate ) );
 
             Promise.all( myPromises )
                 .then( function( data ) {
                     $scope.changes.pendingChanges = false;
                     $rootScope.pendingChanges = false;
-                    // success saving (and send) message alert
+                    $scope.alerts.error   = false; // ok code alert
                     if( send ) {
                         $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.sendingSuccess' ); // ok message alert
                     } else {
                         $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.savingSuccess' ); // ok message alert
                     }
-                    $scope.alerts.showme  = true;
-                    $scope.alerts.error   = false; // ok code alert
                 })
                 .catch( function( err ) {
-                    // error saving message alert
-                    $scope.alerts.showme  = true;
                     $scope.alerts.error   = true; // error code alert
                     $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorSaving' ); // error message alert
                 })
@@ -390,7 +399,7 @@
                     $rootScope.$emit( 'modalNotToSave', 'Modal has been closed to NOT save data');
                 };
             },
-            backdrop: 'static',
+            backdrop: true,
             size: 'md'
             }).result.then( function() {}, function( res ) {} );
         }

@@ -7,7 +7,7 @@
     NotificationController.$invoke = [ '$scope', '$rootScope', 'notifications', '$window', '$state', 'DashboardFactory', '$filter' ];
     function NotificationController( $scope, $rootScope, notifications, $window, $state, DashboardFactory, $filter ) {
 
-        (function init() {
+        ( function init() {
             $scope.tableConfig = {
                 itemsPerPage: getItemsPerPage( 125 ),
                 maxPages: "3",
@@ -34,7 +34,7 @@
             if( $window.innerWidth < 1210 ) {
                 $scope.viewSet = false;
             } else {
-                $scope.viewSet = true;            
+                $scope.viewSet = true;
             }
         }
 
@@ -51,17 +51,21 @@
 
         // TO GO WHERE NOTIFICATION IS ABOUT
         $scope.goTo = function( item ) {
+            var type           = item.type;
             var senderId       = item.senderId._id;
+            var issueDate      = item.issueDate;
             var notificationId = item._id;
-            var issueDate = item.issueDate;
-            var type = item.type;
             $scope.markRead( notificationId ); // before go, mark this notification as read
-            switch (type) {
+            $rootScope.notification = {}; // Initializing
+            $rootScope.notification.issueDate = issueDate;
+            console.log(type);
+            switch ( type ) {
                 case 'hours_req':
-                    $rootScope.notification = {};
                     $rootScope.notification.senderId  = senderId;
-                    $rootScope.notification.issueDate = issueDate;
                     $state.go( 'approvalHours' );
+                    break;
+                case 'hours_reviewed':
+                    $state.go( 'imputeHours' );
                     break;
                 default:
                     break;
@@ -76,7 +80,6 @@
                     notification.status = 'read';
                 })
                 .catch( function ( err ) {
-                    $scope.alerts.showme  = true;
                     $scope.alerts.error   = true; // error code alert
                     $scope.alerts.message = $filter( 'i18next' )( 'notifications.errorMarkRead' ); // error message alert
                 })
@@ -111,18 +114,6 @@
         });
 
         console.clear();
-// ********************************************************* *************************************************************
-        $scope.fn1 = function() {
-            $scope.alerts.showme  = true;
-            $scope.alerts.error   = true;
-            $scope.alerts.message = 'Ocurrió un error cargando los datos. Inténtelo de nuevo más tarde.';
-        };
-        $scope.fn2 = function() {
-            $scope.alerts.showme  = true;
-            $scope.alerts.error   = false;
-            $scope.alerts.message = 'Los datos fueron enviados correctamente!';
-        };
-// ********************************************************* *************************************************************
 
-    }
+     }
 }());

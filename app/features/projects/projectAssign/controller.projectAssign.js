@@ -4,8 +4,8 @@
         .module( 'hours.projects' )
         .controller( 'ProjectAssignController', ProjectAssignController );
 
-    ProjectAssignController.$invoke = [ '$scope', 'ProjectsFactory', '$uibModal', '$timeout' ];
-    function ProjectAssignController( $scope, ProjectsFactory, $uibModal, $timeout ) {
+    ProjectAssignController.$invoke = [ '$scope', '$uibModal', '$timeout' ];
+    function ProjectAssignController( $scope, $uibModal, $timeout ) {
 
         $scope.spinners = {
                     projects : false,
@@ -39,8 +39,8 @@
             // MODAL - WARNING BEFORE REMOVING PROJECT-USER RELATIONSHIP
             var modalPendingChangesInstance = $uibModal.open( {
             animation : true,
-            templateUrl : '/features/projects/projectAssign/modals/warningRemoveModal.tpl.html',
-            controller : 'ModalInfo',
+            templateUrl : '/features/projects/projectAssign/modals/modalWarningRemove.tpl.html',
+            controller : 'ModalDemarcate',
             resolve : {
                 data : {
                     user        : user,
@@ -48,7 +48,7 @@
                     currentMode : $scope.currentMode
                 }
             },
-            backdrop: 'static',
+            backdrop: true,
             size: 'sm',
             }).result.then( function() {}, function( res ) {} ); // to avoid: 'Possibly unhandled rejection: backdrop click'
         };
@@ -61,7 +61,7 @@
             resolve : {
                 data : { currentMode : $scope.currentMode }
             },
-            backdrop: 'static',
+            backdrop: true,
             size: 'md',
             }).result.then( function() {}, function( res ) {} ); // to avoid: 'Possibly unhandled rejection: backdrop click'
         };

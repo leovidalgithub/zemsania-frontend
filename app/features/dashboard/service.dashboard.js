@@ -34,7 +34,20 @@
                         dfd.reject( err );
                     });
                 return dfd.promise;
-            }
+            },
+
+            insertNewNotification: function( data ) { // LEO WAS HERE
+                var dfd = $q.defer();
+                $http.post( buildURL( 'insertNewNotification' ), data )
+                    .then( function ( response ) {
+                        dfd.resolve( response  );
+                    })
+                    .catch( function ( err ) {
+                        dfd.reject( err );
+                    });
+                return dfd.promise;
+            },
+
 
             // getUnreadNotifications: function () {
             //     var dfd = $q.defer();

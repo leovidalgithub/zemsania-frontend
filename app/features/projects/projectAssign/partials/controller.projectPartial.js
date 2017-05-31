@@ -17,7 +17,7 @@
                 resolve : {
                     data : project
                 },
-                backdrop: 'static',
+                backdrop: true,
                 size: 'md',
             }).result.then( function() {}, function( res ) {} ); // to avoid: 'Possibly unhandled rejection: backdrop click'
         };

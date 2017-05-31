@@ -15,9 +15,8 @@
     <!-- SECTION MAIN CONTENT -->
     <section id="section" class="box-shadow p20">
 
-<!-- <button class="btn btn-success" ng-click="fn()">Go!</button> -->
         <!-- ALERTS MESSAGES -->
-        <alert-message error="alerts.error" msg="alerts.message"></alert-message>
+        <alert-message iserror="alerts.error" msg="alerts.message"></alert-message>
 
         <!-- ADVANCED SEARCH -->
         <div class="advanced-search">
@@ -40,13 +39,13 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="mainBoxes box-shadow p20"
-                         ng-include="'/features/projects/projectAssign/partials/projectPartial.tpl.html'">
+                         ng-include="'/features/projects/projectAssign/partials/partialProject.tpl.html'">
                     </div>
                 </div>
 
                 <div class="col-md-6">
                     <div class="mainBoxes box-shadow p20"
-                         ng-include="'/features/projects/projectAssign/partials/userPartial.tpl.html'">
+                         ng-include="'/features/projects/projectAssign/partials/partialUser.tpl.html'">
                     </div>
                 </div>
             </div>

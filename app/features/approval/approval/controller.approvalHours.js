@@ -4,8 +4,8 @@
         .module( 'hours.approvalHours' )
         .controller( 'approvalHoursController', approvalHoursController )
 
-    approvalHoursController.$invoke = [ '$scope', '$rootScope', 'approvalHoursFactory', '$timeout', 'imputeHoursFactory', '$filter' ];
-    function approvalHoursController( $scope, $rootScope, approvalHoursFactory, $timeout, imputeHoursFactory, $filter ) {
+    approvalHoursController.$invoke = [ '$scope', '$rootScope', 'UserFactory', 'approvalHoursFactory', 'DashboardFactory', '$timeout', 'imputeHoursFactory', '$filter' ];
+    function approvalHoursController( $scope, $rootScope, UserFactory, approvalHoursFactory, DashboardFactory, $timeout, imputeHoursFactory, $filter ) {
 
         const IMPUTETYPES = imputeHoursFactory.getImputeTypes();
 
@@ -43,7 +43,6 @@
                     initialSlick();
                 })
                 .catch( function ( err ) {
-                    $scope.alerts.showme  = true;
                     $scope.alerts.error = true; // error code alert
                     $scope.alerts.message = $filter( 'i18next' )( 'approvalHours.errorLoading' ); // error message alert
                 });
@@ -104,7 +103,7 @@
         // 3 TABLE LEVEL    - ACTION OVER A TABLE INSIDE A CURRENT PROJECT
         // 4 DAY LEVEL      - ACTION OVER A PARTICULAR DAY OF A TABLE INSIDE A CURRENT PROJECT
         $scope.setDays = function( approved, _employeeId, _projectId, _imputeType, _imputeSubType, _dayTimestamp, _dayApproved ) {
-            var projectsObj = {}; // object to send data to backend to set timesheets 
+            var projectsObj = {}; // object to send data to backend to set timesheets
             // when click directly on a particular day
             if( _dayTimestamp && _dayApproved ) {
                 approved = _dayApproved == 'NA' ? true : !_dayApproved;
@@ -152,7 +151,33 @@
             projectsObj[projectId] = employee.timesheetDataModel[ projectId ];
             }
 
-            // it finds 'day' inside 'project.info.tables.tableName.days' and sets 'approved'
+            var wrapProjectsObj = [ projectsObj ];
+            var myPromises = [];
+            var issueDate  = []; // notification issue
+            var objDate    = { month : $scope.mainOBJ.currentMonth, year : $scope.mainOBJ.currentYear };
+            issueDate.push( objDate );
+            var notification_data = {
+                                    senderId   : UserFactory.getUserID(),
+                                    receiverId : _employeeId,
+                                    type       : 'hours_reviewed',
+                                    text       : $filter( 'i18next' )( 'calendar.imputeHours.message.hours_reviewed' ),
+                                    issueDate  : issueDate
+                };
+
+            myPromises.push( imputeHoursFactory.setAllTimesheets( wrapProjectsObj, _employeeId ) );
+            myPromises.push( DashboardFactory.insertNewNotification( notification_data ) );
+
+            Promise.all( myPromises )
+                .then( function( data ) {
+                    $scope.alerts.error   = false; // ok code alert
+                    $scope.alerts.message = $filter( 'i18next' )( 'approvalHours.okSaving' ); // ok message alert
+                })
+                .catch( function( err ) {
+                    $scope.alerts.error   = true; // error code alert
+                    $scope.alerts.message = $filter( 'i18next' )( 'approvalHours.errorSaving' ); // error message alert
+                });
+
+            // it finds 'day' inside 'project.info.tables.tableName.days' and sets 'approved' or 'rejected'
             function setDayTable( infoObj, tableName, day, approved ) {
                 var currentDay = new Date( parseInt( day, 10) ).getDate();
                 var dayObj = infoObj.tables[ tableName ].days.find( function( day ) {
@@ -161,18 +186,6 @@
                 dayObj.approved = approved;
             }
 
-            var wrapProjectsObj = [ projectsObj ];
-            imputeHoursFactory.setAllTimesheets( wrapProjectsObj, _employeeId )
-                .then( function( data ) {
-                    $scope.alerts.showme  = true;
-                    $scope.alerts.error   = false; // ok code alert
-                    $scope.alerts.message = $filter( 'i18next' )( 'approvalHours.okSaving' ); // ok message alert
-                })
-                .catch( function( err ) {
-                    $scope.alerts.showme  = true;
-                    $scope.alerts.error   = true; // error code alert
-                    $scope.alerts.message = $filter( 'i18next' )( 'approvalHours.errorSaving' ); // error message alert
-                });
         };
 
         // FUNCTION FOR SHOW ALL EMPLOYESS OR JUST EMPLOYEES WITH PENDING APPROVALS

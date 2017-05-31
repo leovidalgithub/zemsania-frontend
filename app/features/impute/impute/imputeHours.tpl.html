@@ -28,8 +28,8 @@
     <section id="section" class="box-shadow p20">
 <!-- <button class="btn btn-lg" style="background-color: #05AE88; color: white;font-size: 17px;" ng-click="fn()">Go!!</button> -->
 
-        <!-- ALERTS MESSAGES2 -->
-        <alert-message showme="alerts.showme" iserror="alerts.error" msg="alerts.message"></alert-message>
+        <!-- ALERTS MESSAGES -->
+        <alert-message iserror="alerts.error" msg="alerts.message"></alert-message>
 
         <!-- IF NOT USERPROJECTS OR NOT CALENDAR OR ANY LOAD ERROR -->
         <!-- <div ng-hide="!userProjects.length"> -->
@@ -74,7 +74,7 @@
                         </button>
                     </div>
                 </div>
-</form>
+            </form>
 
             </div>
 
@@ -170,7 +170,7 @@
                                 <th style="width: 12%;">{{'calendar.imputeHours.TJV' | i18next}}</th>
                                 <th style="width: 12%;">{{'calendar.imputeHours.TJG' | i18next}}</th>
                             </tr>
-                            <tr class="thisProject" ng-class="{'odd':$odd}" ng-repeat="(key, project) in showStatsObj.projectsInfo"
+                            <tr class="thisProject" ng-class="{'odd':$odd}" ng-repeat="(key, project) in showStatsObj.projectsInfo.projects"
                                 ng-click="goToThisProject(project.projectId)">
                                 <td>{{project.projectName}}</td>
                                 <td>{{project.THI}}</td>

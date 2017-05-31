@@ -291,10 +291,11 @@
             "notdraftspending": "No hay imputaciones pendientes por enviar",
                 "message": {
                     "holiday_req": "Solicitud para aprobación de vacaciones",
-                    "hours_req": "Solicitud para aprobación de horas/guardias imputadas",
-                    "hours_validated": "Sus horas/guardias han sido aprobadas",
-                    "hours_rejected": "Sus horas/guardias han sido rechazadas",
-                    "hours_pending_req": "Recuerde que tiene horas/guardias por imputar"
+                    "hours_req": "Solicitud para aprobación de horas imputadas",
+                    "hours_reviewed": "Sus horas imputadas han sido revisadas",
+                    "hours_validated": "Sus horas imputadas han sido aprobadas",
+                    "hours_rejected": "Sus horas imputadas han sido rechazadas",
+                    "hours_pending_req": "Recuerde que tiene horas por imputar"
                 }
         },
         "imputeHoursValidator": {
@@ -382,6 +383,7 @@
             "demarcateThisProject": "Desvincular proyecto",
             "demarcateThisUser": "Desvincular usuario",
             "demarcateProject": "¿Desvincular proyecto?",
+            "okDemarcate": "Desvinculación correcta",
             "errorDemarcate": "Ocurrió un error durante la desvinculación",
             "errorMarcate": "Ocurrió un error durante la vinculación",
             "errorData": "Ocurrió un error cargando los datos",
@@ -424,10 +426,11 @@
         "markAsRead": "Marcar como leído",
         "unreadNotifications": "notificaciones no leídas",
         "types": {
+            "hours_req": "Solicitud aprobación horas imputadas",
+            "hours_reviewed": "Horas imputadas revisadas",
             "hours_validated": "Imputaciones aprobadas",
             "hours_rejected": "Imputaciones rechazadas",
             "hours_sent": "Imputaciones enviadas",
-            "hours_req": "Solicitud aprobación imputaciones",
             "holiday_req": "Solicitud aprobación vacaciones",
             "hours_pending_req": "Recordatorio para imputar"
         },

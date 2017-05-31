@@ -17,7 +17,7 @@
                 resolve : {
                     data : user
                 },
-                backdrop: 'static',
+                backdrop: true,
                 size: 'md',
             }).result.then( function() {}, function( res ) {} ); // to avoid this error: 'Possibly unhandled rejection: backdrop click'
         };

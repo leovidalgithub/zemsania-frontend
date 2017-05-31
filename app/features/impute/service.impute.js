@@ -57,25 +57,6 @@
                 return dfd.promise;
             },
 
-            insertNewNotification: function( issueDate ) { // LEO WORKING HERE
-                var data = {
-                                senderId   : UserFactory.getUserID(),
-                                receiverId : UserFactory.getSuperior(),
-                                type       : 'hours_req',
-                                text       : $filter( 'i18next' )( 'calendar.imputeHours.message.hours_req' ),
-                                issueDate  : issueDate
-                };
-                var dfd = $q.defer();
-                $http.post( buildURL( 'insertNewNotification' ), data )
-                    .then( function ( response ) {
-                        dfd.resolve( response  );
-                    })
-                    .catch( function ( err ) {
-                        dfd.reject( err );
-                    });
-                return dfd.promise;
-            },
-
             getShowDaysObj : function ( month, year, currentWeekAtFirst ) { // LEO WAS HERE
                 var months          = [ 'january' ,'february' ,'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december' ];
                 var currentFirstDay = new Date( year, month, 1 ),

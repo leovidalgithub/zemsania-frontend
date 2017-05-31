@@ -15,12 +15,18 @@
 
     <!-- SECTION MAIN CONTENT -->
     <section id="section" class="box-shadow p20">
+        <!-- ***************** NOTIFICATIONS ICONS SAMPLES ***************************************** -->
+        <div id="iconsSample">
+            <i class="fa fa-calendar hours_req fa-lg"></i>
+            <i class="fa fa-calendar-check-o hours_reviewed fa-lg"></i>
+            <i class="fa fa-calendar-plus-o hours_validated fa-lg"></i>
+            <i class="fa fa-calendar-times-o hours_pending_req fa-lg"></i>
+            <i class="fa fa-calendar-minus-o holiday_req fa-lg"></i>
+        </div>
+        <!-- ***************** NOTIFICATIONS ICONS SAMPLES ***************************************** -->
 
-<button class="btn btn-danger" ng-click="fn1()">Go!</button>
-<button class="btn btn-success" ng-click="fn2()">Go!</button>
-
-        <!-- ALERTS MESSAGES2 -->
-        <alert-message showme="alerts.showme" iserror="alerts.error" msg="alerts.message"></alert-message>
+        <!-- ALERTS MESSAGES -->
+        <alert-message iserror="alerts.error" msg="alerts.message"></alert-message>
 
         <!-- OPTIONS -->
         <div id="options" class="simple-input">
@@ -44,16 +50,17 @@
                             <td at-implicit at-sortable at-initial-sorting="asc" at-attribute="senderId.fullName" at-title="{{'notifications.from2' | i18next}}"></td>
                             <td at-implicit at-sortable at-attribute="null" at-title="{{'notifications.type' | i18next}}">
                                 <div class="notiTypes" ng-switch on="item.type">
-                                    <i ng-switch-when="hours_validated" class="fa fa-calendar-plus-o hours_validated"
-                                        title="{{'notifications.types.hours_validated' | i18next}}"></i>
-                                    <i ng-switch-when="hours_pending_req" class="fa fa-calendar-check-o hours_pending_req"
-                                        title="{{'notifications.types.hours_pending_req' | i18next}}"></i>
-                                    <i ng-switch-when="hours_req" class="fa fa-calendar-times-o hours_req" 
+                                    <i ng-switch-when="hours_reviewed" class="fa fa-calendar-check-o hours_reviewed"
+                                        title="{{'notifications.types.hours_reviewed' | i18next}}"></i>
+                                    <i ng-switch-when="hours_req" class="fa fa-calendar hours_req" 
                                         title="{{'notifications.types.hours_req' | i18next}}"></i>
+<!--                                     <i ng-switch-when="hours_pending_req" class="fa fa-calendar-check-o hours_pending_req"
+                                        title="{{'notifications.types.hours_pending_req' | i18next}}"></i>
                                     <i ng-switch-when="holiday_req" class="fa fa-calendar holiday_req" 
                                         title="{{'notifications.types.holiday_req' | i18next}}"></i>
                                     <i ng-switch-when="hours_rejected" class="fa fa-calendar-minus-o hours_rejected" 
                                         title="{{'notifications.types.hours_rejected' | i18next}}"></i>
+ -->
                                 </div>
                             </td>
                             <td at-implicit at-sortable at-attribute="null" at-title="{{'notifications.status' | i18next}}">
@@ -87,16 +94,10 @@
                             <ul>
                                 <li>
                                     <div class="notiTypes" ng-switch on="notification.type">
-                                        <i ng-switch-when="hours_validated" class="fa fa-calendar-plus-o hours_validated"
-                                            title="{{'notifications.types.hours_validated' | i18next}}"></i>
-                                        <i ng-switch-when="hours_pending_req" class="fa fa-calendar-check-o hours_pending_req"
-                                            title="{{'notifications.types.hours_pending_req' | i18next}}"></i>
-                                        <i ng-switch-when="hours_req" class="fa fa-calendar-times-o hours_req" 
+                                        <i ng-switch-when="hours_reviewed" class="fa fa-calendar-check-o hours_reviewed"
+                                            title="{{'notifications.types.hours_reviewed' | i18next}}"></i>
+                                        <i ng-switch-when="hours_req" class="fa fa-calendar hours_req" 
                                             title="{{'notifications.types.hours_req' | i18next}}"></i>
-                                        <i ng-switch-when="holiday_req" class="fa fa-calendar holiday_req" 
-                                            title="{{'notifications.types.holiday_req' | i18next}}"></i>
-                                        <i ng-switch-when="hours_rejected" class="fa fa-calendar-minus-o hours_rejected" 
-                                            title="{{'notifications.types.hours_rejected' | i18next}}"></i>
                                     </div>
                                 </li>
                                 <li>{{'notifications.from' | i18next}} <strong>{{notification.senderId.fullName}}</strong></li>
@@ -135,3 +136,4 @@
     </footer>
 
 </div>
+

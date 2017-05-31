@@ -46,14 +46,17 @@
 			.notiTypes i {
 				font-size: 30px;
 				margin-bottom: 5px;
+				&.hours_req {
+					color: $hours_req_color;
+				}
+				&.hours_reviewed {
+					color: $hours_reviewed_color;
+				}
 				&.hours_validated {
 					color: $hours_validated_color;
 				}
 				&.hours_pending_req {
 					color: $hours_pending_req_color;
-				}
-				&.hours_req {
-					color: $hours_req_color;
 				}
 				&.holiday_req {
 					color: $holiday_req_color;
@@ -98,3 +101,36 @@
 		    }
 		}
 	}
+
+
+// ***************** TEMPORAL ICONS TESTING *****************
+	#notifications {
+		#section {
+			#iconsSample {
+				display: inline-block;
+				position: fixed;
+				z-index: 20;
+				i {
+					&.hours_req {
+						color: $hours_req_color;
+					}
+					&.hours_reviewed {
+						color: $hours_reviewed_color;
+					}
+					&.hours_validated {
+						color: $hours_validated_color;
+					}
+					&.hours_pending_req {
+						color: $hours_pending_req_color;
+					}
+					&.holiday_req {
+						color: $holiday_req_color;
+					}
+					&.hours_rejected {
+						color: $hours_rejected_color;
+					}
+				}
+			}
+		}
+	}
+// ***************** ********************** *****************

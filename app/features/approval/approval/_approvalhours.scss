@@ -12,7 +12,6 @@
 		}
 
 		#section {
-
 			#movingDate {
 				text-align: center;
 					div button {
@@ -91,6 +90,7 @@
 					margin-bottom: 20px;
 					padding: 5px;
 					border-radius: 5px;
+					background-color: #F4F4F4;
 				}
 
 				.tableContainer {
@@ -135,14 +135,19 @@
 						.btnDesactivated {
 							cursor: not-allowed;
 						}
+						.highlightGlobal {
+							font-weight: bold;
+							background-color: #F4F4F4;
+						}
                 	}
-
 						// DAYS TABLE SECTION (HORAS, GUARDIAS, ETC.)
 						#tableContent {
         					display: flex;
 							flex-flow: row nowrap;
 							justify-content: center;
 							align-items: center;
+							padding-left: 10px;
+							padding-right: 10px;
 							.lateralButtons {
 						        width: 5%;
 						        * {

@@ -87,8 +87,11 @@
                 var summary = getThisSummary( projectsInfo );
                 summary.TJTGlobal = Number( summary.TJTGlobal.toFixed( 1 ) );
                 summary.TJAGlobal = Number( summary.TJAGlobal.toFixed( 1 ) );
-                projectsInfo.summary = summary;
-                return projectsInfo;
+
+                return {
+                    summary  : summary,
+                    projects : projectsInfo
+                };
             }
         }
 

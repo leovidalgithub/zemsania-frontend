@@ -42,12 +42,14 @@
                 employee.opened = false;
                 // getting projects summary info
                 projectsInfo = projectInfoFactory.getProjectsInfo( ts, calendar );
+
                 employee.projectInfoSummary = projectsInfo.summary;
                 for( var projectId in employee.timesheetDataModel ) {
-                    employee.timesheetDataModel[ projectId ].info.summary = projectsInfo[ projectId ];
+                    employee.timesheetDataModel[ projectId ].info.summary = projectsInfo.projects[ projectId ];
                     employee.timesheetDataModel[ projectId ].info.opened  = false;
                 }
             });
+
             prepareTableDaysData( dfd );
         }
 

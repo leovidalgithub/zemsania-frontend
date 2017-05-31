@@ -824,12 +824,14 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
                 employee.opened = false;
                 // getting projects summary info
                 projectsInfo = projectInfoFactory.getProjectsInfo( ts, calendar );
+
                 employee.projectInfoSummary = projectsInfo.summary;
                 for( var projectId in employee.timesheetDataModel ) {
-                    employee.timesheetDataModel[ projectId ].info.summary = projectsInfo[ projectId ];
+                    employee.timesheetDataModel[ projectId ].info.summary = projectsInfo.projects[ projectId ];
                     employee.timesheetDataModel[ projectId ].info.opened  = false;
                 }
             });
+
             prepareTableDaysData( dfd );
         }
 
@@ -1482,7 +1484,20 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
                         dfd.reject( err );
                     });
                 return dfd.promise;
-            }
+            },
+
+            insertNewNotification: function( data ) { // LEO WAS HERE
+                var dfd = $q.defer();
+                $http.post( buildURL( 'insertNewNotification' ), data )
+                    .then( function ( response ) {
+                        dfd.resolve( response  );
+                    })
+                    .catch( function ( err ) {
+                        dfd.reject( err );
+                    });
+                return dfd.promise;
+            },
+
 
             // getUnreadNotifications: function () {
             //     var dfd = $q.defer();
@@ -1745,25 +1760,6 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
                 return dfd.promise;
             },
 
-            insertNewNotification: function( issueDate ) { // LEO WORKING HERE
-                var data = {
-                                senderId   : UserFactory.getUserID(),
-                                receiverId : UserFactory.getSuperior(),
-                                type       : 'hours_req',
-                                text       : $filter( 'i18next' )( 'calendar.imputeHours.message.hours_req' ),
-                                issueDate  : issueDate
-                };
-                var dfd = $q.defer();
-                $http.post( buildURL( 'insertNewNotification' ), data )
-                    .then( function ( response ) {
-                        dfd.resolve( response  );
-                    })
-                    .catch( function ( err ) {
-                        dfd.reject( err );
-                    });
-                return dfd.promise;
-            },
-
             getShowDaysObj : function ( month, year, currentWeekAtFirst ) { // LEO WAS HERE
                 var months          = [ 'january' ,'february' ,'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december' ];
                 var currentFirstDay = new Date( year, month, 1 ),
@@ -1958,8 +1954,11 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
                 var summary = getThisSummary( projectsInfo );
                 summary.TJTGlobal = Number( summary.TJTGlobal.toFixed( 1 ) );
                 summary.TJAGlobal = Number( summary.TJAGlobal.toFixed( 1 ) );
-                projectsInfo.summary = summary;
-                return projectsInfo;
+
+                return {
+                    summary  : summary,
+                    projects : projectsInfo
+                };
             }
         }
 
@@ -2184,8 +2183,8 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
         .module( 'hours.approvalHours' )
         .controller( 'approvalHoursController', approvalHoursController )
 
-    approvalHoursController.$invoke = [ '$scope', '$rootScope', 'approvalHoursFactory', '$timeout', 'imputeHoursFactory', '$filter' ];
-    function approvalHoursController( $scope, $rootScope, approvalHoursFactory, $timeout, imputeHoursFactory, $filter ) {
+    approvalHoursController.$invoke = [ '$scope', '$rootScope', 'UserFactory', 'approvalHoursFactory', 'DashboardFactory', '$timeout', 'imputeHoursFactory', '$filter' ];
+    function approvalHoursController( $scope, $rootScope, UserFactory, approvalHoursFactory, DashboardFactory, $timeout, imputeHoursFactory, $filter ) {
 
         const IMPUTETYPES = imputeHoursFactory.getImputeTypes();
 
@@ -2223,7 +2222,6 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
                     initialSlick();
                 })
                 .catch( function ( err ) {
-                    $scope.alerts.showme  = true;
                     $scope.alerts.error = true; // error code alert
                     $scope.alerts.message = $filter( 'i18next' )( 'approvalHours.errorLoading' ); // error message alert
                 });
@@ -2284,7 +2282,7 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
         // 3 TABLE LEVEL    - ACTION OVER A TABLE INSIDE A CURRENT PROJECT
         // 4 DAY LEVEL      - ACTION OVER A PARTICULAR DAY OF A TABLE INSIDE A CURRENT PROJECT
         $scope.setDays = function( approved, _employeeId, _projectId, _imputeType, _imputeSubType, _dayTimestamp, _dayApproved ) {
-            var projectsObj = {}; // object to send data to backend to set timesheets 
+            var projectsObj = {}; // object to send data to backend to set timesheets
             // when click directly on a particular day
             if( _dayTimestamp && _dayApproved ) {
                 approved = _dayApproved == 'NA' ? true : !_dayApproved;
@@ -2332,7 +2330,33 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
             projectsObj[projectId] = employee.timesheetDataModel[ projectId ];
             }
 
-            // it finds 'day' inside 'project.info.tables.tableName.days' and sets 'approved'
+            var wrapProjectsObj = [ projectsObj ];
+            var myPromises = [];
+            var issueDate  = []; // notification issue
+            var objDate    = { month : $scope.mainOBJ.currentMonth, year : $scope.mainOBJ.currentYear };
+            issueDate.push( objDate );
+            var notification_data = {
+                                    senderId   : UserFactory.getUserID(),
+                                    receiverId : _employeeId,
+                                    type       : 'hours_reviewed',
+                                    text       : $filter( 'i18next' )( 'calendar.imputeHours.message.hours_reviewed' ),
+                                    issueDate  : issueDate
+                };
+
+            myPromises.push( imputeHoursFactory.setAllTimesheets( wrapProjectsObj, _employeeId ) );
+            myPromises.push( DashboardFactory.insertNewNotification( notification_data ) );
+
+            Promise.all( myPromises )
+                .then( function( data ) {
+                    $scope.alerts.error   = false; // ok code alert
+                    $scope.alerts.message = $filter( 'i18next' )( 'approvalHours.okSaving' ); // ok message alert
+                })
+                .catch( function( err ) {
+                    $scope.alerts.error   = true; // error code alert
+                    $scope.alerts.message = $filter( 'i18next' )( 'approvalHours.errorSaving' ); // error message alert
+                });
+
+            // it finds 'day' inside 'project.info.tables.tableName.days' and sets 'approved' or 'rejected'
             function setDayTable( infoObj, tableName, day, approved ) {
                 var currentDay = new Date( parseInt( day, 10) ).getDate();
                 var dayObj = infoObj.tables[ tableName ].days.find( function( day ) {
@@ -2341,18 +2365,6 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
                 dayObj.approved = approved;
             }
 
-            var wrapProjectsObj = [ projectsObj ];
-            imputeHoursFactory.setAllTimesheets( wrapProjectsObj, _employeeId )
-                .then( function( data ) {
-                    $scope.alerts.showme  = true;
-                    $scope.alerts.error   = false; // ok code alert
-                    $scope.alerts.message = $filter( 'i18next' )( 'approvalHours.okSaving' ); // ok message alert
-                })
-                .catch( function( err ) {
-                    $scope.alerts.showme  = true;
-                    $scope.alerts.error   = true; // error code alert
-                    $scope.alerts.message = $filter( 'i18next' )( 'approvalHours.errorSaving' ); // error message alert
-                });
         };
 
         // FUNCTION FOR SHOW ALL EMPLOYESS OR JUST EMPLOYEES WITH PENDING APPROVALS
@@ -2684,26 +2696,23 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
     alertMessageController.$invoke = [ '$scope', '$timeout' ];
     function alertMessageController( $scope, $timeout ) {
 
-                    $scope.alertMessage = 'Ocurrió un error cargando los datos. Inténtelo de nuevo más tarde.';
-            $scope.$watch( 'showme', function( value ) {
-                if ( value !== null ) {
-                    $timeout( function() { $scope.showme = null });
+            $scope.$watch( 'iserror', function( value ) {
+                if ( value != null ) {
                     $scope.alertMessage = $scope.msg;
-
-                    moveThis( 70, .95 );
+                    moveThis( 60, .95 );
                     $timeout( function() {
-                        moveThis( -200, .05 );
-                    }, $scope.iserror ? 4000 : 2000 ); // 6000 : 2500
+                        moveThis( -200, 0 );
+                    }, $scope.iserror ? 6000 : 2500 );
                 }
             });
             function moveThis( YP, OP ) {
                 $( "#alertMessage .thisAlertBox" ).animate({
                     opacity: OP,
                     bottom : YP + 'px'
-                }, 700, function() {
+                }, 650, function() {
+                    if( YP < 0) $timeout( function() { $scope.iserror = null } );
                 });
             }
-
         }
 
     function alertMessage() {
@@ -2711,7 +2720,6 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
             restrict: 'E',
             scope: {
                 msg     : '=',
-                showme  : '=',
                 iserror : '='
             },
             transclude: false,
@@ -2719,7 +2727,6 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
             controller : alertMessageController,
             link : function( scope, elem, attrs ) {
                 scope.msg     = '';
-                scope.showme  = null;
                 scope.iserror = null;
             }
         };
@@ -2767,7 +2774,7 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
     NotificationController.$invoke = [ '$scope', '$rootScope', 'notifications', '$window', '$state', 'DashboardFactory', '$filter' ];
     function NotificationController( $scope, $rootScope, notifications, $window, $state, DashboardFactory, $filter ) {
 
-        (function init() {
+        ( function init() {
             $scope.tableConfig = {
                 itemsPerPage: getItemsPerPage( 125 ),
                 maxPages: "3",
@@ -2794,7 +2801,7 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
             if( $window.innerWidth < 1210 ) {
                 $scope.viewSet = false;
             } else {
-                $scope.viewSet = true;            
+                $scope.viewSet = true;
             }
         }
 
@@ -2811,17 +2818,21 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
 
         // TO GO WHERE NOTIFICATION IS ABOUT
         $scope.goTo = function( item ) {
+            var type           = item.type;
             var senderId       = item.senderId._id;
+            var issueDate      = item.issueDate;
             var notificationId = item._id;
-            var issueDate = item.issueDate;
-            var type = item.type;
             $scope.markRead( notificationId ); // before go, mark this notification as read
-            switch (type) {
+            $rootScope.notification = {}; // Initializing
+            $rootScope.notification.issueDate = issueDate;
+            console.log(type);
+            switch ( type ) {
                 case 'hours_req':
-                    $rootScope.notification = {};
                     $rootScope.notification.senderId  = senderId;
-                    $rootScope.notification.issueDate = issueDate;
                     $state.go( 'approvalHours' );
+                    break;
+                case 'hours_reviewed':
+                    $state.go( 'imputeHours' );
                     break;
                 default:
                     break;
@@ -2836,7 +2847,6 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
                     notification.status = 'read';
                 })
                 .catch( function ( err ) {
-                    $scope.alerts.showme  = true;
                     $scope.alerts.error   = true; // error code alert
                     $scope.alerts.message = $filter( 'i18next' )( 'notifications.errorMarkRead' ); // error message alert
                 })
@@ -2871,21 +2881,10 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
         });
 
         console.clear();
-// ********************************************************* *************************************************************
-        $scope.fn1 = function() {
-            $scope.alerts.showme  = true;
-            $scope.alerts.error   = true;
-            $scope.alerts.message = 'Ocurrió un error cargando los datos. Inténtelo de nuevo más tarde.';
-        };
-        $scope.fn2 = function() {
-            $scope.alerts.showme  = true;
-            $scope.alerts.error   = false;
-            $scope.alerts.message = 'Los datos fueron enviados correctamente!';
-        };
-// ********************************************************* *************************************************************
 
-    }
+     }
 }());
+
 ( function () {
     'use strict';
     angular
@@ -3233,12 +3232,67 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
     'use strict';
     angular
         .module( 'hours.impute' )
+        .controller( 'imputeTypeSummaryController', imputeTypeSummaryController );
+
+    imputeTypeSummaryController.$invoke = [ '$scope', '$rootScope', '$uibModalInstance', 'data' ];
+    function imputeTypeSummaryController( $scope, $rootScope, $uibModalInstance, data ) {
+
+        var day                = data.day;
+        var timesheets         = data.timesheets;
+        var imputeTypes        = data.imputeTypes;
+        var imputeTypesSummary = data.imputeTypesSummary;
+        var imputeTypesInfo    = {};
+
+        imputeTypes.forEach( function( el, index ) {
+            if( timesheets[ index ] ) {
+                if( !imputeTypesInfo[ el ] ) imputeTypesInfo[ el ] = [];
+                for( var imputeSubType in timesheets[ index ] ) {
+                    if( timesheets[ index ][ imputeSubType ].value ) {
+                        imputeTypesInfo[ el ].push( { subType : imputeTypes[imputeTypes[ index ]][ imputeSubType ],
+                                                      value : timesheets[ index ][ imputeSubType ].value } );
+                    }
+                }
+            }
+        });
+
+        $scope.dayInfo = {
+                day             : day.day,
+                dayType         : day.dayType,
+                imputeTypesInfo : imputeTypesInfo,
+                totalHours      : imputeTypesSummary.totalHours
+            };
+
+        $scope.cancel = function() {
+            $uibModalInstance.dismiss( 'cancel' );
+        };
+
+        $scope.goTo = function( imputeType, imputeSubType ) {
+            $uibModalInstance.dismiss( 'cancel' );
+            $scope.$emit('goToThisImputeType', { imputeType    : imputeType,
+                                                 imputeSubType : imputeSubType,
+                                                 dayTimestamp  : day.timeStamp } );
+        };
+
+}
+
+})();
+
+;( function () {
+    'use strict';
+    angular
+        .module( 'hours.impute' )
         .controller( 'imputeHoursController', imputeHoursController );
 
-    imputeHoursController.$invoke = [ '$scope', 'UserFactory', 'imputeHoursFactory', 'userProjects', 'CalendarFactory', '$q', '$uibModal', '$rootScope', '$state', '$timeout', '$filter' ];
-    function imputeHoursController( $scope, UserFactory, imputeHoursFactory, userProjects, CalendarFactory, $q, $uibModal, $rootScope, $state, $timeout, $filter ) {
+    imputeHoursController.$invoke = [ '$scope', 'UserFactory', 'imputeHoursFactory', 'DashboardFactory', 'userProjects', 'CalendarFactory', '$q', '$uibModal', '$rootScope', '$state', '$timeout', '$filter' ];
+    function imputeHoursController( $scope, UserFactory, imputeHoursFactory, DashboardFactory, userProjects, CalendarFactory, $q, $uibModal, $rootScope, $state, $timeout, $filter ) {
 
-        var currentDate      = new Date();
+        var currentDate;
+        if( $rootScope.notification ) { // if it comes from notification it takes the date from that notification
+            currentDate = new Date( $rootScope.notification.issueDate.year, $rootScope.notification.issueDate.month, 1 );
+            $rootScope.notification = null;
+        } else { // otherwise it will show the data from current month and year
+            currentDate = new Date();
+        }
         var currentMonth     = currentDate.getMonth();
         var currentYear      = currentDate.getFullYear();
         var calendarID       = UserFactory.getcalendarID(); // get user calendar
@@ -3264,7 +3318,6 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
             if( !userProjects.length ) { // no user Projects available
                 // error: NO userProjects available message alert
                 $timeout( function() {
-                    $scope.alerts.showme  = true;
                     $scope.alerts.error = true; // error code alert
                     $scope.alerts.permanentError = true;
                     $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorNoProjects' ); // error message alert
@@ -3293,7 +3346,6 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
                     var timesheetDataModel = data[1];
 
                     if ( calendar.success == false ) { // error: calendar not found
-                        $scope.alerts.showme  = true;
                         $scope.alerts.error = true; // error code alert
                         $scope.alerts.permanentError = true;
                         $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorNoCalendar' ); // error message alert
@@ -3314,8 +3366,6 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
                     $scope.alerts.permanentError = false;
                 })
                 .catch( function( err ) {
-                    console.log(err);
-                    $scope.alerts.showme  = true;
                     $scope.alerts.error = true; // error code alert
                     $scope.alerts.permanentError = true;
                     $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorLoading' ); // error message alert
@@ -3519,6 +3569,9 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
             refreshShowDaysObj();
         };
 
+        // When toSend, it sets status to 'sent' and modified to 'true' to all items with status on 'draft' and
+        // to set 'issueDate' notification field
+        // When !toSend it's just to know if there is some item on 'draft'
         function findDrafts( toSend, issueDate ) {
             for( var date in generalDataModel ) {
                 for( var projectId in generalDataModel[date].timesheetDataModel ) {
@@ -3527,12 +3580,12 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
                             for( var subType in generalDataModel[date].timesheetDataModel[projectId][day][type] ) {
                                 if( generalDataModel[date].timesheetDataModel[projectId][day][type][subType].status == 'draft' ) {
                                     if( !toSend ) { // just to know if there is some 'draft'
-                                        return true;
+                                        return true; // at least one 'draft' found
                                     }
                                     generalDataModel[date].timesheetDataModel[projectId][day][type][subType].status = 'sent';
                                     generalDataModel[date].timesheetDataModel[projectId][day][type][subType].modified = true;
 
-                                    // before send to manager, it stores all month/year related. This is for 'issueDate' field
+                                    // it stores all month/year related. This is for 'issueDate' notification field
                                     var thisDay = new Date( parseInt( day, 10 ) );
                                     var obj = { month : thisDay.getMonth(), year : thisDay.getFullYear() };
                                     var isRepited = issueDate.some( function( date ) {
@@ -3549,38 +3602,42 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
         }
 
         $scope.save = function( send ) {
+            var myPromises = [];
+
+            var ts_data = []; // to send an array of just 'timesheetDataModel' objects
+            for( var date in generalDataModel ) {
+                ts_data.push( generalDataModel[ date ].timesheetDataModel );
+            }
+            myPromises.push( imputeHoursFactory.setAllTimesheets( ts_data ) );
+
             // if send: all 'draft' gonna be change to 'sent' and 'modified' to true ( findDrafts() )
-            var issueDate = [];
+            // and sets issueDate for notification
             if( send ) {
+                var issueDate = [];
                 findDrafts( true, issueDate );
                 refreshShowDaysObj();
+                var notification_data = {
+                                    senderId   : UserFactory.getUserID(),
+                                    receiverId : UserFactory.getSuperior(),
+                                    type       : 'hours_req',
+                                    text       : $filter( 'i18next' )( 'calendar.imputeHours.message.hours_req' ),
+                                    issueDate  : issueDate
+                };
+                myPromises.push( DashboardFactory.insertNewNotification( notification_data ) );
             }
-
-            var myPromises = [];
-            var data       = []; // to send an array of just 'timesheetDataModel' objects
-            for( var date in generalDataModel ) {
-                data.push( generalDataModel[ date ].timesheetDataModel );
-            }
-
-            myPromises.push( imputeHoursFactory.setAllTimesheets( data ) );
-            if( send ) myPromises.push( imputeHoursFactory.insertNewNotification( issueDate ) );
 
             Promise.all( myPromises )
                 .then( function( data ) {
                     $scope.changes.pendingChanges = false;
                     $rootScope.pendingChanges = false;
-                    // success saving (and send) message alert
+                    $scope.alerts.error   = false; // ok code alert
                     if( send ) {
                         $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.sendingSuccess' ); // ok message alert
                     } else {
                         $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.savingSuccess' ); // ok message alert
                     }
-                    $scope.alerts.showme  = true;
-                    $scope.alerts.error   = false; // ok code alert
                 })
                 .catch( function( err ) {
-                    // error saving message alert
-                    $scope.alerts.showme  = true;
                     $scope.alerts.error   = true; // error code alert
                     $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorSaving' ); // error message alert
                 })
@@ -3621,7 +3678,7 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
                     $rootScope.$emit( 'modalNotToSave', 'Modal has been closed to NOT save data');
                 };
             },
-            backdrop: 'static',
+            backdrop: true,
             size: 'md'
             }).result.then( function() {}, function( res ) {} );
         }
@@ -3760,24 +3817,24 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
             var currentFirstDay  = $scope.showDaysObj.currentFirstDay;
             var calendar         = generalDataModel[ currentFirstDay ].calendar;
             var ts               = generalDataModel[ currentFirstDay ].timesheetDataModel;
-            var projectsInfoTemp = {};
-            projectsInfoTemp = projectInfoFactory.getProjectsInfo( ts, calendar, $scope.userProjects );
+            var projectsInfo     = projectInfoFactory.getProjectsInfo( ts, calendar, $scope.userProjects );
 
             // when one project has not info it does not exist so, we create it and fill with zeros (for visual purposes)
             $scope.userProjects.forEach( function( project ) {
-                if( !projectsInfoTemp[ project._id ] ) {
-                    projectsInfoTemp[ project._id ] = {};
-                    projectsInfoTemp[ project._id ].projectId   = project._id;
-                    projectsInfoTemp[ project._id ].projectName = project.nameToShow;
-                    projectsInfoTemp[ project._id ].THI = 0;
-                    projectsInfoTemp[ project._id ].THT = 0;
-                    projectsInfoTemp[ project._id ].TJT = 0;
-                    projectsInfoTemp[ project._id ].TJA = 0;
-                    projectsInfoTemp[ project._id ].TJG = 0;
-                    projectsInfoTemp[ project._id ].TJV = 0;
+                if( !projectsInfo.projects[ project._id ] ) {
+                    projectsInfo.projects[ project._id ] = {};
+                    projectsInfo.projects[ project._id ].projectId   = project._id;
+                    projectsInfo.projects[ project._id ].projectName = project.nameToShow;
+                    projectsInfo.projects[ project._id ].THI = 0;
+                    projectsInfo.projects[ project._id ].THT = 0;
+                    projectsInfo.projects[ project._id ].TJT = 0;
+                    projectsInfo.projects[ project._id ].TJA = 0;
+                    projectsInfo.projects[ project._id ].TJG = 0;
+                    projectsInfo.projects[ project._id ].TJV = 0;
                 }
             });
-            return projectsInfoTemp;
+
+            return projectsInfo;
         }
 
         // RETURNS TOTAL OF WORKING HOURS OF CURRENT MONTH AND DAILYWORK
@@ -3846,60 +3903,11 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
 ;( function () {
     'use strict';
     angular
-        .module( 'hours.impute' )
-        .controller( 'imputeTypeSummaryController', imputeTypeSummaryController );
-
-    imputeTypeSummaryController.$invoke = [ '$scope', '$rootScope', '$uibModalInstance', 'data' ];
-    function imputeTypeSummaryController( $scope, $rootScope, $uibModalInstance, data ) {
-
-        var day                = data.day;
-        var timesheets         = data.timesheets;
-        var imputeTypes        = data.imputeTypes;
-        var imputeTypesSummary = data.imputeTypesSummary;
-        var imputeTypesInfo    = {};
-
-        imputeTypes.forEach( function( el, index ) {
-            if( timesheets[ index ] ) {
-                if( !imputeTypesInfo[ el ] ) imputeTypesInfo[ el ] = [];
-                for( var imputeSubType in timesheets[ index ] ) {
-                    if( timesheets[ index ][ imputeSubType ].value ) {
-                        imputeTypesInfo[ el ].push( { subType : imputeTypes[imputeTypes[ index ]][ imputeSubType ],
-                                                      value : timesheets[ index ][ imputeSubType ].value } );
-                    }
-                }
-            }
-        });
-
-        $scope.dayInfo = {
-                day             : day.day,
-                dayType         : day.dayType,
-                imputeTypesInfo : imputeTypesInfo,
-                totalHours      : imputeTypesSummary.totalHours
-            };
-
-        $scope.cancel = function() {
-            $uibModalInstance.dismiss( 'cancel' );
-        };
-
-        $scope.goTo = function( imputeType, imputeSubType ) {
-            $uibModalInstance.dismiss( 'cancel' );
-            $scope.$emit('goToThisImputeType', { imputeType    : imputeType,
-                                                 imputeSubType : imputeSubType,
-                                                 dayTimestamp  : day.timeStamp } );
-        };
-
-}
-
-})();
-
-;( function () {
-    'use strict';
-    angular
         .module( 'hours.projects' )
         .controller( 'ProjectAssignController', ProjectAssignController );
 
-    ProjectAssignController.$invoke = [ '$scope', 'ProjectsFactory', '$uibModal', '$timeout' ];
-    function ProjectAssignController( $scope, ProjectsFactory, $uibModal, $timeout ) {
+    ProjectAssignController.$invoke = [ '$scope', '$uibModal', '$timeout' ];
+    function ProjectAssignController( $scope, $uibModal, $timeout ) {
 
         $scope.spinners = {
                     projects : false,
@@ -3933,8 +3941,8 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
             // MODAL - WARNING BEFORE REMOVING PROJECT-USER RELATIONSHIP
             var modalPendingChangesInstance = $uibModal.open( {
             animation : true,
-            templateUrl : '/features/projects/projectAssign/modals/warningRemoveModal.tpl.html',
-            controller : 'ModalInfo',
+            templateUrl : '/features/projects/projectAssign/modals/modalWarningRemove.tpl.html',
+            controller : 'ModalDemarcate',
             resolve : {
                 data : {
                     user        : user,
@@ -3942,7 +3950,7 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
                     currentMode : $scope.currentMode
                 }
             },
-            backdrop: 'static',
+            backdrop: true,
             size: 'sm',
             }).result.then( function() {}, function( res ) {} ); // to avoid: 'Possibly unhandled rejection: backdrop click'
         };
@@ -3955,7 +3963,7 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
             resolve : {
                 data : { currentMode : $scope.currentMode }
             },
-            backdrop: 'static',
+            backdrop: true,
             size: 'md',
             }).result.then( function() {}, function( res ) {} ); // to avoid: 'Possibly unhandled rejection: backdrop click'
         };
@@ -3975,290 +3983,6 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
             var sectionHeight = document.getElementById( 'section' ).offsetHeight;
             $( '#projectAssign #section .mainBoxes' ).height( sectionHeight - 185 );
         }
-    }
-
-}());
-
-;( function () {
-    'use strict';
-    angular
-        .module( 'hours.projects' )
-        .controller( 'ModalInfo', ModalInfo );
-
-    ModalInfo.$invoke = [ '$scope', '$uibModalInstance', 'data', 'ProjectsFactory', '$rootScope', '$filter' ];
-    function ModalInfo( $scope, $uibModalInstance, data, ProjectsFactory, $rootScope, $filter ) {
-
-        $scope.data = data;
-
-        $scope.demarcate = function () {
-            $uibModalInstance.dismiss( 'cancel' );
-            ProjectsFactory.demarcateUserProject( data )
-                .then( function ( result ) {
-                    // once relationship was erased from ProjectUsers entity
-                    // we proceed to refresh the projects or users list view calling to ActiveThisUser or ActiveThisProject
-                    if( $scope.data.currentMode.type == 'users' ) {
-                        $rootScope.$broadcast( 'refreshactiveThisUser', { data : null } );
-                    } else {
-                        $rootScope.$broadcast( 'refreshactiveThisProject', { data : null } ); 
-                    };
-                })
-                .catch( function ( err ) {
-                    $rootScope.$broadcast( 'messageAlert', { 
-                                        error : true,
-                                        message : $filter( 'i18next' )( 'projects.projectAssign.errorDemarcate' ) } );
-                });
-        };
-
-        $scope.cancel = function () {
-            $uibModalInstance.dismiss( 'cancel' );
-        };
-
-    }
-
-}());
-
-;( function () {
-    'use strict';
-    angular
-        .module( 'hours.projects' )
-        .controller( 'ModalMarcate', ModalMarcate );
-
-    ModalMarcate.$invoke = [ '$scope', '$rootScope', '$uibModalInstance', 'data', 'ProjectsFactory', 'EmployeeManagerFactory', '$filter' ];
-    function ModalMarcate( $scope, $rootScope, $uibModalInstance, data, ProjectsFactory, EmployeeManagerFactory, $filter ) {
-
-        $scope.data = {
-                spinners    : false,
-                maxHours    : 0,
-                searchText  : '',
-                currentMode : data.currentMode
-        };
-
-        $scope.search = function( searchText ) {
-            $scope.data.spinners = true;
-            var thisPromise      = [];
-            if( $scope.data.currentMode.type == 'users' ) {
-                thisPromise.push( ProjectsFactory.advancedProjectSearch( searchText ) );
-            } else {
-                thisPromise.push( EmployeeManagerFactory.advancedUserSearch( { textToFind : searchText } ) );                
-            }
-            Promise.all( thisPromise )
-                .then( function ( data ) {
-                    if( $scope.data.currentMode.type == 'users' ) {
-                        $scope.data.items = data[0].projects;
-                    } else {
-                        $scope.data.items = data[0];
-                    }
-                })
-                .catch( function ( err ) {
-                   $rootScope.$broadcast( 'messageAlert', {
-                                        error : true,
-                                        message : $filter( 'i18next' )( 'projects.projectAssign.errorData' ) } );
-                })
-                .then( function() { // functionallity as finally
-                    $scope.data.spinners = false;
-                });
-        };
-
-        $scope.marcateThis = function( item ) {
-            var userId    = '';
-            var projectId = '';
-            if( $scope.data.currentMode.type == 'users' ) {
-                userId    = $scope.data.currentMode.obj._id;
-                projectId = item._id;
-            } else {
-                projectId = $scope.data.currentMode.obj._id;
-                userId    = item._id;
-            }
-            var data = {
-                projectId : projectId,
-                userId    : userId,
-                maxHours  : $scope.data.maxHours
-            };
-            ProjectsFactory.marcateUserProject( data )
-                .then( function ( result ) {
-                    // once the new ProjectUser document was inserted, we proceed to delete that item from list
-                    ProjectsFactory.removeItemFromArray( $scope.data.items, item._id );
-                })
-                .catch( function ( err ) {
-                    $uibModalInstance.dismiss( 'cancel' );
-                    $rootScope.$broadcast( 'messageAlert', { 
-                                        error : true,
-                                        message : $filter( 'i18next' )( 'projects.projectAssign.errorMarcate' ) } );
-                });
-        };
-
-        $scope.cancel = function () {
-            $uibModalInstance.dismiss( 'cancel' );
-            // at modal exit, we proceed to refresh the projects or users list view calling to ActiveThisUser or ActiveThisProject
-            if( $scope.data.currentMode.type == 'users' ) {
-                $scope.$emit( 'refreshactiveThisUser', { data : null } );
-            } else {
-                $scope.$emit( 'refreshactiveThisProject', { data : null } ); 
-            }
-        };
-
-    }
-
-}());
-
-;( function () {
-    'use strict';
-    angular
-        .module( 'hours.projects' )
-        .controller( 'ProjectAssignProjectController', ProjectAssignProjectController );
-
-    ProjectAssignProjectController.$invoke = [ '$scope', 'ProjectsFactory', '$uibModal', '$rootScope', '$filter', '$timeout' ];
-    function ProjectAssignProjectController( $scope, ProjectsFactory, $uibModal, $rootScope, $filter, $timeout ) {
-
-        $scope.openProjectInfo = function ( project, event ) {
-            event.preventDefault();
-            event.stopPropagation(); // to avoid continue to select item
-            var modalInstance = $uibModal.open( {
-                animation: true,
-                templateUrl: '/features/projects/projectAssign/modals/modalProjectInfo.tpl.html',
-                controller : 'ModalInfo',
-                resolve : {
-                    data : project
-                },
-                backdrop: 'static',
-                size: 'md',
-            }).result.then( function() {}, function( res ) {} ); // to avoid: 'Possibly unhandled rejection: backdrop click'
-        };
-
-        // receiving event from controller.projectAssign when search is done
-        $scope.$on( 'toSearchEvent', function( event, data ) {
-            $scope.spinners.projects = true;
-            ProjectsFactory.advancedProjectSearch( data.searchText )
-                .then( function ( data ) {
-                    ProjectsFactory.toAddActiveField( data.projects ); // create and set all users items with 'active = false' field
-                    $scope.projects = data.projects;
-                    ProjectsFactory.setItemsOcurrences( $scope.projects ); // get and set number of ocurrences on ProjectUser entity
-                })
-                .catch( function ( err ) {
-                    $rootScope.$broadcast( 'messageAlert', {
-                                        error : true,
-                                        message : $filter( 'i18next' )( 'projects.projectAssign.errorData' ) } );
-                })
-                .finally( function() {
-                    $scope.spinners.projects = false;
-                });
-        });
-
-        $scope.activeThisProject = function( project ) {
-            $scope.spinners.users = true;
-            $scope.$parent.$parent.currentMode.obj  = project;
-            $scope.$parent.$parent.currentMode.type = 'projects';
-            // set active to true for selected item
-            ProjectsFactory.setActiveItem( $scope.projects, project._id );
-            // get all users that belong to selected project
-            ProjectsFactory.getUsersByProjectId( project._id )
-                .then( function ( users ) {
-                    ProjectsFactory.toAddActiveField( users.users ); // create and set all users items with 'active = false' field
-                    $scope.$emit( 'sendFilteredUsers', { users : users } );
-                })
-                .catch( function ( err ) {
-                    $rootScope.$broadcast( 'messageAlert', {
-                                        error : true,
-                                        message : $filter( 'i18next' )( 'projects.projectAssign.errorData' ) } );
-                })
-                .finally( function() {
-                    $scope.spinners.users = false;
-                });
-        };
-
-        // receiving event from controller.user when an user is clicked
-        $scope.$on( 'sendFilteredProjects', function( event, filteredProjects ) {
-            $scope.projects = filteredProjects.projects;
-            ProjectsFactory.setItemsOcurrences( $scope.projects ); // get and set number of ocurrences on ProjectUser entity
-        });
-
-        // when a relationship is added or erased, we need to refresh the User view list. It comes from controller.marcate
-        $rootScope.$on( 'refreshactiveThisProject', function( event, data ) {
-            $scope.activeThisProject( $scope.$parent.$parent.currentMode.obj ); // to refresh users items list view
-            ProjectsFactory.setItemsOcurrences( $scope.projects ); // get and set number of ocurrences on ProjectUser entity
-        });
-
-    }
-
-}());
-
-;( function () {
-    'use strict';
-    angular
-        .module( 'hours.projects' )
-        .controller( 'ProjectAssignUsersController', ProjectAssignUsersController );
-
-    ProjectAssignUsersController.$invoke = [ '$scope', '$rootScope', 'EmployeeManagerFactory', 'ProjectsFactory', '$uibModal', '$filter' ];
-    function ProjectAssignUsersController( $scope, $rootScope, EmployeeManagerFactory, ProjectsFactory, $uibModal, $filter )  {
-
-        $scope.openUserInfo = function ( user , event ) {
-            event.preventDefault();
-            event.stopPropagation(); // to avoid continue to select item
-            var modalInstance = $uibModal.open( {
-                animation: true,
-                templateUrl: '/features/projects/projectAssign/modals/modalUserInfo.tpl.html',
-                controller : 'ModalInfo',
-                resolve : {
-                    data : user
-                },
-                backdrop: 'static',
-                size: 'md',
-            }).result.then( function() {}, function( res ) {} ); // to avoid this error: 'Possibly unhandled rejection: backdrop click'
-        };
-
-        // receiving event from controller.projectAssign when search is done
-        $scope.$on( 'toSearchEvent', function( event, data ) {
-            $scope.spinners.users = true;
-            EmployeeManagerFactory.advancedUserSearch( { textToFind : data.searchText } )
-                .then( function ( data ) {
-                    ProjectsFactory.toAddActiveField( data ); // create and set all users items with 'active = false' field
-                    $scope.employees = data;
-                    ProjectsFactory.setItemsOcurrences( $scope.employees ); // get and set number of ocurrences on ProjectUser entity
-                })
-                .catch( function ( err ) {
-                    $rootScope.$broadcast( 'messageAlert', {
-                                        error : true,
-                                        message : $filter( 'i18next' )( 'projects.projectAssign.errorData' ) } );
-                })
-                .finally( function() {
-                    $scope.spinners.users = false;
-                });
-        });
-
-        $scope.activeThisUser = function( user ) {
-            $scope.spinners.projects = true;
-            $scope.$parent.$parent.currentMode.obj  = user;
-            $scope.$parent.$parent.currentMode.type = 'users';
-            // set active to true for selected item
-            ProjectsFactory.setActiveItem( $scope.employees, user._id );
-            // get all projects that belong to selected user
-            ProjectsFactory.getProjectsByUserId( user._id )
-                .then( function ( projects ) {
-                    ProjectsFactory.toAddActiveField( projects ); // create and set all users items with 'active = false' field
-                    $rootScope.$broadcast( 'sendFilteredProjects', { projects : projects } );
-                })
-                .catch( function ( err ) {
-                    $rootScope.$broadcast( 'messageAlert', {
-                                        error : true,
-                                        message : $filter( 'i18next' )( 'projects.projectAssign.errorData' ) } );
-                })
-                .finally( function() {
-                    $scope.spinners.projects = false;
-                });
-        };
-
-        // receiving event from controller.project when a project is clicked
-        $rootScope.$on( 'sendFilteredUsers', function( event, filteredUsers ) {
-            $scope.employees = filteredUsers.users.users;
-            ProjectsFactory.setItemsOcurrences( $scope.employees ); // get and set number of ocurrences on ProjectUser entity
-        });
-
-        // when a relationship is added or erased, we need to refresh the Project view list. It comes from controller.marcate
-        $rootScope.$on( 'refreshactiveThisUser', function( event, data ) {
-            $scope.activeThisUser( $scope.$parent.$parent.currentMode.obj ); // to refresh projects items list view
-            ProjectsFactory.setItemsOcurrences( $scope.employees ); // get and set number of ocurrences on ProjectUser entity
-        });
-
     }
 
 }());
@@ -4527,6 +4251,313 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
         });
 
 }
+
+}());
+
+;( function () {
+    'use strict';
+    angular
+        .module( 'hours.projects' )
+        .controller( 'ModalDemarcate', ModalDemarcate );
+
+    ModalDemarcate.$invoke = [ '$scope', '$uibModalInstance', 'data', 'ProjectsFactory', '$rootScope', '$filter' ];
+    function ModalDemarcate( $scope, $uibModalInstance, data, ProjectsFactory, $rootScope, $filter ) {
+
+        $scope.data = data;
+
+        $scope.demarcate = function () {
+            console.log('epa');
+            $uibModalInstance.dismiss( 'cancel' );
+            ProjectsFactory.demarcateUserProject( data )
+                .then( function ( result ) {
+                    // once relationship was erased from ProjectUsers entity
+                    // we proceed to refresh the projects or users list view calling to ActiveThisUser or ActiveThisProject
+                    if( $scope.data.currentMode.type == 'users' ) {
+                        $rootScope.$broadcast( 'refreshactiveThisUser', { data : null } );
+                    } else {
+                        $rootScope.$broadcast( 'refreshactiveThisProject', { data : null } ); 
+                    };
+                    $rootScope.$broadcast( 'messageAlert', { 
+                                        error : false,
+                                        message : $filter( 'i18next' )( 'projects.projectAssign.okDemarcate' ) } );
+                })
+                .catch( function ( err ) {
+                    $rootScope.$broadcast( 'messageAlert', { 
+                                        error : true,
+                                        message : $filter( 'i18next' )( 'projects.projectAssign.errorDemarcate' ) } );
+                });
+        };
+
+        $scope.cancel = function () {
+            $uibModalInstance.dismiss( 'cancel' );
+        };
+
+    }
+
+}());
+
+;( function () {
+    'use strict';
+    angular
+        .module( 'hours.projects' )
+        .controller( 'ModalInfo', ModalInfo );
+
+    ModalInfo.$invoke = [ '$scope', '$uibModalInstance', 'data' ];
+    function ModalInfo( $scope, $uibModalInstance, data ) {
+
+        $scope.data = data;
+
+        $scope.cancel = function () {
+            $uibModalInstance.dismiss( 'cancel' );
+        };
+
+    }
+
+}());
+
+;( function () {
+    'use strict';
+    angular
+        .module( 'hours.projects' )
+        .controller( 'ModalMarcate', ModalMarcate );
+
+    ModalMarcate.$invoke = [ '$scope', '$rootScope', '$uibModalInstance', 'data', 'ProjectsFactory', 'EmployeeManagerFactory', '$filter' ];
+    function ModalMarcate( $scope, $rootScope, $uibModalInstance, data, ProjectsFactory, EmployeeManagerFactory, $filter ) {
+
+        $scope.data = {
+                spinners    : false,
+                maxHours    : 0,
+                searchText  : '',
+                currentMode : data.currentMode
+        };
+
+        $scope.search = function( searchText ) {
+            $scope.data.spinners = true;
+            var thisPromise      = [];
+            if( $scope.data.currentMode.type == 'users' ) {
+                thisPromise.push( ProjectsFactory.advancedProjectSearch( searchText ) );
+            } else {
+                thisPromise.push( EmployeeManagerFactory.advancedUserSearch( { textToFind : searchText } ) );                
+            }
+            Promise.all( thisPromise )
+                .then( function ( data ) {
+                    if( $scope.data.currentMode.type == 'users' ) {
+                        $scope.data.items = data[0].projects;
+                    } else {
+                        $scope.data.items = data[0];
+                    }
+                })
+                .catch( function ( err ) {
+                   $rootScope.$broadcast( 'messageAlert', {
+                                        error : true,
+                                        message : $filter( 'i18next' )( 'projects.projectAssign.errorData' ) } );
+                })
+                .then( function() { // functionallity as finally
+                    $scope.data.spinners = false;
+                });
+        };
+
+        $scope.marcateThis = function( item ) {
+            var userId    = '';
+            var projectId = '';
+            if( $scope.data.currentMode.type == 'users' ) {
+                userId    = $scope.data.currentMode.obj._id;
+                projectId = item._id;
+            } else {
+                projectId = $scope.data.currentMode.obj._id;
+                userId    = item._id;
+            }
+            var data = {
+                projectId : projectId,
+                userId    : userId,
+                maxHours  : $scope.data.maxHours
+            };
+            ProjectsFactory.marcateUserProject( data )
+                .then( function ( result ) {
+                    // once the new ProjectUser document was inserted, we proceed to delete that item from list
+                    ProjectsFactory.removeItemFromArray( $scope.data.items, item._id );
+                })
+                .catch( function ( err ) {
+                    $uibModalInstance.dismiss( 'cancel' );
+                    $rootScope.$broadcast( 'messageAlert', { 
+                                        error : true,
+                                        message : $filter( 'i18next' )( 'projects.projectAssign.errorMarcate' ) } );
+                });
+        };
+
+        $scope.cancel = function () {
+            $uibModalInstance.dismiss( 'cancel' );
+            // at modal exit, we proceed to refresh the projects or users list view calling to ActiveThisUser or ActiveThisProject
+            if( $scope.data.currentMode.type == 'users' ) {
+                $scope.$emit( 'refreshactiveThisUser', { data : null } );
+            } else {
+                $scope.$emit( 'refreshactiveThisProject', { data : null } ); 
+            }
+        };
+
+    }
+
+}());
+
+;( function () {
+    'use strict';
+    angular
+        .module( 'hours.projects' )
+        .controller( 'ProjectAssignProjectController', ProjectAssignProjectController );
+
+    ProjectAssignProjectController.$invoke = [ '$scope', 'ProjectsFactory', '$uibModal', '$rootScope', '$filter', '$timeout' ];
+    function ProjectAssignProjectController( $scope, ProjectsFactory, $uibModal, $rootScope, $filter, $timeout ) {
+
+        $scope.openProjectInfo = function ( project, event ) {
+            event.preventDefault();
+            event.stopPropagation(); // to avoid continue to select item
+            var modalInstance = $uibModal.open( {
+                animation: true,
+                templateUrl: '/features/projects/projectAssign/modals/modalProjectInfo.tpl.html',
+                controller : 'ModalInfo',
+                resolve : {
+                    data : project
+                },
+                backdrop: true,
+                size: 'md',
+            }).result.then( function() {}, function( res ) {} ); // to avoid: 'Possibly unhandled rejection: backdrop click'
+        };
+
+        // receiving event from controller.projectAssign when search is done
+        $scope.$on( 'toSearchEvent', function( event, data ) {
+            $scope.spinners.projects = true;
+            ProjectsFactory.advancedProjectSearch( data.searchText )
+                .then( function ( data ) {
+                    ProjectsFactory.toAddActiveField( data.projects ); // create and set all users items with 'active = false' field
+                    $scope.projects = data.projects;
+                    ProjectsFactory.setItemsOcurrences( $scope.projects ); // get and set number of ocurrences on ProjectUser entity
+                })
+                .catch( function ( err ) {
+                    $rootScope.$broadcast( 'messageAlert', {
+                                        error : true,
+                                        message : $filter( 'i18next' )( 'projects.projectAssign.errorData' ) } );
+                })
+                .finally( function() {
+                    $scope.spinners.projects = false;
+                });
+        });
+
+        $scope.activeThisProject = function( project ) {
+            $scope.spinners.users = true;
+            $scope.$parent.$parent.currentMode.obj  = project;
+            $scope.$parent.$parent.currentMode.type = 'projects';
+            // set active to true for selected item
+            ProjectsFactory.setActiveItem( $scope.projects, project._id );
+            // get all users that belong to selected project
+            ProjectsFactory.getUsersByProjectId( project._id )
+                .then( function ( users ) {
+                    ProjectsFactory.toAddActiveField( users.users ); // create and set all users items with 'active = false' field
+                    $scope.$emit( 'sendFilteredUsers', { users : users } );
+                })
+                .catch( function ( err ) {
+                    $rootScope.$broadcast( 'messageAlert', {
+                                        error : true,
+                                        message : $filter( 'i18next' )( 'projects.projectAssign.errorData' ) } );
+                })
+                .finally( function() {
+                    $scope.spinners.users = false;
+                });
+        };
+
+        // receiving event from controller.user when an user is clicked
+        $scope.$on( 'sendFilteredProjects', function( event, filteredProjects ) {
+            $scope.projects = filteredProjects.projects;
+            ProjectsFactory.setItemsOcurrences( $scope.projects ); // get and set number of ocurrences on ProjectUser entity
+        });
+
+        // when a relationship is added or erased, we need to refresh the User view list. It comes from controller.marcate
+        $rootScope.$on( 'refreshactiveThisProject', function( event, data ) {
+            $scope.activeThisProject( $scope.$parent.$parent.currentMode.obj ); // to refresh users items list view
+            ProjectsFactory.setItemsOcurrences( $scope.projects ); // get and set number of ocurrences on ProjectUser entity
+        });
+
+    }
+
+}());
+
+;( function () {
+    'use strict';
+    angular
+        .module( 'hours.projects' )
+        .controller( 'ProjectAssignUsersController', ProjectAssignUsersController );
+
+    ProjectAssignUsersController.$invoke = [ '$scope', '$rootScope', 'EmployeeManagerFactory', 'ProjectsFactory', '$uibModal', '$filter' ];
+    function ProjectAssignUsersController( $scope, $rootScope, EmployeeManagerFactory, ProjectsFactory, $uibModal, $filter )  {
+
+        $scope.openUserInfo = function ( user , event ) {
+            event.preventDefault();
+            event.stopPropagation(); // to avoid continue to select item
+            var modalInstance = $uibModal.open( {
+                animation: true,
+                templateUrl: '/features/projects/projectAssign/modals/modalUserInfo.tpl.html',
+                controller : 'ModalInfo',
+                resolve : {
+                    data : user
+                },
+                backdrop: true,
+                size: 'md',
+            }).result.then( function() {}, function( res ) {} ); // to avoid this error: 'Possibly unhandled rejection: backdrop click'
+        };
+
+        // receiving event from controller.projectAssign when search is done
+        $scope.$on( 'toSearchEvent', function( event, data ) {
+            $scope.spinners.users = true;
+            EmployeeManagerFactory.advancedUserSearch( { textToFind : data.searchText } )
+                .then( function ( data ) {
+                    ProjectsFactory.toAddActiveField( data ); // create and set all users items with 'active = false' field
+                    $scope.employees = data;
+                    ProjectsFactory.setItemsOcurrences( $scope.employees ); // get and set number of ocurrences on ProjectUser entity
+                })
+                .catch( function ( err ) {
+                    $rootScope.$broadcast( 'messageAlert', {
+                                        error : true,
+                                        message : $filter( 'i18next' )( 'projects.projectAssign.errorData' ) } );
+                })
+                .finally( function() {
+                    $scope.spinners.users = false;
+                });
+        });
+
+        $scope.activeThisUser = function( user ) {
+            $scope.spinners.projects = true;
+            $scope.$parent.$parent.currentMode.obj  = user;
+            $scope.$parent.$parent.currentMode.type = 'users';
+            // set active to true for selected item
+            ProjectsFactory.setActiveItem( $scope.employees, user._id );
+            // get all projects that belong to selected user
+            ProjectsFactory.getProjectsByUserId( user._id )
+                .then( function ( projects ) {
+                    ProjectsFactory.toAddActiveField( projects ); // create and set all users items with 'active = false' field
+                    $rootScope.$broadcast( 'sendFilteredProjects', { projects : projects } );
+                })
+                .catch( function ( err ) {
+                    $rootScope.$broadcast( 'messageAlert', {
+                                        error : true,
+                                        message : $filter( 'i18next' )( 'projects.projectAssign.errorData' ) } );
+                })
+                .finally( function() {
+                    $scope.spinners.projects = false;
+                });
+        };
+
+        // receiving event from controller.project when a project is clicked
+        $rootScope.$on( 'sendFilteredUsers', function( event, filteredUsers ) {
+            $scope.employees = filteredUsers.users.users;
+            ProjectsFactory.setItemsOcurrences( $scope.employees ); // get and set number of ocurrences on ProjectUser entity
+        });
+
+        // when a relationship is added or erased, we need to refresh the Project view list. It comes from controller.marcate
+        $rootScope.$on( 'refreshactiveThisUser', function( event, data ) {
+            $scope.activeThisUser( $scope.$parent.$parent.currentMode.obj ); // to refresh projects items list view
+            ProjectsFactory.setItemsOcurrences( $scope.employees ); // get and set number of ocurrences on ProjectUser entity
+        });
+
+    }
 
 }());
 

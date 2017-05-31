@@ -28,24 +28,24 @@
             var currentFirstDay  = $scope.showDaysObj.currentFirstDay;
             var calendar         = generalDataModel[ currentFirstDay ].calendar;
             var ts               = generalDataModel[ currentFirstDay ].timesheetDataModel;
-            var projectsInfoTemp = {};
-            projectsInfoTemp = projectInfoFactory.getProjectsInfo( ts, calendar, $scope.userProjects );
+            var projectsInfo     = projectInfoFactory.getProjectsInfo( ts, calendar, $scope.userProjects );
 
             // when one project has not info it does not exist so, we create it and fill with zeros (for visual purposes)
             $scope.userProjects.forEach( function( project ) {
-                if( !projectsInfoTemp[ project._id ] ) {
-                    projectsInfoTemp[ project._id ] = {};
-                    projectsInfoTemp[ project._id ].projectId   = project._id;
-                    projectsInfoTemp[ project._id ].projectName = project.nameToShow;
-                    projectsInfoTemp[ project._id ].THI = 0;
-                    projectsInfoTemp[ project._id ].THT = 0;
-                    projectsInfoTemp[ project._id ].TJT = 0;
-                    projectsInfoTemp[ project._id ].TJA = 0;
-                    projectsInfoTemp[ project._id ].TJG = 0;
-                    projectsInfoTemp[ project._id ].TJV = 0;
+                if( !projectsInfo.projects[ project._id ] ) {
+                    projectsInfo.projects[ project._id ] = {};
+                    projectsInfo.projects[ project._id ].projectId   = project._id;
+                    projectsInfo.projects[ project._id ].projectName = project.nameToShow;
+                    projectsInfo.projects[ project._id ].THI = 0;
+                    projectsInfo.projects[ project._id ].THT = 0;
+                    projectsInfo.projects[ project._id ].TJT = 0;
+                    projectsInfo.projects[ project._id ].TJA = 0;
+                    projectsInfo.projects[ project._id ].TJG = 0;
+                    projectsInfo.projects[ project._id ].TJV = 0;
                 }
             });
-            return projectsInfoTemp;
+
+            return projectsInfo;
         }
 
         // RETURNS TOTAL OF WORKING HOURS OF CURRENT MONTH AND DAILYWORK
