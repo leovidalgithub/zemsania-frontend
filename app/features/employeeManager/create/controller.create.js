@@ -4,8 +4,8 @@
         .module( 'hours.employeeManager' )
         .controller( 'createEmployeeController', createEmployeeController );
 
-    createEmployeeController.$invoke = [ '$scope', '$state', 'data', '$filter', '$timeout', 'EmployeeManagerFactory' ];
-    function createEmployeeController( $scope, $state, data, $filter, $timeout, EmployeeManagerFactory ) {
+    createEmployeeController.$invoke = [ '$scope', '$rootScope', '$state', 'data', '$filter', '$timeout', 'EmployeeManagerFactory' ];
+    function createEmployeeController( $scope, $rootScope, $state, data, $filter, $timeout, EmployeeManagerFactory ) {
 
         $scope.companies = data.enterprises;
         $scope.supervisors = data.supervisors;
@@ -104,19 +104,16 @@
             EmployeeManagerFactory.createEmployee( $scope.employee )
                 .then( function ( data ) {
                     if( data.success ) {
-                        $scope.alerts.error = false; // ok code alert
-                        $scope.alerts.message = $filter( 'i18next' )( 'employeeManager.create.saveSuccess' ); // ok message alert
+                        $rootScope.$broadcast( 'showThisAlertPlease', { type : 'ok', msg : $filter( 'i18next' )( 'employeeManager.create.saveSuccess' ) } );
                         $timeout( function () {
                             $state.go( 'employeeManager' );
                         }, 2500 );
                     } else {
-                        $scope.alerts.error = true; // error code alert
-                        $scope.alerts.message = $filter( 'i18next' )( 'employeeManager.create.userAlreadyExists' ); // error message alert
+                        $rootScope.$broadcast( 'showThisAlertPlease', { type : 'warning', msg : $filter( 'i18next' )( 'employeeManager.create.userAlreadyExists' ) + $scope.employee.username } );
                     }
                 })
                 .catch( function ( err ) {
-                    $scope.alerts.error = true; // error code alert
-                    $scope.alerts.message = $filter( 'i18next' )( 'employeeManager.create.saveError' ); // error message alert
+                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'error', msg : $filter( 'i18next' )( 'employeeManager.create.saveError' ) } );
                 });
         };
     }

@@ -20,7 +20,7 @@
             if( $scope.data.currentMode.type == 'users' ) {
                 thisPromise.push( ProjectsFactory.advancedProjectSearch( searchText ) );
             } else {
-                thisPromise.push( EmployeeManagerFactory.advancedUserSearch( { textToFind : searchText } ) );                
+                thisPromise.push( EmployeeManagerFactory.advancedUserSearch( { textToFind : searchText } ) );
             }
             Promise.all( thisPromise )
                 .then( function ( data ) {
@@ -31,9 +31,7 @@
                     }
                 })
                 .catch( function ( err ) {
-                   $rootScope.$broadcast( 'messageAlert', {
-                                        error : true,
-                                        message : $filter( 'i18next' )( 'projects.projectAssign.errorData' ) } );
+                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'error', msg : $filter( 'i18next' )( 'projects.projectAssign.errorData' ) } );
                 })
                 .then( function() { // functionallity as finally
                     $scope.data.spinners = false;
@@ -59,12 +57,11 @@
                 .then( function ( result ) {
                     // once the new ProjectUser document was inserted, we proceed to delete that item from list
                     ProjectsFactory.removeItemFromArray( $scope.data.items, item._id );
+                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'ok', msg : 'TODO FINO !!!' } );
                 })
                 .catch( function ( err ) {
                     $uibModalInstance.dismiss( 'cancel' );
-                    $rootScope.$broadcast( 'messageAlert', { 
-                                        error : true,
-                                        message : $filter( 'i18next' )( 'projects.projectAssign.errorMarcate' ) } );
+                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'error', msg : $filter( 'i18next' )( 'projects.projectAssign.errorMarcate' ) } );
                 });
         };
 
@@ -74,7 +71,7 @@
             if( $scope.data.currentMode.type == 'users' ) {
                 $scope.$emit( 'refreshactiveThisUser', { data : null } );
             } else {
-                $scope.$emit( 'refreshactiveThisProject', { data : null } ); 
+                $scope.$emit( 'refreshactiveThisProject', { data : null } );
             }
         };
 

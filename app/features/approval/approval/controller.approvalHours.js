@@ -17,7 +17,6 @@
                 currentDate = new Date();
             }
 
-            $scope.alerts   = {};
             $scope.mainOBJ  = {};
             $scope.mainOBJ  = {
                                 currentDate          : currentDate,
@@ -26,7 +25,7 @@
                                 currentYear          : currentDate.getFullYear(),
                                 currentFirstDay      : new Date( currentDate.getFullYear(), currentDate.getMonth(), 1 ),
                                 currentLastDay       : new Date( currentDate.getFullYear(), currentDate.getMonth() + 1, 0 ),
-                                totalMonthDays       : new Date( currentDate.getFullYear(), currentDate.getMonth() + 1, 0 ).getDate(),                            
+                                totalMonthDays       : new Date( currentDate.getFullYear(), currentDate.getMonth() + 1, 0 ).getDate(),
                                 allEmployees         : 'true',
                                 searchText           : '',
                                 imputesCount         : 0
@@ -43,8 +42,7 @@
                     initialSlick();
                 })
                 .catch( function ( err ) {
-                    $scope.alerts.error = true; // error code alert
-                    $scope.alerts.message = $filter( 'i18next' )( 'approvalHours.errorLoading' ); // error message alert
+                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'error', msg : $filter( 'i18next' )( 'approvalHours.errorLoading' ) } );
                 });
         }
 
@@ -121,7 +119,7 @@
 
                 // find through days inside each project
                 for( var day in employee.timesheetDataModel[ projectId ] ) {
-                    
+
                     // if _dayTimestamp has value, so it will be filter to work just over that day
                     if( _dayTimestamp && day != _dayTimestamp ) continue;
                     if( day == 'info' ) continue; // 'info' is where all project info is stored, so, it is necessary to skip it
@@ -143,8 +141,8 @@
                                     var tableName = imputeType + '_' + imputeSubType;
                                     var infoObj = employee.timesheetDataModel[ projectId ].info;
                                     setDayTable( infoObj, tableName, day, approved );
-                                }                                
-                            }                            
+                                }
+                            }
                         }
                 }
             if( !projectsObj[projectId] ) projectsObj[projectId] = {};
@@ -169,12 +167,10 @@
 
             Promise.all( myPromises )
                 .then( function( data ) {
-                    $scope.alerts.error   = false; // ok code alert
-                    $scope.alerts.message = $filter( 'i18next' )( 'approvalHours.okSaving' ); // ok message alert
+                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'ok', msg : $filter( 'i18next' )( 'approvalHours.okSaving' ) } );
                 })
                 .catch( function( err ) {
-                    $scope.alerts.error   = true; // error code alert
-                    $scope.alerts.message = $filter( 'i18next' )( 'approvalHours.errorSaving' ); // error message alert
+                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'error', msg : $filter( 'i18next' )( 'approvalHours.errorSaving' ) } );
                 });
 
             // it finds 'day' inside 'project.info.tables.tableName.days' and sets 'approved' or 'rejected'
@@ -232,7 +228,7 @@
                     employee.timesheetDataModel[project].info.opened = true;
                 }
                 collapseToggle( senderId ); // to open employee content
-                employee.opened = true;                    
+                employee.opened = true;
             }, 800 );
         }
 

@@ -15,6 +15,11 @@
 
     <!-- SECTION MAIN CONTENT -->
     <section id="section" class="box-shadow p20">
+
+        <button class="btn btn-danger" ng-click="fn1()">Go !!!</button>
+        <button class="btn btn-warning" ng-click="fn2()">Go !!!</button>
+        <button class="btn btn-success" ng-click="fn3()">Go !!!</button>
+
         <!-- ***************** NOTIFICATIONS ICONS SAMPLES ***************************************** -->
         <div id="iconsSample">
             <i class="fa fa-calendar hours_req fa-lg"></i>
@@ -25,17 +30,14 @@
         </div>
         <!-- ***************** NOTIFICATIONS ICONS SAMPLES ***************************************** -->
 
-        <!-- ALERTS MESSAGES -->
-        <alert-message iserror="alerts.error" msg="alerts.message"></alert-message>
-
         <!-- OPTIONS -->
         <div id="options" class="simple-input">
             <div class="opts">
-                <input id="rad1" type="radio" name="read_unreadRadio" ng-model="options.justUnread" value="true" /> 
+                <input id="rad1" type="radio" name="read_unreadRadio" ng-model="options.justUnread" value="true" />
                     <label for="rad1">{{'notifications.unreads' | i18next}}</label>
             </div>
             <div class="opts">
-                <input id="rad2" type="radio" name="read_unreadRadio" ng-model="options.justUnread" value="false" /> 
+                <input id="rad2" type="radio" name="read_unreadRadio" ng-model="options.justUnread" value="false" />
                     <label for="rad2">{{'notifications.reads' | i18next}}</label>
             </div>
         </div>
@@ -45,20 +47,20 @@
                 <table at-table at-config="tableConfig" at-paginated at-list="notifications" class="table table-striped">
                     <div class="table-thead"><thead></thead></div>
                     <tbody>
-                        <tr ng-show="filterNotifications(item.status)" 
+                        <tr ng-show="filterNotifications(item.status)"
                             title="{{item.initDate | date : 'dd/MMM/yyyy'}} - {{item.endDate | date : 'dd/MMM/yyyy'}}">
                             <td at-implicit at-sortable at-initial-sorting="asc" at-attribute="senderId.fullName" at-title="{{'notifications.from2' | i18next}}"></td>
                             <td at-implicit at-sortable at-attribute="null" at-title="{{'notifications.type' | i18next}}">
                                 <div class="notiTypes" ng-switch on="item.type">
                                     <i ng-switch-when="hours_reviewed" class="fa fa-calendar-check-o hours_reviewed"
                                         title="{{'notifications.types.hours_reviewed' | i18next}}"></i>
-                                    <i ng-switch-when="hours_req" class="fa fa-calendar hours_req" 
+                                    <i ng-switch-when="hours_req" class="fa fa-calendar hours_req"
                                         title="{{'notifications.types.hours_req' | i18next}}"></i>
 <!--                                     <i ng-switch-when="hours_pending_req" class="fa fa-calendar-check-o hours_pending_req"
                                         title="{{'notifications.types.hours_pending_req' | i18next}}"></i>
-                                    <i ng-switch-when="holiday_req" class="fa fa-calendar holiday_req" 
+                                    <i ng-switch-when="holiday_req" class="fa fa-calendar holiday_req"
                                         title="{{'notifications.types.holiday_req' | i18next}}"></i>
-                                    <i ng-switch-when="hours_rejected" class="fa fa-calendar-minus-o hours_rejected" 
+                                    <i ng-switch-when="hours_rejected" class="fa fa-calendar-minus-o hours_rejected"
                                         title="{{'notifications.types.hours_rejected' | i18next}}"></i>
  -->
                                 </div>
@@ -75,8 +77,8 @@
                                 <button ng-click="goTo(item)" class="btn btn-primary" title="{{'notifications.goTo' | i18next}}">
                                          <i class="fa fa-forward"></i>
                                 </button>
-                                <button ng-disabled="(options.justUnread == 'false')" ng-click="markRead(item._id)" 
-                                        ng-class="{'desactivated':(options.justUnread == 'false')}" class="btn btn-gray" 
+                                <button ng-disabled="(options.justUnread == 'false')" ng-click="markRead(item._id)"
+                                        ng-class="{'desactivated':(options.justUnread == 'false')}" class="btn btn-gray"
                                         ng-attr-title="{{options.justUnread == 'true' ? ('notifications.markAsRead' | i18next) : ''}}">
                                         <i class="fa fa-thumbs-up"></i>
                                 </button>
@@ -96,7 +98,7 @@
                                     <div class="notiTypes" ng-switch on="notification.type">
                                         <i ng-switch-when="hours_reviewed" class="fa fa-calendar-check-o hours_reviewed"
                                             title="{{'notifications.types.hours_reviewed' | i18next}}"></i>
-                                        <i ng-switch-when="hours_req" class="fa fa-calendar hours_req" 
+                                        <i ng-switch-when="hours_req" class="fa fa-calendar hours_req"
                                             title="{{'notifications.types.hours_req' | i18next}}"></i>
                                     </div>
                                 </li>
@@ -111,8 +113,8 @@
                             <button ng-click="goTo(notification)" class="btn btn-primary" title="Ir a ello">
                                     <i class="fa fa-forward"></i>
                             </button>
-                            <button ng-disabled="(options.justUnread == 'false')" ng-click="markRead(notification._id)" 
-                                    ng-class="{'desactivated':(options.justUnread == 'false')}" class="btn btn-gray" 
+                            <button ng-disabled="(options.justUnread == 'false')" ng-click="markRead(notification._id)"
+                                    ng-class="{'desactivated':(options.justUnread == 'false')}" class="btn btn-gray"
                                     ng-attr-title="{{options.justUnread == 'true' ? ('notifications.markAsRead' | i18next) : ''}}">
                                     <i class="fa fa-thumbs-up"></i>
                             </button>
@@ -136,4 +138,3 @@
     </footer>
 
 </div>
-

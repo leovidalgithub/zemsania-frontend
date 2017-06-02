@@ -4,8 +4,8 @@
         .module( 'hours.auth' )
         .controller( 'UserProfileController', UserProfileController );
 
-    UserProfileController.$invoke = [ '$scope', 'UserFactory', '$filter', '$timeout' ];
-    function UserProfileController( $scope, UserFactory, $filter, $timeout ) {
+    UserProfileController.$invoke = [ '$scope', '$rootScope', 'UserFactory', '$filter', '$timeout' ];
+    function UserProfileController( $scope, $rootScope, UserFactory, $filter, $timeout ) {
 
         var originalUsername;
         $scope.showPwdContent = false;
@@ -64,12 +64,10 @@
             if ( $scope.flag ) return;
             UserFactory.saveProfile( $scope.user )
                 .then( function ( data ) {
-                    $scope.alerts.error = false; // ok code alert
-                    $scope.alerts.message = $filter( 'i18next' )( 'auth.profile.saveSuccess' ); // ok message alert
+                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'ok', msg : $filter( 'i18next' )( 'auth.profile.saveSuccess' ) } );
                 })
                 .catch( function( err ) {
-                    $scope.alerts.error = true; // error code alert
-                    $scope.alerts.message = $filter( 'i18next' )( 'auth.profile.saveError' ); // error message alert
+                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'error', msg : $filter( 'i18next' )( 'auth.profile.saveError' ) } );
                 })
                 .finally( function() {
                     $( '#page-content-wrapper #section' ).animate( { scrollTop: 0 }, 'slow' );
@@ -96,34 +94,28 @@
         // PASSWORD CHANGE
         $scope.processPWDChange = function() {
             if ( $scope.changePassword.new != $scope.changePassword.confirm ) {
-                $scope.alerts.error   = true; // error code alert
-                $scope.alerts.message = $filter( 'i18next' )( 'auth.changePassword.newConfirmNotMatching' ); // error message alert
+                $rootScope.$broadcast( 'showThisAlertPlease', { type : 'warning', msg : $filter( 'i18next' )( 'auth.changePassword.newConfirmNotMatching' ) } );
             } else {
                 UserFactory
                     .doChangePassword( $scope.changePassword )
                     .then( function( data ) {
                         if ( data.data.success ) {
-                            $scope.alerts.error   = false; // ok code alert
-                            $scope.alerts.message = $filter( 'i18next' )( 'auth.changePassword.success' ); // ok message alert
-
+                            $rootScope.$broadcast( 'showThisAlertPlease', { type : 'ok', msg : $filter( 'i18next' )( 'auth.changePassword.success' ) } );
                             $timeout( function() {
                                 $scope.showPwdContent = false;
                             }, 3500 );
                         } else {
-                                $scope.alerts.error = true; // error code alert
-
                             switch( data.data.code ) {
                                 case 101:
-                                    $scope.alerts.message = $filter( 'i18next' )( 'auth.changePassword.userNotFound' ); // error message alert
+                                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'error', msg : $filter( 'i18next' )( 'auth.changePassword.userNotFound' ) } );
                                     break;
                                 case 102:
-                                    $scope.alerts.message = $filter( 'i18next' )( 'auth.changePassword.currentPassIncorrect' ); // error message alert
+                                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'warning', msg : $filter( 'i18next' )( 'auth.changePassword.currentPassIncorrect' ) } );
                             };
                         }
                     })
                     .catch( function( err ) {
-                        $scope.alerts.error   = true; // error code alert
-                        $scope.alerts.message = $filter( 'i18next' )( 'auth.changePassword.error' ); // error message alert
+                        $rootScope.$broadcast( 'showThisAlertPlease', { type : 'error', msg : $filter( 'i18next' )( 'auth.changePassword.error' ) } );
                     });
             };
         };

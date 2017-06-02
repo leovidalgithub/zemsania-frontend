@@ -21,14 +21,10 @@
                     } else {
                         $rootScope.$broadcast( 'refreshactiveThisProject', { data : null } ); 
                     };
-                    $rootScope.$broadcast( 'messageAlert', { 
-                                        error : false,
-                                        message : $filter( 'i18next' )( 'projects.projectAssign.okDemarcate' ) } );
+                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'ok', msg : $filter( 'i18next' )( 'projects.projectAssign.okDemarcate' ) } );
                 })
                 .catch( function ( err ) {
-                    $rootScope.$broadcast( 'messageAlert', { 
-                                        error : true,
-                                        message : $filter( 'i18next' )( 'projects.projectAssign.errorDemarcate' ) } );
+                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'error', msg : $filter( 'i18next' )( 'projects.projectAssign.errorDemarcate' ) } );
                 });
         };
 

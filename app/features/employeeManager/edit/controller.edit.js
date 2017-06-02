@@ -4,9 +4,9 @@
         .module( 'hours.employeeManager' )
         .controller( 'editEmployeeController', editEmployeeController );
 
-    editEmployeeController.$invoke = [ '$scope', '$state', 'data', '$filter', '$timeout', 'EmployeeManagerFactory' ];
-    function editEmployeeController( $scope, $state, data, $filter, $timeout, EmployeeManagerFactory ) {
-        
+    editEmployeeController.$invoke = [ '$scope', '$rootScope', '$state', 'data', '$filter', '$timeout', 'EmployeeManagerFactory' ];
+    function editEmployeeController( $scope, $rootScope, $state, data, $filter, $timeout, EmployeeManagerFactory ) {
+
         $scope.companies   = data.enterprises;
         $scope.supervisors = data.supervisors;
         $scope.calendars   = data.calendars;
@@ -98,15 +98,13 @@
             $( '#page-content-wrapper #section' ).animate( { scrollTop: 0 }, 'slow' );
             EmployeeManagerFactory.updateEmployee( $scope.employee )
                 .then( function () {
-                    $scope.alerts.error = false; // ok code alert
-                    $scope.alerts.message = $filter( 'i18next' )( 'employeeManager.edit.saveSuccess' ); // ok message alert
+                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'ok', msg : $filter( 'i18next' )( 'employeeManager.edit.saveSuccess' ) } );
                     $timeout( function () {
                         $state.go( 'employeeManager' );
                     }, 2500 );
                 })
                 .catch( function () {
-                    $scope.alerts.error = true; // error code alert
-                    $scope.alerts.message = $filter( 'i18next' )( 'employeeManager.edit.saveError' ); // error message alert
+                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'error', msg : $filter( 'i18next' )( 'employeeManager.edit.saveError' ) } );
                     });
         };
 

@@ -16,12 +16,9 @@
             </div>
         </div>
     </header>
-    
+
     <!-- SECTION MAIN CONTENT -->
     <section id="section" class="box-shadow p20">
-
-        <!-- ALERTS MESSAGES -->
-        <alert-message iserror="alerts.error" msg="alerts.message"></alert-message>
 
         <!-- CHANGE PASSWORD -->
         <div ng-show="showPwdContent">
@@ -50,7 +47,7 @@
                             <div>{{'auth.changePassword.confirmPassword' | i18next}}</div>
                             <input type="password" name="" ng-model="changePassword.confirm" class="form-control" placeholder="{{'auth.changePassword.enterConfirm' | i18next}}" required />
                         </div>
-                    </div>                
+                    </div>
                 </div>
                 <br>
                 <button type="sbumit" class="btn btn-primary no-margin-t no-margin-l" ng-disabled="pwdForm.$invalid"

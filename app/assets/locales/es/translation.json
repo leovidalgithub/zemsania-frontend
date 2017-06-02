@@ -126,8 +126,8 @@
     "words": {
         "employee": "empleado",
         "project": "proyecto",
-        "projects": "Proyectos",     
-        "users": "Usuarios",     
+        "projects": "Proyectos",
+        "users": "Usuarios",
         "type": "Tipo",
         "subType": "Sub-tipo",
         "hour": "hora",
@@ -164,7 +164,7 @@
         "create": {
             "title": "Dar de alta",
             "saveSuccess": "Empleado dado de alta con éxito",
-            "userAlreadyExists": "Este usuario ya existe en la base de datos.",
+            "userAlreadyExists": "El correo introducido ya pertenece a un usuario: ",
             "saveError": "Ha ocurrido un error al dar de alta el empleado. Inténtalo más tarde."
         },
         "edit": {
@@ -202,7 +202,7 @@
     },
     "calendars": {
         "title": "Esquemas de Calendarios",
-        "description": "Esquema de Calendarios. Los nuevos usuarios se agregan automáticamente al esquema predeterminado.",        
+        "description": "Esquema de Calendarios. Los nuevos usuarios se agregan automáticamente al esquema predeterminado.",
         "error": "Error cargando el calendario!",
         "holidays": "Días festivos",
         "workingDays": "Días laborables",
@@ -214,7 +214,7 @@
     },
     "months": {
         "0": "Enero",
-        "1": "Febrero",        
+        "1": "Febrero",
         "2": "Marzo",
         "3": "Abril",
         "4": "Mayo",
@@ -229,7 +229,7 @@
     },
     "days": {
         "Mon": "Lun",
-        "Tue": "Mar",        
+        "Tue": "Mar",
         "Wed": "Mié",
         "Thu": "Jue",
         "Fri": "Vie",
@@ -251,8 +251,8 @@
             "errorNoProjects": "No tiene ningún proyecto asignado o hubo un error al cargarlo",
             "errorNoCalendar": "No tiene ningún calendario asignado o hubo un error al cargarlo",
             "savingCalendar": "Guardando horas imputadas en el calendario...",
-            "savingSuccess": "Las Imputaciones se han guardado correctamente",
-            "sendingSuccess": "Las Imputaciones se han enviado correctamente",
+            "savingSuccess": "Imputaciones guardadas correctamente",
+            "sendingSuccess": "Imputaciones enviadas correctamente",
             "approveCalendarSuccess": "Semana aprobada correctamente.",
             "approveCalendarError": "Ha ocurrido un problema al aprobar la semana",
             "rejectCalendarSuccess": "Semana rechazada correctamente",
@@ -268,7 +268,7 @@
             "totalTHT": "Total Horas Trabajadas",
             "totalTJT": "Total Jornadas Trabajadas",
             "totalTJA": "Total Jornadas Ausencias",
-            "totalTJV": "Total Jornadas Vacaciones",          
+            "totalTJV": "Total Jornadas Vacaciones",
             "totalTJG": "Total Jornadas Guardias",
             "project": "Proyecto",
             "THI": "Horas Imputadas",
@@ -435,7 +435,7 @@
             "hours_pending_req": "Recordatorio para imputar"
         },
         "noNotifications": "No hay notificaciones por atender.",
-        "errorMarkRead": "Ha ocurrido intentado marcar la notificación como leída"
+        "errorMarkRead": "Ha ocurrido un error intentado marcar la notificación como leída"
     },
     "locale": {
         "es": "Español",

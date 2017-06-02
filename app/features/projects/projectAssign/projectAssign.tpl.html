@@ -7,7 +7,7 @@
                     <h3>{{'projects.projectAssign.title' | i18next}}</h3>
                 </div>
                  <div class="rightMargin">
-                </div> 
+                </div>
             </div>
         </div>
     </header>
@@ -15,16 +15,13 @@
     <!-- SECTION MAIN CONTENT -->
     <section id="section" class="box-shadow p20">
 
-        <!-- ALERTS MESSAGES -->
-        <alert-message iserror="alerts.error" msg="alerts.message"></alert-message>
-
         <!-- ADVANCED SEARCH -->
         <div class="advanced-search">
             <h4>{{'employeeManager.list.advancedSearch' | i18next}}</h4>
-            <form class="form-inline simple-input" ng-submit="searchProject(searchText)">       
+            <form class="form-inline simple-input" ng-submit="searchProject(searchText)">
                 <div class="col-md-8 form-elements">
                     <div style="width: 100%;" class="form-group">
-                        <input id="searchInput" ng-model="searchText" type="text" class="form-control" 
+                        <input id="searchInput" ng-model="searchText" type="text" class="form-control"
                                 placeholder="{{'projects.projectAssign.searchPlaceholder' | i18next}}" autocomplete="off" />
                     </div>
                 </div>

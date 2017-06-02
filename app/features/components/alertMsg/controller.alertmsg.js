@@ -8,40 +8,57 @@
     alertMessageController.$invoke = [ '$scope', '$timeout' ];
     function alertMessageController( $scope, $timeout ) {
 
-            $scope.$watch( 'iserror', function( value ) {
-                if ( value != null ) {
-                    $scope.alertMessage = $scope.msg;
-                    moveThis( 60, .95 );
-                    $timeout( function() {
-                        moveThis( -200, 0 );
-                    }, $scope.iserror ? 6000 : 2500 );
-                }
-            });
-            function moveThis( YP, OP ) {
-                $( "#alertMessage .thisAlertBox" ).animate({
-                    opacity: OP,
-                    bottom : YP + 'px'
-                }, 650, function() {
-                    if( YP < 0) $timeout( function() { $scope.iserror = null } );
-                });
+        var thisIsBusy   = false;
+        var thisArray = [];
+
+        $scope.$on( 'showThisAlertPlease',function( event, data ) {
+            thisArray.push( { type : data.type, msg : data.msg } );
+            if( thisIsBusy == false ) doIt();
+        });
+
+        function doIt() {
+            if( thisArray.length ) { // some alert to show
+                thisIsBusy    = true;
+                var nextAlert = thisArray.shift();
+                showingThis( nextAlert.type, nextAlert.msg );
+            } else { // no more alerts inside array to show
+                thisIsBusy    = false;
             }
         }
 
+        function showingThis( _type, _msg ) {
+            $scope.type         = _type;
+            $scope.alertMessage = _msg;
+            moveThis( 40, .95 );
+            $timeout( function() {
+                moveThis( -390, 0 );
+            }, $scope.type == 'ok' ? 2500 : 6500 );
+        }
+
+        function moveThis( RP, OP, callback ) {
+            $( '#alertMessage' ).animate({
+                opacity : OP,
+                right   : RP + 'px'
+            }, 850, function() {
+                if( RP < 0) { // when exit
+                    $timeout( function() {
+                        doIt();
+                    });
+                }
+            })
+        }
+    }
+
     function alertMessage() {
         return {
-            restrict: 'E',
-            scope: {
-                msg     : '=',
-                iserror : '='
-            },
-            transclude: false,
-            templateUrl: 'features/components/alertMsg/alertmsg.tpl.html',
-            controller : alertMessageController,
+            restrict : 'E',
+            scope : true,
+            transclude  : false,
+            templateUrl : 'features/components/alertMsg/alertmsg.tpl.html',
+            controller  : alertMessageController,
             link : function( scope, elem, attrs ) {
-                scope.msg     = '';
-                scope.iserror = null;
             }
-        };
+        }
     }
 }());
 

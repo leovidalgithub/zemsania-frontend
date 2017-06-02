@@ -124,7 +124,16 @@
                     }
                 }
             });
-
+            
+//             data.data.employees.forEach( function( element ) {
+//                 for( var project in element.timesheetDataModel ) {
+// // console.log(element.timesheetDataModel);
+//                     for ( var day in element.timesheetDataModel[ project ].info.tables['1_2'].days ) {
+//                         var thisDay = element.timesheetDataModel[ project ].info.tables['1_2'].days[day];
+//                         console.log('day ' + thisDay.day + ' approved ' + thisDay.approved + ' dayType ' + thisDay.dayType + ' status ' + thisDay.status );
+//                     }
+//                 }
+//             });
             return dfd.resolve( data.data.employees );
         }
     }

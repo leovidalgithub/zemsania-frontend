@@ -52,7 +52,7 @@
 				}
 			}
 
-			.collapsing { 
+			.collapsing {
 				color: #E1E1E1 !important;
 			}
 			.myEmployee {
@@ -147,7 +147,7 @@
 							justify-content: center;
 							align-items: center;
 							padding-left: 10px;
-							padding-right: 10px;
+							padding-right: 20px;
 							.lateralButtons {
 						        width: 5%;
 						        * {
@@ -174,15 +174,33 @@
 					        margin: 0;
 					        margin-right: 15px;
 					        .dayBox {
-						        background-color: orange;
 						        color: black;
 						        width: 40px;
-						        margin-left: 3px;
+						        margin-left: 2px;
 						        padding: 4px;
 						        border-radius: 3px;
 						        &:hover {
 						        	border: .5px solid transparent;
 						        }
+						        &.sent {
+						        	background-color: orange;
+						        }
+						        &.rejected {
+						        	background-color: $rejectedColor;
+						        }
+						        &.approved {
+						        	background-color: $approvedColor;
+						        }
+						        &.desactivated {
+									pointer-events: none;
+									cursor: default;
+									// background-color: #EAEAEA;
+						        	.dayContent.day, .dayContent.value, .dayContent.approved {
+										// background-color: #F4F4F4;
+										// color: #666;
+						        	}
+						        }
+
 
 						        .dayContent {
 							        background-color: white;
@@ -216,6 +234,7 @@
 				                        }
 									}
 									&.value {
+										color: black;
 									}
 									&.approved {
 										color: white;
@@ -231,15 +250,6 @@
 										}
 									}
 
-						        }
-						        &.desactivated {
-									pointer-events: none;
-									cursor: default;
-									background-color: #EAEAEA;
-						        	.dayContent.day, .dayContent.value, .dayContent.approved {
-										// background-color: #F4F4F4;
-										color: #CCCCCC;
-						        	}
 						        }
 					        }
 					    }
@@ -285,7 +295,7 @@
                          div {
                                 background-color: $holidaysColor;
                                 margin: 5px 10px 7px 3px;
-                         }                  
+                         }
                 }
                 #non_workingLeyend {
                     @extend .ext_flex-start_;
@@ -294,7 +304,7 @@
                                 margin: 5px 10px 7px 3px;
                          }
                 }
-                    #workingRange, #fridayRange, 
+                    #workingRange, #fridayRange,
                     #intensiveRange, #specialRange {
                                 text-align: right;
                                 font-size: 15px;

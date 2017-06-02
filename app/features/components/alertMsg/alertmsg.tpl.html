@@ -1,6 +1,11 @@
 
-<div id="alertMessage">
-    <div class="thisAlertBox" ng-class="{'redAlert':iserror,'greenAlert':!iserror}">
-        <p>{{alertMessage}}</p>
-    </div>
+<div id="alertMessage" ng-class="{'errorAlert':type=='error','okAlert':type=='ok','warningAlert':type=='warning'}">
+  <div class="left content">
+    <i ng-show="type=='ok'"      class="fa fa-check-circle"></i>
+    <i ng-show="type=='error'"   class="fa fa-exclamation-circle"></i>
+    <i ng-show="type=='warning'" class="fa fa-exclamation-triangle"></i>
+  </div>
+  <div class="right content">
+      <p>{{alertMessage}}</p>
+  </div>
 </div>

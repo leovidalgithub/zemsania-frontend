@@ -878,7 +878,7 @@
 #imputeHours #section #daysDiv .myWeek .myDay {
   position: relative;
   border-radius: 5px;
-  height: 228px;
+  height: 235px;
   width: 124px;
   margin: 7px;
 }
@@ -1517,7 +1517,7 @@
   justify-content: center;
   align-items: center;
   padding-left: 10px;
-  padding-right: 10px;
+  padding-right: 20px;
 }
 #approvalHours #section #mainContent .tableContainer #tableContent .lateralButtons {
   width: 5%;
@@ -1545,15 +1545,27 @@
   margin-right: 15px;
 }
 #approvalHours #section #mainContent .tableContainer .slickTable .dayBox {
-  background-color: orange;
   color: black;
   width: 40px;
-  margin-left: 3px;
+  margin-left: 2px;
   padding: 4px;
   border-radius: 3px;
 }
 #approvalHours #section #mainContent .tableContainer .slickTable .dayBox:hover {
   border: .5px solid transparent;
+}
+#approvalHours #section #mainContent .tableContainer .slickTable .dayBox.sent {
+  background-color: orange;
+}
+#approvalHours #section #mainContent .tableContainer .slickTable .dayBox.rejected {
+  background-color: #f12919;
+}
+#approvalHours #section #mainContent .tableContainer .slickTable .dayBox.approved {
+  background-color: #3AA33E;
+}
+#approvalHours #section #mainContent .tableContainer .slickTable .dayBox.desactivated {
+  pointer-events: none;
+  cursor: default;
 }
 #approvalHours #section #mainContent .tableContainer .slickTable .dayBox .dayContent {
   background-color: white;
@@ -1587,6 +1599,9 @@
 #approvalHours #section #mainContent .tableContainer .slickTable .dayBox .dayContent.day.non_working {
   background-color: #808080;
 }
+#approvalHours #section #mainContent .tableContainer .slickTable .dayBox .dayContent.value {
+  color: black;
+}
 #approvalHours #section #mainContent .tableContainer .slickTable .dayBox .dayContent.approved {
   color: white;
   font-size: 12px;
@@ -1599,14 +1614,6 @@
 }
 #approvalHours #section #mainContent .tableContainer .slickTable .dayBox .dayContent.approved.na {
   background-color: #BFBEBE;
-}
-#approvalHours #section #mainContent .tableContainer .slickTable .dayBox.desactivated {
-  pointer-events: none;
-  cursor: default;
-  background-color: #EAEAEA;
-}
-#approvalHours #section #mainContent .tableContainer .slickTable .dayBox.desactivated .dayContent.day, #approvalHours #section #mainContent .tableContainer .slickTable .dayBox.desactivated .dayContent.value, #approvalHours #section #mainContent .tableContainer .slickTable .dayBox.desactivated .dayContent.approved {
-  color: #CCCCCC;
 }
 #approvalHours #section #leyend {
   border: solid 1px #6C6C6C;
@@ -1751,33 +1758,68 @@
   text-align: center;
 }
 
-#alertMessage .thisAlertBox {
-  border-radius: 5px;
-  min-height: 110px;
-  width: 320px;
+#alertMessage {
+  border-radius: 10px;
+  min-height: 80px;
+  width: 390px;
   position: fixed;
-  padding: 10px 20px;
-  bottom: -200px;
-  right: 35px;
+  bottom: 70px;
+  right: -390px;
   opacity: 0;
   display: flex;
   flex-flow: row nowrap;
   justify-content: center;
-  align-items: center;
+  align-items: stretch;
   z-index: 99999;
 }
-#alertMessage .thisAlertBox p {
-  color: white;
+#alertMessage .content {
+  padding: 0 5px;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+}
+#alertMessage .content.left {
+  width: 60px;
+  font-size: 2em;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+#alertMessage .content.right {
+  width: inherit;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  padding: 5px;
+}
+#alertMessage .content.right p {
   font-size: 18px;
   font-family: monospace;
   margin: 0;
   text-align: center;
 }
-#alertMessage .thisAlertBox.redAlert {
-  background-color: #f44336;
+#alertMessage.errorAlert .content.left {
+  background-color: #a4150a;
+  color: #f23f31;
 }
-#alertMessage .thisAlertBox.greenAlert {
-  background-color: #4caf50;
+#alertMessage.errorAlert .content.right {
+  color: #a4150a;
+  background-color: #f23f31;
+}
+#alertMessage.okAlert .content.left {
+  background-color: #225f24;
+  color: #41b645;
+}
+#alertMessage.okAlert .content.right {
+  color: #225f24;
+  background-color: #41b645;
+}
+#alertMessage.warningAlert .content.left {
+  background-color: #aa8104;
+  color: #fac72a;
+}
+#alertMessage.warningAlert .content.right {
+  color: #aa8104;
+  background-color: #fac72a;
 }
 
 html, body, body > div, div[ui-view] {

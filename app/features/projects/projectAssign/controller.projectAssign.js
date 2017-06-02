@@ -66,12 +66,6 @@
             }).result.then( function() {}, function( res ) {} ); // to avoid: 'Possibly unhandled rejection: backdrop click'
         };
 
-        // MESSAGES ALERT RECEIVE EVENT
-        $scope.$on( 'messageAlert', function( event, data ) {
-            $scope.alerts.error   = data.error;
-            $scope.alerts.message = data.message;
-        });
-
         // please, back to me just one word (one name, one surname)
         $scope.giveMeFirstWord = function( string ) {
             return string ? string.toString().split( ' ' )[0] : '';

@@ -32,9 +32,7 @@
                     ProjectsFactory.setItemsOcurrences( $scope.employees ); // get and set number of ocurrences on ProjectUser entity
                 })
                 .catch( function ( err ) {
-                    $rootScope.$broadcast( 'messageAlert', {
-                                        error : true,
-                                        message : $filter( 'i18next' )( 'projects.projectAssign.errorData' ) } );
+                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'error', msg : $filter( 'i18next' )( 'projects.projectAssign.errorData' ) } );
                 })
                 .finally( function() {
                     $scope.spinners.users = false;
@@ -54,9 +52,7 @@
                     $rootScope.$broadcast( 'sendFilteredProjects', { projects : projects } );
                 })
                 .catch( function ( err ) {
-                    $rootScope.$broadcast( 'messageAlert', {
-                                        error : true,
-                                        message : $filter( 'i18next' )( 'projects.projectAssign.errorData' ) } );
+                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'error', msg : $filter( 'i18next' )( 'projects.projectAssign.errorData' ) } );
                 })
                 .finally( function() {
                     $scope.spinners.projects = false;

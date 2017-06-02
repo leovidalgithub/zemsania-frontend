@@ -39,9 +39,8 @@
             if( !userProjects.length ) { // no user Projects available
                 // error: NO userProjects available message alert
                 $timeout( function() {
-                    $scope.alerts.error = true; // error code alert
                     $scope.alerts.permanentError = true;
-                    $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorNoProjects' ); // error message alert
+                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'error', msg : $filter( 'i18next' )( 'calendar.imputeHours.errorNoProjects' ) } );
                 }, 1000 );
             } else { // userProjects OK cotinues to getData()
                 $scope.userProjects = userProjects;
@@ -67,9 +66,8 @@
                     var timesheetDataModel = data[1];
 
                     if ( calendar.success == false ) { // error: calendar not found
-                        $scope.alerts.error = true; // error code alert
                         $scope.alerts.permanentError = true;
-                        $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorNoCalendar' ); // error message alert
+                        $rootScope.$broadcast( 'showThisAlertPlease', { type : 'error', msg : $filter( 'i18next' )( 'calendar.imputeHours.errorNoCalendar' ) } );
                         return;
                     }
                     if( !generalDataModel[ currentFirstDay ] ) generalDataModel[ currentFirstDay ] = {};
@@ -87,9 +85,8 @@
                     $scope.alerts.permanentError = false;
                 })
                 .catch( function( err ) {
-                    $scope.alerts.error = true; // error code alert
                     $scope.alerts.permanentError = true;
-                    $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorLoading' ); // error message alert
+                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'error', msg : $filter( 'i18next' )( 'calendar.imputeHours.errorLoading' ) } );
                 });
         }
 
@@ -232,7 +229,7 @@
                                 totalGlobalHoursObj[ day ].totalGlobalHours += value;
                             }
                         }
-                    }                    
+                    }
                 }
             }
             //store 'totalGlobalHours' value inside 'showDaysObj'
@@ -266,7 +263,7 @@
             var currentType     = $scope.imputeTypes.indexOf( $scope.typesModel );
             var currentSubType  = $scope.imputeTypes[ $scope.typesModel ].indexOf( $scope.subtypesModel );
             var currentProject  = $scope.projectModel._id;
-            var currentFirstDay = $scope.showDaysObj.currentFirstDay;          
+            var currentFirstDay = $scope.showDaysObj.currentFirstDay;
             var ts              = generalDataModel[ currentFirstDay ].timesheetDataModel;
             var thisDate        = value.day.getTime();
 
@@ -279,13 +276,13 @@
             // stores values
             if( currentType == IMPUTETYPES.Guardias || currentType == IMPUTETYPES.Vacaciones ) {
                 var newValue = value.checkValue ? 1 : 0;
-                ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ].value = newValue;    
+                ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ].value = newValue;
             } else {
-                ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ].value = value.value;    
+                ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ].value = value.value;
             }
             ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ].status   = 'draft';
             ts[ currentProject ][ thisDate ][ currentType ][ currentSubType ].modified = true;
-            
+
             $scope.$broadcast( 'refreshStats', { generalDataModel : generalDataModel, IMPUTETYPES : IMPUTETYPES } );
             refreshShowDaysObj();
         };
@@ -351,16 +348,14 @@
                 .then( function( data ) {
                     $scope.changes.pendingChanges = false;
                     $rootScope.pendingChanges = false;
-                    $scope.alerts.error   = false; // ok code alert
                     if( send ) {
-                        $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.sendingSuccess' ); // ok message alert
+                        $rootScope.$broadcast( 'showThisAlertPlease', { type : 'ok', msg : $filter( 'i18next' )( 'calendar.imputeHours.sendingSuccess' ) } );
                     } else {
-                        $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.savingSuccess' ); // ok message alert
+                        $rootScope.$broadcast( 'showThisAlertPlease', { type : 'ok', msg : $filter( 'i18next' )( 'calendar.imputeHours.savingSuccess' ) } );
                     }
                 })
                 .catch( function( err ) {
-                    $scope.alerts.error   = true; // error code alert
-                    $scope.alerts.message = $filter( 'i18next' )( 'calendar.imputeHours.errorSaving' ); // error message alert
+                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'error', msg : $filter( 'i18next' )( 'calendar.imputeHours.errorSaving' ) } );
                 })
                 .then( function() { //(.then is .finally for Promise.all)
                     if( goToState ) {
@@ -406,7 +401,7 @@
         $rootScope.$on( 'modalToSave', function ( event, data ) { $scope.save() } );
         $rootScope.$on( 'modalNotToSave', function ( event, data ) { $scope.notSave() } );
 
-        // when pendingChanges this comes from 'sidebar' to prevent URL change without save changes 
+        // when pendingChanges this comes from 'sidebar' to prevent URL change without save changes
         $scope.$on( 'urlChangeRequest', function ( event, data ) {
             event.preventDefault();
             $scope.openPendingChangesModal();

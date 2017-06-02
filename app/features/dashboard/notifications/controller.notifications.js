@@ -58,7 +58,6 @@
             $scope.markRead( notificationId ); // before go, mark this notification as read
             $rootScope.notification = {}; // Initializing
             $rootScope.notification.issueDate = issueDate;
-            console.log(type);
             switch ( type ) {
                 case 'hours_req':
                     $rootScope.notification.senderId  = senderId;
@@ -80,8 +79,7 @@
                     notification.status = 'read';
                 })
                 .catch( function ( err ) {
-                    $scope.alerts.error   = true; // error code alert
-                    $scope.alerts.message = $filter( 'i18next' )( 'notifications.errorMarkRead' ); // error message alert
+                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'error', msg : $filter( 'i18next' )( 'notifications.errorMarkRead' ) } );
                 })
                 .finally( function() {
                     getUnreadLength();
@@ -114,6 +112,16 @@
         });
 
         console.clear();
+        // ***********************************************************************
+        $scope.fn1 = function() {
+            $rootScope.$broadcast( 'showThisAlertPlease', { type : 'error', msg : $filter( 'i18next' )( 'notifications.errorMarkRead' ) } );
+        };
+        $scope.fn2 = function() {
+            $rootScope.$broadcast( 'showThisAlertPlease', { type : 'warning', msg : 'Mensaje de advertencia. No haga eso nunca más o se va a joder para siempre!' } );
+        };
+        $scope.fn3 = function() {
+            $rootScope.$broadcast( 'showThisAlertPlease', { type : 'ok', msg : 'Everything is gonna be Ok !!!' } );
+        };
 
      }
 }());
