@@ -95,7 +95,7 @@
                             }
                         }
                     }
-                    
+
                     var day = new Date( new Date( year, month, currentDay.getDate() ) );
                     addNewDay( day, week );
 
@@ -114,7 +114,7 @@
                         }
                         break;
                     }
-                    
+
                     currentDay = new Date( year, month, currentDay.getDate() + 1 );
                     if( currentDay.getDay() == 1 ) { // when week ends and start a new one
                         week++;

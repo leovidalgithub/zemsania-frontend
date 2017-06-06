@@ -36,6 +36,13 @@
         function getData() {
             approvalHoursFactory.getEmployeesTimesheets( $scope.mainOBJ )
                 .then( function ( data ) {
+                    //**********************************************************
+                    data.forEach(function(el) {
+                        if( el.name == 'Javier' ) {
+                            console.log(el.timesheetDataModel);
+                        }
+                    });
+                    //**********************************************************
                     $scope.employees = data;
                     imputesCount();
                     if( $rootScope.notification ) showNotificationData();
@@ -134,12 +141,12 @@
                                 // if _imputeSubType has value, so it will be filter to work just over that _imputeSubType
                                 if( _imputeSubType && imputeSubType != _imputeSubType ) continue;
 
-                                // enabled when status = 'sent'
-                                if( employee.timesheetDataModel[ projectId ][ day ][ imputeType ][ imputeSubType ].enabled ) {
+                                // setting status, modified and info.tables
+                                if( employee.timesheetDataModel[ projectId ][ day ][ imputeType ][ imputeSubType ].status != 'draft' ) {
                                     employee.timesheetDataModel[ projectId ][ day ][ imputeType ][ imputeSubType ].status   = newStatus;
                                     employee.timesheetDataModel[ projectId ][ day ][ imputeType ][ imputeSubType ].modified = true;
                                     var tableName = imputeType + '_' + imputeSubType;
-                                    var infoObj = employee.timesheetDataModel[ projectId ].info;
+                                    var infoObj   = employee.timesheetDataModel[ projectId ].info;
                                     setDayTable( infoObj, tableName, day, approved );
                                 }
                             }
@@ -239,7 +246,7 @@
         }
 
         $scope.giveMeImputeNames = function( imputeType, imputeSubTypes ) {
-            var type = IMPUTETYPES[ imputeType ];
+            var type    = IMPUTETYPES[ imputeType ];
             var subType = IMPUTETYPES[ IMPUTETYPES[ imputeType ] ][ imputeSubTypes ];
             return type + ' - ' + subType;
         };

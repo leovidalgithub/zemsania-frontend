@@ -8,8 +8,8 @@
     alertMessageController.$invoke = [ '$scope', '$timeout' ];
     function alertMessageController( $scope, $timeout ) {
 
-        var thisIsBusy   = false;
-        var thisArray = [];
+        var thisIsBusy = false;
+        var thisArray  = [];
 
         $scope.$on( 'showThisAlertPlease',function( event, data ) {
             thisArray.push( { type : data.type, msg : data.msg } );
@@ -17,7 +17,7 @@
         });
 
         function doIt() {
-            if( thisArray.length ) { // some alert to show
+            if( thisArray.length ) { // there is some alert to show
                 thisIsBusy    = true;
                 var nextAlert = thisArray.shift();
                 showingThis( nextAlert.type, nextAlert.msg );

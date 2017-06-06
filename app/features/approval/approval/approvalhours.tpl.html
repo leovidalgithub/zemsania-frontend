@@ -57,13 +57,13 @@
                 <!-- EMPLOYEES TABLE SECTION -->
                 <table>
                     <tr class="notHoverPlease">
-                        <th style="width: 26%;">{{'approvalHours.employee' | i18next}}</th>
-                        <th style="width: 8%;">{{'calendar.imputeHours.THI' | i18next}}</th>
-                        <th style="width: 8%;">{{'calendar.imputeHours.THT' | i18next}}</th>
-                        <th style="width: 8%;">{{'calendar.imputeHours.TJT' | i18next}}</th>
-                        <th style="width: 8%;">{{'calendar.imputeHours.TJA' | i18next}}</th>
-                        <th style="width: 8%;">{{'calendar.imputeHours.TJV' | i18next}}</th>
-                        <th style="width: 8%;">{{'calendar.imputeHours.TJG' | i18next}}</th>
+                        <th style="width: 26%;">{{'approvalHours.employee'   | i18next}}</th>
+                        <th style="width:  8%;">{{'calendar.imputeHours.THI' | i18next}}</th>
+                        <th style="width:  8%;">{{'calendar.imputeHours.THT' | i18next}}</th>
+                        <th style="width:  8%;">{{'calendar.imputeHours.TJT' | i18next}}</th>
+                        <th style="width:  8%;">{{'calendar.imputeHours.TJA' | i18next}}</th>
+                        <th style="width:  8%;">{{'calendar.imputeHours.TJV' | i18next}}</th>
+                        <th style="width:  8%;">{{'calendar.imputeHours.TJG' | i18next}}</th>
                         <th style="width: 26%;"></th>
                     </tr>
                 </table>
@@ -166,14 +166,15 @@
                                                 </code>
                                             </div>
                                             <div class="slickTable">
-                                                <div ng-class="{'desactivated':!day.enabled}" class="dayBox {{day.status}}"
+                                                <div ng-class="{'desactivated':day.status=='draft'}" class="dayBox {{day.status}}"
                                                      ng-repeat="(dayKey, day) in table.days">
                                                     <div class="dayContent day {{day.dayType}}">{{day.day}}</div>
                                                     <div class="dayContent value">{{day.value}}</div>
                                                     <div class="dayContent approved"
-                                                            ng-class="{'na':day.approved=='NA','ok':day.approved==true,'ko':day.approved==false}" ng-click="setDays(true, employee.employeeId, projectId, table.imputeType, table.imputeSubType, day.dayTimestamp, day.approved)">
-                                                            <span ng-show="day.enabled && day.approved!='NA'">
-                                                                {{day.approved ? 'OK' : 'KO'}}</span>
+                                                         ng-class="{'na':day.approved=='NA','ok':day.approved==true,'ko':day.approved==false}"
+                                                         ng-click="setDays(true, employee.employeeId, projectId, table.imputeType, table.imputeSubType, day.dayTimestamp, day.approved)">
+                                                         <span ng-show="day.status!='draft' && day.approved!='NA'">
+                                                             {{day.approved ? 'OK' : 'KO'}}</span>
                                                     </div>
                                                 </div>
                                             </div>

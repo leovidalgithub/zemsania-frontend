@@ -1,4 +1,3 @@
-
     #alertMessage {
         border-radius: 10px;
             min-height: 80px;
@@ -72,6 +71,18 @@
                     &.right {
                         color: darken( $warningColor, 18% );
                         background-color: lighten( $warningColor, 5% );
+                    }
+                }
+            }
+            &.infoAlert {
+                .content {
+                    &.left {
+                        background-color: darken( $infoColor, 18% );
+                        color: lighten( $infoColor, 5% );
+                    }
+                    &.right {
+                            color: darken( $infoColor, 18% );
+                            background-color: lighten( $infoColor, 5% );
                     }
                 }
             }

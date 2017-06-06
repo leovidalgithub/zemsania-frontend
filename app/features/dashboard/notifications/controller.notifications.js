@@ -122,6 +122,9 @@
         $scope.fn3 = function() {
             $rootScope.$broadcast( 'showThisAlertPlease', { type : 'ok', msg : 'Everything is gonna be Ok !!!' } );
         };
+        $scope.fn4 = function() {
+            $rootScope.$broadcast( 'showThisAlertPlease', { type : 'info', msg : 'Información importante espera por usted!' } );
+        };
 
      }
 }());

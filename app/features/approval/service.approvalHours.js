@@ -6,8 +6,8 @@
 
     approvalHoursFactory.$invoke = [ '$http', '$q', 'UserFactory', 'imputeHoursFactory', 'projectInfoFactory' ];
     function approvalHoursFactory( $http, $q, UserFactory, imputeHoursFactory, projectInfoFactory ) {
-    
-        const IMPUTETYPES = imputeHoursFactory.getImputeTypesIndexConst();
+
+        // const IMPUTETYPES = imputeHoursFactory.getImputeTypesIndexConst();
         var mainOBJ;
         var data;
 
@@ -61,7 +61,7 @@
 
                         for( var day in employee.timesheetDataModel[ projectId ] ) {
                             if( day == 'info' ) continue; // 'info' is where all project info is stored, so, it is necessary to skip it
-    
+
                             for( var imputeType in employee.timesheetDataModel[ projectId ][ day ] ) {
                                 for( var imputeSubType in employee.timesheetDataModel[ projectId ][ day ][ imputeType ] ) {
 
@@ -75,22 +75,25 @@
                                         newTable.days = [];
                                         createTable( newTable );
                                     }
-                                    var table     = employee.timesheetDataModel[ projectId ].info.tables[ tableName ];
-                                    var value     = employee.timesheetDataModel[ projectId ][ day ][ imputeType ][ imputeSubType ].value;
-                                    var status    = employee.timesheetDataModel[ projectId ][ day ][ imputeType ][ imputeSubType ].status;
-                                    var isEnabled = status == 'sent' ? true : false;
-                                    
-                                    if( !employee.isPending && isEnabled ) employee.isPending = true;
+                                    var table  = employee.timesheetDataModel[ projectId ].info.tables[ tableName ];
+                                    var value  = employee.timesheetDataModel[ projectId ][ day ][ imputeType ][ imputeSubType ].value;
+                                    var status = employee.timesheetDataModel[ projectId ][ day ][ imputeType ][ imputeSubType ].status;
+
+                                    // Pending radio option (show just employees with some imputed-hours pending or show all)
+                                    if( !employee.isPending && status == 'sent' ) employee.isPending = true;
 
                                     var currentDay = new Date( parseInt( day, 10 ) ).getDate();
 
                                     var dayToSet = table.days.find( function( dayObj ) {
                                         return dayObj.day == currentDay;
                                     });
-                                    dayToSet.value   = value;
-                                    dayToSet.status  = status;
-                                    dayToSet.enabled = isEnabled;
-                                    employee.timesheetDataModel[ projectId ][ day ][ imputeType ][ imputeSubType ].enabled = isEnabled;
+                                    dayToSet.value  = value;
+                                    dayToSet.status = status;
+                                    if( status == 'approved' ) {
+                                        dayToSet.approved = true;
+                                    } else if ( status == 'rejected' ) {
+                                        dayToSet.approved = false;
+                                    }
                                 }
                             }
                         }
@@ -101,7 +104,8 @@
             function createTable( newTable ) {
                 for( var day = 1; day <= mainOBJ.totalMonthDays; day++ ) {
                     var dayTimestamp = new Date( mainOBJ.currentYear, mainOBJ.currentMonth, day ).getTime();
-                    newTable.days.push( { day : day, dayTimestamp : dayTimestamp, value : 0, approved : 'NA', enabled : false, status : 'draft' } );
+                    // newTable.days.push( { day : day, dayTimestamp : dayTimestamp, value : 0, approved : 'NA', enabled : false, status : 'draft' } );
+                    newTable.days.push( { day : day, dayTimestamp : dayTimestamp, value : 0, approved : 'NA', status : 'draft' } );
                 }
             }
             prepareDayType( dfd );
@@ -124,7 +128,7 @@
                     }
                 }
             });
-            
+
 //             data.data.employees.forEach( function( element ) {
 //                 for( var project in element.timesheetDataModel ) {
 // // console.log(element.timesheetDataModel);

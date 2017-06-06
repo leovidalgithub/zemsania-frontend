@@ -53,6 +53,7 @@
         function getData() {
             slideContent( true );
             $scope.showDaysObj  = imputeHoursFactory.getShowDaysObj( currentMonth, currentYear );
+            console.log($scope.showDaysObj);
             var currentFirstDay = $scope.showDaysObj.currentFirstDay;
             if( generalDataModel[ currentFirstDay ] ) { // if that month and year already exists in 'generalDataModel', do not find anything
                 refreshShowDaysObj();

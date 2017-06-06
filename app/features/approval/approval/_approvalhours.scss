@@ -186,10 +186,10 @@
 						        	background-color: orange;
 						        }
 						        &.rejected {
-						        	background-color: $rejectedColor;
+									border: 1px dashed $rejectedColor;
 						        }
 						        &.approved {
-						        	background-color: $approvedColor;
+									border: 1px dashed $approvedColor;
 						        }
 						        &.desactivated {
 									pointer-events: none;
@@ -200,7 +200,6 @@
 										// color: #666;
 						        	}
 						        }
-
 
 						        .dayContent {
 							        background-color: white;

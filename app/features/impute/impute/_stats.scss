@@ -37,12 +37,12 @@
                 }
 
                 .THIonRed {
-                    background-color: #E54343;
+                    background-color: $rejectedColor;
                     color: white;
                     font-size: 16px;
                 }
                 .THIonGreen {
-                    background-color: #5CB72A;
+                    background-color: $approvedColor;
                     color: white;
                     font-size: 16px;
                 }
@@ -93,7 +93,7 @@
                          div {
                                 background-color: $holidaysColor;
                                 margin: 5px 10px 7px 3px;
-                         }                  
+                         }
                 }
                 #non_workingLeyend {
                     @extend .ext_flex-start_;
@@ -102,7 +102,7 @@
                                 margin: 5px 10px 7px 3px;
                          }
                 }
-                    #workingRange, #fridayRange, 
+                    #workingRange, #fridayRange,
                     #intensiveRange, #specialRange {
                                 text-align: right;
                                 font-size: 15px;

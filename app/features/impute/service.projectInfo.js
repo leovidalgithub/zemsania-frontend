@@ -6,9 +6,9 @@
 
     projectInfoFactory.$invoke = [ 'imputeHoursFactory' ];
     function projectInfoFactory( imputeHoursFactory ) {
-        
+
         const IMPUTETYPES = imputeHoursFactory.getImputeTypesIndexConst();
-        
+
         return {
 
             // it returns the 'projectInfo' object with total of hours and journeys for each project
@@ -39,7 +39,7 @@
                                         TJA += dailyWorkCalculate( calendar, day, imputeType, imputeValue );
                                     } else {
                                         THT += imputeValue;
-                                        TJT += dailyWorkCalculate( calendar, day, imputeType, imputeValue );                                    
+                                        TJT += dailyWorkCalculate( calendar, day, imputeType, imputeValue );
                                     }
                                 } else if ( imputeType == IMPUTETYPES.Guardias ) {
                                         TJG += imputeValue;
@@ -67,7 +67,7 @@
                 function dailyWorkCalculate( calendar, day, imputeType, imputeValue ) {
                     var dayType = '';
                     var dayTypeMilliseconds = 0;
-                    // getting dayType acoording to day            
+                    // getting dayType acoording to day
                     if( calendar.eventHours[0].eventDates[ day ] ) {
                         dayType = calendar.eventHours[0].eventDates[ day ].type;
                     }
@@ -97,12 +97,12 @@
 
         // RETURNS SUMMARY INFO. GLOBAL TOTAL OF IMPUTED AND JOURNEYS
         function getThisSummary( projectsInfoObj ) {
-            var THIGlobal  = 0;
-            var THTGlobal  = 0;
-            var TJTGlobal  = 0;
-            var TJAGlobal  = 0;
-            var TJVGlobal  = 0;
-            var TJGGlobal  = 0;
+            var THIGlobal = 0;
+            var THTGlobal = 0;
+            var TJTGlobal = 0;
+            var TJAGlobal = 0;
+            var TJVGlobal = 0;
+            var TJGGlobal = 0;
             for( var project in projectsInfoObj ) {
                 THIGlobal += projectsInfoObj[ project ].THI;
                 THTGlobal += projectsInfoObj[ project ].THT;

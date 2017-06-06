@@ -57,7 +57,7 @@
                 .then( function ( result ) {
                     // once the new ProjectUser document was inserted, we proceed to delete that item from list
                     ProjectsFactory.removeItemFromArray( $scope.data.items, item._id );
-                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'ok', msg : 'TODO FINO !!!' } );
+                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'ok', msg : $filter( 'i18next' )( 'projects.projectAssign.okMarcate' ) } );    
                 })
                 .catch( function ( err ) {
                     $uibModalInstance.dismiss( 'cancel' );

@@ -383,6 +383,7 @@
             "demarcateThisProject": "Desvincular proyecto",
             "demarcateThisUser": "Desvincular usuario",
             "demarcateProject": "¿Desvincular proyecto?",
+            "okMarcate": "Vinculación correcta",
             "okDemarcate": "Desvinculación correcta",
             "errorDemarcate": "Ocurrió un error durante la desvinculación",
             "errorMarcate": "Ocurrió un error durante la vinculación",
