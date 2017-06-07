@@ -93,8 +93,8 @@
                                 ng-switch on="day.status">
                             <i ng-switch-when="approved" class="fa fa-thumbs-up" title="{{'calendar.imputeHours.approved' | i18next}}!"></i>
                             <i ng-switch-when="rejected" class="fa fa-thumbs-down" title="{{'calendar.imputeHours.rejected' | i18next}}!"></i>
-                            <i ng-switch-when="sent" class="fa fa-paper-plane" title="{{'calendar.imputeHours.sent' | i18next}}"></i>
-                            <i ng-switch-when="draft" class="fa fa-wrench" title="{{'calendar.imputeHours.draft' | i18next}}"></i>
+                            <i ng-switch-when="sent" class="fa fa-paper-plane" title="{{'calendar.imputeHours.pendingToReview' | i18next}}"></i>
+                            <i ng-switch-when="draft" class="fa fa-wrench" title="{{'calendar.imputeHours.pendingToSend' | i18next}}"></i>
                         </div>
 
                         <div class="myHeader">
@@ -117,20 +117,15 @@
                         <!-- IMPUTE TYPES SUMMARY -->
                         <div ng-repeat="(imputeTypeKey, value) in day.imputeTypesSummary" class="imputeTypesSummary {{day.dayType}}"
                              ng-class="{'desactivedByStatus': day.status=='approved' || day.status=='sent',
-                             'highlightValue': value,'totalHours':imputeTypeKey=='totalHours',
+                             'highlightValue': value.value,'totalHours':imputeTypeKey=='totalHours',
                              'totalGlobalHours':imputeTypeKey=='totalGlobalHours'}"
                              ng-click="openImputeTypeSummaryModal(day.timeStamp,day,day.imputeTypesSummary)">
-
-<!-- I'M WORKING HERE!!! -->
-<!-- I'M WORKING HERE!!! -->
-<!-- I'M WORKING HERE!!! -->
-                             <span ng-show="imputeTypeKey.indexOf('total')==-1">
-                                 <i ng-show="day.status=='approved'" class="fa fa-thumbs-up"></i>
-                                 <i ng-show="day.status=='rejected'" class="fa fa-thumbs-down"></i>
-                             </span>
-
-                            <span>&nbsp;{{giveMeAbbreviation(imputeTypeKey)}}&nbsp;</span>
-                            <span>{{value}}</span>
+                                 <i ng-show="value.status=='approved'" class="fa fa-thumbs-up"></i>
+                                 <i ng-show="value.status=='rejected'" class="fa fa-thumbs-down"></i>
+                                 <i ng-show="value.status=='sent'" class="fa fa-paper-plane"></i>
+                                 <i ng-show="value.status=='draft'" class="fa fa-wrench"></i>
+                                 <span>&nbsp;{{giveMeAbbreviation(imputeTypeKey)}}&nbsp;</span>
+                                 <span>{{value.value}}</span>
                         </div>
 
                             <!-- DAY FOOTER -->

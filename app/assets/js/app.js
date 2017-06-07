@@ -2708,7 +2708,10 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
         var thisArray  = [];
 
         $scope.$on( 'showThisAlertPlease',function( event, data ) {
-            thisArray.push( { type : data.type, msg : data.msg } );
+            var alreadyExists = thisArray.some( function( el ) {
+                return el.type == data.type;
+            });
+            if( !alreadyExists ) thisArray.push( { type : data.type, msg : data.msg } );
             if( thisIsBusy == false ) doIt();
         });
 
@@ -2869,6 +2872,7 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
                 .then( function ( data ) {
                     var notification = getNotification( notificationId );
                     notification.status = 'read';
+                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'ok', msg : $filter( 'i18next' )( 'notifications.okMarkRead' ) } );
                 })
                 .catch( function ( err ) {
                     $rootScope.$broadcast( 'showThisAlertPlease', { type : 'error', msg : $filter( 'i18next' )( 'notifications.errorMarkRead' ) } );
@@ -3315,7 +3319,6 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
         function getData() {
             slideContent( true );
             $scope.showDaysObj  = imputeHoursFactory.getShowDaysObj( currentMonth, currentYear );
-            console.log($scope.showDaysObj);
             var currentFirstDay = $scope.showDaysObj.currentFirstDay;
             if( generalDataModel[ currentFirstDay ] ) { // if that month and year already exists in 'generalDataModel', do not find anything
                 refreshShowDaysObj();
@@ -3454,9 +3457,10 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
             function initializeImputeTypesSummary() {
                 var imputeTypesSummary = {};
                 $scope.imputeTypes.forEach( function( type, index ) {
-                    imputeTypesSummary[ index ] = 0;
+                    imputeTypesSummary[ index ] = { value : 0, status : ''};
                 });
-                imputeTypesSummary.totalHours = 0; // great hours total
+                imputeTypesSummary.totalHours = {};
+                imputeTypesSummary.totalHours.value = 0; // total day hours
                 return imputeTypesSummary;
             }
 
@@ -3466,14 +3470,16 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
                     if( ts[ currentProject ][ thisDate ][ imputeType ] ) {
                         for( var imputeSubType in ts[ currentProject ][ thisDate ][ imputeType ] ) {
                             var value = parseFloat( ts[ currentProject ][ thisDate ][ imputeType ][ imputeSubType ].value );
-                            imputeTypesSummary[ imputeType ] += value;
+                            var status = ts[ currentProject ][ thisDate ][ imputeType ][ imputeSubType ].status;
+                            imputeTypesSummary[ imputeType ].value += value;
+                            imputeTypesSummary[ imputeType ].status = status;
                             if( imputeType == IMPUTETYPES.Ausencias || imputeType == IMPUTETYPES.Horas || imputeType == IMPUTETYPES.Variables ) {
                                 totalHours += value;
                             }
                         }
                     }
                 }
-                imputeTypesSummary.totalHours = totalHours;
+                imputeTypesSummary.totalHours.value = totalHours;
             }
 
             // getting totalGlobalHours
@@ -3499,9 +3505,10 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
             for( var week in $scope.showDaysObj.weeks ) {
                 for( var day in $scope.showDaysObj.weeks[ week ] ) {
                     if( $scope.showDaysObj.weeks[ week ][ day ].imputeTypesSummary ) {
-                        $scope.showDaysObj.weeks[ week ][ day ].imputeTypesSummary.totalGlobalHours = 0; // initializating 'totalGlobalHours'
+                        $scope.showDaysObj.weeks[ week ][ day ].imputeTypesSummary.totalGlobalHours = {}; // initializating 'totalGlobalHours'
+                        $scope.showDaysObj.weeks[ week ][ day ].imputeTypesSummary.totalGlobalHours.value = 0; // initializating 'totalGlobalHours'
                         if( totalGlobalHoursObj[ day ] ) {
-                            $scope.showDaysObj.weeks[ week ][ day ].imputeTypesSummary.totalGlobalHours = totalGlobalHoursObj[ day ].totalGlobalHours;
+                            $scope.showDaysObj.weeks[ week ][ day ].imputeTypesSummary.totalGlobalHours.value = totalGlobalHoursObj[ day ].totalGlobalHours;
                         }
                     }
                 }
@@ -3703,7 +3710,7 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
 
         // modal: imputeType Summary info
         $scope.openImputeTypeSummaryModal = function( myDayId, day, imputeTypesSummary ) {
-            $scope.gotFocus( myDayId ); // timeStamp day
+            $scope.gotFocus( myDayId ); // set focus on clicked day
             var currentFirstDay = $scope.showDaysObj.currentFirstDay;
             var currentProject  = $scope.projectModel._id;
             var timesheets;
@@ -3885,8 +3892,8 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
         .module( 'hours.impute' )
         .controller( 'imputeTypeSummaryController', imputeTypeSummaryController );
 
-    imputeTypeSummaryController.$invoke = [ '$scope', '$rootScope', '$uibModalInstance', 'data' ];
-    function imputeTypeSummaryController( $scope, $rootScope, $uibModalInstance, data ) {
+    imputeTypeSummaryController.$invoke = [ '$scope', '$rootScope', '$uibModalInstance', 'data', '$timeout', '$filter' ];
+    function imputeTypeSummaryController( $scope, $rootScope, $uibModalInstance, data, $timeout, $filter ) {
 
         var day                = data.day;
         var timesheets         = data.timesheets;
@@ -3900,17 +3907,19 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
                 for( var imputeSubType in timesheets[ index ] ) {
                     if( timesheets[ index ][ imputeSubType ].value ) {
                         imputeTypesInfo[ el ].push( { subType : imputeTypes[imputeTypes[ index ]][ imputeSubType ],
-                                                      value : timesheets[ index ][ imputeSubType ].value } );
+                                                      value : timesheets[ index ][ imputeSubType ].value,
+                                                      status: timesheets[ index ][ imputeSubType ].status } );
                     }
                 }
             }
         });
 
         $scope.dayInfo = {
-                day             : day.day,
-                dayType         : day.dayType,
-                imputeTypesInfo : imputeTypesInfo,
-                totalHours      : imputeTypesSummary.totalHours
+                day              : day.day,
+                dayType          : day.dayType,
+                imputeTypesInfo  : imputeTypesInfo,
+                totalHours       : imputeTypesSummary.totalHours,
+                totalGlobalHours : imputeTypesSummary.totalGlobalHours
             };
 
         $scope.cancel = function() {
@@ -3919,10 +3928,38 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
 
         $scope.goTo = function( imputeType, imputeSubType ) {
             $uibModalInstance.dismiss( 'cancel' );
-            $scope.$emit('goToThisImputeType', { imputeType    : imputeType,
+            $scope.$emit( 'goToThisImputeType', { imputeType   : imputeType,
                                                  imputeSubType : imputeSubType,
                                                  dayTimestamp  : day.timeStamp } );
         };
+
+        // tooltip messages over each imputeSubType
+        $scope.giveMeTitlePlease = function( status ) {
+            let title = '';
+            switch ( status ) {
+                case 'approved':
+                    title = $filter( 'i18next' )( 'calendar.imputeHours.approved' );
+                    break;
+                case 'rejected':
+                    title = $filter( 'i18next' )( 'calendar.imputeHours.rejected' );
+                    break;
+                case 'draft':
+                    title = $filter( 'i18next' )( 'calendar.imputeHours.pendingToSend' );
+                    break;
+                case 'sent':
+                    title = $filter( 'i18next' )( 'calendar.imputeHours.pendingToReview' );
+                    break;
+                default:
+            }
+            return title;
+        };
+
+        // bootstrap tooltip initializating
+        $( document ).ready( function(){
+            $timeout( function() {
+                $( '[data-toggle="tooltip"]' ).tooltip();
+            });
+        });
 
 }
 

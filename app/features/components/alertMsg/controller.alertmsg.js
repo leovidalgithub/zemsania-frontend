@@ -12,7 +12,10 @@
         var thisArray  = [];
 
         $scope.$on( 'showThisAlertPlease',function( event, data ) {
-            thisArray.push( { type : data.type, msg : data.msg } );
+            var alreadyExists = thisArray.some( function( el ) {
+                return el.type == data.type;
+            });
+            if( !alreadyExists ) thisArray.push( { type : data.type, msg : data.msg } );
             if( thisIsBusy == false ) doIt();
         });
 

@@ -1,9 +1,8 @@
 <div id="imputeSummaryModal" class="{{dayInfo.dayType}}">
-
     <div id="modalTitle" class="modal-header border-b">
         <p>
             {{'days.' + (dayInfo.day | amDateFormat:'ddd') | i18next}}
-            {{dayInfo.day | amDateFormat:'DD MMMM YYYY'}}            
+            {{dayInfo.day | amDateFormat:'DD MMM YYYY'}}
         </p>
     </div>
 
@@ -12,17 +11,25 @@
             <p class="imputeType">
                 {{imputeTypeKey}}
             </p>
-            <div class="subTypeGroup {{dayInfo.dayType}}" ng-repeat="(imputeSubTypeKey, imputeSubTypeValue) in imputeTypeValue" 
+            <div class="subTypeGroup {{dayInfo.dayType}}" ng-repeat="(imputeSubTypeKey, imputeSubTypeValue) in imputeTypeValue"
                  ng-click="goTo(imputeTypeKey,imputeSubTypeValue.subType)">
-                <p class="subType">
-                    <span>{{imputeSubTypeValue.subType}}</span>
-                    <span>{{imputeSubTypeValue.value}}</span>
-                </p>
+                <div class="subType" data-toggle="tooltip"
+                     ng-attr-title="{{giveMeTitlePlease(imputeSubTypeValue.status)}}">
+                    <div>
+                        <span>{{imputeSubTypeValue.subType}}</span>
+                        <span>{{imputeSubTypeValue.value}}</span>
+                    </div>
+                    <i ng-if="imputeSubTypeValue.status=='approved'" class="fa fa-thumbs-up"></i>
+                    <i ng-if="imputeSubTypeValue.status=='rejected'" class="fa fa-thumbs-down"></i>
+                    <i ng-if="imputeSubTypeValue.status=='sent'" class="fa fa-paper-plane"></i>
+                    <i ng-if="imputeSubTypeValue.status=='draft'" class="fa fa-wrench"></i>
+                </div>
             </div>
         </div>
 
         <div class="totalHours">
-            {{'calendar.imputeHours.totalTHI' | i18next}} <span> {{dayInfo.totalHours}}</span>
+            <p>{{'calendar.imputeHours.TH' | i18next}} <span> {{dayInfo.totalHours.value}}</span></p>
+            <p>{{'calendar.imputeHours.THG' | i18next}} <span> {{dayInfo.totalGlobalHours.value}}</span></p>
         </div>
 
     </div>

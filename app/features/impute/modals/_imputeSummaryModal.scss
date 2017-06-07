@@ -79,13 +79,16 @@
 	            }
 	            &.non_working {
 	                background-color: darken( $non_workingColor, 10% );
-	            }				
+	            }
 				.subType {
-					margin: 0 20px;
 			        display: flex;
 			        flex-flow: row nowrap;
-			        justify-content: space-between;
+			        justify-content: flex-start;
 			        align-items: center;
+					div {
+						margin-left: 10px;
+						margin-right: 10px;
+					}
 				}
 			}
 		}
@@ -93,6 +96,11 @@
 			margin-top: 8px;
 			font-size: 16px;
 			text-transform: uppercase;
+			p {
+				margin: 0;
+				margin-right: 10px;
+				text-align: right;
+			}
 			span {
 				font-weight: bold;
 				font-size: 16.5px;

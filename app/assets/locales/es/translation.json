@@ -271,6 +271,8 @@
             "totalTJV": "Total Jornadas Vacaciones",
             "totalTJG": "Total Jornadas Guardias",
             "project": "Proyecto",
+            "TH": "Total Horas",
+            "THG": "Total Horas Global",
             "THI": "Horas Imputadas",
             "THT": "Horas Trabajadas",
             "TJT": "Jornadas trabajadas",
@@ -287,6 +289,8 @@
             "draft": "Modificando",
             "approved": "Aprobado",
             "rejected": "Rechazado",
+            "pendingToSend": "Pendiente por enviar",
+            "pendingToReview": "Esperando a ser revisado",
             "draftspending": "Hay imputaciones pendientes por enviar",
             "notdraftspending": "No hay imputaciones pendientes por enviar",
                 "message": {
@@ -436,7 +440,8 @@
             "hours_pending_req": "Recordatorio para imputar"
         },
         "noNotifications": "No hay notificaciones por atender.",
-        "errorMarkRead": "Ha ocurrido un error intentado marcar la notificación como leída"
+        "errorMarkRead": "Ha ocurrido un error intentado marcar la notificación como leída",
+        "okMarkRead": "Notificación marcada como leída"
     },
     "locale": {
         "es": "Español",

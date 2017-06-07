@@ -878,7 +878,7 @@
 #imputeHours #section #daysDiv .myWeek .myDay {
   position: relative;
   border-radius: 5px;
-  height: 235px;
+  height: 245px;
   width: 124px;
   margin: 7px;
 }
@@ -918,16 +918,22 @@
   color: #333;
 }
 #imputeHours #section #daysDiv .myWeek .myDay .imputeTypesSummary {
-  margin: 1px 10px;
-  border-radius: 5px;
+  margin-bottom: 1px;
+  margin-left: 1px;
+  margin-right: 1px;
+  padding: 1px 0;
+  padding-left: 20px;
+  border-radius: 4px;
   font-family: monospace;
   font-size: 15px;
-  padding: 0 18px;
   cursor: pointer;
   display: flex;
   flex-flow: row nowrap;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
+}
+#imputeHours #section #daysDiv .myWeek .myDay .imputeTypesSummary i {
+  font-size: 12px;
 }
 #imputeHours #section #daysDiv .myWeek .myDay .imputeTypesSummary.friday {
   background-color: #0d7db7;
@@ -964,11 +970,10 @@
   color: #333;
 }
 #imputeHours #section #daysDiv .myWeek .myDay .imputeTypesSummary.totalHours, #imputeHours #section #daysDiv .myWeek .myDay .imputeTypesSummary.totalGlobalHours {
-  font-weight: bold;
   font-size: 16px;
 }
 #imputeHours #section #daysDiv .myWeek .myDay .imputeTypesSummary.totalGlobalHours {
-  font-size: 16.5px;
+  font-weight: bold;
 }
 #imputeHours #section #daysDiv .myWeek .myDay .infoTag {
   z-index: 999;
@@ -1261,16 +1266,24 @@
   background-color: #676767;
 }
 #imputeSummaryModal .typeGroup .subTypeGroup .subType {
-  margin: 0 20px;
   display: flex;
   flex-flow: row nowrap;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
+}
+#imputeSummaryModal .typeGroup .subTypeGroup .subType div {
+  margin-left: 10px;
+  margin-right: 10px;
 }
 #imputeSummaryModal .totalHours {
   margin-top: 8px;
   font-size: 16px;
   text-transform: uppercase;
+}
+#imputeSummaryModal .totalHours p {
+  margin: 0;
+  margin-right: 10px;
+  text-align: right;
 }
 #imputeSummaryModal .totalHours span {
   font-weight: bold;

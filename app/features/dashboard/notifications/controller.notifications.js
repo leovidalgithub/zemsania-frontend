@@ -77,6 +77,7 @@
                 .then( function ( data ) {
                     var notification = getNotification( notificationId );
                     notification.status = 'read';
+                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'ok', msg : $filter( 'i18next' )( 'notifications.okMarkRead' ) } );
                 })
                 .catch( function ( err ) {
                     $rootScope.$broadcast( 'showThisAlertPlease', { type : 'error', msg : $filter( 'i18next' )( 'notifications.errorMarkRead' ) } );

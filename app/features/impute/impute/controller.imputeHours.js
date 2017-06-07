@@ -53,7 +53,6 @@
         function getData() {
             slideContent( true );
             $scope.showDaysObj  = imputeHoursFactory.getShowDaysObj( currentMonth, currentYear );
-            console.log($scope.showDaysObj);
             var currentFirstDay = $scope.showDaysObj.currentFirstDay;
             if( generalDataModel[ currentFirstDay ] ) { // if that month and year already exists in 'generalDataModel', do not find anything
                 refreshShowDaysObj();
@@ -192,9 +191,10 @@
             function initializeImputeTypesSummary() {
                 var imputeTypesSummary = {};
                 $scope.imputeTypes.forEach( function( type, index ) {
-                    imputeTypesSummary[ index ] = 0;
+                    imputeTypesSummary[ index ] = { value : 0, status : ''};
                 });
-                imputeTypesSummary.totalHours = 0; // great hours total
+                imputeTypesSummary.totalHours = {};
+                imputeTypesSummary.totalHours.value = 0; // total day hours
                 return imputeTypesSummary;
             }
 
@@ -204,14 +204,16 @@
                     if( ts[ currentProject ][ thisDate ][ imputeType ] ) {
                         for( var imputeSubType in ts[ currentProject ][ thisDate ][ imputeType ] ) {
                             var value = parseFloat( ts[ currentProject ][ thisDate ][ imputeType ][ imputeSubType ].value );
-                            imputeTypesSummary[ imputeType ] += value;
+                            var status = ts[ currentProject ][ thisDate ][ imputeType ][ imputeSubType ].status;
+                            imputeTypesSummary[ imputeType ].value += value;
+                            imputeTypesSummary[ imputeType ].status = status;
                             if( imputeType == IMPUTETYPES.Ausencias || imputeType == IMPUTETYPES.Horas || imputeType == IMPUTETYPES.Variables ) {
                                 totalHours += value;
                             }
                         }
                     }
                 }
-                imputeTypesSummary.totalHours = totalHours;
+                imputeTypesSummary.totalHours.value = totalHours;
             }
 
             // getting totalGlobalHours
@@ -237,9 +239,10 @@
             for( var week in $scope.showDaysObj.weeks ) {
                 for( var day in $scope.showDaysObj.weeks[ week ] ) {
                     if( $scope.showDaysObj.weeks[ week ][ day ].imputeTypesSummary ) {
-                        $scope.showDaysObj.weeks[ week ][ day ].imputeTypesSummary.totalGlobalHours = 0; // initializating 'totalGlobalHours'
+                        $scope.showDaysObj.weeks[ week ][ day ].imputeTypesSummary.totalGlobalHours = {}; // initializating 'totalGlobalHours'
+                        $scope.showDaysObj.weeks[ week ][ day ].imputeTypesSummary.totalGlobalHours.value = 0; // initializating 'totalGlobalHours'
                         if( totalGlobalHoursObj[ day ] ) {
-                            $scope.showDaysObj.weeks[ week ][ day ].imputeTypesSummary.totalGlobalHours = totalGlobalHoursObj[ day ].totalGlobalHours;
+                            $scope.showDaysObj.weeks[ week ][ day ].imputeTypesSummary.totalGlobalHours.value = totalGlobalHoursObj[ day ].totalGlobalHours;
                         }
                     }
                 }
@@ -441,7 +444,7 @@
 
         // modal: imputeType Summary info
         $scope.openImputeTypeSummaryModal = function( myDayId, day, imputeTypesSummary ) {
-            $scope.gotFocus( myDayId ); // timeStamp day
+            $scope.gotFocus( myDayId ); // set focus on clicked day
             var currentFirstDay = $scope.showDaysObj.currentFirstDay;
             var currentProject  = $scope.projectModel._id;
             var timesheets;
