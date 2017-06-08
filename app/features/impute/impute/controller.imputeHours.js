@@ -503,6 +503,11 @@
             refreshShowDaysObj();
         });
 
+        // it returns the actual imputeType index for activeType ng-class
+        $scope.giveMeImputeTypeIndex = function() {
+            return $scope.imputeTypes.indexOf( $scope.typesModel );
+        };
+
 }
 
 })();

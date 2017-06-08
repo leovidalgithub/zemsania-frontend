@@ -48,6 +48,10 @@
                         <select ng-options="type for type in imputeTypes | orderBy : type" ng-model="typesModel"
                                 ng-change="imputeTypeChanged()" id="imputeTypes"></select>
                     </div>
+
+                    <!-- <h3>{{gg(typesModel)}}</h3> -->
+                    <!-- <h3>{{imputeTypes.indexOf( typesModel )}}</h3> -->
+
                     <!-- IMPUTE SUBTYPES -->
                     <div class="col-xs-12 col-md-4">
                         <label for="imputeSubTypes">{{'words.subType' | i18next}}</label>
@@ -118,7 +122,8 @@
                         <div ng-repeat="(imputeTypeKey, value) in day.imputeTypesSummary" class="imputeTypesSummary {{day.dayType}}"
                              ng-class="{'desactivedByStatus': day.status=='approved' || day.status=='sent',
                              'highlightValue': value.value,'totalHours':imputeTypeKey=='totalHours',
-                             'totalGlobalHours':imputeTypeKey=='totalGlobalHours'}"
+                             'totalGlobalHours':imputeTypeKey=='totalGlobalHours',
+                             'activeType':giveMeImputeTypeIndex()==imputeTypeKey}"
                              ng-click="openImputeTypeSummaryModal(day.timeStamp,day,day.imputeTypesSummary)">
                                  <i ng-show="value.status=='approved'" class="fa fa-thumbs-up"></i>
                                  <i ng-show="value.status=='rejected'" class="fa fa-thumbs-down"></i>

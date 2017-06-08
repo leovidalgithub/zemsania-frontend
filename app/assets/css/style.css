@@ -967,7 +967,12 @@
   color: #b5b3b3;
 }
 #imputeHours #section #daysDiv .myWeek .myDay .imputeTypesSummary.desactivedByStatus.highlightValue {
-  color: #333;
+  color: gray;
+}
+#imputeHours #section #daysDiv .myWeek .myDay .imputeTypesSummary.activeType {
+  font-size: 16px;
+  border: .5px dashed black;
+  text-shadow: 1px 1px 5px white;
 }
 #imputeHours #section #daysDiv .myWeek .myDay .imputeTypesSummary.totalHours, #imputeHours #section #daysDiv .myWeek .myDay .imputeTypesSummary.totalGlobalHours {
   font-size: 16px;
