@@ -2,10 +2,13 @@
 
 var gulp      = require( 'gulp' );
 var connect   = require( 'gulp-connect' );
-var compass   = require( 'gulp-compass' );
+var rename       = require( 'gulp-rename' );
+var sass         = require( 'gulp-ruby-sass' );
+var autoprefixer = require( 'gulp-autoprefixer' );
 var concat    = require( 'gulp-concat' );
 var uglify    = require( 'gulp-uglify' );
 var minifyCss = require( 'gulp-minify-css' );
+var autoprefixer = require('gulp-autoprefixer');
 
 gulp.task( 'connect', function () {
     connect.server({
@@ -16,14 +19,12 @@ gulp.task( 'connect', function () {
     });
 });
 
-gulp.task( 'sass', function () {
-    gulp.src( './app/**/*.scss' )
-        .pipe( compass({
-            config_file: './app/assets/config.rb',
-            css: './app/assets/css',
-            sass: './app/assets/sass'
-        }))
-        // .pipe(gulp.dest('temp'))
+gulp.task( 'sass', function() {
+    return sass( './app/**/*.scss', { style: 'compressed' } )
+        .pipe( concat( 'style.css' ) )
+        .pipe( rename( { suffix: '.min' } ) )
+        .pipe( autoprefixer() )
+        .pipe( gulp.dest( './app/assets/css' ) )
         .pipe( connect.reload() );
 });
 

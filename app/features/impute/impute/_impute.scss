@@ -112,14 +112,8 @@
                                 }
                             }
                             &.activeType {
-                                font-size: 16px;
-                                // background-color: #404040;
-                                // background-color: #000;
-                                border: .5px dashed black;
-                                text-shadow: 1px 1px 5px white;
-                                span {
-                                    // color: red;
-                                }
+                                font-size: 17px;
+                                box-shadow: 0px 0px 5px 1px rgba(0,0,0,0.75);
                             }
                             &.totalHours, &.totalGlobalHours {
                                 font-size: 16px;
