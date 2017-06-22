@@ -2909,133 +2909,20 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
 
         console.clear();
         // ***********************************************************************
-        $scope.fn1 = function() {
-            $rootScope.$broadcast( 'showThisAlertPlease', { type : 'error', msg : $filter( 'i18next' )( 'notifications.errorMarkRead' ) } );
-        };
-        $scope.fn2 = function() {
-            $rootScope.$broadcast( 'showThisAlertPlease', { type : 'warning', msg : 'Mensaje de advertencia. No haga eso nunca más o se va a joder para siempre!' } );
-        };
-        $scope.fn3 = function() {
-            $rootScope.$broadcast( 'showThisAlertPlease', { type : 'ok', msg : 'Everything is gonna be Ok !!!' } );
-        };
-        $scope.fn4 = function() {
-            $rootScope.$broadcast( 'showThisAlertPlease', { type : 'info', msg : 'Información importante espera por usted!' } );
-        };
+        // $scope.fn1 = function() {
+        //     $rootScope.$broadcast( 'showThisAlertPlease', { type : 'error', msg : $filter( 'i18next' )( 'notifications.errorMarkRead' ) } );
+        // };
+        // $scope.fn2 = function() {
+        //     $rootScope.$broadcast( 'showThisAlertPlease', { type : 'warning', msg : 'Mensaje de advertencia. No haga eso nunca más o se va a joder para siempre!' } );
+        // };
+        // $scope.fn3 = function() {
+        //     $rootScope.$broadcast( 'showThisAlertPlease', { type : 'ok', msg : 'Everything is gonna be Ok !!!' } );
+        // };
+        // $scope.fn4 = function() {
+        //     $rootScope.$broadcast( 'showThisAlertPlease', { type : 'info', msg : 'Información importante espera por usted!' } );
+        // };
 
      }
-}());
-
-;( function () {
-    'use strict';
-    angular
-        .module( 'hours.employeeManager' )
-        .controller( 'editEmployeeController', editEmployeeController );
-
-    editEmployeeController.$invoke = [ '$scope', '$rootScope', '$state', 'data', '$filter', '$timeout', 'EmployeeManagerFactory' ];
-    function editEmployeeController( $scope, $rootScope, $state, data, $filter, $timeout, EmployeeManagerFactory ) {
-
-        $scope.companies   = data.enterprises;
-        $scope.supervisors = data.supervisors;
-        $scope.calendars   = data.calendars;
-
-        data.employee.birthdate = new Date( data.employee.birthdate );
-        $scope.employee = data.employee;
-        $scope.maxDate = new Date();
-
-        $scope.open = function () {
-            $scope.status.opened = true;
-        };
-
-        $scope.dateOptions = {
-            formatYear: 'yy',
-            startingDay: 1,
-            showWeeks: false
-        };
-
-        $scope.status = {
-            opened: false
-        };
-
-        function loadSelectsTranslate() {
-            $scope.genres = [
-                {
-                    name: $filter( 'i18next' )( 'userProfile.user.genre_male' ),
-                    slug: 'male'
-                },
-                {
-                    name: $filter( 'i18next' )( 'userProfile.user.genre_female' ),
-                    slug: 'female'
-                }
-            ];
-
-            $scope.locales = [
-                {
-                    name: 'Español',
-                    slug: 'es'
-                },
-                {
-                    name: 'English',
-                    slug: 'en'
-                },
-                {
-                    name: 'Catalán',
-                    slug: 'ca'
-                }
-            ];
-
-            $scope.roles = [
-                {
-                    name: $filter( 'i18next' )( 'role.ROLE_BACKOFFICE' ),
-                    slug: 'ROLE_BACKOFFICE'
-                },
-                {
-                    name: $filter( 'i18next' )( 'role.ROLE_DELIVERY' ),
-                    slug: 'ROLE_DELIVERY'
-                },
-                {
-                    name: $filter( 'i18next' )( 'role.ROLE_MANAGER' ),
-                    slug: 'ROLE_MANAGER'
-                },
-                {
-                    name: $filter( 'i18next' )( 'role.ROLE_USER' ),
-                    slug: 'ROLE_USER'
-                }
-            ];
-
-            data.employee.roles.forEach( function( role ) {
-                $filter( 'filter' )( $scope.roles, { slug: role })[0].active = true;
-            });
-
-        }
-
-        $timeout( function () {
-            loadSelectsTranslate();
-        }, 100 );
-
-        $scope.changeRole = function () {
-            $scope.employee.roles = [];
-            $scope.roles.forEach( function( role ) {
-                if ( role.active ) {
-                    $scope.employee.roles.push( role.slug );
-                }
-            });
-        };
-
-        $scope.editUser = function () {
-            $( '#page-content-wrapper #section' ).animate( { scrollTop: 0 }, 'slow' );
-            EmployeeManagerFactory.updateEmployee( $scope.employee )
-                .then( function () {
-                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'ok', msg : $filter( 'i18next' )( 'employeeManager.edit.saveSuccess' ) } );
-                    $timeout( function () {
-                        $state.go( 'employeeManager' );
-                    }, 2500 );
-                })
-                .catch( function () {
-                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'error', msg : $filter( 'i18next' )( 'employeeManager.edit.saveError' ) } );
-                    });
-        };
-
-    }
 }());
 
 ( function () {
@@ -3156,6 +3043,119 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
                     $rootScope.$broadcast( 'showThisAlertPlease', { type : 'error', msg : $filter( 'i18next' )( 'employeeManager.create.saveError' ) } );
                 });
         };
+    }
+}());
+
+;( function () {
+    'use strict';
+    angular
+        .module( 'hours.employeeManager' )
+        .controller( 'editEmployeeController', editEmployeeController );
+
+    editEmployeeController.$invoke = [ '$scope', '$rootScope', '$state', 'data', '$filter', '$timeout', 'EmployeeManagerFactory' ];
+    function editEmployeeController( $scope, $rootScope, $state, data, $filter, $timeout, EmployeeManagerFactory ) {
+
+        $scope.companies   = data.enterprises;
+        $scope.supervisors = data.supervisors;
+        $scope.calendars   = data.calendars;
+
+        data.employee.birthdate = new Date( data.employee.birthdate );
+        $scope.employee = data.employee;
+        $scope.maxDate = new Date();
+
+        $scope.open = function () {
+            $scope.status.opened = true;
+        };
+
+        $scope.dateOptions = {
+            formatYear: 'yy',
+            startingDay: 1,
+            showWeeks: false
+        };
+
+        $scope.status = {
+            opened: false
+        };
+
+        function loadSelectsTranslate() {
+            $scope.genres = [
+                {
+                    name: $filter( 'i18next' )( 'userProfile.user.genre_male' ),
+                    slug: 'male'
+                },
+                {
+                    name: $filter( 'i18next' )( 'userProfile.user.genre_female' ),
+                    slug: 'female'
+                }
+            ];
+
+            $scope.locales = [
+                {
+                    name: 'Español',
+                    slug: 'es'
+                },
+                {
+                    name: 'English',
+                    slug: 'en'
+                },
+                {
+                    name: 'Catalán',
+                    slug: 'ca'
+                }
+            ];
+
+            $scope.roles = [
+                {
+                    name: $filter( 'i18next' )( 'role.ROLE_BACKOFFICE' ),
+                    slug: 'ROLE_BACKOFFICE'
+                },
+                {
+                    name: $filter( 'i18next' )( 'role.ROLE_DELIVERY' ),
+                    slug: 'ROLE_DELIVERY'
+                },
+                {
+                    name: $filter( 'i18next' )( 'role.ROLE_MANAGER' ),
+                    slug: 'ROLE_MANAGER'
+                },
+                {
+                    name: $filter( 'i18next' )( 'role.ROLE_USER' ),
+                    slug: 'ROLE_USER'
+                }
+            ];
+
+            data.employee.roles.forEach( function( role ) {
+                $filter( 'filter' )( $scope.roles, { slug: role })[0].active = true;
+            });
+
+        }
+
+        $timeout( function () {
+            loadSelectsTranslate();
+        }, 100 );
+
+        $scope.changeRole = function () {
+            $scope.employee.roles = [];
+            $scope.roles.forEach( function( role ) {
+                if ( role.active ) {
+                    $scope.employee.roles.push( role.slug );
+                }
+            });
+        };
+
+        $scope.editUser = function () {
+            $( '#page-content-wrapper #section' ).animate( { scrollTop: 0 }, 'slow' );
+            EmployeeManagerFactory.updateEmployee( $scope.employee )
+                .then( function () {
+                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'ok', msg : $filter( 'i18next' )( 'employeeManager.edit.saveSuccess' ) } );
+                    $timeout( function () {
+                        $state.go( 'employeeManager' );
+                    }, 2500 );
+                })
+                .catch( function () {
+                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'error', msg : $filter( 'i18next' )( 'employeeManager.edit.saveError' ) } );
+                    });
+        };
+
     }
 }());
 

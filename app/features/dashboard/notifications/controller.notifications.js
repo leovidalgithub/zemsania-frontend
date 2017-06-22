@@ -114,18 +114,18 @@
 
         console.clear();
         // ***********************************************************************
-        $scope.fn1 = function() {
-            $rootScope.$broadcast( 'showThisAlertPlease', { type : 'error', msg : $filter( 'i18next' )( 'notifications.errorMarkRead' ) } );
-        };
-        $scope.fn2 = function() {
-            $rootScope.$broadcast( 'showThisAlertPlease', { type : 'warning', msg : 'Mensaje de advertencia. No haga eso nunca más o se va a joder para siempre!' } );
-        };
-        $scope.fn3 = function() {
-            $rootScope.$broadcast( 'showThisAlertPlease', { type : 'ok', msg : 'Everything is gonna be Ok !!!' } );
-        };
-        $scope.fn4 = function() {
-            $rootScope.$broadcast( 'showThisAlertPlease', { type : 'info', msg : 'Información importante espera por usted!' } );
-        };
+        // $scope.fn1 = function() {
+        //     $rootScope.$broadcast( 'showThisAlertPlease', { type : 'error', msg : $filter( 'i18next' )( 'notifications.errorMarkRead' ) } );
+        // };
+        // $scope.fn2 = function() {
+        //     $rootScope.$broadcast( 'showThisAlertPlease', { type : 'warning', msg : 'Mensaje de advertencia. No haga eso nunca más o se va a joder para siempre!' } );
+        // };
+        // $scope.fn3 = function() {
+        //     $rootScope.$broadcast( 'showThisAlertPlease', { type : 'ok', msg : 'Everything is gonna be Ok !!!' } );
+        // };
+        // $scope.fn4 = function() {
+        //     $rootScope.$broadcast( 'showThisAlertPlease', { type : 'info', msg : 'Información importante espera por usted!' } );
+        // };
 
      }
 }());
