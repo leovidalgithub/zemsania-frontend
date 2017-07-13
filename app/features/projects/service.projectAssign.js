@@ -80,9 +80,9 @@
                 });
                 $http.post( buildURL( 'countOcurrences' ), idObj )
                     .then( function ( data ) {
-                        let idObj = data.data.idObj;
+                        var data_IdObj = data.data.idObj;
                         array.forEach( function( item ) {
-                            item.ocurrences = idObj[ item._id ].ocurrences;
+                            item.ocurrences = data_IdObj[ item._id ].ocurrences;
                         });
                     })
                     .catch( function ( err ) {
@@ -180,7 +180,7 @@
 
             //     return dfd.promise;
             // }
-            
+
         };
     }
 }());

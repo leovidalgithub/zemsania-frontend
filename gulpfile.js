@@ -1,14 +1,12 @@
 'use strict';
-
-var gulp      = require( 'gulp' );
-var connect   = require( 'gulp-connect' );
-var rename       = require( 'gulp-rename' );
-var sass         = require( 'gulp-ruby-sass' );
-var autoprefixer = require( 'gulp-autoprefixer' );
-var concat    = require( 'gulp-concat' );
-var uglify    = require( 'gulp-uglify' );
-var minifyCss = require( 'gulp-minify-css' );
-var autoprefixer = require('gulp-autoprefixer');
+let sass         = require( 'gulp-ruby-sass' );
+let gulp         = require( 'gulp' );
+let rename       = require( 'gulp-rename' );
+let uglify       = require( 'gulp-uglify' );
+let concat       = require( 'gulp-concat' );
+let connect      = require( 'gulp-connect' );
+let minifyCss    = require( 'gulp-minify-css' );
+let autoprefixer = require( 'gulp-autoprefixer' );
 
 gulp.task( 'connect', function () {
     connect.server({
@@ -119,7 +117,9 @@ gulp.task( 'vendors:js', function () {
             './lib/slick/slick.min.js'
         ])
         .pipe( concat( 'vendors.js') )
-        .pipe( uglify() )
+        .pipe( uglify({
+            mangle: false
+        }))
         .pipe( gulp.dest( './app/assets/js/') );
 });
 

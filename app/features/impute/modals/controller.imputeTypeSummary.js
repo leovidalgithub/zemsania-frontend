@@ -47,7 +47,7 @@
 
         // tooltip messages over each imputeSubType
         $scope.giveMeTitlePlease = function( status ) {
-            let title = '';
+            var title = '';
             switch ( status ) {
                 case 'approved':
                     title = $filter( 'i18next' )( 'calendar.imputeHours.approved' );

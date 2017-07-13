@@ -31,6 +31,11 @@ html, body, body > div, div[ui-view] {
   min-width: 420px;
 }
 
+::selection {
+    color: #2aff00;
+    background-color: #333;
+}
+
 * {
   outline: none !important;
 }
@@ -397,4 +402,3 @@ ng-form {
     cursor: pointer !important;
   }
 }
-

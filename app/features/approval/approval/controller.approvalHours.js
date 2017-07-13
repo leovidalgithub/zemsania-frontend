@@ -36,13 +36,6 @@
         function getData() {
             approvalHoursFactory.getEmployeesTimesheets( $scope.mainOBJ )
                 .then( function ( data ) {
-                    //**********************************************************
-                    data.forEach(function(el) {
-                        if( el.name == 'Javier' ) {
-                            console.log(el.timesheetDataModel);
-                        }
-                    });
-                    //**********************************************************
                     $scope.employees = data;
                     imputesCount();
                     if( $rootScope.notification ) showNotificationData();

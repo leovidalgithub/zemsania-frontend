@@ -38,7 +38,7 @@
             }, $scope.type == 'ok' ? 2500 : 6500 );
         }
 
-        function moveThis( RP, OP, callback ) {
+        function moveThis( RP, OP ) {
             $( '#alertMessage' ).animate({
                 opacity : OP,
                 right   : RP + 'px'
