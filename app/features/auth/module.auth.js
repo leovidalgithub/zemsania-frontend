@@ -1,11 +1,11 @@
-(function () {
+;(function () {
     'use strict';
     angular
-        .module('hours.auth', [])
-        .config(authConfig);
+        .module( 'hours.auth', [])
+        .config( authConfig );
 
-    authConfig.$invoke = ['$stateProvider'];
-    function authConfig($stateProvider) {
+    authConfig.$invoke = [ '$stateProvider' ];
+    function authConfig( $stateProvider ) {
         $stateProvider
             .state('login', {
                 url: '/login',

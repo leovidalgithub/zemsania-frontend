@@ -6,6 +6,7 @@
     'use strict';
     angular
         .module( 'hours', [
+            'ngIdle',
             'ui.router',
             'permission',
             'permission.ui',
@@ -23,6 +24,7 @@
             'ngFileSaver',
             // 'ngAnimate', // this cause ng-show/ng-hide/ng-if delay issue
             'hours.auth',
+            'hours.timeout',
             'hours.dashboard',
             'hours.components',
             'hours.employeeManager',
@@ -38,8 +40,14 @@
         .config( appConfig )
         .run( appRun );
 
-    appConfig.$invoke = [ '$locationProvider', '$i18nextProvider', 'cfpLoadingBarProvider', '$urlRouterProvider', '$qProvider' ];
-    function appConfig( $locationProvider, $i18nextProvider, cfpLoadingBarProvider, $urlRouterProvider, $qProvider ) {
+    appConfig.$invoke = [ '$locationProvider', '$i18nextProvider', 'cfpLoadingBarProvider', '$urlRouterProvider', '$qProvider', 'KeepaliveProvider', 'IdleProvider' ];
+    function appConfig( $locationProvider, $i18nextProvider, cfpLoadingBarProvider, $urlRouterProvider, $qProvider, KeepaliveProvider, IdleProvider ) {
+
+        // IDLE USER ACTIVITY DETECT ************************
+        IdleProvider.idle(5); // 5 seconds to get warning
+        IdleProvider.timeout(7); // 7 seconds to user do something to avoid logout
+        KeepaliveProvider.interval(10);
+
         $urlRouterProvider.otherwise( function( $injector ) {
             var $state = $injector.get( "$state" );
             $state.transitionTo( 'login' );
@@ -53,8 +61,8 @@
         $qProvider.errorOnUnhandledRejections(false);
     }
 
-    appRun.$invoke = [ 'PermRoleStore', 'UserFactory', '$rootScope', '$http', 'formlyConfig', '$i18next' ];
-    function appRun( PermRoleStore, UserFactory, $rootScope, $http, formlyConfig, $i18next ) {
+    appRun.$invoke = [ 'PermRoleStore', 'UserFactory', '$rootScope', '$http', 'formlyConfig', '$i18next', 'Idle' ];
+    function appRun( PermRoleStore, UserFactory, $rootScope, $http, formlyConfig, $i18next, Idle ) {
 
         window.i18next
             .use( window.i18nextXHRBackend );
@@ -68,7 +76,7 @@
             $rootScope.$apply();
         });
 
-        $rootScope.$on( '$stateChangePermissionStart', function( event, args ) {            
+        $rootScope.$on( '$stateChangePermissionStart', function( event, args ) {
             var reqPerms = args.data.permissions;
             var anonymousUser = angular.isDefined( reqPerms.only ) && reqPerms.only[0] === 'anonymous';
             var locale = ( navigator.language || navigator.userLanguage ).split( '-' )[0];
@@ -76,7 +84,7 @@
             $rootScope.activeState = args.data.state;
             $rootScope.layoutTemplate = '/layouts/' + args.data.template + '.html';
 
-            // if not anonymous, we put token on http header for all requests. And set locale from user credentials
+            // if not anonymous (some user corretly logged), we put token on http header for all requests. And set locale from user credentials
             if ( !anonymousUser ) {
                 $http.defaults.headers.common['x-auth-token'] = UserFactory.getUserToken();
                 locale = UserFactory.getUser().locale;
@@ -94,6 +102,9 @@
         loadPermissions( PermRoleStore, UserFactory );
         tmpData( $rootScope );
         setFormlyConfig( formlyConfig );
+
+        // IDLE USER ACTIVITY DETECT ************************
+        Idle.watch();
 
     }
 }());

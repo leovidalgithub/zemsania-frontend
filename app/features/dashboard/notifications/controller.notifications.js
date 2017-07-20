@@ -7,7 +7,7 @@
     NotificationController.$invoke = [ '$scope', '$rootScope', 'notifications', '$window', '$state', 'DashboardFactory', '$filter' ];
     function NotificationController( $scope, $rootScope, notifications, $window, $state, DashboardFactory, $filter ) {
 
-        ( function init() {
+        (function init() {
             $scope.tableConfig = {
                 itemsPerPage: getItemsPerPage( 125 ),
                 maxPages: "3",
@@ -112,7 +112,7 @@
             $scope.tmpData( 'add', 'notificationsListPage', $scope.tableConfig.currentPage );
         });
 
-        console.clear();
+        // console.clear();
 
      }
 }());
