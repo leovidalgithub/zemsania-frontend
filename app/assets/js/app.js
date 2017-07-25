@@ -44,8 +44,8 @@
     function appConfig( $locationProvider, $i18nextProvider, cfpLoadingBarProvider, $urlRouterProvider, $qProvider, KeepaliveProvider, IdleProvider ) {
 
         // IDLE USER ACTIVITY DETECT ************************
-        IdleProvider.idle(5); // 5 seconds to get warning
-        IdleProvider.timeout(7); // 7 seconds to user do something to avoid logout
+        IdleProvider.idle(80); // 80 seconds to get warning
+        IdleProvider.timeout(125); // 25 seconds to user do something to avoid logout
         KeepaliveProvider.interval(10);
 
         $urlRouterProvider.otherwise( function( $injector ) {
@@ -103,7 +103,7 @@
         tmpData( $rootScope );
         setFormlyConfig( formlyConfig );
 
-        // IDLE USER ACTIVITY DETECT ************************
+        // IDLE USER ACTIVITY DETECT STARTING ************************
         Idle.watch();
 
     }
@@ -1476,38 +1476,6 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
 ;( function () {
     'use strict';
     angular
-        .module( 'hours.timeout', [] )
-        .service( 'timeoutService', timeoutService );
-
-    timeoutService.$invoke = [ '$rootScope' ];
-    function timeoutService( $rootScope ) {
-
-        this.sayHello = function() {
-            return 'Hi! This is timeoutService';
-        }
-        $rootScope.$on('IdleStart', function() {
-            console.log('IdleStart');
-    	});
-        $rootScope.$on('IdleWarn', function(e, countdown) {
-            console.log('*******IdleWarn********');
-	    });
-	    $rootScope.$on('IdleTimeout', function() {
-            console.log('IdleTimeout');
-	    });
-	    $rootScope.$on('IdleEnd', function() {
-            console.log('IdleEnd');
-	    });
-	    $rootScope.$on('Keepalive', function() {
-            console.log('Keepalive');
-		// do something to keep the user's session alive
-	    });
-
-    }
-}());
-
-;( function () {
-    'use strict';
-    angular
         .module( 'hours.dashboard' )
         .factory( 'DashboardFactory', DashboardFactory );
 
@@ -2834,13 +2802,88 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
 ;( function () {
     'use strict';
     angular
+        .module( 'hours.timeout', [] )
+        .controller( 'timeoutController', timeoutController );
+
+    timeoutController.$invoke = [ '$scope', '$rootScope', '$uibModal', '$state', '$uibModalStack' ];
+    function timeoutController( $scope, $rootScope, $uibModal, $state, $uibModalStack ) {
+
+        $scope.$on( 'IdleStart', function() { // start idle warning
+            openModal();
+    	});
+        $scope.$on( 'IdleWarn', function( e, countdown ) { // timeout every second countdown
+            $rootScope.$emit( 'timeoutCount', { data : countdown });
+	    });
+	    $scope.$on( 'IdleTimeout', function() { // logout
+            logout( true );
+	    });
+	    $scope.$on( 'IdleEnd', function() { // resume before timeout
+            logout( false );
+	    });
+	    $scope.$on('Keepalive', function() { // do something to keep the user's session alive
+	    });
+
+        function logout( logout ) {
+            $uibModalStack.dismissAll();
+            if( logout ) $state.go( 'logout' );
+        };
+
+        function openModal() {
+            $uibModal.open( {
+                animation : true,
+                templateUrl : '/features/components/timeout/timeout.tpl.html',
+                controller : 'timeoutModalController',
+                backdrop: 'false',
+                size: 'md',
+                resolve: {
+                },
+            });
+        }
+}
+
+})();
+
+;( function () {
+    'use strict';
+    angular
+        .module( 'hours.timeout' )
+        .controller( 'timeoutModalController', timeoutModalController );
+
+    timeoutModalController.$invoke = [ '$scope', '$rootScope' ];
+    function timeoutModalController( $scope, $rootScope ) {
+
+        $scope.value = 100;
+        $scope.remainingSeconds;
+        var interval = 0;
+
+        $rootScope.$on( 'timeoutCount', function( event, data ) {
+            if ( interval === 0 ) {
+                interval = $scope.value / data.data;
+            }
+            $scope.$apply( function() {
+                $scope.remainingSeconds = data.data;
+                $scope.value -= interval;
+            });
+        });
+
+
+}
+
+})();
+
+;( function () {
+    'use strict';
+    angular
         .module( 'hours.dashboard' )
         .controller( 'NotificationController', NotificationController );
 
-    NotificationController.$invoke = [ '$scope', '$rootScope', 'notifications', '$window', '$state', 'DashboardFactory', '$filter' ];
-    function NotificationController( $scope, $rootScope, notifications, $window, $state, DashboardFactory, $filter ) {
+    NotificationController.$invoke = [ '$scope', '$rootScope', 'notifications', '$window', '$state', 'DashboardFactory', '$filter', 'Idle' ];
+    function NotificationController( $scope, $rootScope, notifications, $window, $state, DashboardFactory, $filter, Idle ) {
 
         (function init() {
+            // IDLE USER ACTIVITY DETECT STARTING ************************
+            Idle.watch();
+
             $scope.tableConfig = {
                 itemsPerPage: getItemsPerPage( 125 ),
                 maxPages: "3",
@@ -2945,7 +2988,7 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
             $scope.tmpData( 'add', 'notificationsListPage', $scope.tableConfig.currentPage );
         });
 
-        // console.clear();
+        console.clear();
 
      }
 }());

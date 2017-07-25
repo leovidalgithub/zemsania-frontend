@@ -60,6 +60,10 @@
         "moderateAbsences": "Gestión de ausencias",
         "exportFiles": "Exportación de tablas "
     },
+    "timeout": {
+        "message": "Por su seguridad esta sesión será cerrada en",
+        "seconds": "segundos"
+    },
     "userProfile": {
         "user" : {
             "name"            : "Nombre",

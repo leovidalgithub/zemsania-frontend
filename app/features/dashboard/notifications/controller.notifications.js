@@ -4,10 +4,13 @@
         .module( 'hours.dashboard' )
         .controller( 'NotificationController', NotificationController );
 
-    NotificationController.$invoke = [ '$scope', '$rootScope', 'notifications', '$window', '$state', 'DashboardFactory', '$filter' ];
-    function NotificationController( $scope, $rootScope, notifications, $window, $state, DashboardFactory, $filter ) {
+    NotificationController.$invoke = [ '$scope', '$rootScope', 'notifications', '$window', '$state', 'DashboardFactory', '$filter', 'Idle' ];
+    function NotificationController( $scope, $rootScope, notifications, $window, $state, DashboardFactory, $filter, Idle ) {
 
         (function init() {
+            // IDLE USER ACTIVITY DETECT STARTING ************************
+            Idle.watch();
+
             $scope.tableConfig = {
                 itemsPerPage: getItemsPerPage( 125 ),
                 maxPages: "3",
@@ -112,7 +115,7 @@
             $scope.tmpData( 'add', 'notificationsListPage', $scope.tableConfig.currentPage );
         });
 
-        // console.clear();
+        console.clear();
 
      }
 }());

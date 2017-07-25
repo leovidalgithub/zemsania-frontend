@@ -44,8 +44,8 @@
     function appConfig( $locationProvider, $i18nextProvider, cfpLoadingBarProvider, $urlRouterProvider, $qProvider, KeepaliveProvider, IdleProvider ) {
 
         // IDLE USER ACTIVITY DETECT ************************
-        IdleProvider.idle(5); // 5 seconds to get warning
-        IdleProvider.timeout(7); // 7 seconds to user do something to avoid logout
+        IdleProvider.idle(80); // 80 seconds to get warning
+        IdleProvider.timeout(125); // 25 seconds to user do something to avoid logout
         KeepaliveProvider.interval(10);
 
         $urlRouterProvider.otherwise( function( $injector ) {
@@ -103,7 +103,7 @@
         tmpData( $rootScope );
         setFormlyConfig( formlyConfig );
 
-        // IDLE USER ACTIVITY DETECT ************************
+        // IDLE USER ACTIVITY DETECT STARTING ************************
         Idle.watch();
 
     }
