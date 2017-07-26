@@ -28,12 +28,12 @@ $tablet: "(max-width: 1023px)";
 html, body, body > div, div[ui-view] {
   height: 100%;
   overflow-y: hidden;
-  min-width: 420px;
+  // min-width: 420px;
 }
 
 ::selection {
-    color: #2aff00;
-    background-color: #333;
+    color: #e8f1e6;
+    background-color: #585858;
 }
 
 * {
@@ -164,13 +164,14 @@ hr {
   }
   input {
     border: none;
-    border-bottom: 1px solid rgba(black, 0.2);
+    border-bottom: 1px solid rgba(black, 0.3);
     box-shadow: none;
     border-radius: 0;
     padding: 5px 0;
     // @include transition(all .3s);
+    transition: all 1s ease;
     &:focus {
-      border-color: $zemsania;
+        border-bottom: 1.4px solid $zemsania;
     }
     &:hover {
       border-color: $zemsania;

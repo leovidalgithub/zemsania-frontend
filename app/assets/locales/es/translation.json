@@ -4,7 +4,7 @@
         "login": {
             "login": "Inicio de sesión",
             "logout": "Salir",
-            "username": "Nombre de empleado",
+            "username": "Correo de empleado",
             "password": "Contraseña",
             "errorAtLogin": "Usuario o contraseña no válidos",
             "passwordRecovery": "Recuperar acceso",

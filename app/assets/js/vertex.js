@@ -97,4 +97,3 @@ function draw() {
         ctx.stroke();
     }
 }
-

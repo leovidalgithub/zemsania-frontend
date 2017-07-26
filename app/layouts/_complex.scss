@@ -3,28 +3,8 @@
   #wrapper {
     height: 100%;
     padding-left: 0;
-    // overflow: auto;
-    // @include transition(all .4s ease);
-    // &.toggled {
-    //   padding-left: 250px;
-    //   #sidebar-wrapper {
-    //     width: 250px;
-    //   }
-    //   #page-content-wrapper {
-    //     position: absolute;
-    //     margin-right: -250px;
-    //   }
-    // }
 
     #page-content-wrapper {
-      // height: 100%;
-      // overflow-y: scroll;
-      // > .container-fluid {
-      //   min-height: 100%;
-      //   @media #{$mobile} {
-      //     padding: 0;
-      //   }
-      // }
     }
 
     #menuButton {
@@ -240,20 +220,9 @@
 
   @media(max-width: 768px) {
     #wrapper {
-      // padding-left: 250px;
-      // &.toggled {
-      //   padding-left: 0;
-      //   #sidebar-wrapper {
-      //     width: 0;
-      //   }
-      //   #page-content-wrapper {
-      //     position: relative;
-      //     margin-right: 0;
-      //   }
-      // }
-          #menuButton {
-            display: block;
-          }
+      #menuButton {
+        display: block;
+      }
     }
 
    #sidebar-wrapper {
