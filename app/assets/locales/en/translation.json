@@ -1,0 +1,516 @@
+{
+    "loaded": "true",
+    "auth": {
+        "login": {
+            "login": "Start here",
+            "logout": "Salir",
+            "username": "Nombre de empleado",
+            "password": "Password",
+            "errorAtLogin": "Usuario o contraseña no válidos",
+            "passwordRecovery": "Access recovery",
+            "invalidEmail": "El usuario no es correcto",
+            "invalidPassword": "Se requiere de contraseña"
+        },
+        "passwordRecovery": {
+            "title": "Password recovery",
+            "recovery": "Recuperar",
+            "email": "Correo electrónico",
+            "errorRecovery": "No se ha podido realizar la operación",
+            "successRecovery": "Te hemos enviado un correo de recuperación"
+        },
+        "changePassword": {
+            "title": "Cambiar contraseña",
+            "currentPassword": "Contraseña actual",
+            "newPassword": "Contraseña nueva",
+            "confirmPassword": "Repetir contraseña nueva",
+            "enterCurrent": "Actual",
+            "enterNew": "Nueva",
+            "enterConfirm": "Confirmar",
+            "currentPassIncorrect": "Contraseña actual incorrecta",
+            "newConfirmNotMatching": "Las contraseñas no coinciden",
+            "userNotFound": "Usuario no encontrado",
+            "error": "Error cambiar la contraseña",
+            "success": "Contraseña cambiada con éxito",
+            "changeBtn": "Cambiar"
+        },
+        "profile": {
+            "title": "Mi perfil",
+            "saveSuccess": "El perfil se ha actualziado con éxito.",
+            "saveError": "Ha ocurrido un problema mientras se guardaba tu perfil."
+        }
+    },
+    "sidebar": {
+        "notifications": "Notificaciones",
+        "dashboard": "Página principal",
+        "userProfile": "Mi cuenta",
+        "employeeManager": "Employees Manager",
+        "userConfig": "Configuration",
+        "timeCalendar": "Impute hours",
+        "calendars": "Calendars",
+        "vacationCalendar": "Holiday Calendar",
+        "timeManager": "Check hours",
+        "projectAssign": "Assign Projects",
+        "vacationManager": "Check Vacations",
+        "moderateSpents": "Expense Management",
+        "imputeSpents": "Expense list",
+        "holidaySchemes": "Calendars",
+        "workloadSchemes": "Schedules",
+        "approvalHours": "Management Approval",
+        "projectTimesheets": "Project Approval",
+        "imputeAbsences": "Register Absence",
+        "moderateAbsences": "Absence Management",
+        "exportFiles": "Tables Export"
+    },
+    "userProfile": {
+        "user" : {
+            "name"            : "Name",
+            "surname"         : "Surname",
+            "lastname"        : "Last name",
+            "lastname_plural" : "Surnames",
+            "nif"             : "NIF",
+            "sex"             : "Genre",
+            "genre"           : "Genre",
+            "genre_male"      : "Male",
+            "genre_female"    : "Female",
+            "username"        : "Email",
+            "email"           : "Email",
+            "password"        : "Password",
+            "birthdate"       : "Date of birth",
+            "locale"          : "Panel language",
+            "enabled"         : "Empleado habilitado",
+            "notFound"        : "No se ha encontrado ningún empleado",
+            "roles"           : "Roles",
+            "userNotFound"    : "Employee not found",
+            "superior"        : "Gestor Personal",
+            "company"         : "Company",
+            "candidateId"     : "CandidateId",
+            "cp"              : "Employee Code"
+        },
+        "formValidations" : {
+            "usernameValid"         : "Se requiere un correo electrónico válido",
+            "usernameAlreadyExists" : "El correo introducido ya existe",
+            "name"        : "Se requiere un nombre",
+            "surname"     : "Se requiere al menos un apellido",
+            "nif"         : "Se requiere un NIF válido",
+            "birthday"    : "La fecha no debe ser menor a 18 años"
+        }
+    },
+    "actions": {
+        "generate": "Generar",
+        "findingString" : "String to find",
+        "save": "Guardar",
+        "uploading": "Subiendo archivo",
+        "addNew": "Añadir",
+        "sentToValidate": "Enviar a validar",
+        "attend": "Atender",
+        "decline": "Declinar",
+        "filterBy": "Filtrar por:",
+        "approve": "Aprobar",
+        "loading": "Cargando",
+        "request": "Solicitar",
+        "cancel": "Cancelar",
+        "send": "Enviar",
+        "markRead": "Descartar",
+        "done": "Finalizar",
+        "remove": "Eliminar",
+        "sure": "¿Seguro?",
+        "search": "Find",
+        "toSearch": "Find",
+        "create": "Crear",
+        "reset": "Borrar",
+        "next": "Continuar",
+        "nextPage": "Primera",
+        "lastPage": "Última",
+        "logout": "Cerrar sesión",
+        "close": "Cerrar"
+    },
+    "words": {
+        "employee": "empleado",
+        "project": "Project",
+        "projects": "Projects",     
+        "type": "tipo",
+        "subType": "Sub-type",
+        "hour": "hora",
+        "hours": "horas",
+        "input": "entrada",
+        "worked": "trabajadas",
+        "days": "días",
+        "journey": "jornadas",
+        "absences": "ausencias",
+        "holidays": "vacaciones",
+        "week": "Week",
+        "yes": "Sí",
+        "no": "No",
+        "comments": "Comments",
+        "next": "Next",
+        "previous": "Previous",
+        "from": "De:"
+    },
+    "employeeManager": {
+        "list": {
+            "title": "Gestionar empleados",
+            "removeUserSuccess": "El empleado ha sido borrado con éxito",
+            "removeUserError": "Ha ocurrido un problema borrando el empleado.",
+            "createNew": "Dar de alta",
+            "advancedSearch": "Búsqueda"
+        },
+        "create": {
+            "title": "Dar de alta un empleado",
+            "saveSuccess": "Empleado dado de alta con éxito",
+            "userAlreadyExists": "Este usuario ya existe en la base de datos.",
+            "saveError": "Ha ocurrido un error al dar de alta el empleado. Inténtalo más tarde"
+        },
+        "edit": {
+            "title": "Edición de empleados",
+            "minRoles": "Mínimo tiene que existir un rol",
+            "saveSuccess": "Los datos se han guardado con éxito",
+            "saveError": "Ha ocurrido un error al guardar los datos. Inténtalo más tarde"
+        }
+    },
+    "approvalHours": {
+        "all": "Todos los Registros",
+        "justPending": "Sólo pendientes",
+        "title": "Aprobación vía Gestor",
+        "description": "La descripción de la página de tiempos de empleados se explica aquí ..",
+        "search": "Buscar empleado...",
+        "approve": "Aprobar",
+        "reject": "Rechazar",
+        "employeePending": "empleado pendiente",
+        "employeesPending": "empleados pendientes",
+        "employee": "Empleado",
+        "imputeHours": "Horas Imputadas",
+        "workingHours": "Horas Trabajadas",
+        "dailywork": "Jornadas Trabajadas",
+        "dailyworkabsence": "Jornadas Ausencias",
+        "dailyworkHoliday": "Jornadas Vacaciones",
+        "day": "Día",
+        "value": "Valor",
+        "errorLoading": "Ha ocurrido un error al cargar los datos!",
+        "errorSaving": "Ha ocurrido un error al guardar la información. Inténtalo más tarde",
+        "okSaving": "Las Imputaciones han sido guardadas correctamente"
+    },
+    "projectTimesheets": {
+        "title": "Aprobacion Via Proyectos",
+        "description": "La descripción de las páginas de los proyectos .."
+    },
+    "calendars": {
+        "title": "Calendar Schemes",
+        "description": "Esquema de Calendarios. Los nuevos usuarios se agregan automáticamente al esquema predeterminado.",
+        "error": "Error loading calendar!",
+        "holidays": "Holidays",
+        "workingDays": "Working days",
+        "fridays": "Fridays",
+        "intensiveDays": "Intensive days",
+        "specialDays": "Special days",
+        "non_workingDays": "Non-working days",
+        "yearShowed": "Year displayed"
+    },
+        "months": {
+            "0": "January",
+            "1": "February",        
+            "2": "March",
+            "3": "April",
+            "4": "May",
+            "5": "June",
+            "6": "July",
+            "7": "August",
+            "8": "September",
+            "9": "October",
+            "10": "November",
+            "11": "December",
+            "year": "Year"
+    },
+        "days": {
+        "Mon": "Mon",
+        "Tue": "Tue",        
+        "Wed": "Wed",
+        "Thu": "Thu",
+        "Fri": "Fri",
+        "Sat": "Sat",
+        "Sun": "Sun"
+    },
+    "workloadSchemes": {
+        "title": "Patrón Horario",
+        "description": "Creación de esquemas de carga de trabajo para gestionar diferentes tipos de carga de trabajo del usuario. El cálculo de las horas requeridas por día se basa en el esquema de carga de trabajo de un usuario. Los nuevos usuarios se agregan automáticamente al esquema de carga de trabajo predeterminado."
+    },
+    "calendar": {
+        "imputeHours": {
+            "title": "Calendario de imputación laboral",
+            "reportTitle": "Reporte sobre el proyecto",
+            "reportPlaceholder": "Escribe aquí el contenido de tu reporte.",
+            "loadingCalendar": "Cargando contenido del calendario...",
+            "errorLoading": "Ha ocurrido un error al cargar los datos!",
+            "errorSaving": "Ha ocurrido un error al guardar la información. Inténtalo más tarde.",
+            "errorNoProjects": "No tiene ningún proyecto asignado o hubo un error al cargarlo",
+            "errorNoCalendar": "No tiene ningún calendario asignado o hubo un error al cargarlo",
+            "savingCalendar": "Guardando horas imputadas en el calendario...",
+            "savingSuccess": "Las Imputaciones se han guardado correctamente",
+            "sendingSuccess": "Las Imputaciones se han enviado correctamente",
+            "approveCalendarSuccess": "Semana aprobada correctamente.",
+            "approveCalendarError": "Ha ocurrido un problema al aprobar la semana",
+            "rejectCalendarSuccess": "Semana rechazada correctamente",
+            "rejectCalendarError": "Ha ocurrido un problema al rechazar la semana",
+            "hours_exceeded": "Total de horas excedidas",
+            "imputed_in_holidays": "Horas imputadas en un día festivo",
+            "expenses": "Expenses",
+            "monthView": "Month View",
+            "weekView": "Week View",
+            "changeToWeekView": "Change to Week view",
+            "changeToMonthView": "Change to Month view",
+            "totalHours": "Total Horas Imputadas",
+            "totalGuards": "Total Guardias Imputadas",
+            "totalDailywork": "Total Jornadas trabajadas",
+            "project": "Proyecto",
+            "hours": "Horas",
+            "guards": "Guardias",
+            "dailywork": "Jornadas",
+            "summary": "Resumen",
+            "media": "Media",
+            "turns": "Turnicidad",
+            "guard": "Guardia",
+            "various": "Varios",
+            "sent": "Sent",
+            "draft": "Modified",
+            "approved": "Approved",
+            "rejected": "Rejected",
+            "draftspending": "Hay imputaciones pendientes por enviar",
+            "notdraftspending": "No hay imputaciones pendientes por enviar",
+            "message": {
+                    "holiday_req": "Solicitud para aprobación de vacaciones",
+                    "hours_req": "Solicitud para aprobación de horas/guardias imputadas",
+                    "hours_validated": "Sus horas/guardias han sido aprobadas",
+                    "hours_rejected": "Sus horas/guardias han sido rechazadas",
+                    "hours_pending_req": "Recuerde que tiene horas/guardias por imputar"
+                }
+        },
+        "imputeHoursValidator": {
+            "title": "Validación calendarios de imputación laborales",
+            "usersAssociated": "Empleados con proyectos que supervisas:"
+        },
+        "holidayCalendar": {
+            "remainingDays": "Días vacacionales: ",
+            "textExplanation": "Haz click sobre la casilla que quieras establecer como vacacional.",
+            "title": "Calendario de vacaciones",
+            "requestHoliday": "Pedir día de vacaciones",
+            "requestHolidayMessage_1": "Vas a solicitar el día",
+            "requestHolidayMessage_2": "como vacacional. Un supervisor revisará tu petición.",
+            "requestedHolidayMessage": "Un supervisor revisará esta petición para aprobarla.",
+            "rejectedHolidayMessage": "Tu supervisor ha rechazado este dia de vacaciones",
+            "approvedHolidayMessage": "Tu supervisor ha aprobado este dia de vacaciones."
+        },
+        "moderateHolidayCalendar": {
+            "title": "Revisión de calendario vacacional",
+            "selectUser": "Ningún empleado seleccionado",
+            "modalTitle": "Revisión de fecha: ",
+            "noHolidaysRequested": "No hay peticiones para este empleado",
+            "requestedHolidayMessage": "Este día está pendiente de aprobación. ¿Aprobar?",
+            "rejectedHolidayMessage": "Este día ha sido rechazado. ¿Cambiar el estado?",
+            "approvedHolidayMessage": "Este día ha sido aprobado. ¿Cambiar el estado?.",
+            "filterByAllAsc": "Fechas ascendientes",
+            "filterByAllDesc": "Fechas descendientes",
+            "filterByPending": "Sólo pendientes",
+            "filterByApproved": "Sólo aprobadas",
+            "filterByRejected": "Sólo declinadas"
+        },
+        "dailyConcepts": {
+            "servicios": "Servicios",
+            "gastos_de_viaje": "Gastos de viaje",
+            "varios": "Varios",
+            "turnicidad": "Turnicidad",
+            "hora_extra": "Hora extra",
+            "hora_extra_festivo": "Hora extra festivo",
+            "guardias_presenciales_laborales": "Guardias presenciales laborales",
+            "guardias_presenciales_festivos": "Guardias presenciales festivos",
+            "guardias_a_distancia_laborales": "Guardias a distancia laborales",
+            "guardias_a_distancia_festivos": "Guardias a distancia festivos",
+            "dietas_fijas_forfaits": "Dietas fijas forfaits",
+            "gastos_de_viaje": "Gastos de viaje",
+            "dietas_variables": "Turnicidad",
+            "pluses_idiomas_permanencia": "Pluses idiomas permanencia",
+            "horas_nocturnas": "Horas nocturnas",
+            "jornadas_superfestivos": "Jornadas superfestivos",
+            "intervenciones": "Intervenciones",
+            "disponibilidad_ligada_a_turnicidad": "Disponibilidad ligada a turnicidad",
+            "nocturnidad": "Nocturnidad",
+            "rappel": "Rappel",
+            "formacion": "Formación"
+        },
+        "calendarCreator": {
+            "weekendsAreHolidays": "Fines de semana no laborables"
+        }
+    },
+    "projects": {
+        "projectAssign": {
+            "title": "Asignar proyectos",
+            "userInfo": "Edición del empleado en el proyecto",
+            "addUserToProject": "Agregar empleado al proyecto",
+            "projectGeneralInfo": "Información del proyecto",
+            "selectProjectFirst": "Ningún proyecto seleccionado",
+            "projectName": "Nombre del proyecto",
+            "searchProject": "Nombre, descripción, código...",
+            "activeUsers": "Empleados asignados",
+            "removeUserFromProject": "¿Eliminar empleado de este proyecto?",
+            "searchResultUsers": "Empleados encontrados",
+            "projectRef": "Referencia de proyecto",
+            "customerName": "Nombre del cliente",
+            "customerRef": "Referencia del cliente",
+            "emailSupervisor": "Supervisor",
+            "emailSupervisorDelivery": "Supervisor de entrega",
+            "initDate": "Día de inicio",
+            "endDate": "Día de finalización"
+        }
+    },
+    "error": {
+        "500": {
+            "title": "Oops!",
+            "subtitle": "Ha ocurrido un problema en nuestros servidores!"
+        }
+    },
+    "dates": {
+        "initDate": "Fecha inicial",
+        "endDate": "Fecha final",
+        "maxHours": "Horas máx.",
+        "zeroIsUnlimited": "0h para ilimitado"
+    },
+    "notifications": {
+        "title": "Notificaciones",
+        "unread": "No leído",
+        "unreads": "No leídos",
+        "read": "Leído",
+        "reads": "Leídos",
+        "from": "De:",
+        "from2": "Remite",
+        "type": "Tipo",
+        "status": "Estado",
+        "msg": "Mensaje",
+        "goTo": "Ir a ello",
+        "markAsRead": "Marcar como leído",
+        "unreadNotifications": "notificaciones no leídas",
+        "types": {
+            "hours_validated": "Imputaciones aprobadas",
+            "hours_rejected": "Imputaciones rechazadas",
+            "hours_sent": "Imputaciones enviadas",
+            "hours_req": "Solicitud aprobación imputaciones",
+            "holiday_req": "Solicitud aprobación vacaciones",
+            "hours_pending_req": "Recordatorio para imputar"
+        },
+        "noNotifications": "No hay notificaciones por atender.",
+        "errorMarkRead": "Ha ocurrido intentado marcar la notificación como leída" 
+    },
+    "locale": {
+        "es": "Español",
+        "en": "Inglés",
+        "ca": "Catalán"
+    },
+    "role": {
+        "ROLE_BACKOFFICE": "Administrador",
+        "ROLE_DELIVERY": "Facturador",
+        "ROLE_MANAGER": "Supervisor",
+        "ROLE_USER": "Usuario"
+    },
+    "reports": {
+        "spents": {
+            "title": "Listado de gastos",
+            "listTitle": "Gastos del empleado",
+            "comment": "Comentario adicional",
+            "attachment": "Archivo adjunto",
+            "removeSpentsTitle": "¿Eliminar gasto?",
+            "removeSpentsText": "Si eliminas este gasto no lo podrás recuperar, ¿estás seguro?"
+        },
+        "spentsAdd": {
+            "title": "Añadir gasto"
+        },
+        "spentsEditor": {
+            "title": "Editor de gastos",
+            "successSaving": "Gasto guardado correctamente",
+            "errorSaving": "Error al guardar el gasto"
+        },
+        "moderatorSpents": {
+            "title": "Moderar gastos de usuarios",
+            "singleSpent": "Moderar gasto",
+            "spentSaveSuccess": "El estado del gasto ha sido actualizado",
+            "spentSaveError": "Ha ocurrido un error al actualizar el gasto"
+        },
+        "absences": {
+            "title": "Listado de ausencias",
+            "listTitle": "Ausencias del empleado",
+            "comment": "Comentario adicional",
+            "attachment": "Archivo adjunto",
+            "removeAbsenceTitle": "¿Borrar ausencia?",
+            "removeAbsenceText": "Este proceso no es reversible, ¿seguro que quieres borrar esta ausencia?"
+        },
+        "absencesAdd": {
+            "title": "Añadir ausencia"
+        },
+        "absencesEditor": {
+            "title": "Editor de ausencias",
+            "successSaving": "Ausencia guardado correctamente",
+            "errorSaving": "Error al guardar la ausencia"
+        },
+        "moderatorAbsences": {
+            "title": "Moderar ausencias del usuarios",
+            "singleSpent": "Moderar ausencia",
+            "spentSaveSuccess": "El estado de la ausencia ha sido actualizado",
+            "spentSaveError": "Ha ocurrido un error al actualizar la ausencia"
+        },
+        "labels": {
+            "date": "Fecha",
+            "hours": "Horas",
+            "status": "Estado",
+            "price": "Precio",
+            "concept": "Concepto",
+            "comment": "Comentario",
+            "attachment": "Imagen adjunta",
+            "statusApproved": "Aprobado",
+            "statusRejected": "Denegado",
+            "statusPending": "Pendiente de aprobación",
+            "approved": "Aprobado",
+            "rejected": "Denegado",
+            "spent_sent": "Pendiente de aprobación"
+        },
+        "concepts": {
+            "doctor": "Visita médica",
+            "school_visit": "Visita escolar",
+            "hotel": "Hotel",
+            "transport": "Transporte",
+            "food": "Comida"
+        }
+    },
+    "excelExport": {
+        "comboSelector": {
+            "title": "Exportación de tablas",
+            "euro": "Exportar gastos",
+            "stethoscope": "Exportar ausencias",
+            "clock": "Exportar horas",
+            "holidays": "Exportar vacaciones"
+        },
+        "labels": {
+            "name": "Email del empleado",
+            "project": "Proyecto",
+            "spentType": "Tipo de gasto",
+            "startAmount": "Importe mínimo",
+            "endAmount": "Importe máximo",
+            "state": "Estado",
+            "startDate": "Fecha inicio",
+            "endDate": "Fecha fin",
+            "attachment": "Justificante",
+            "attachment_both": "Ambos",
+            "attachment_yes": "Si",
+            "attachment_no": "No",
+            "absencesType": "Tipo de ausencia",
+            "timeStart": "Mínimo de horas",
+            "timeEnd": "Máximo de horas",
+            "holiday_types": "Estado",
+            "holiday_approved": "Vacaciones aprobadas",
+            "holiday_rejected": "Vacaciones rechazadas",
+            "holiday_pending": "Vacaciones pendientes",
+            "spent_status": "Estado",
+            "spent_approved": "Gastos aprobados",
+            "spent_rejected": "Gastos rechazados",
+            "spent_sent": "Gastos pendientes",
+            "approved": "Aprobada",
+            "rejected": "Rechazada",
+            "absence_sent": "Pendiente"
+        }
+    }
+}

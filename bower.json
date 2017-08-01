@@ -1,0 +1,46 @@
+{
+  "name": "zemtime",
+  "description": "zemtime frontend",
+  "main": "index.js",
+  "authors": [
+    "Leonardo Rdgz Vidal"
+  ],
+  "license": "ISC",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular-animate": "^1.6.2",
+    "angular-elastic": "^2.5.1",
+    "angular-file-saver": "^1.1.3",
+    "angular-formly-templates-bootstrap": "^6.3.2",
+    "angular-formly": "^8.4.1",
+    "angular-loading-bar": "^0.9.0",
+    "angular-permission": "^5.2.1",
+    "angular-resource": "^1.6.2",
+    "angular-sanitize": "^1.6.2",
+    "angular-ui-calendar": "^1.0.2",
+    "angular-ui-router": "^0.4.2",
+    "angular": "^1.6.2",
+    "animate.css": "^3.5.2",
+    "at-table": "^1.0.7",
+    "bootstrap": "^3.3.7",
+    "bourbon": "^4.3.2",
+    "font-awesome": "^4.7.0",
+    "i18next-xhr-backend": "^1.3.0",
+    "i18next": "6.1.2",
+    "ng-i18next": "^1.0.4",
+    "ngstorage": "^0.3.11",
+    "jquery-ui": "jqueryui#1.9.2",
+    "moment": "^2.18.1",
+    "angular-moment": "^1.0.1",
+    "jquery": "1.9.1",
+    "ng-idle": "^1.3.2",
+    "angular-bootstrap": "^2.5.0"
+  }
+}

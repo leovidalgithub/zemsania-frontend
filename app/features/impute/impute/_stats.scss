@@ -1,0 +1,113 @@
+    #imputeHours #section {
+
+        #statistics {
+
+            width: 98%;
+            margin: auto;
+            display: flex;
+            flex-flow: row wrap;
+            justify-content: space-around;
+            align-items: flex-start;
+            font-size: 14px;
+
+            .tableContainer {
+                overflow-x:auto;
+                margin: 10px;
+
+                table, th , td {
+                    border: 1px solid #AAAAAA;
+                    border-collapse: collapse;
+                    padding: 5px 10px;
+                    text-align: center;
+                    vertical-align: center;
+                }
+                th {
+                    background-color: #333;
+                    color: white;
+                    // font-size: 13px;
+                    font-weight: normal;
+                }
+                tr.odd {
+                    background-color:#999999;
+                    color: white;
+                }
+                tr:hover:not(.notHoverPlease) * {
+                    border-bottom: 1px solid $zemsania;
+                    border-left: 1px solid $zemsania;
+                }
+
+                .THIonRed {
+                    background-color: $rejectedColor;
+                    color: white;
+                    font-size: 16px;
+                }
+                .THIonGreen {
+                    background-color: $approvedColor;
+                    color: white;
+                    font-size: 16px;
+                }
+                .thisProject {
+                    cursor: pointer;
+                    &:hover {
+                        font-weight: bold;
+                    }
+                }
+            }
+            /***** LEYEND *****/
+            #leyend {
+                margin: 0;
+                    @include myLeyend( 220px, 1px );
+                .leyendBox {
+                    @include myLeyendBox( 20px, 60px );
+                }
+                #workingLeyend {
+                    @extend .ext_flex-start_;
+                         div:first-of-type {
+                                background-color: $workingColor;
+                                margin: 3px 10px 5px 3px;
+                         }
+                }
+                #fridayLeyend {
+                    @extend .ext_flex-start_;
+                         div {
+                                background-color: $fridayColor;
+                                margin: 5px 10px 7px 3px;
+                         }
+                }
+                #intensiveLeyend {
+                    @extend .ext_flex-start_;
+                         div {
+                                background-color: $intensiveColor;
+                                margin: 5px 10px 7px 3px;
+                         }
+                }
+                #specialLeyend {
+                    @extend .ext_flex-start_;
+                         div {
+                                background-color: $specialColor;
+                                margin: 5px 10px 7px 3px;
+                         }
+                }
+                #holidaysLeyend {
+                    @extend .ext_flex-start_;
+                         div {
+                                background-color: $holidaysColor;
+                                margin: 5px 10px 7px 3px;
+                         }
+                }
+                #non_workingLeyend {
+                    @extend .ext_flex-start_;
+                         div:first-of-type {
+                                background-color: $non_workingColor;
+                                margin: 5px 10px 7px 3px;
+                         }
+                }
+                    #workingRange, #fridayRange,
+                    #intensiveRange, #specialRange {
+                                text-align: right;
+                                font-size: 15px;
+                                margin-top: -6px;
+                    }
+            } // #leyend
+        }
+    }

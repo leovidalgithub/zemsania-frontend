@@ -1,0 +1,274 @@
+<div id="imputeHours">
+    <!-- HEADER TOOL-BAR -->
+    <header id="header">
+        <div id="headerContent">
+            <div class="flexDesign box-shadow p20 top-bar">
+                <div>
+                    <h3>{{'calendar.imputeHours.title' | i18next}}</h3>
+                </div>
+                 <div class="rightMargin" ng-hide="alerts.permanentError">
+                     <button ng-disabled="!changes.pendingChanges" class="btn btn-gray no-margin" ng-click="openPendingChangesModal()">
+                        {{'actions.cancel' | i18next}}
+                    </button>
+                    <button ng-disabled="!pendingDrafts" class="btn no-margin" ng-click="save(true)"
+                            ng-class="{ 'btn-gray': !pendingDrafts, 'btn-primary': pendingDrafts}"
+                            ng-attr-title="{{pendingDrafts ? ('calendar.imputeHours.draftspending' | i18next) : ('calendar.imputeHours.notdraftspending' | i18next)}}">
+                            {{'actions.send' | i18next}}
+                    </button>
+                    <button ng-disabled="!changes.pendingChanges" class="btn no-margin" ng-click="save(false)"
+                            ng-class="{ 'btn-gray': !changes.pendingChanges, 'btn-primary': changes.pendingChanges}">
+                            {{'actions.save' | i18next}}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- SECTION MAIN CONTENT -->
+    <section id="section" class="box-shadow p20">
+<!-- <button class="btn btn-lg" style="background-color: #05AE88; color: white;font-size: 17px;" ng-click="fn()">Go!!</button> -->
+
+        <!-- IF NOT USERPROJECTS OR NOT CALENDAR OR ANY LOAD ERROR -->
+        <div ng-hide="alerts.permanentError">
+
+            <!-- OPTIONS -->
+            <div id="imputeOptions" class="simple-input">
+            <form>
+                <div class="form-group row">
+                    <!-- PROJECTS -->
+                    <div class="col-xs-12 col-md-8">
+                        <label for="projectsID">{{'words.projects' | i18next}}</label>
+                        <select ng-options="project as project.nameToShow for project in userProjects | orderBy : 'nameToShow'" ng-model="projectModel" ng-change="projectChanged()" id="projectsID"></select>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <!-- IMPUTE TYPES -->
+                    <div class="col-xs-12 col-md-3">
+                        <label for="imputeTypes">{{'words.type' | i18next}}</label>
+                        <select ng-options="type for type in imputeTypes | orderBy : type" ng-model="typesModel"
+                                ng-change="imputeTypeChanged()" id="imputeTypes"></select>
+                    </div>
+
+                    <!-- <h3>{{gg(typesModel)}}</h3> -->
+                    <!-- <h3>{{imputeTypes.indexOf( typesModel )}}</h3> -->
+
+                    <!-- IMPUTE SUBTYPES -->
+                    <div class="col-xs-12 col-md-4">
+                        <label for="imputeSubTypes">{{'words.subType' | i18next}}</label>
+                        <select ng-options="subType for subType in imputeTypes[typesModel] | orderBy : subType" ng-disabled="!typesModel" ng-model="subtypesModel" ng-change="imputeSubTypeChanged()" id="imputeSubTypes"></select>
+                    </div>
+
+                    <!-- MOVING-DATE BUTTONS -->
+                    <div class="col-xs-12 col-md-5">
+                        <button class="btn btn-primary" ng-click="moveDate(-1)" title="{{'words.previous' | i18next}}">
+                            <i class="fa fa-arrow-left"></i></button>
+                        <button class="btn btn-primary" ng-click="moveDate(+1)" title="{{'words.next' | i18next}}">
+                            <i class="fa fa-arrow-right"></i></button>
+                        <button ng-show="weekViewMode" class="btn btn-primary" ng-click="monthWeekViewSwap()"
+                                 title="{{'calendar.imputeHours.changeToMonthView' | i18next}}">
+                                {{'calendar.imputeHours.monthView' | i18next}}
+                        </button>
+                        <button ng-hide="weekViewMode" class="btn btn-primary" ng-click="monthWeekViewSwap()"
+                                 title="{{'calendar.imputeHours.changeToWeekView' | i18next}}">
+                                {{'calendar.imputeHours.weekView' | i18next}}
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            </div>
+
+            <!-- MONTH INFO -->
+            <div id="monthInfo">
+                <p>{{'months.' + showDaysObj.currentMonth | i18next}}  {{showDaysObj.currentYear}}
+                <span ng-show="weekViewMode">{{'words.week' | i18next}} Nº {{showDaysObj.currentWeek + 1}}</span></p>
+            </div>
+
+            <!-- MONTH DAYS -->
+            <div id="daysDiv">
+                <div class="myWeek" ng-repeat="(keyWeek, week) in showDaysObj.weeks">
+                    <div id="{{day.timeStamp}}" class="myDay {{day.dayType}}" ng-repeat="(keyDay, day) in week"
+                         ng-class="{'desactivedNotCurrentMonth': showDaysObj.currentMonth!=day.thisMonth,
+                                    'desactivedByStatus': day.status=='approved' || day.status=='sent'}"
+                         ng-hide="((weekViewMode == true) && (showDaysObj.currentWeek != day.week))">
+
+                        <!-- LEFT CORNER INFO TAG -->
+                        <div ng-hide="showDaysObj.currentMonth!=day.thisMonth" class="infoTag {{day.status}} {{day.dayType}}"
+                                ng-switch on="day.status">
+                            <i ng-switch-when="approved" class="fa fa-thumbs-up" title="{{'calendar.imputeHours.approved' | i18next}}!"></i>
+                            <i ng-switch-when="rejected" class="fa fa-thumbs-down" title="{{'calendar.imputeHours.rejected' | i18next}}!"></i>
+                            <i ng-switch-when="sent" class="fa fa-paper-plane" title="{{'calendar.imputeHours.pendingToReview' | i18next}}"></i>
+                            <i ng-switch-when="draft" class="fa fa-wrench" title="{{'calendar.imputeHours.pendingToSend' | i18next}}"></i>
+                        </div>
+
+                        <div class="myHeader">
+                            {{'days.' + (day.day | amDateFormat:'ddd') | i18next}}
+                            {{day.day | amDateFormat:'DD'}} <!-- {{day.day | date : 'dd/MMM/yyyy'}} -->
+                        </div>
+
+                        <div class="myInput">
+                            <input id="input{{day.timeStamp}}" ng-disabled="day.status=='approved' || day.status=='sent'"
+                                    ng-focus="gotFocus(day.timeStamp)"
+                                    ng-show="(day.inputType == 'number') && (showDaysObj.currentMonth==day.thisMonth)"
+                                    class="form-control input-sm" type="number" step="0.5" min="0" max="24"
+                                    ng-change="inputChanged(day)" ng-model="day.value" />
+                            <input ng-disabled="day.status=='approved' || day.status=='sent'" ng-focus="gotFocus(day.timeStamp)"
+                                    ng-show="(day.inputType == 'checkbox') && (showDaysObj.currentMonth==day.thisMonth)"
+                                    class="form-control input-sm" type="checkbox" value="{{day.checkValue}}"
+                                    ng-model="day.checkValue" ng-change="inputChanged(day)">
+                        </div>
+
+                        <!-- IMPUTE TYPES SUMMARY -->
+                        <div ng-repeat="(imputeTypeKey, value) in day.imputeTypesSummary" class="imputeTypesSummary {{day.dayType}}"
+                             ng-class="{'desactivedByStatus': day.status=='approved' || day.status=='sent',
+                             'highlightValue': value.value,'totalHours':imputeTypeKey=='totalHours',
+                             'totalGlobalHours':imputeTypeKey=='totalGlobalHours',
+                             'activeType':giveMeImputeTypeIndex()==imputeTypeKey}"
+                             ng-click="openImputeTypeSummaryModal(day.timeStamp,day,day.imputeTypesSummary)">
+                                 <i ng-show="value.status=='approved'" class="fa fa-thumbs-up"></i>
+                                 <i ng-show="value.status=='rejected'" class="fa fa-thumbs-down"></i>
+                                 <i ng-show="value.status=='sent'" class="fa fa-paper-plane"></i>
+                                 <i ng-show="value.status=='draft'" class="fa fa-wrench"></i>
+                                 <span>&nbsp;{{giveMeAbbreviation(imputeTypeKey)}}&nbsp;</span>
+                                 <span>{{value.value}}</span>
+                        </div>
+
+                            <!-- DAY FOOTER -->
+<!--                         <div class="myFooter" ng-show="showDaysObj.currentMonth==day.thisMonth">
+                            <button ng-disabled="day.status=='approved' || day.status=='sent'" class="btn btn-xs btn-warning" title="{{'calendar.imputeHours.expenses' | i18next}}" tabindex="-1">
+                                <i class="fa fa-eur"></i></button>
+                            <button ng-disabled="day.status=='approved' || day.status=='sent'" class="btn btn-xs btn-danger" title="{{'words.comments' | i18next}}" tabindex="-1">
+                                <i class="fa fa-comment"></i></button>
+                        </div>
+ -->
+                    </div>
+                </div>
+            </div>
+
+    <hr><!-- STATISTICS CONTROLLER *********************************************** *********************************************** -->
+            <div ng-controller="imputeHoursStatsController">
+                <div id="statistics">
+
+                    <!-- LEYEND -->
+                    <div id="leyend">
+                        <div id="workingLeyend"><div class="leyendBox"></div><span>{{'calendars.workingDays' | i18next}}</span></div>
+                        <div id="workingRange"></div>
+                        <div id="fridayLeyend"><div class="leyendBox"></div><span>{{'calendars.fridays' | i18next}}</span></div>
+                        <div id="fridayRange"></div>
+                        <div id="intensiveLeyend"><div class="leyendBox"></div><span>{{'calendars.intensiveDays' | i18next}}</span></div>
+                        <div id="intensiveRange"></div>
+                        <div id="specialLeyend"><div class="leyendBox"></div><span>{{'calendars.specialDays' | i18next}}</span></div>
+                        <div id="specialRange"></div>
+                        <div id="holidaysLeyend"><div class="leyendBox"></div><span>{{'calendars.holidays' | i18next}}</span></div>
+                        <div id="non_workingLeyend"><div class="leyendBox"></div><span>{{'calendars.non_workingDays' | i18next}}</span></div>
+                    </div>
+
+                    <!-- PROJECTS DETAILS INFO TABLE -->
+                    <div class="tableContainer">
+                        <table style="table-layout: fixed; width: 700px;">
+                            <tr class="notHoverPlease">
+                                <th style="width: 28%;">{{'calendar.imputeHours.project' | i18next}}</th>
+                                <th style="width: 12%;">{{'calendar.imputeHours.THI' | i18next}}</th>
+                                <th style="width: 12%;">{{'calendar.imputeHours.THT' | i18next}}</th>
+                                <th style="width: 12%;">{{'calendar.imputeHours.TJT' | i18next}}</th>
+                                <th style="width: 12%;">{{'calendar.imputeHours.TJA' | i18next}}</th>
+                                <th style="width: 12%;">{{'calendar.imputeHours.TJV' | i18next}}</th>
+                                <th style="width: 12%;">{{'calendar.imputeHours.TJG' | i18next}}</th>
+                            </tr>
+                            <tr class="thisProject" ng-class="{'odd':$odd}" ng-repeat="(key, project) in showStatsObj.projectsInfo.projects"
+                                ng-click="goToThisProject(project.projectId)">
+                                <td>{{project.projectName}}</td>
+                                <td>{{project.THI}}</td>
+                                <td>{{project.THT}}</td>
+                                <td>{{project.TJT}}</td>
+                                <td>{{project.TJA}}</td>
+                                <td>{{project.TJV}}</td>
+                                <td>{{project.TJG}}</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- SUMMARY TABLE -->
+                    <div class="tableContainer">
+                        <table style="table-layout: fixed; width: 330px;">
+                            <tr class="notHoverPlease">
+                                <th style="width: 50%;">{{'calendar.imputeHours.summary' | i18next}}</th>
+                                <th style="width: 22%;"></th>
+                                <th style="width: 28%;">{{'words.calendar' | i18next}}</th>
+                            </tr>
+                            <tr>
+                                <td>{{'calendar.imputeHours.THI' | i18next}}</td>
+                                <td ng-class="{'THIonRed':showStatsObj.projectsInfo.summary.THIGlobal > showStatsObj.calendarInfo.totalTHTmonth,
+                                    'THIonGreen':showStatsObj.projectsInfo.summary.THIGlobal == showStatsObj.calendarInfo.totalTHTmonth}">
+                                    {{showStatsObj.projectsInfo.summary.THIGlobal}}</td>
+                                <td ng-class="{'THIonRed':showStatsObj.projectsInfo.summary.THIGlobal > showStatsObj.calendarInfo.totalTHTmonth,
+                                    'THIonGreen':showStatsObj.projectsInfo.summary.THIGlobal == showStatsObj.calendarInfo.totalTHTmonth}">
+                                    {{showStatsObj.calendarInfo.totalTHTmonth}}</td>
+                            </tr>
+                            <tr class="odd">
+                                <td>{{'calendar.imputeHours.THT' | i18next}}</td>
+                                <td>{{showStatsObj.projectsInfo.summary.THTGlobal}}</td>
+                                <td>{{showStatsObj.calendarInfo.totalTHTmonth}}</td>
+                            </tr>
+                            <tr>
+                                <td>{{'calendar.imputeHours.TJT' | i18next}}</td>
+                                <td ng-class="{'THIonRed':showStatsObj.projectsInfo.summary.TJTGlobal > showStatsObj.calendarInfo.totalTJTmonth,
+                                'THIonGreen':showStatsObj.projectsInfo.summary.TJTGlobal == showStatsObj.calendarInfo.totalTJTmonth}">
+                                    {{showStatsObj.projectsInfo.summary.TJTGlobal}}</td>
+                                <td ng-class="{'THIonRed':showStatsObj.projectsInfo.summary.TJTGlobal > showStatsObj.calendarInfo.totalTJTmonth,
+                                'THIonGreen':showStatsObj.projectsInfo.summary.TJTGlobal == showStatsObj.calendarInfo.totalTJTmonth}">
+                                    {{showStatsObj.calendarInfo.totalTJTmonth}}</td>
+                            </tr>
+                            <tr class="odd">
+                                <td>{{'calendar.imputeHours.TJA' | i18next}}</td>
+                                <td>{{showStatsObj.projectsInfo.summary.TJAGlobal}}</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>{{'calendar.imputeHours.TJV' | i18next}}</td>
+                                <td>{{showStatsObj.projectsInfo.summary.TJVGlobal}}</td>
+                                <td>-</td>
+                            </tr>
+                            <tr class="odd">
+                                <td>{{'calendar.imputeHours.TJG' | i18next}}</td>
+                                <td>{{showStatsObj.projectsInfo.summary.TJGGlobal}}</td>
+                                <td>-</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- GUARDS TABLE -->
+                    <div class="tableContainer">
+                        <table style="table-layout: fixed; width: 230px;">
+                            <tr class="notHoverPlease">
+                                <th style="width: 60%;">{{'calendar.imputeHours.guards' | i18next}}</th>
+                                <th style="width: 40%;">{{'words.journey' | i18next}}</th>
+                            </tr>
+                            <tr>
+                                <td>{{'calendar.imputeHours.turns' | i18next}}</td>
+                                <td>{{showStatsObj.guardsInfo.totalTurns}}</td>
+                            </tr>
+                            <tr class="odd">
+                                <td>{{'calendar.imputeHours.guard' | i18next}}</td>
+                                <td>{{showStatsObj.guardsInfo.totalGuards}}</td>
+                            </tr>
+                            <tr>
+                                <td>{{'calendar.imputeHours.various' | i18next}}</td>
+                                <td>{{showStatsObj.guardsInfo.totalVarious}}</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer id="footer">
+        <div id="footerContent">
+            <div class="copyRight">Zemsania Time Manager&copy;</div>
+        </div>
+    </footer>
+
+</div>

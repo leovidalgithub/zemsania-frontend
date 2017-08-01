@@ -1,0 +1,95 @@
+<div id="sidebar-wrapper" ng-class="{'toggled' : toggleSidebarStatus}">
+    <ul class="sidebar-nav">
+
+        <div class="sidebar-brand">
+            <li>
+                <a class="noShadowForMePlease" ui-sref="dashboard" title="{{'sidebar.dashboard' | i18next}}">
+                    <img src="/assets/img/zemsania.png">
+                </a>
+            </li>
+            <li class="top-separator">
+                <a ui-sref="userProfile" ui-sref-active="active" title="{{'sidebar.userProfile' | i18next}}">
+                    <i class="fa fa-user"></i> {{username.name + ' ' + username.surname}}</a>
+            </li>
+        </div>
+
+        <div class="sidebar-mobile">
+            <li class="myTop"> <!-- LEO WORKING HERE - IMPUTE-HOURS -->
+                <a ui-sref="dashboard" ui-sref-active="active" ng-class="{'active' : activeState === 'userConfig'}">
+                <i class="fa fa-bars"></i> {{'sidebar.notifications' | i18next}}</a>
+            </li>
+            <li class="myTop"> <!-- LEO WORKING HERE - IMPUTE-HOURS -->
+                <a ui-sref="imputeHours" ui-sref-active="active" ng-class="{'active' : activeState === 'userConfig'}">
+                <i class="fa fa-clock-o"></i> {{'sidebar.timeCalendar' | i18next}}</a>
+            </li>
+            <li>
+                <a class="not-active" ui-sref="holidayCalendar" ui-sref-active="active"><i class="fa fa-calendar-plus-o"></i>
+                    {{'sidebar.vacationCalendar' | i18next}}</a>
+            </li>
+            <li>
+                <a class="not-active" ui-sref="userSpents" ng-class="{'active' : activeState === 'userSpents'}"><i class="fa fa-euro"></i>
+                    {{'sidebar.imputeSpents' | i18next}}</a>
+            </li>
+            <li role-auth="{'only' : ['administrator', 'manager']}"> <!-- LEO WORKING HERE - CALENDARS -->
+                <a ng-click="changeState('calendars')" ng-class="{'active' : activeState === 'calendars'}"><i class="fa fa-list-alt"></i>
+                    {{'sidebar.calendars' | i18next}}</a>
+            </li>
+            <li role-auth="{'only' : ['administrator', 'manager']}">
+                <a class="not-active"  ui-sref="workloadSchemes" ng-class="{'active' : activeState === 'workloadSchemes'}"><i class="fa fa-hourglass-start"></i>
+                    {{'sidebar.workloadSchemes' | i18next}}</a>
+            </li>
+
+            <li role-auth="{'only' : ['administrator', 'manager']}">
+                <a ui-sref="approvalHours" ng-class="{'active' : activeState === 'approvalHours'}">
+                    <i class="fa fa-calendar-check-o"></i>
+                    {{'sidebar.approvalHours' | i18next}}</a>
+            </li>
+
+            <li role-auth="{'only' : ['administrator', 'manager']}">
+                <a class="not-active"  ui-sref="projectTimesheets" ng-class="{'active' : activeState === 'projectTimesheets'}"><i class="fa fa-calendar-check-o"></i>
+                    {{'sidebar.projectTimesheets' | i18next}}</a>
+            </li>
+            <li >
+                <a class="not-active"  ui-sref="userAbsences" ng-class="{'active' : activeState === 'userAbsences'}"><i
+                        class="fa fa-stethoscope"></i>
+                    {{'sidebar.imputeAbsences' | i18next}}</a>
+            </li>
+            <li role-auth="{'only' : ['administrator']}"> <!-- LEO WORKING HERE -->
+                <a ng-click="changeState('employeeManager')" ng-class="{'active' : activeState === 'employeeManager'}">
+                    <i class="fa fa-dashboard"></i> {{'sidebar.employeeManager' | i18next}}</a>
+            </li>
+            <li>
+                <a ui-sref="projectAssign" ui-sref-active="active" role-auth="{'only' : ['administrator', 'manager']}"><i
+                        class="fa fa-street-view"></i>
+                    {{'sidebar.projectAssign' | i18next}}</a>
+            </li>
+            <li>
+                <a class="not-active" ui-sref="calendarImputeHoursValidator" ui-sref-active="active" role-auth="{'only' : ['administrator', 'manager']}"><i class="fa fa-history"></i>
+                    {{'sidebar.timeManager' | i18next}}</a>
+            </li>
+            <li>
+                <a class="not-active" ui-sref="moderateHolidayCalendar" ui-sref-active="active" role-auth="{'only' : ['administrator', 'manager']}"><i class="fa fa-calendar-check-o"></i>
+                    {{'sidebar.vacationManager' | i18next}}</a>
+            </li>
+            <li>
+                <a class="not-active" ui-sref="userSpentsByID" ng-class="{'active' : activeState === 'userSpentsByID'}" role-auth="{'only' : ['administrator', 'manager']}"><i class="fa fa-euro"></i>
+                    {{'sidebar.moderateSpents' | i18next}}</a>
+            </li>
+            <li>
+                <a class="not-active" ui-sref="userAbsencesByID" ng-class="{'active' : activeState === 'userAbsencesByID'}" role-auth="{'only' : ['administrator', 'manager']}"><i class="fa fa-stethoscope"></i>
+                    {{'sidebar.moderateAbsences' | i18next}}</a>
+            </li>
+            <li>
+                <a class="not-active" ui-sref="comboSelectorExport" ui-sref-active="active" role-auth="{'only' : ['administrator', 'manager']}"><i class="fa fa-file-archive-o"></i>
+                    {{'sidebar.exportFiles' | i18next}}</a>
+            </li>
+            <li>            
+                <a href="http://jira.zemsania.com:8080/secure/RapidBoard.jspa?projectKey=ZTIME&rapidView=4&view=planning.nodetail" target="_blank"><i class="fa fa-bug"></i>Reportar Bug</a>
+            </li>
+            <li class="bottom">
+                <a ng-click="changeState('logout')"><i class="fa fa-power-off"></i>{{'actions.logout' | i18next}}</a>
+            </li>
+            <br>
+        </div>
+    </ul>
+</div>

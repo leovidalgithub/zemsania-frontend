@@ -1,0 +1,136 @@
+	#notifications {
+		#header {
+			#headerContent {
+				.rightMargin {
+					span {
+						font-size: 22px;
+						color: blue;
+					}
+				}
+			}
+		}
+		#section {
+			#options {
+				display: flex;
+				flex-flow: row wrap;
+				justify-content: center;
+				align-items: center;
+				.opts {
+					margin-right: 45px;
+					font-size: 19px;
+					font-family: monospace;
+					& input[type="radio"]+label:hover {
+						color: blue;
+						cursor: pointer;
+					}
+					input[type="radio"]:checked+label {
+						font-size: 19.1px;
+						font-weight: bold;
+					}
+				}
+			}
+
+			table {
+				.buttons {
+		        	margin-left: 40px;
+					display: flex;
+					flex-flow: column nowrap;
+					justify-content: space-between;
+					align-items: center;
+					.desactivated {
+						cursor: not-allowed;
+					}
+		        }
+			}
+
+			.notiTypes i {
+				font-size: 30px;
+				margin-bottom: 5px;
+				&.hours_req {
+					color: $hours_req_color;
+				}
+				&.hours_reviewed {
+					color: $hours_reviewed_color;
+				}
+				&.hours_validated {
+					color: $hours_validated_color;
+				}
+				&.hours_pending_req {
+					color: $hours_pending_req_color;
+				}
+				&.holiday_req {
+					color: $holiday_req_color;
+				}
+				&.hours_rejected {
+					color: $hours_rejected_color;
+				}
+			}
+
+		    #itemsList {
+		        width: 80%;
+		        margin: 15px auto;
+		        padding: 15px;
+		        border: 1px solid #E0E0E0;
+		        &:hover {
+		          background-color: #F6F6F6;
+		        }
+		        ul li {
+		          list-style: none;
+		        }
+		        .usersList {
+		          display: flex;
+		          flex-flow: row nowrap;
+		          justify-content: space-between;
+		          align-items: center;
+		          .buttons {
+		        	margin-left: 40px;
+					display: flex;
+					flex-flow: column nowrap;
+					justify-content: space-between;
+					align-items: center;
+					.desactivated {
+						cursor: not-allowed;
+					}
+		          }
+
+
+		        }
+		        li {
+		        	margin-bottom: 5px;
+		        }
+		    }
+		}
+	}
+
+
+// ***************** TEMPORAL ICONS TESTING *****************
+	#notifications {
+		#section {
+			#iconsSample {
+				display: inline-block;
+				position: fixed;
+				z-index: 20;
+				i {
+					&.hours_req {
+						color: $hours_req_color;
+					}
+					&.hours_reviewed {
+						color: $hours_reviewed_color;
+					}
+					&.hours_validated {
+						color: $hours_validated_color;
+					}
+					&.hours_pending_req {
+						color: $hours_pending_req_color;
+					}
+					&.holiday_req {
+						color: $holiday_req_color;
+					}
+					&.hours_rejected {
+						color: $hours_rejected_color;
+					}
+				}
+			}
+		}
+	}
+// ***************** ********************** *****************

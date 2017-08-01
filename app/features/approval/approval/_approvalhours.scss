@@ -1,0 +1,315 @@
+
+	#approvalHours {
+		#header {
+			#headerContent {
+				.rightMargin {
+					span {
+						font-size: 22px;
+						color: blue;
+					}
+				}
+			}
+		}
+
+		#section {
+			#movingDate {
+				text-align: center;
+					div button {
+						border-radius: 5px;
+					}
+				#writtenDate {
+					margin-top: 3px;
+					display: flex;
+					flex-flow: row nowrap;
+					justify-content: center;
+					align-items: center;
+					p {
+						font-family: monospace;
+						font-size: 19px;
+						margin: 0;
+					}
+				}
+			}
+
+			#options {
+				display: flex;
+				flex-flow: row wrap;
+				justify-content: center;
+				align-items: center;
+				margin-top: 10px;
+				.opts {
+					margin-right: 45px;
+					font-size: 17px;
+					font-family: monospace;
+					& input[type="radio"]+label:hover {
+						color: blue;
+						cursor: pointer;
+					}
+					input[type="radio"]:checked+label {
+						font-size: 17.1px;
+						font-weight: bold;
+					}
+				}
+			}
+
+			.collapsing {
+				color: #E1E1E1 !important;
+			}
+			.myEmployee {
+				color: #333;
+				font-size: 18px;
+				margin: 20px;
+				transition: all .3s ease;
+				i {
+					font-size: 22px;
+					margin-right: 8px;
+					transition: all .3s ease;
+				}
+				&:hover {
+					font-size: 18.3px;
+					i {
+						font-size: 26px;
+						color: #3A70EC;
+					}
+				}
+				i.closed {
+					// color: #1047C3;
+				}
+				i.opened {
+					// color: #73E173;
+				}
+			}
+
+
+			#mainContent {
+				min-width: 970px;
+
+				.projectTable {
+					width: 98%;
+					margin: auto;
+					margin-bottom: 20px;
+					padding: 5px;
+					border-radius: 5px;
+					background-color: #F4F4F4;
+				}
+
+				.tableContainer {
+					overflow-x:auto;
+                	margin: 10px;
+
+                	table {
+                		table-layout: fixed;
+                		width: 100%;
+                		text-align: center;
+                		th {
+                			background-color: #EAEAEA;
+                			text-align: center;
+                			border-radius: 5px;
+                			font-size: 13px;
+                			font-family: monospace;
+                			}
+                		tr td{
+                			line-height: 45px;
+                		}
+                		td:not(.notForMePlease) {
+	                		padding: 3px 0;
+	                		border-bottom: 1px solid gray;
+	                		overflow: hidden;
+	                		// text-overflow:ellipsis;
+	                		white-space: nowrap;
+                		}
+                		tr td:first-child {
+                			text-align: left;
+                			padding-left: 20px;
+                			button {
+                				margin-right: 8px;
+                				border-radius: 3px;
+                			}
+                		}
+                		tr:hover:not(.notHoverPlease) * {
+                			border-bottom: 1px solid $zemsania;
+                			}
+						.opened { // button: when a callapsable table is opened
+							background-color: lighten( $zemsania, 10% );
+						}
+						.btnDesactivated {
+							cursor: not-allowed;
+						}
+						.highlightGlobal {
+							font-weight: bold;
+							background-color: #F4F4F4;
+						}
+                	}
+						// DAYS TABLE SECTION (HORAS, GUARDIAS, ETC.)
+						#tableContent {
+        					display: flex;
+							flex-flow: row nowrap;
+							justify-content: center;
+							align-items: center;
+							padding-left: 10px;
+							padding-right: 20px;
+							.lateralButtons {
+						        width: 5%;
+						        * {
+						        	margin-bottom: 5px !important;
+						        	border-radius: 5px;
+						        }
+        						.btnDesactivated {
+        							cursor: not-allowed;
+								}
+							}
+							.leyend p {
+								font-size: 14px;
+								margin: 0;
+								margin-right: 10px;
+								line-height: 21px;
+								text-align: right;
+							}
+						}
+					    .slickTable {
+					        background-color: #EAEAEA;
+					        border-radius: 5px;
+					        padding: 7px;
+					        width: 90%;
+					        margin: 0;
+					        margin-right: 15px;
+					        .dayBox {
+						        color: black;
+						        width: 40px;
+						        margin-left: 2px;
+						        padding: 4px;
+						        border-radius: 3px;
+						        &:hover {
+						        	border: .5px solid transparent;
+						        }
+						        &.sent {
+						        	background-color: orange;
+						        }
+						        &.rejected {
+									border: 1px dashed $rejectedColor;
+						        }
+						        &.approved {
+									border: 1px dashed $approvedColor;
+						        }
+						        &.desactivated {
+									pointer-events: none;
+									cursor: default;
+									// background-color: #EAEAEA;
+						        	.dayContent.day, .dayContent.value, .dayContent.approved {
+										// background-color: #F4F4F4;
+										// color: #666;
+						        	}
+						        }
+
+						        .dayContent {
+							        background-color: white;
+						        	border: .5px solid gray;
+						        	border-radius: 3px;
+						        	margin-top: 2px;
+						        	height: 20px;
+		        					display: flex;
+									flex-flow: row nowrap;
+									justify-content: center;
+									align-items: center;
+									&.day {
+										color: white;
+				                        &.friday {
+				                           background-color: $fridayColor;
+				                        }
+				                        &.working {
+				                           background-color: $workingColor;
+				                        }
+				                        &.intensive {
+				                           background-color: $intensiveColor;
+				                        }
+				                        &.special {
+				                           background-color: $specialColor;
+				                        }
+				                        &.holidays {
+				                           background-color: $holidaysColor;
+				                        }
+				                        &.non_working {
+				                           background-color: $non_workingColor;
+				                        }
+									}
+									&.value {
+										color: black;
+									}
+									&.approved {
+										color: white;
+										font-size: 12px;
+										&.ok {
+											background-color: $zemsania;
+										}
+										&.ko {
+											background-color: gray;
+										}
+										&.na {
+											background-color: #BFBEBE;
+										}
+									}
+
+						        }
+					        }
+					    }
+					}
+			}
+
+            /***** LEYEND *****/
+            #leyend {
+                @include myLeyend( 220px, 1px );
+                .leyendBox {
+                    @include myLeyendBox( 20px, 60px );
+                }
+                #workingLeyend {
+                    @extend .ext_flex-start_;
+                         div:first-of-type {
+                                background-color: $workingColor;
+                                margin: 3px 10px 5px 3px;
+                         }
+                }
+                #fridayLeyend {
+                    @extend .ext_flex-start_;
+                         div {
+                                background-color: $fridayColor;
+                                margin: 5px 10px 7px 3px;
+                         }
+                }
+                #intensiveLeyend {
+                    @extend .ext_flex-start_;
+                         div {
+                                background-color: $intensiveColor;
+                                margin: 5px 10px 7px 3px;
+                         }
+                }
+                #specialLeyend {
+                    @extend .ext_flex-start_;
+                         div {
+                                background-color: $specialColor;
+                                margin: 5px 10px 7px 3px;
+                         }
+                }
+                #holidaysLeyend {
+                    @extend .ext_flex-start_;
+                         div {
+                                background-color: $holidaysColor;
+                                margin: 5px 10px 7px 3px;
+                         }
+                }
+                #non_workingLeyend {
+                    @extend .ext_flex-start_;
+                         div:first-of-type {
+                                background-color: $non_workingColor;
+                                margin: 5px 10px 7px 3px;
+                         }
+                }
+                    #workingRange, #fridayRange,
+                    #intensiveRange, #specialRange {
+                                text-align: right;
+                                font-size: 15px;
+                                margin-top: -6px;
+                    }
+            } // #leyend
+
+		} // section
+	}

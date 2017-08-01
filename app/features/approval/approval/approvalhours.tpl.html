@@ -1,0 +1,226 @@
+<div id="approvalHours">
+    <!-- HEADER TOOL-BAR -->
+    <header id="header">
+        <div id="headerContent">
+            <div class="flexDesign box-shadow p20 top-bar">
+                <div>
+                    <h3>{{'approvalHours.title' | i18next}}</h3>
+                </div>
+                 <div class="rightMargin">
+                    <h4><span>{{mainOBJ.imputesCount}} </span>{{mainOBJ.imputesCount > 1 ? ('approvalHours.employeesPending' | i18next) : ('approvalHours.employeePending' | i18next)}}  por aprobar</h4>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- SECTION MAIN CONTENT -->
+    <section id="section" class="box-shadow p20">
+
+        <!-- MOVING-DATE BUTTONS -->
+        <div class="row">
+            <div id="movingDate" class="col-xs-12">
+                <div class="row">
+                    <div class="col-xs-2 col-xs-offset-4 col-sm-2 col-sm-offset-2 col-md-1 col-md-offset-3 col-lg-1 col-lg-offset-4">
+                            <button class="btn btn-primary" ng-click="moveDate(-1)" title="{{'words.previous' | i18next}}">
+                                <i class="fa fa-arrow-left"></i></button>
+                    </div>
+                    <div class="col-xs-2 col-sm-2 col-sm-push-4 col-md-1 col-md-push-3 col-lg-1 col-lg-push-2">
+                        <button class="btn btn-primary" ng-click="moveDate(+1)" title="{{'words.next' | i18next}}">
+                            <i class="fa fa-arrow-right"></i></button>
+                    </div>
+                    <div id="writtenDate" class="col-xs-12 col-sm-4 col-sm-pull-2 col-md-3 col-md-pull-1 col-lg-2 col-lg-pull-1">
+                        <p>{{'months.' + mainOBJ.currentMonth | i18next}}  {{mainOBJ.currentYear}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- OPTIONS -->
+        <div id="options" class="simple-input">
+            <div class="opts">
+                <input id="rad1" type="radio" name="justPendingRadio" ng-model="mainOBJ.allEmployees" value="true" />
+                    <label for="rad1">{{'approvalHours.all' | i18next}}</label>
+            </div>
+            <div class="opts">
+                <input id="rad2" type="radio" name="justPendingRadio" ng-model="mainOBJ.allEmployees" value="false" />
+                    <label for="rad2">{{'approvalHours.justPending' | i18next}}</label>
+            </div>
+            <div class="opts">
+                <input ng-model="mainOBJ.searchText" type="text" class="form-control text-capitalize"
+                    placeholder="{{'approvalHours.search' | i18next}}" />
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT TABLE -->
+        <div id="mainContent">
+            <div class="tableContainer">
+                <!-- EMPLOYEES TABLE SECTION -->
+                <table>
+                    <tr class="notHoverPlease">
+                        <th style="width: 26%;">{{'approvalHours.employee'   | i18next}}</th>
+                        <th style="width:  8%;">{{'calendar.imputeHours.THI' | i18next}}</th>
+                        <th style="width:  8%;">{{'calendar.imputeHours.THT' | i18next}}</th>
+                        <th style="width:  8%;">{{'calendar.imputeHours.TJT' | i18next}}</th>
+                        <th style="width:  8%;">{{'calendar.imputeHours.TJA' | i18next}}</th>
+                        <th style="width:  8%;">{{'calendar.imputeHours.TJV' | i18next}}</th>
+                        <th style="width:  8%;">{{'calendar.imputeHours.TJG' | i18next}}</th>
+                        <th style="width: 26%;"></th>
+                    </tr>
+                </table>
+
+                <div ng-show="showEmployee(employee.isPending)"
+                     ng-repeat="(key, employee) in employees | orderBy: 'name' | filter: mainOBJ.searchText">
+                    <table>
+                        <tr>
+                            <td style="width: 26%;"><button ng-class="{'opened':employee.opened}"
+                                                            ng-click="myEmployeeClick(employee.employeeId)" class="btn btn-primary">
+                                <i ng-hide="employee.opened" class="fa fa-chevron-right"></i>
+                                <i ng-show="employee.opened" class="fa fa-chevron-down"></i></button>
+                                {{employee.name}} {{employee.surname}}
+                            </td>
+                            <td ng-class="{'highlightGlobal':employee.projectInfoSummary.THIGlobal}"
+                                style="width: 8%;">{{employee.projectInfoSummary.THIGlobal}}</td>
+                            <td ng-class="{'highlightGlobal':employee.projectInfoSummary.THTGlobal}"
+                                style="width: 8%;">{{employee.projectInfoSummary.THTGlobal}}</td>
+                            <td ng-class="{'highlightGlobal':employee.projectInfoSummary.TJTGlobal}"
+                                style="width: 8%;">{{employee.projectInfoSummary.TJTGlobal}}</td>
+                            <td ng-class="{'highlightGlobal':employee.projectInfoSummary.TJAGlobal}"
+                                style="width: 8%;">{{employee.projectInfoSummary.TJAGlobal}}</td>
+                            <td ng-class="{'highlightGlobal':employee.projectInfoSummary.TJVGlobal}"
+                                style="width: 8%;">{{employee.projectInfoSummary.TJVGlobal}}</td>
+                            <td ng-class="{'highlightGlobal':employee.projectInfoSummary.TJGGlobal}"
+                                style="width: 8%;">{{employee.projectInfoSummary.TJGGlobal}}</td>
+                            <td class="notForMePlease" style="width: 26%;">
+                                <button ng-disabled="!employee.isPending" class="btn no-margin mainButtons"
+                                        ng-click="setDays(true, employee.employeeId)"
+                                        ng-class="{'btn-primary':employee.isPending,'btnDesactivated':!employee.isPending}">
+                                    {{'approvalHours.approve' | i18next}}
+                                </button>
+                                <button ng-disabled="!employee.isPending" class="btn no-margin mainButtons"
+                                        ng-click="setDays(false, employee.employeeId)"
+                                        ng-class="{'btn-gray':employee.isPending,'btnDesactivated':!employee.isPending}">
+                                    {{'approvalHours.reject' | i18next}}
+                                </button>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <!-- PROJECTS TABLE SECTION -->
+                    <div id="{{employee.employeeId}}" class="collapse">
+                        <div class="projectTable">
+                            <table>
+                                <tr class="notHoverPlease">
+                                    <th style="width: 26%;">{{'calendar.imputeHours.project' | i18next}}</th>
+                                    <th style="width: 8%;"></th>
+                                    <th style="width: 8%;"></th>
+                                    <th style="width: 8%;"></th>
+                                    <th style="width: 8%;"></th>
+                                    <th style="width: 8%;"></th>
+                                    <th style="width: 8%;"></th>
+                                </tr>
+                            </table>
+                            <div ng-repeat="(projectId, project) in employee.timesheetDataModel">
+                                <table>
+                                    <tr>
+                                        <td style="width: 26%;"><button ng-class="{'opened':project.info.opened}"
+                                                                        ng-click="myProjectClick(employee.employeeId, projectId)"
+                                                                        class="btn btn-primary">
+                                            <i ng-hide="project.info.opened" class="fa fa-chevron-right"></i>
+                                            <i ng-show="project.info.opened" class="fa fa-chevron-down"></i></button>
+                                            {{project.info.name}}
+                                        </td>
+                                        <td style="width: 8%;">{{project.info.summary.THI}}</td>
+                                        <td style="width: 8%;">{{project.info.summary.THT}}</td>
+                                        <td style="width: 8%;">{{project.info.summary.TJT}}</td>
+                                        <td style="width: 8%;">{{project.info.summary.TJA}}</td>
+                                        <td style="width: 8%;">{{project.info.summary.TJV}}</td>
+                                        <td style="width: 8%;">{{project.info.summary.TJG}}</td>
+                                        <td class="notForMePlease" style="width: 26%;">
+                                            <button ng-disabled="!employee.isPending" class="btn no-margin mainButtons"
+                                                    ng-click="setDays(true, employee.employeeId, projectId)"
+                                                    ng-class="{'btn-primary':employee.isPending,'btnDesactivated':!employee.isPending}">
+                                                {{'approvalHours.approve' | i18next}}
+                                            </button>
+                                            <button ng-disabled="!employee.isPending" class="btn no-margin mainButtons"
+                                                    ng-click="setDays(false, employee.employeeId, projectId)"
+                                                    ng-class="{'btn-gray':employee.isPending,'btnDesactivated':!employee.isPending}">
+                                                {{'approvalHours.reject' | i18next}}
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </table>
+
+                                <!-- DAYS TABLE SECTION (HORAS, GUARDIAS, ETC.) -->
+                                <div id="{{projectId}}_{{employee.employeeId}}" class="collapse">
+                                    <div ng-repeat="(tableName, table) in project.info.tables">
+
+                                        <!-- <p style="font-size: 18px;font-family: monospace;">{{tableName}}</p> -->
+                                        <p style="font-size: 18px;font-family: monospace;">
+                                            {{giveMeImputeNames(table.imputeType,table.imputeSubType)}}</p>
+                                        <div id="tableContent">
+                                            <div class="leyend">
+                                                <code>
+                                                    <p>{{'approvalHours.day' | i18next}}</p>
+                                                    <p>{{'approvalHours.value' | i18next}}</p>
+                                                    <p><i class="fa fa-thumbs-up"></i></p>
+                                                </code>
+                                            </div>
+                                            <div class="slickTable">
+                                                <div ng-class="{'desactivated':day.status=='draft'}" class="dayBox {{day.status}}"
+                                                     ng-repeat="(dayKey, day) in table.days">
+                                                    <div class="dayContent day {{day.dayType}}">{{day.day}}</div>
+                                                    <div class="dayContent value">{{day.value}}</div>
+                                                    <div class="dayContent approved"
+                                                         ng-class="{'na':day.approved=='NA','ok':day.approved==true,'ko':day.approved==false}"
+                                                         ng-click="setDays(true, employee.employeeId, projectId, table.imputeType, table.imputeSubType, day.dayTimestamp, day.approved)">
+                                                         <span ng-show="day.status!='draft' && day.approved!='NA'">
+                                                             {{day.approved ? 'OK' : 'KO'}}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="lateralButtons">
+                                                <button ng-disabled="!employee.isPending" class="btn no-margin mainButtons"
+                                                        ng-click="setDays(true, employee.employeeId, projectId, table.imputeType, table.imputeSubType)"
+                                                        ng-class="{'btn-primary':employee.isPending,'btnDesactivated':!employee.isPending}">
+                                                    OK
+                                                </button>
+                                                <button ng-disabled="!employee.isPending" class="btn no-margin mainButtons"
+                                                        ng-click="setDays(false, employee.employeeId, projectId, table.imputeType, table.imputeSubType)"
+                                                       ng-class="{'btn-gray':employee.isPending,'btnDesactivated':!employee.isPending}">
+                                                    KO
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div> <!-- MAIN NG-REPEAT -->
+            </div>
+        </div>
+
+        <!-- LEYEND --><hr>
+        <div id="leyend">
+            <div id="workingLeyend"><div class="leyendBox"></div><span>{{'calendars.workingDays' | i18next}}</span></div>
+            <div id="workingRange"></div>
+            <div id="fridayLeyend"><div class="leyendBox"></div><span>{{'calendars.fridays' | i18next}}</span></div>
+            <div id="fridayRange"></div>
+            <div id="intensiveLeyend"><div class="leyendBox"></div><span>{{'calendars.intensiveDays' | i18next}}</span></div>
+            <div id="intensiveRange"></div>
+            <div id="specialLeyend"><div class="leyendBox"></div><span>{{'calendars.specialDays' | i18next}}</span></div>
+            <div id="specialRange"></div>
+            <div id="holidaysLeyend"><div class="leyendBox"></div><span>{{'calendars.holidays' | i18next}}</span></div>
+            <div id="non_workingLeyend"><div class="leyendBox"></div><span>{{'calendars.non_workingDays' | i18next}}</span></div>
+        </div>
+
+    </section>
+
+    <!-- FOOTER -->
+    <footer id="footer">
+        <div id="footerContent">
+            <div class="copyRight">Zemsania Time Manager&copy;</div>
+        </div>
+    </footer>
+
+</div>

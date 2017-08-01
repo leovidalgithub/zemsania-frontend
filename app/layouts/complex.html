@@ -1,0 +1,24 @@
+<div id="complex_layout">
+    <!-- <div id="wrapper" ng-class="{'toggled' : toggleSidebarStatus}"> -->
+    <div id="wrapper">
+
+        <zem-sidebar></zem-sidebar>
+        <button id="menuButton" ng-click="toggleMobileSidebar()"><i class="fa fa-bars"></i></button>
+
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+
+<!--                 <div class="header-mobile only-mobile">
+                    <button ng-click="toggleMobileSidebar()"><i class="fa fa-bars"></i></button>
+                </div>
+ -->
+
+                <div ui-view></div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<div ng-controller="timeoutController"></div>
+<!-- ALERT MESSAGES -->
+<alert-message></alert-message>

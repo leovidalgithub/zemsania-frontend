@@ -1,0 +1,71 @@
+<div id="modal-info">
+    <div class="modal-header">
+        <h3 class="modal-title">{{'projects.projectAssign.projectGeneralInfo' | i18next}}</h3>
+    </div>
+    <div class="modal-body">
+        <table class="table table-striped">
+            <tr>
+                <td class="tittle">{{'projects.projectAssign.code' | i18next}}</td>
+                <td>{{data.code}}</td>
+            </tr>
+            <tr>
+                <td class="tittle">{{'projects.projectAssign.name' | i18next}}</td>
+                <td>{{data.name}}</td>
+            </tr>
+            <tr>
+                <td class="tittle">{{'projects.projectAssign.description' | i18next}}</td>
+                <td>{{data.description}}</td>
+            </tr>
+            <tr>
+                <td class="tittle">{{'projects.projectAssign.alias' | i18next}}</td>
+                <td>{{data.alias}}</td>
+            </tr>
+            <tr>
+                <td class="tittle">{{'words.enabled' | i18next}}</td>
+                <td>{{data.enabled ? ('words.yes' | i18next) : ('words.no' | i18next)}}</td>
+            </tr>
+            <tr>
+                <td class="tittle">{{'projects.projectAssign.initDate' | i18next}}</td>
+                <td>{{data.initDate | date : 'dd/MMMM/yyyy'}}</td>
+            </tr>
+            <tr>
+                <td class="tittle">{{'projects.projectAssign.idOrigen' | i18next}}</td>
+                <td>{{data.idOrigen}}</td>
+            </tr>
+            <tr>
+                <td class="tittle">{{'projects.projectAssign.origenTipo' | i18next}}</td>
+                <td>{{data.origenTipo}}</td>
+            </tr>
+        </table>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-gray" type="button" ng-click="cancel()">{{'actions.close' | i18next}}</button>
+    </div>
+</div>
+
+
+<!--             <tr>
+                <td>{{'projects.projectAssign.projectRef' | i18next}}</td>
+                <td>{{data.projectRef}}</td>
+            </tr>
+            <tr>
+                <td>{{'projects.projectAssign.customerName' | i18next}}</td>
+                <td>{{data.customerName}}</td>
+            </tr>
+            <tr>
+                <td>{{'projects.projectAssign.customerRef' | i18next}}</td>
+                <td>{{data.customerRef}}</td>
+            </tr>
+            <tr>
+                <td>{{'projects.projectAssign.emailSupervisor' | i18next}}</td>
+                <td>{{data.emailSupervisor}}</td>
+            </tr>
+            <tr>
+                <td>{{'projects.projectAssign.emailSupervisorDelivery' | i18next}}</td>
+                <td>{{data.emailSupervisorDelivery}}</td>
+            </tr>
+            <tr>
+                <td>{{'projects.projectAssign.endDate' | i18next}}</td>
+                <td>{{data.endDate | date : 'dd/MMMM/yyyy'}}</td>
+            </tr>
+ -->

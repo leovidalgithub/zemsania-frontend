@@ -1,0 +1,125 @@
+    <!-- HEADER TOOL-BAR -->
+    <header id="header">
+        <div id="headerContent">
+            <div class="flexDesign box-shadow p20 top-bar">
+                <div>
+                    <h3>{{'employeeManager.edit.title' | i18next}}</h3>
+                </div>
+                <div class="rightMargin">
+                    <button ui-sref="employeeManager" class="btn btn-gray no-margin">
+                        {{'actions.cancel' | i18next}}
+                    </button>
+                    <button class="btn btn-primary no-margin" ng-disabled="employeeForm.$invalid" ng-click="editUser()">
+                        {{'actions.save' | i18next}}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- SECTION MAIN CONTENT -->
+    <section id="section" class="box-shadow p20">
+
+        <div class="simple-input">
+            <form ng-submit="editUser()" name="employeeForm">
+                <div class="form-group row">
+                    <div class="col-md-6">
+                        <label for="user_email">{{'userProfile.user.email' | i18next}}</label>
+                        <input type="email" class="form-control" id="user_email" ng-disabled="true" ng-model="employee.username" required placeholder="{{'userProfile.user.email' | i18next}}">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="user_nif">{{'userProfile.user.birthdate' | i18next}}</label>
+                        <p class="input-group">
+                            <input type="text" class="form-control" uib-datepicker-popup="dd/MM/yyyy" ng-model="employee.birthdate" is-open="status.opened" max-date="maxDate" datepicker-options="dateOptions" ng-required="true" close-text="{{'actions.close' | i18next}}" />
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-default" ng-click="open($event)">
+                                        <i class="fa fa-calendar"></i>
+                                </button>
+                              </span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-md-6">
+                        <label for="user_name">{{'userProfile.user.name' | i18next}}</label>
+                        <input type="text" class="form-control" id="user_name" ng-model="employee.name" required placeholder="{{'userProfile.user.name' | i18next}}">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="user_surname">{{'userProfile.user.lastname' | i18next}}</label>
+                        <input type="text" class="form-control" id="user_surname" ng-model="employee.surname" required placeholder="{{'userProfile.user.lastname' | i18next}}">
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-md-6">
+                        <label for="user_nif">{{'userProfile.user.nif' | i18next}}</label>
+                        <input type="text" class="form-control" id="user_nif" ng-model="employee.nif" required placeholder="{{'userProfile.user.nif' | i18next}}">
+                    </div>
+                    <div class="col-xs-6 col-md-3">
+                        <label for="user_genre">{{'userProfile.user.genre' | i18next}}</label>
+                        <select id="user_genre" ng-model="employee.sex" class="col-md-12" ng-options="genre.slug as genre.name for genre in genres" required></select>
+                    </div>
+                    <div class="col-xs-6 col-md-3">
+                        <label for="user_locale">{{'userProfile.user.locale' | i18next}}</label>
+                        <select id="user_locale" ng-model="employee.locale" class="col-md-12" ng-options="locale.slug as locale.name for locale in locales"></select>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-md-4">
+                        <label for="user_nif">{{'calendars.title' | i18next}}</label>
+                        <select id="user_genre" ng-model="employee.calendarID" class="col-md-12" ng-options="calendar._id as calendar.name for calendar in calendars | orderBy : 'name'"></select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="user_genre">{{'workloadSchemes.title' | i18next}}</label>
+                        <select id="user_genre" ng-model="employee.workloadScheme" class="col-md-12" ng-options="scheme._id as scheme.name for scheme in workloadSchemes">
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <div>
+                            <label for="user_superior">{{'userProfile.user.superior' | i18next}}</label>
+                            <select id="user_superior" ng-model="employee.superior" class="col-md-12 text-capitalize" ng-options="sup._id as (sup.name + ' ' + sup.surname) for sup in supervisors | orderBy : 'name'">
+                            </select>
+                        </div>
+                        <span class="text-muted">-</span>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-md-4">
+                        <label for="user_genre">{{'userProfile.user.roles' | i18next}}</label>
+                        <div class="col-md-12" ng-repeat="role in roles">
+
+                            <input id="user_role_{{role.slug}}" ng-disabled="role.slug === 'ROLE_USER'" type="checkbox" ng-checked="role.active || role.slug === 'ROLE_USER'" ng-model="role.active" value="active" ng-change="changeRole()">
+
+                            <label class="no-bold" for="user_role_{{role.slug}}">{{role.name}}</label>
+
+                        </div>
+                        <div class="col-md-12 row">
+                            <div class="alert alert-danger" ng-hide="employee.roles.length">{{'employeeManager.edit.minRoles' | i18next}}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="user_enable">{{'userProfile.user.enabled' | i18next}}</label>
+
+                        <div class="col-md-12">
+                            <input type="checkbox" id="user_enable" ng-model="employee.enabled" ng-checked="employee.enabled">
+                            <label class="no-bold" for="user_enable">{{'userProfile.user.enabled' | i18next}}</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div>
+                            <label for="user_company">{{'userProfile.user.company' | i18next}}</label>
+                            <select id="user_company" ng-model="employee.company._id" class="col-md-12 text-capitalize" ng-options="c._id as c.enterpriseName for c in companies | orderBy : 'enterpriseName'">
+                            </select>
+                        </div>
+                        <span class="text-muted">-</span>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>

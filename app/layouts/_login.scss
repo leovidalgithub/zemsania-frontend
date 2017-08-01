@@ -1,0 +1,70 @@
+#login_view {
+      height: 100%;
+      width: 100%;
+      color: #333;
+      font-family: monospace;
+
+    .login-view {
+      height: 100%;
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-flow: column nowrap;
+      justify-content: space-around;
+      align-items: center;
+      .myImg {
+        max-width: 515px;
+          .logo {
+              width: 100%;
+          }
+      }
+      .myLogin {
+          text-align: center;
+          padding: 0 20px;
+          width: 90%;
+        //   height: 265px;
+          max-width: 440px;
+          background-color: rgba(51,51,51,.09);
+          box-shadow: 3px 3px 2px rgba(51,51,51,.2);
+          border-radius: 7px;
+
+        form {
+            > *, button {
+                margin-bottom: 22px;
+            }
+            input {
+                border: none;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+                border-left: 1px solid rgba(0, 0, 0, 0.3);
+                box-shadow: none;
+                border-radius: 0;
+                width: 100%;
+                transition: all 1s ease;
+                &:focus {
+                  border-bottom: 1.3px solid $zemsania;
+                  border-left: 1px solid $zemsania;
+                }
+            }
+        }
+
+        p.restore-password {
+            font-size: 16px;
+            a {
+                color: rgba(0, 0, 0, 0.8);
+                &:hover {
+                    font-weight: bold;
+                    color: $zemsania;
+                    text-decoration: none;
+                }
+            }
+        }
+    }
+}
+
+    canvas {
+        position: fixed;
+        z-index: 0;
+        top: 0;
+        left: 0;
+      }
+}

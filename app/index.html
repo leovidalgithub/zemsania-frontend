@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="hours" class="no-js">
+<head>
+<!-- TECHNIQUE FOR AVOID BROWSERS FROM CACHE FILES - EVERY TIME UPLOAD TO SERVER WE HAVE TO CHANGE VARIABLE VALUE -->
+<!-- ?v=1.0 -->
+    <meta charset="utf-8" />
+    <meta name="theme-color" content="#F15A29">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Zemsania - TimeManager</title>
+    <base href="/" />
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+
+    <!-- <link href="assets/css/angular-toggle-switch.css" rel="stylesheet"> -->
+    <!-- <link href="assets/css/binaries.css" rel="stylesheet"> -->
+    <!-- <link href="assets/css/overrides.css" rel="stylesheet"> -->
+    <link href="assets/css/vendors.css?v=1.0" rel="stylesheet" />
+    <link href="assets/css/style.min.css?v=1.0" rel="stylesheet" />
+</head>
+
+<body ng-class="{'blockView' : toggleSidebarStatus}">
+
+    <div ng-include="layoutTemplate"></div>
+
+    <script src="/assets/js/vendors.js?v=1.0"></script>
+    <script src="/assets/js/angular-toggle-switch.min.js?v=1.0"></script>
+    <script src="/assets/js/app.js?v=1.0"></script>
+    <script src="/datepicker-es.js?v=1.0"></script>
+    <script src="/datepicker-en.js?v=1.0"></script>
+    <script src="/datepicker-ca.js?v=1.0"></script>
+    <!-- <script src="//use.edgefonts.net/open-sans:n3,n4,i4,n6,n7:all.js"></script> -->
+</body>
+</html>

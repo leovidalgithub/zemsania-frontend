@@ -1,0 +1,74 @@
+<div id="calendars">
+    <!-- HEADER TOOL-BAR -->
+    <header id="header">
+        <div id="headerContent">
+            <div class="flexDesign box-shadow p20 top-bar">
+                <div>
+                    <h4>{{calendar.name}}</h4>
+                </div>
+                <div class="rightMargin">
+                     <button ui-sref="calendars" class="btn btn-gray no-margin">
+                        {{'actions.cancel' | i18next}}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- SECTION MAIN CONTENT -->
+    <section id="section" class="box-shadow p20">
+
+        <div class="alert alert-danger" ng-show="loadingError">{{'calendars.error' | i18next}}</div>
+
+        <div id="options">
+            <!-- LEYEND -->            
+            <div id="leyend">
+                <div id="workingLeyend"><div class="leyendBox"></div><span>{{'calendars.workingDays' | i18next}}</span></div>
+                <div id="workingRange"></div>
+                <div id="fridayLeyend"><div class="leyendBox"></div><span>{{'calendars.fridays' | i18next}}</span></div>
+                <div id="fridayRange"></div>
+                <div id="intensiveLeyend"><div class="leyendBox"></div><span>{{'calendars.intensiveDays' | i18next}}</span></div>
+                <div id="intensiveRange"></div>
+                <div id="specialLeyend"><div class="leyendBox"></div><span>{{'calendars.specialDays' | i18next}}</span></div>
+                <div id="specialRange"></div>
+                <div id="holidaysLeyend"><div class="leyendBox"></div><span>{{'calendars.holidays' | i18next}}</span></div>
+                <div id="non_workingLeyend"><div class="leyendBox"></div><span>{{'calendars.non_workingDays' | i18next}}</span></div>
+            </div>
+
+            <!-- TOTAL HOURS BY MONTH -->
+            <div id="hoursByMonth">
+                <div ng-repeat="(key, value) in monthsHours">
+                        <span>{{'months.' + value.month | i18next}}</span>
+                        <span><code>{{value.hours}}h : {{value.minutes}}m</code></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- YEAR SELECTOR -->
+        <div id="yearSelect">
+        <label>{{'calendars.yearShowed' | i18next}}
+            <select style="font-size: 24px;" ng-model="yearShowed" ng-change="yearChanged()">
+                <option value="2013">2013</option>
+                <option value="2014">2014</option>
+                <option value="2015">2015</option>
+                <option value="2016">2016</option>
+                <option value="2017">2017</option>
+                <option value="2018">2018</option>
+            </select>
+        </label>
+        </div>
+
+        <!-- MONTHS DISPLAY (generating dynamically by code) -->
+        <div id="months">
+            <!-- <div class="calendar" id="calendar-1"><p></p></div> -->
+        </div>
+
+    </section>
+
+    <!-- FOOTER -->
+    <footer id="footer">
+        <div id="footerContent">
+        <code>Zemsania Time Manager&copy;</code>
+        </div>
+    </footer>
+</div>

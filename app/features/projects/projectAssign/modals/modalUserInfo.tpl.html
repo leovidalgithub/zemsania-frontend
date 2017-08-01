@@ -1,0 +1,40 @@
+<div id="modal-info">
+    <div class="modal-header">
+        <h3 class="modal-title">{{'projects.projectAssign.userGeneralInfo' | i18next}}</h3>
+    </div>
+    <div class="modal-body"> 
+        <table class="table table-striped">
+            <tr>
+                <td class="tittle">{{'projects.projectAssign.name' | i18next}}</td>
+                <td>{{data.name}} {{data.surname}}</td>
+            </tr>
+            <tr>
+                <td class="tittle">{{'projects.projectAssign.nif' | i18next}}</td>
+                <td>{{data.nif}}</td>
+            </tr>
+            <tr>
+                <td class="tittle">{{'userProfile.user.birthdate' | i18next}}</td>
+                <td>{{data.birthdate | date : 'dd/MMM/yyyy'}}</td>
+            </tr>
+            <tr>
+                <td class="tittle">{{'projects.projectAssign.phone' | i18next}}</td>
+                <td>{{data.phone}}</td>
+            </tr>
+            <tr>
+                <td class="tittle">{{'projects.projectAssign.lastLoginDate' | i18next}}</td>
+                <td>{{data.lastLoginDate | date : 'dd/MMM/yyyy'}}</td>
+            </tr>
+            <tr>
+                <td class="tittle">{{'projects.projectAssign.personalManager' | i18next}}</td>
+                <td>{{data.superior.name}} {{data.superior.surname}}</td>
+            </tr>
+            <tr>
+                <td class="tittle">{{'projects.projectAssign.mainCalendar' | i18next}}</td>
+                <td>{{data.calendarID.name}}</td>
+            </tr>
+        </table>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-gray" type="button" ng-click="cancel()">{{'actions.close' | i18next}}</button>
+    </div>
+</div>

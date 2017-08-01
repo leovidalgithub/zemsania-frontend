@@ -1,0 +1,43 @@
+<div id="imputeSummaryModal" class="{{dayInfo.dayType}}">
+    <div id="modalTitle" class="modal-header border-b">
+        <p>
+            {{'days.' + (dayInfo.day | amDateFormat:'ddd') | i18next}}
+            {{dayInfo.day | amDateFormat:'DD MMM YYYY'}}
+        </p>
+    </div>
+
+    <div class="modal-body set-padding-t-lg">
+        <div class="typeGroup {{dayInfo.dayType}}" ng-repeat="(imputeTypeKey, imputeTypeValue) in dayInfo.imputeTypesInfo">
+            <p class="imputeType">
+                {{imputeTypeKey}}
+            </p>
+            <div class="subTypeGroup {{dayInfo.dayType}}" ng-repeat="(imputeSubTypeKey, imputeSubTypeValue) in imputeTypeValue"
+                 ng-click="goTo(imputeTypeKey,imputeSubTypeValue.subType)">
+                <div class="subType" data-toggle="tooltip"
+                     ng-attr-title="{{giveMeTitlePlease(imputeSubTypeValue.status)}}">
+                    <div>
+                        <span>{{imputeSubTypeValue.subType}}</span>
+                        <span>{{imputeSubTypeValue.value}}</span>
+                    </div>
+                    <i ng-if="imputeSubTypeValue.status=='approved'" class="fa fa-thumbs-up"></i>
+                    <i ng-if="imputeSubTypeValue.status=='rejected'" class="fa fa-thumbs-down"></i>
+                    <i ng-if="imputeSubTypeValue.status=='sent'" class="fa fa-paper-plane"></i>
+                    <i ng-if="imputeSubTypeValue.status=='draft'" class="fa fa-wrench"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="totalHours">
+            <p>{{'calendar.imputeHours.TH' | i18next}} <span> {{dayInfo.totalHours.value}}</span></p>
+            <p>{{'calendar.imputeHours.THG' | i18next}} <span> {{dayInfo.totalGlobalHours.value}}</span></p>
+        </div>
+
+    </div>
+
+    <div class="modal-footer">
+        <div class="text-right form-buttons">
+            <button type="button" ng-click="cancel()" class="btn btn-warning no-margin">{{'actions.cancel' | i18next}}</button>
+        </div>
+    </div>
+
+</div>

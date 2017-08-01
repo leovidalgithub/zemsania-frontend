@@ -1,0 +1,89 @@
+    #alertMessage {
+        border-radius: 10px;
+            min-height: 80px;
+            width: 390px;
+            position: fixed;
+            bottom: 70px;
+            right: -390px;
+            opacity: 0;
+            display: flex;
+            flex-flow: row nowrap;
+            justify-content: center;
+            align-items: stretch;
+            z-index: 99999;
+
+            .content {
+                padding: 0 5px;
+                display: flex;
+                flex-flow: row nowrap;
+                justify-content: center;
+                align-items: center;
+                &.left {
+                    width: 60px;
+                    font-size: 2em;
+                    border-top-left-radius: 5px;
+                    border-bottom-left-radius: 5px;
+                }
+                &.right {
+                    width: inherit;
+                    border-top-right-radius: 10px;
+                    border-bottom-right-radius: 10px;
+                    padding: 5px;
+                    p {
+                        font-size: 18px;
+                        font-family: monospace;
+                        margin: 0;
+                        text-align: center;
+                    }
+                }
+            }
+            // COLORS
+            &.errorAlert {
+                .content {
+                    &.left {
+                        background-color: darken( $rejectedColor, 18% );
+                        color: lighten( $rejectedColor, 5% );
+                    }
+                    &.right {
+                        color: darken( $rejectedColor, 18% );
+                        background-color: lighten( $rejectedColor, 5% );
+                    }
+                }
+            }
+            &.okAlert {
+                .content {
+                    &.left {
+                        background-color: darken( $approvedColor, 18% );
+                        color: lighten( $approvedColor, 5% );
+                    }
+                    &.right {
+                        color: darken( $approvedColor, 18% );
+                        background-color: lighten( $approvedColor, 5% );
+                    }
+                }
+            }
+            &.warningAlert {
+                .content {
+                    &.left {
+                        background-color: darken( $warningColor, 18% );
+                        color: lighten( $warningColor, 5% );
+                    }
+                    &.right {
+                        color: darken( $warningColor, 18% );
+                        background-color: lighten( $warningColor, 5% );
+                    }
+                }
+            }
+            &.infoAlert {
+                .content {
+                    &.left {
+                        background-color: darken( $infoColor, 18% );
+                        color: lighten( $infoColor, 5% );
+                    }
+                    &.right {
+                            color: darken( $infoColor, 18% );
+                            background-color: lighten( $infoColor, 5% );
+                    }
+                }
+            }
+    }

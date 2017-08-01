@@ -1,0 +1,32 @@
+<div id="login">
+    <h3>{{'auth.login.login' | i18next}}</h3>
+
+    <form name="form" ng-submit="login()" role="form" class="set-padding-t-xl">
+
+        <div class="input-group" ng-class="{'has-error': form.username.$dirty && form.username.$error.required}">
+            <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+            <input type="email" name="username" placeholder="{{'auth.login.username' | i18next}}" class="form-control"
+                    ng-model="loginForm.username" required />
+            <span ng-show="form.username.$dirty && form.username.$invalid"
+                    class="help-block ng-hide">{{'auth.login.invalidEmail' | i18next}}</span>
+        </div>
+
+        <div class="input-group" ng-class="{'has-error': form.password.$dirty && form.password.$error.required}">
+            <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+            <input type="password" name="password" placeholder="{{'auth.login.password' | i18next}}" class="form-control"
+                    ng-model="loginForm.password" required />
+            <span ng-show="form.password.$dirty && form.password.$error.required"
+                    class="help-block ng-hide">{{'auth.login.invalidPassword' | i18next}}</span>
+        </div>
+
+        <div class="form-actions">
+            <div class="alert alert-danger" ng-show="loginForm.error">{{'auth.login.errorAtLogin' | i18next}}</div>
+            <button ng-disabled="form.$invalid || loginForm.disabled" type="submit" class="btn btn-primary">
+                    {{'auth.login.login' | i18next}}
+            </button>
+            <p class="restore-password">
+                <a ui-sref="recovery">{{'auth.login.passwordRecovery' | i18next}}</a>
+            </p>
+        </div>
+    </form>
+</div>
