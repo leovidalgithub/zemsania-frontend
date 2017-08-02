@@ -4,7 +4,9 @@
     "jquery",
     "browser"
   ],
-  "loadEagerly": [],
+  "loadEagerly": [
+    
+  ],
   "dontLoad": [
     "node_modules/**"
   ],
@@ -18,18 +20,24 @@
       "load": "",
       "modules": ""
     },
-    "node_resolve": {},
+    "node_resolve": {
+      
+    },
     "modules": {
       "dontLoad": "",
       "load": "",
       "modules": ""
     },
-    "angular": {},
     "requirejs": {
       "baseURL": "",
       "paths": "",
       "override": ""
     },
-    "commonjs": {}
+    "commonjs": {
+      
+    },
+    "angular1": {
+      
+    }
   }
 }

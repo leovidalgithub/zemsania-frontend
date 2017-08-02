@@ -113,6 +113,7 @@
       position: fixed;
       top: 0;
       left: 0;
+
       background-color: #FFF;
       overflow-y: auto;
       transition: all 2s ease;
@@ -120,8 +121,8 @@
     // @include transition(all .4s ease);
     // box-shadow: 0 0 25px rgba(black, 0.07);
     &.toggled {
-      left: 0;
-      top: 0;
+        margin-left: 0; // using 'left' gives some visual flaw on Firefox
+        top: 0;
     }
   }
 
@@ -226,8 +227,8 @@
     }
 
    #sidebar-wrapper {
-      left: -250px;
-      top: -135px;
+       margin-left: -250px; // using 'left' gives some visual flaw on Firefox
+       top: -135px;
   }
    #page-content-wrapper {
       margin-left: 42px;
