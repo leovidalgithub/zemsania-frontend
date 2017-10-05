@@ -85,9 +85,9 @@
             $rootScope.layoutTemplate = '/layouts/' + args.data.template + '.html';
 
             // if not anonymous (some user corretly logged), we put token on http header for all requests. And set locale from user credentials
+            locale = UserFactory.getUser().locale;
             if ( !anonymousUser ) {
                 $http.defaults.headers.common['x-auth-token'] = UserFactory.getUserToken();
-                locale = UserFactory.getUser().locale;
             }
 
             $i18next.changeLanguage( locale );
@@ -2510,7 +2510,7 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
 
     LoginController.$invoke = [ '$scope', 'UserFactory', '$state' ];
     function LoginController( $scope, UserFactory, $state ) {
-        initialVertex();
+        // initialVertex();
         $scope.loginForm = {
             username: null,
             password: null
@@ -2985,11 +2985,13 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
             return ( status == radioStatus );
         };
 
+        // todo hacer aquello
+
         $scope.$on( '$destroy', function () {
             $scope.tmpData( 'add', 'notificationsListPage', $scope.tableConfig.currentPage );
         });
 
-        console.clear();
+        // console.clear();
 
      }
 }());

@@ -6,7 +6,7 @@
 
     LoginController.$invoke = [ '$scope', 'UserFactory', '$state' ];
     function LoginController( $scope, UserFactory, $state ) {
-        initialVertex();
+        // initialVertex();
         $scope.loginForm = {
             username: null,
             password: null

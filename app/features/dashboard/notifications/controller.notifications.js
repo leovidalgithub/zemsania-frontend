@@ -111,11 +111,13 @@
             return ( status == radioStatus );
         };
 
+        // todo hacer aquello
+
         $scope.$on( '$destroy', function () {
             $scope.tmpData( 'add', 'notificationsListPage', $scope.tableConfig.currentPage );
         });
 
-        console.clear();
+        // console.clear();
 
      }
 }());

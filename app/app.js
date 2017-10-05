@@ -85,9 +85,9 @@
             $rootScope.layoutTemplate = '/layouts/' + args.data.template + '.html';
 
             // if not anonymous (some user corretly logged), we put token on http header for all requests. And set locale from user credentials
+            locale = UserFactory.getUser().locale;
             if ( !anonymousUser ) {
                 $http.defaults.headers.common['x-auth-token'] = UserFactory.getUserToken();
-                locale = UserFactory.getUser().locale;
             }
 
             $i18next.changeLanguage( locale );
