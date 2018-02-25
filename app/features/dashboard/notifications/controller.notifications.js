@@ -115,7 +115,8 @@
             $scope.tmpData( 'add', 'notificationsListPage', $scope.tableConfig.currentPage );
         });
 
+        $("[id^=lptop]").remove(); // to remove element added by Lastpass plugin
         console.clear();
 
-     }
+    }
 }());

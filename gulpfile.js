@@ -1,12 +1,23 @@
 'use strict';
-let sass         = require( 'gulp-ruby-sass' );
 let gulp         = require( 'gulp' );
+let sass         = require( 'gulp-ruby-sass' );
 let rename       = require( 'gulp-rename' );
 let uglify       = require( 'gulp-uglify' );
 let concat       = require( 'gulp-concat' );
 let connect      = require( 'gulp-connect' );
-let minifyCss    = require( 'gulp-minify-css' );
+let cleanCSS     = require( 'gulp-clean-css' );
+// let minifyCss = require( 'gulp-minify-css' ); - DEPRECATED - NOW USING gulp-clean-css
 let autoprefixer = require( 'gulp-autoprefixer' );
+
+// gulp gulp-ruby-sass gulp-rename gulp-uglify gulp-concat gulp-connect gulp-clean-css gulp-autoprefixer
+// "gulp": "^3.9.1",
+// "gulp-autoprefixer": "^4.0.0",
+// "gulp-concat": "^2.6.1",
+// "gulp-connect": "^5.0.0",
+// "gulp-minify-css": "^1.2.4",
+// "gulp-rename": "^1.2.2",
+// "gulp-ruby-sass": "^2.1.1",
+// "gulp-uglify": "^2.0.1"
 
 gulp.task( 'connect', function () {
     connect.server({
@@ -81,7 +92,8 @@ gulp.task( 'vendors:css', function () {
             './lib/slick/slick-theme.css'
         ])
         .pipe( concat( 'vendors.css') )
-        .pipe( minifyCss() )
+        // .pipe( minifyCss() ) - DEPRECATED - NOW USING gulp-clean-css
+        .pipe(cleanCSS({ compatibility: 'ie8' }))
         .pipe( gulp.dest( './app/assets/css/' ) );
 });
 

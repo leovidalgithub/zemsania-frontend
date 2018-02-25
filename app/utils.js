@@ -1,5 +1,9 @@
-var API_base = 'http://' + location.hostname + ':5000/';
-var API_paths = {
+const protocol = window.location.protocol;
+const hostname = window.location.hostname;
+const API_base = `${protocol}//zemback.sipedi.net/`; // zemback.sipedi.tedevelopment
+// const API_base = 'http://zemback.sipedi.net:8080/';
+
+const API_paths = {
     login: 'authn/login',
     passwordRecovery: 'authn/password/remember',
     createUser: 'authn/signup',
@@ -11,7 +15,7 @@ var API_paths = {
     saveUser: 'user/profile',
     advancedUserSearch: 'user/advancedUserSearch',
     newSearchUser: 'user/newSearch',
-    removeUser: 'user/delete',    
+    removeUser: 'user/delete',
 
     getEmployeesTimesheets: 'approval/getEmployeesTimesheets/',
 
@@ -82,7 +86,7 @@ var API_paths = {
     filesRemove: 'files/remove'
 };
 
-function buildURL( path ) { // ***************** LEO WAS HERE *****************
+let buildURL = ( path ) => {
     'use strict';
     return API_base + API_paths[ path ];
 }
@@ -195,4 +199,3 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
     }
     return dailyWork;
 }
-

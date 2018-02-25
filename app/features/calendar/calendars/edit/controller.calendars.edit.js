@@ -10,6 +10,7 @@
         var eventDates;
         var eventHours;
         var currentYear     = new Date().getFullYear();
+
         $scope.loadingError = false;
         $scope.yearShowed   = currentYear.toString();
         var locale      = UserFactory.getUser().locale;
@@ -25,8 +26,8 @@
                         $scope.loadingError = false;
                         $scope.calendar = data.calendar;
                         eventHours = data.eventHours[0];
-                        eventDates = data.eventHours[0].eventDates;
-                        $timeout( function () {
+                        eventDates = data.eventHours[0].eventDates;                      
+                        $timeout( () => {
                             showCalendars();
                         }, 300 );
                     })
@@ -90,6 +91,7 @@
                 defaultDate: new Date( month ), // ( 2014, 2, 1 )
                 // onSelect: selectedDay,
                 beforeShowDay: function( date ) {
+                    
                     date = new Date( date ).getTime(); // from date to timestamp
                     var highlight = eventDates[ date ];
                     if ( highlight ) {

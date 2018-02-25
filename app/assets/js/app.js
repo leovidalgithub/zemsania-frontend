@@ -44,8 +44,8 @@
     function appConfig( $locationProvider, $i18nextProvider, cfpLoadingBarProvider, $urlRouterProvider, $qProvider, KeepaliveProvider, IdleProvider ) {
 
         // IDLE USER ACTIVITY DETECT ************************
-        IdleProvider.idle(80); // 80 seconds to get warning
-        IdleProvider.timeout(125); // 25 seconds to user do something to avoid logout
+        IdleProvider.idle(120); // user get warning in xx seconds
+        IdleProvider.timeout(80); // time in seconds to user do something to avoid logout
         KeepaliveProvider.interval(10);
 
         $urlRouterProvider.otherwise( function( $injector ) {
@@ -194,8 +194,12 @@ function setFormlyConfig(formlyConfig){
 
     types.datepicker();
 }
-var API_base = 'http://' + location.hostname + ':5000/';
-var API_paths = {
+const protocol = window.location.protocol;
+const hostname = window.location.hostname;
+const API_base = `${protocol}//zemback.sipedi.net/`; // zemback.sipedi.tedevelopment
+// const API_base = 'http://zemback.sipedi.net:8080/';
+
+const API_paths = {
     login: 'authn/login',
     passwordRecovery: 'authn/password/remember',
     createUser: 'authn/signup',
@@ -207,7 +211,7 @@ var API_paths = {
     saveUser: 'user/profile',
     advancedUserSearch: 'user/advancedUserSearch',
     newSearchUser: 'user/newSearch',
-    removeUser: 'user/delete',    
+    removeUser: 'user/delete',
 
     getEmployeesTimesheets: 'approval/getEmployeesTimesheets/',
 
@@ -278,7 +282,7 @@ var API_paths = {
     filesRemove: 'files/remove'
 };
 
-function buildURL( path ) { // ***************** LEO WAS HERE *****************
+let buildURL = ( path ) => {
     'use strict';
     return API_base + API_paths[ path ];
 }
@@ -391,7 +395,6 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
     }
     return dailyWork;
 }
-
 
 ;( function() {
     'use strict';
@@ -2989,9 +2992,10 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
             $scope.tmpData( 'add', 'notificationsListPage', $scope.tableConfig.currentPage );
         });
 
+        $("[id^=lptop]").remove(); // to remove element added by Lastpass plugin
         console.clear();
 
-     }
+    }
 }());
 
 ( function () {
@@ -4120,6 +4124,83 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
 
 }());
 
+( function () {
+    'use strict';
+    angular
+        .module( 'hours.calendar' )
+        .controller( 'CalendarsController', CalendarsController );
+
+    CalendarsController.$invoke = [ '$scope', '$filter', '$window', 'CalendarFactory', 'calendars', '$timeout' ];
+    function CalendarsController( $scope, $filter, $window, CalendarFactory, calendars, $timeout ) {
+
+        $scope.tableConfig = {
+            itemsPerPage: getItemsPerPage( 65 ),
+            maxPages: "3",
+            fillLastPage: false,
+            currentPage: $scope.tmpData( 'get', 'calendarsListPage' ) || 0
+        };
+
+        $scope.calendars = calendars;
+        setUsersView();
+
+        // ADVANDED SEARCH TOGGLE BUTTON
+        $scope.toggleAdvancedSearch = function () {
+            takeMeUp();
+            $scope.showAdvancedSearch = !$scope.showAdvancedSearch;
+            if ( !$scope.showAdvancedSearch ) {
+                $scope.calendars = calendars;
+            } else {
+                $scope.avancedSearch();
+                $timeout( function() { // search input set_focus
+                    document.getElementById( 'searchInput' ).focus();
+                });
+            }
+        };
+
+        // ADVANDED SEARCH SERVICE FUNCTION
+        $scope.avancedSearch = function () {
+            CalendarFactory.advancedCalendarSearch( $scope.search )
+                .then( function ( foundCalendars ) {
+                    $scope.calendars = foundCalendars;
+                });
+        };
+
+        $scope.$on( '$destroy', function () {
+            $scope.tmpData( 'add', 'calendarsListPage', $scope.tableConfig.currentPage );
+        });
+
+        angular.element( $window ).bind( 'resize', function() {
+            $scope.$digest();
+            setUsersView();
+        });
+
+        function setUsersView() {
+            if( $window.innerWidth < 930 ) {
+                $scope.viewSet = false;
+            } else {
+                $scope.viewSet = true;            
+            }
+        }
+
+        // SECTION SCROLL MOVE EVENT TO MAKE BUTTON 'toUpButton' APPEAR
+        var scrollWrapper = document.getElementById( 'section' );
+        scrollWrapper.onscroll = function ( event ) {
+            var currentScroll = scrollWrapper.scrollTop;
+            var upButton = $( '#toUpButton' );
+            showUpButton( upButton, currentScroll );
+        };
+
+        // BUTTON TO TAKE SECTION SCROLL TO TOP
+        $scope.pageGetUp = function() { takeMeUp() };
+
+        $scope.$on( '$destroy', function () {
+            $scope.tmpData( 'add', 'notificationsListPage', $scope.tableConfig.currentPage );
+        });
+
+}
+
+}());
+
 ;( function () {
     'use strict';
     angular
@@ -4132,6 +4213,7 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
         var eventDates;
         var eventHours;
         var currentYear     = new Date().getFullYear();
+
         $scope.loadingError = false;
         $scope.yearShowed   = currentYear.toString();
         var locale      = UserFactory.getUser().locale;
@@ -4147,8 +4229,8 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
                         $scope.loadingError = false;
                         $scope.calendar = data.calendar;
                         eventHours = data.eventHours[0];
-                        eventDates = data.eventHours[0].eventDates;
-                        $timeout( function () {
+                        eventDates = data.eventHours[0].eventDates;                      
+                        $timeout( () => {
                             showCalendars();
                         }, 300 );
                     })
@@ -4212,6 +4294,7 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
                 defaultDate: new Date( month ), // ( 2014, 2, 1 )
                 // onSelect: selectedDay,
                 beforeShowDay: function( date ) {
+                    
                     date = new Date( date ).getTime(); // from date to timestamp
                     var highlight = eventDates[ date ];
                     if ( highlight ) {
@@ -4310,80 +4393,141 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
 
 })();
 
-( function () {
+;( function () {
     'use strict';
     angular
-        .module( 'hours.calendar' )
-        .controller( 'CalendarsController', CalendarsController );
+        .module( 'hours.projects' )
+        .controller( 'ModalDemarcate', ModalDemarcate );
 
-    CalendarsController.$invoke = [ '$scope', '$filter', '$window', 'CalendarFactory', 'calendars', '$timeout' ];
-    function CalendarsController( $scope, $filter, $window, CalendarFactory, calendars, $timeout ) {
+    ModalDemarcate.$invoke = [ '$scope', '$uibModalInstance', 'data', 'ProjectsFactory', '$rootScope', '$filter' ];
+    function ModalDemarcate( $scope, $uibModalInstance, data, ProjectsFactory, $rootScope, $filter ) {
 
-        $scope.tableConfig = {
-            itemsPerPage: getItemsPerPage( 65 ),
-            maxPages: "3",
-            fillLastPage: false,
-            currentPage: $scope.tmpData( 'get', 'calendarsListPage' ) || 0
-        };
+        $scope.data = data;
 
-        $scope.calendars = calendars;
-        setUsersView();
-
-        // ADVANDED SEARCH TOGGLE BUTTON
-        $scope.toggleAdvancedSearch = function () {
-            takeMeUp();
-            $scope.showAdvancedSearch = !$scope.showAdvancedSearch;
-            if ( !$scope.showAdvancedSearch ) {
-                $scope.calendars = calendars;
-            } else {
-                $scope.avancedSearch();
-                $timeout( function() { // search input set_focus
-                    document.getElementById( 'searchInput' ).focus();
-                });
-            }
-        };
-
-        // ADVANDED SEARCH SERVICE FUNCTION
-        $scope.avancedSearch = function () {
-            CalendarFactory.advancedCalendarSearch( $scope.search )
-                .then( function ( foundCalendars ) {
-                    $scope.calendars = foundCalendars;
+        $scope.demarcate = function () {
+            console.log('epa');
+            $uibModalInstance.dismiss( 'cancel' );
+            ProjectsFactory.demarcateUserProject( data )
+                .then( function ( result ) {
+                    // once relationship was erased from ProjectUsers entity
+                    // we proceed to refresh the projects or users list view calling to ActiveThisUser or ActiveThisProject
+                    if( $scope.data.currentMode.type == 'users' ) {
+                        $rootScope.$broadcast( 'refreshactiveThisUser', { data : null } );
+                    } else {
+                        $rootScope.$broadcast( 'refreshactiveThisProject', { data : null } ); 
+                    };
+                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'ok', msg : $filter( 'i18next' )( 'projects.projectAssign.okDemarcate' ) } );
+                })
+                .catch( function ( err ) {
+                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'error', msg : $filter( 'i18next' )( 'projects.projectAssign.errorDemarcate' ) } );
                 });
         };
 
-        $scope.$on( '$destroy', function () {
-            $scope.tmpData( 'add', 'calendarsListPage', $scope.tableConfig.currentPage );
-        });
-
-        angular.element( $window ).bind( 'resize', function() {
-            $scope.$digest();
-            setUsersView();
-        });
-
-        function setUsersView() {
-            if( $window.innerWidth < 930 ) {
-                $scope.viewSet = false;
-            } else {
-                $scope.viewSet = true;            
-            }
-        }
-
-        // SECTION SCROLL MOVE EVENT TO MAKE BUTTON 'toUpButton' APPEAR
-        var scrollWrapper = document.getElementById( 'section' );
-        scrollWrapper.onscroll = function ( event ) {
-            var currentScroll = scrollWrapper.scrollTop;
-            var upButton = $( '#toUpButton' );
-            showUpButton( upButton, currentScroll );
+        $scope.cancel = function () {
+            $uibModalInstance.dismiss( 'cancel' );
         };
 
-        // BUTTON TO TAKE SECTION SCROLL TO TOP
-        $scope.pageGetUp = function() { takeMeUp() };
+    }
 
-        $scope.$on( '$destroy', function () {
-            $scope.tmpData( 'add', 'notificationsListPage', $scope.tableConfig.currentPage );
-        });
+}());
 
-}
+;( function () {
+    'use strict';
+    angular
+        .module( 'hours.projects' )
+        .controller( 'ModalInfo', ModalInfo );
+
+    ModalInfo.$invoke = [ '$scope', '$uibModalInstance', 'data' ];
+    function ModalInfo( $scope, $uibModalInstance, data ) {
+
+        $scope.data = data;
+
+        $scope.cancel = function () {
+            $uibModalInstance.dismiss( 'cancel' );
+        };
+
+    }
+
+}());
+
+;( function () {
+    'use strict';
+    angular
+        .module( 'hours.projects' )
+        .controller( 'ModalMarcate', ModalMarcate );
+
+    ModalMarcate.$invoke = [ '$scope', '$rootScope', '$uibModalInstance', 'data', 'ProjectsFactory', 'EmployeeManagerFactory', '$filter' ];
+    function ModalMarcate( $scope, $rootScope, $uibModalInstance, data, ProjectsFactory, EmployeeManagerFactory, $filter ) {
+
+        $scope.data = {
+                spinners    : false,
+                maxHours    : 0,
+                searchText  : '',
+                currentMode : data.currentMode
+        };
+
+        $scope.search = function( searchText ) {
+            $scope.data.spinners = true;
+            var thisPromise      = [];
+            if( $scope.data.currentMode.type == 'users' ) {
+                thisPromise.push( ProjectsFactory.advancedProjectSearch( searchText ) );
+            } else {
+                thisPromise.push( EmployeeManagerFactory.advancedUserSearch( { textToFind : searchText } ) );
+            }
+            Promise.all( thisPromise )
+                .then( function ( data ) {
+                    if( $scope.data.currentMode.type == 'users' ) {
+                        $scope.data.items = data[0].projects;
+                    } else {
+                        $scope.data.items = data[0];
+                    }
+                })
+                .catch( function ( err ) {
+                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'error', msg : $filter( 'i18next' )( 'projects.projectAssign.errorData' ) } );
+                })
+                .then( function() { // functionallity as finally
+                    $scope.data.spinners = false;
+                });
+        };
+
+        $scope.marcateThis = function( item ) {
+            var userId    = '';
+            var projectId = '';
+            if( $scope.data.currentMode.type == 'users' ) {
+                userId    = $scope.data.currentMode.obj._id;
+                projectId = item._id;
+            } else {
+                projectId = $scope.data.currentMode.obj._id;
+                userId    = item._id;
+            }
+            var data = {
+                projectId : projectId,
+                userId    : userId,
+                maxHours  : $scope.data.maxHours
+            };
+            ProjectsFactory.marcateUserProject( data )
+                .then( function ( result ) {
+                    // once the new ProjectUser document was inserted, we proceed to delete that item from list
+                    ProjectsFactory.removeItemFromArray( $scope.data.items, item._id );
+                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'ok', msg : $filter( 'i18next' )( 'projects.projectAssign.okMarcate' ) } );    
+                })
+                .catch( function ( err ) {
+                    $uibModalInstance.dismiss( 'cancel' );
+                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'error', msg : $filter( 'i18next' )( 'projects.projectAssign.errorMarcate' ) } );
+                });
+        };
+
+        $scope.cancel = function () {
+            $uibModalInstance.dismiss( 'cancel' );
+            // at modal exit, we proceed to refresh the projects or users list view calling to ActiveThisUser or ActiveThisProject
+            if( $scope.data.currentMode.type == 'users' ) {
+                $scope.$emit( 'refreshactiveThisUser', { data : null } );
+            } else {
+                $scope.$emit( 'refreshactiveThisProject', { data : null } );
+            }
+        };
+
+    }
 
 }());
 
@@ -4536,144 +4680,6 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
             $scope.activeThisUser( $scope.$parent.$parent.currentMode.obj ); // to refresh projects items list view
             ProjectsFactory.setItemsOcurrences( $scope.employees ); // get and set number of ocurrences on ProjectUser entity
         });
-
-    }
-
-}());
-
-;( function () {
-    'use strict';
-    angular
-        .module( 'hours.projects' )
-        .controller( 'ModalDemarcate', ModalDemarcate );
-
-    ModalDemarcate.$invoke = [ '$scope', '$uibModalInstance', 'data', 'ProjectsFactory', '$rootScope', '$filter' ];
-    function ModalDemarcate( $scope, $uibModalInstance, data, ProjectsFactory, $rootScope, $filter ) {
-
-        $scope.data = data;
-
-        $scope.demarcate = function () {
-            console.log('epa');
-            $uibModalInstance.dismiss( 'cancel' );
-            ProjectsFactory.demarcateUserProject( data )
-                .then( function ( result ) {
-                    // once relationship was erased from ProjectUsers entity
-                    // we proceed to refresh the projects or users list view calling to ActiveThisUser or ActiveThisProject
-                    if( $scope.data.currentMode.type == 'users' ) {
-                        $rootScope.$broadcast( 'refreshactiveThisUser', { data : null } );
-                    } else {
-                        $rootScope.$broadcast( 'refreshactiveThisProject', { data : null } ); 
-                    };
-                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'ok', msg : $filter( 'i18next' )( 'projects.projectAssign.okDemarcate' ) } );
-                })
-                .catch( function ( err ) {
-                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'error', msg : $filter( 'i18next' )( 'projects.projectAssign.errorDemarcate' ) } );
-                });
-        };
-
-        $scope.cancel = function () {
-            $uibModalInstance.dismiss( 'cancel' );
-        };
-
-    }
-
-}());
-
-;( function () {
-    'use strict';
-    angular
-        .module( 'hours.projects' )
-        .controller( 'ModalInfo', ModalInfo );
-
-    ModalInfo.$invoke = [ '$scope', '$uibModalInstance', 'data' ];
-    function ModalInfo( $scope, $uibModalInstance, data ) {
-
-        $scope.data = data;
-
-        $scope.cancel = function () {
-            $uibModalInstance.dismiss( 'cancel' );
-        };
-
-    }
-
-}());
-
-;( function () {
-    'use strict';
-    angular
-        .module( 'hours.projects' )
-        .controller( 'ModalMarcate', ModalMarcate );
-
-    ModalMarcate.$invoke = [ '$scope', '$rootScope', '$uibModalInstance', 'data', 'ProjectsFactory', 'EmployeeManagerFactory', '$filter' ];
-    function ModalMarcate( $scope, $rootScope, $uibModalInstance, data, ProjectsFactory, EmployeeManagerFactory, $filter ) {
-
-        $scope.data = {
-                spinners    : false,
-                maxHours    : 0,
-                searchText  : '',
-                currentMode : data.currentMode
-        };
-
-        $scope.search = function( searchText ) {
-            $scope.data.spinners = true;
-            var thisPromise      = [];
-            if( $scope.data.currentMode.type == 'users' ) {
-                thisPromise.push( ProjectsFactory.advancedProjectSearch( searchText ) );
-            } else {
-                thisPromise.push( EmployeeManagerFactory.advancedUserSearch( { textToFind : searchText } ) );
-            }
-            Promise.all( thisPromise )
-                .then( function ( data ) {
-                    if( $scope.data.currentMode.type == 'users' ) {
-                        $scope.data.items = data[0].projects;
-                    } else {
-                        $scope.data.items = data[0];
-                    }
-                })
-                .catch( function ( err ) {
-                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'error', msg : $filter( 'i18next' )( 'projects.projectAssign.errorData' ) } );
-                })
-                .then( function() { // functionallity as finally
-                    $scope.data.spinners = false;
-                });
-        };
-
-        $scope.marcateThis = function( item ) {
-            var userId    = '';
-            var projectId = '';
-            if( $scope.data.currentMode.type == 'users' ) {
-                userId    = $scope.data.currentMode.obj._id;
-                projectId = item._id;
-            } else {
-                projectId = $scope.data.currentMode.obj._id;
-                userId    = item._id;
-            }
-            var data = {
-                projectId : projectId,
-                userId    : userId,
-                maxHours  : $scope.data.maxHours
-            };
-            ProjectsFactory.marcateUserProject( data )
-                .then( function ( result ) {
-                    // once the new ProjectUser document was inserted, we proceed to delete that item from list
-                    ProjectsFactory.removeItemFromArray( $scope.data.items, item._id );
-                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'ok', msg : $filter( 'i18next' )( 'projects.projectAssign.okMarcate' ) } );    
-                })
-                .catch( function ( err ) {
-                    $uibModalInstance.dismiss( 'cancel' );
-                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'error', msg : $filter( 'i18next' )( 'projects.projectAssign.errorMarcate' ) } );
-                });
-        };
-
-        $scope.cancel = function () {
-            $uibModalInstance.dismiss( 'cancel' );
-            // at modal exit, we proceed to refresh the projects or users list view calling to ActiveThisUser or ActiveThisProject
-            if( $scope.data.currentMode.type == 'users' ) {
-                $scope.$emit( 'refreshactiveThisUser', { data : null } );
-            } else {
-                $scope.$emit( 'refreshactiveThisProject', { data : null } );
-            }
-        };
 
     }
 
