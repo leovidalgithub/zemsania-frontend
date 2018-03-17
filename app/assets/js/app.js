@@ -196,8 +196,8 @@ function setFormlyConfig(formlyConfig){
 }
 const protocol = window.location.protocol;
 const hostname = window.location.hostname;
-const API_base = `${protocol}//zemback.sipedi.net/`; // zemback.sipedi.tedevelopment
-// const API_base = 'http://zemback.sipedi.net:8080/';
+const API_base = `${protocol}//zemtime_ng1_back.sipedi.net/`;
+// const API_base = 'http://localhost:5000/';
 
 const API_paths = {
     login: 'authn/login',
@@ -396,31 +396,6 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
     return dailyWork;
 }
 
-;( function() {
-    'use strict';
-    angular
-        .module( 'hours.approvalHours', [] )
-        .config( approvalHoursConfig )
-
-    approvalHoursConfig.$invoke = [ '$stateProvider' ];
-    function approvalHoursConfig( $stateProvider ) {
-        $stateProvider
-            .state( 'approvalHours', {
-                url: '/approvalhours',
-                templateUrl: '/features/approval/approval/approvalhours.tpl.html',
-                controller: 'approvalHoursController',
-                data: {
-                    template: 'complex',
-                    permissions: {
-                        except: ['anonymous'],
-                        redirectTo: 'login'
-                    }
-                },
-                resolve: {}
-            })
-    }
-}());
-
 ;(function () {
     'use strict';
     angular
@@ -562,6 +537,31 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
                 }
             }
         };
+    }
+}());
+
+;( function() {
+    'use strict';
+    angular
+        .module( 'hours.approvalHours', [] )
+        .config( approvalHoursConfig )
+
+    approvalHoursConfig.$invoke = [ '$stateProvider' ];
+    function approvalHoursConfig( $stateProvider ) {
+        $stateProvider
+            .state( 'approvalHours', {
+                url: '/approvalhours',
+                templateUrl: '/features/approval/approval/approvalhours.tpl.html',
+                controller: 'approvalHoursController',
+                data: {
+                    template: 'complex',
+                    permissions: {
+                        except: ['anonymous'],
+                        redirectTo: 'login'
+                    }
+                },
+                resolve: {}
+            })
     }
 }());
 
@@ -793,152 +793,6 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
                 }
             });
     }
-}());
-
-;( function() {
-    'use strict';
-    angular
-        .module( 'hours.approvalHours' )
-        .factory( 'approvalHoursFactory', approvalHoursFactory )
-
-    approvalHoursFactory.$invoke = [ '$http', '$q', 'UserFactory', 'imputeHoursFactory', 'projectInfoFactory' ];
-    function approvalHoursFactory( $http, $q, UserFactory, imputeHoursFactory, projectInfoFactory ) {
-
-        // const IMPUTETYPES = imputeHoursFactory.getImputeTypesIndexConst();
-        var mainOBJ;
-        var data;
-
-        return {
-
-            getEmployeesTimesheets: function ( _mainOBJ ) { // LEO WAS HERE
-                mainOBJ = _mainOBJ;
-                var month = mainOBJ.currentMonth;
-                var year = mainOBJ.currentYear;
-                var managerId = UserFactory.getUserID();
-                var dfd = $q.defer();
-                $http.get( buildURL( 'getEmployeesTimesheets' ) + managerId + '?month=' + month + '&year=' + year )
-                    .then( prepareData.bind( null, dfd ) )
-                    .catch( function ( err ) {
-                        dfd.reject( err );
-                    });
-                return dfd.promise;
-            }
-        };
-
-        // getting projects summary info and set opened fields
-        function prepareData( dfd, _data ) {
-            data = _data;
-            var calendars = data.data.calendars;
-            var employees = data.data.employees;
-
-            employees.forEach( function( employee, index, thisArray ) {
-                var projectsInfo = {};
-                var ts = employee.timesheetDataModel;
-                var calendarId = employee.calendarID;
-                var calendar = calendars[ calendarId ];
-                employee.opened = false;
-                // getting projects summary info
-                projectsInfo = projectInfoFactory.getProjectsInfo( ts, calendar );
-
-                employee.projectInfoSummary = projectsInfo.summary;
-                for( var projectId in employee.timesheetDataModel ) {
-                    employee.timesheetDataModel[ projectId ].info.summary = projectsInfo.projects[ projectId ];
-                    employee.timesheetDataModel[ projectId ].info.opened  = false;
-                }
-            });
-
-            prepareTableDaysData( dfd );
-        }
-
-        function prepareTableDaysData( dfd ) {
-            var employees = data.data.employees;
-            employees.forEach( function( employee ) {
-                    employee.isPending = false;
-                    for( var projectId in employee.timesheetDataModel ) {
-
-                        for( var day in employee.timesheetDataModel[ projectId ] ) {
-                            if( day == 'info' ) continue; // 'info' is where all project info is stored, so, it is necessary to skip it
-
-                            for( var imputeType in employee.timesheetDataModel[ projectId ][ day ] ) {
-                                for( var imputeSubType in employee.timesheetDataModel[ projectId ][ day ][ imputeType ] ) {
-
-                                    var tableName = imputeType + '_' + imputeSubType;
-                                    if( !employee.timesheetDataModel[ projectId ].info.tables[ tableName ] ) {
-                                        employee.timesheetDataModel[ projectId ].info.tables[ tableName ] = {};
-                                        var newTable = employee.timesheetDataModel[ projectId ].info.tables[ tableName ];
-                                        newTable.name = tableName;
-                                        newTable.imputeType = imputeType;
-                                        newTable.imputeSubType = imputeSubType;
-                                        newTable.days = [];
-                                        createTable( newTable );
-                                    }
-                                    var table  = employee.timesheetDataModel[ projectId ].info.tables[ tableName ];
-                                    var value  = employee.timesheetDataModel[ projectId ][ day ][ imputeType ][ imputeSubType ].value;
-                                    var status = employee.timesheetDataModel[ projectId ][ day ][ imputeType ][ imputeSubType ].status;
-
-                                    // Pending radio option (show just employees with some imputed-hours pending or show all)
-                                    if( !employee.isPending && status == 'sent' ) employee.isPending = true;
-
-                                    var currentDay = new Date( parseInt( day, 10 ) ).getDate();
-
-                                    var dayToSet = table.days.find( function( dayObj ) {
-                                        return dayObj.day == currentDay;
-                                    });
-                                    dayToSet.value  = value;
-                                    dayToSet.status = status;
-                                    if( status == 'approved' ) {
-                                        dayToSet.approved = true;
-                                    } else if ( status == 'rejected' ) {
-                                        dayToSet.approved = false;
-                                    }
-                                }
-                            }
-                        }
-                    }
-            });
-
-            // insert standar days content for the new table
-            function createTable( newTable ) {
-                for( var day = 1; day <= mainOBJ.totalMonthDays; day++ ) {
-                    var dayTimestamp = new Date( mainOBJ.currentYear, mainOBJ.currentMonth, day ).getTime();
-                    // newTable.days.push( { day : day, dayTimestamp : dayTimestamp, value : 0, approved : 'NA', enabled : false, status : 'draft' } );
-                    newTable.days.push( { day : day, dayTimestamp : dayTimestamp, value : 0, approved : 'NA', status : 'draft' } );
-                }
-            }
-            prepareDayType( dfd );
-        }
-
-        // setting 'dayType' of each day inside each table
-        function prepareDayType( dfd ) {
-            var employees = data.data.employees;
-            var calendars = data.data.calendars;
-            employees.forEach( function( employee ) {
-                var calendarID = employee.calendarID;
-                for( var projectId in employee.timesheetDataModel ) {
-                    for( var table in employee.timesheetDataModel[ projectId ].info.tables) {
-                        var currentTable =  employee.timesheetDataModel[ projectId ].info.tables[ table ];
-                        currentTable.days.forEach( function( day ) {
-                            var currentDay = new Date( mainOBJ.currentYear, mainOBJ.currentMonth,  parseInt( day.day, 10) ).getTime();
-                            var dayType = calendars[ calendarID ].eventHours[ 0 ].eventDates[ currentDay ].type;
-                            day.dayType = dayType;
-                        });
-                    }
-                }
-            });
-
-//             data.data.employees.forEach( function( element ) {
-//                 for( var project in element.timesheetDataModel ) {
-// // console.log(element.timesheetDataModel);
-//                     for ( var day in element.timesheetDataModel[ project ].info.tables['1_2'].days ) {
-//                         var thisDay = element.timesheetDataModel[ project ].info.tables['1_2'].days[day];
-//                         console.log('day ' + thisDay.day + ' approved ' + thisDay.approved + ' dayType ' + thisDay.dayType + ' status ' + thisDay.status );
-//                     }
-//                 }
-//             });
-            return dfd.resolve( data.data.employees );
-        }
-    }
-
 }());
 
 ( function () {
@@ -1476,6 +1330,152 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
         };
     }
 }());
+;( function() {
+    'use strict';
+    angular
+        .module( 'hours.approvalHours' )
+        .factory( 'approvalHoursFactory', approvalHoursFactory )
+
+    approvalHoursFactory.$invoke = [ '$http', '$q', 'UserFactory', 'imputeHoursFactory', 'projectInfoFactory' ];
+    function approvalHoursFactory( $http, $q, UserFactory, imputeHoursFactory, projectInfoFactory ) {
+
+        // const IMPUTETYPES = imputeHoursFactory.getImputeTypesIndexConst();
+        var mainOBJ;
+        var data;
+
+        return {
+
+            getEmployeesTimesheets: function ( _mainOBJ ) { // LEO WAS HERE
+                mainOBJ = _mainOBJ;
+                var month = mainOBJ.currentMonth;
+                var year = mainOBJ.currentYear;
+                var managerId = UserFactory.getUserID();
+                var dfd = $q.defer();
+                $http.get( buildURL( 'getEmployeesTimesheets' ) + managerId + '?month=' + month + '&year=' + year )
+                    .then( prepareData.bind( null, dfd ) )
+                    .catch( function ( err ) {
+                        dfd.reject( err );
+                    });
+                return dfd.promise;
+            }
+        };
+
+        // getting projects summary info and set opened fields
+        function prepareData( dfd, _data ) {
+            data = _data;
+            var calendars = data.data.calendars;
+            var employees = data.data.employees;
+
+            employees.forEach( function( employee, index, thisArray ) {
+                var projectsInfo = {};
+                var ts = employee.timesheetDataModel;
+                var calendarId = employee.calendarID;
+                var calendar = calendars[ calendarId ];
+                employee.opened = false;
+                // getting projects summary info
+                projectsInfo = projectInfoFactory.getProjectsInfo( ts, calendar );
+
+                employee.projectInfoSummary = projectsInfo.summary;
+                for( var projectId in employee.timesheetDataModel ) {
+                    employee.timesheetDataModel[ projectId ].info.summary = projectsInfo.projects[ projectId ];
+                    employee.timesheetDataModel[ projectId ].info.opened  = false;
+                }
+            });
+
+            prepareTableDaysData( dfd );
+        }
+
+        function prepareTableDaysData( dfd ) {
+            var employees = data.data.employees;
+            employees.forEach( function( employee ) {
+                    employee.isPending = false;
+                    for( var projectId in employee.timesheetDataModel ) {
+
+                        for( var day in employee.timesheetDataModel[ projectId ] ) {
+                            if( day == 'info' ) continue; // 'info' is where all project info is stored, so, it is necessary to skip it
+
+                            for( var imputeType in employee.timesheetDataModel[ projectId ][ day ] ) {
+                                for( var imputeSubType in employee.timesheetDataModel[ projectId ][ day ][ imputeType ] ) {
+
+                                    var tableName = imputeType + '_' + imputeSubType;
+                                    if( !employee.timesheetDataModel[ projectId ].info.tables[ tableName ] ) {
+                                        employee.timesheetDataModel[ projectId ].info.tables[ tableName ] = {};
+                                        var newTable = employee.timesheetDataModel[ projectId ].info.tables[ tableName ];
+                                        newTable.name = tableName;
+                                        newTable.imputeType = imputeType;
+                                        newTable.imputeSubType = imputeSubType;
+                                        newTable.days = [];
+                                        createTable( newTable );
+                                    }
+                                    var table  = employee.timesheetDataModel[ projectId ].info.tables[ tableName ];
+                                    var value  = employee.timesheetDataModel[ projectId ][ day ][ imputeType ][ imputeSubType ].value;
+                                    var status = employee.timesheetDataModel[ projectId ][ day ][ imputeType ][ imputeSubType ].status;
+
+                                    // Pending radio option (show just employees with some imputed-hours pending or show all)
+                                    if( !employee.isPending && status == 'sent' ) employee.isPending = true;
+
+                                    var currentDay = new Date( parseInt( day, 10 ) ).getDate();
+
+                                    var dayToSet = table.days.find( function( dayObj ) {
+                                        return dayObj.day == currentDay;
+                                    });
+                                    dayToSet.value  = value;
+                                    dayToSet.status = status;
+                                    if( status == 'approved' ) {
+                                        dayToSet.approved = true;
+                                    } else if ( status == 'rejected' ) {
+                                        dayToSet.approved = false;
+                                    }
+                                }
+                            }
+                        }
+                    }
+            });
+
+            // insert standar days content for the new table
+            function createTable( newTable ) {
+                for( var day = 1; day <= mainOBJ.totalMonthDays; day++ ) {
+                    var dayTimestamp = new Date( mainOBJ.currentYear, mainOBJ.currentMonth, day ).getTime();
+                    // newTable.days.push( { day : day, dayTimestamp : dayTimestamp, value : 0, approved : 'NA', enabled : false, status : 'draft' } );
+                    newTable.days.push( { day : day, dayTimestamp : dayTimestamp, value : 0, approved : 'NA', status : 'draft' } );
+                }
+            }
+            prepareDayType( dfd );
+        }
+
+        // setting 'dayType' of each day inside each table
+        function prepareDayType( dfd ) {
+            var employees = data.data.employees;
+            var calendars = data.data.calendars;
+            employees.forEach( function( employee ) {
+                var calendarID = employee.calendarID;
+                for( var projectId in employee.timesheetDataModel ) {
+                    for( var table in employee.timesheetDataModel[ projectId ].info.tables) {
+                        var currentTable =  employee.timesheetDataModel[ projectId ].info.tables[ table ];
+                        currentTable.days.forEach( function( day ) {
+                            var currentDay = new Date( mainOBJ.currentYear, mainOBJ.currentMonth,  parseInt( day.day, 10) ).getTime();
+                            var dayType = calendars[ calendarID ].eventHours[ 0 ].eventDates[ currentDay ].type;
+                            day.dayType = dayType;
+                        });
+                    }
+                }
+            });
+
+//             data.data.employees.forEach( function( element ) {
+//                 for( var project in element.timesheetDataModel ) {
+// // console.log(element.timesheetDataModel);
+//                     for ( var day in element.timesheetDataModel[ project ].info.tables['1_2'].days ) {
+//                         var thisDay = element.timesheetDataModel[ project ].info.tables['1_2'].days[day];
+//                         console.log('day ' + thisDay.day + ' approved ' + thisDay.approved + ' dayType ' + thisDay.dayType + ' status ' + thisDay.status );
+//                     }
+//                 }
+//             });
+            return dfd.resolve( data.data.employees );
+        }
+    }
+
+}());
+
 ;( function () {
     'use strict';
     angular
@@ -2206,256 +2206,6 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
     }
 }());
 
-;( function() {
-    'use strict';
-    angular
-        .module( 'hours.approvalHours' )
-        .controller( 'approvalHoursController', approvalHoursController )
-
-    approvalHoursController.$invoke = [ '$scope', '$rootScope', 'UserFactory', 'approvalHoursFactory', 'DashboardFactory', '$timeout', 'imputeHoursFactory', '$filter' ];
-    function approvalHoursController( $scope, $rootScope, UserFactory, approvalHoursFactory, DashboardFactory, $timeout, imputeHoursFactory, $filter ) {
-
-        const IMPUTETYPES = imputeHoursFactory.getImputeTypes();
-
-        ( function init() {
-            var currentDate;
-            if( $rootScope.notification ) { // if it comes from notification it takes the date from that notification
-                currentDate = new Date( $rootScope.notification.issueDate.year, $rootScope.notification.issueDate.month, 1 );
-            } else { // otherwise it will show the data from current month and year
-                currentDate = new Date();
-            }
-
-            $scope.mainOBJ  = {};
-            $scope.mainOBJ  = {
-                                currentDate          : currentDate,
-                                currentDateTimestamp : currentDate.getTime(),
-                                currentMonth         : currentDate.getMonth(),
-                                currentYear          : currentDate.getFullYear(),
-                                currentFirstDay      : new Date( currentDate.getFullYear(), currentDate.getMonth(), 1 ),
-                                currentLastDay       : new Date( currentDate.getFullYear(), currentDate.getMonth() + 1, 0 ),
-                                totalMonthDays       : new Date( currentDate.getFullYear(), currentDate.getMonth() + 1, 0 ).getDate(),
-                                allEmployees         : 'true',
-                                searchText           : '',
-                                imputesCount         : 0
-                            };
-            getData();
-        })();
-
-        function getData() {
-            approvalHoursFactory.getEmployeesTimesheets( $scope.mainOBJ )
-                .then( function ( data ) {
-                    $scope.employees = data;
-                    imputesCount();
-                    if( $rootScope.notification ) showNotificationData();
-                    initialSlick();
-                })
-                .catch( function ( err ) {
-                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'error', msg : $filter( 'i18next' )( 'approvalHours.errorLoading' ) } );
-                });
-        }
-
-        $scope.myEmployeeClick = function( employeeId ) {
-            var openStatus = collapseToggle( employeeId );
-            var employee = getEmployee( employeeId );
-            employee.opened = ( openStatus === 'true' );
-        };
-
-        $scope.myProjectClick = function( employeeId, projectId ) {
-            var openStatus = collapseToggle( projectId + '_' + employeeId );
-            var employee = getEmployee( employeeId );
-            employee.timesheetDataModel[ projectId ].info.opened =  ( openStatus === 'true' );
-            if ( openStatus ) { // if project content is opening, we have to reinitalize the slickTable to show corretly for the first time
-                var element = '#' + projectId + '_' + employeeId + ' .slickTable';
-                $( element ).hide();
-                initialSlick( element );
-            }
-        };
-
-        // to collapse toggle of table views
-        function collapseToggle( id ) {
-            var element = $( '#' + id );
-            element.collapse( 'toggle' );
-            return element.attr( 'aria-expanded' ); // to know if tab content is collapsed or not
-        }
-
-        // SLICKTABLE ISSUE: when it comes from notifications, for some reason, all hidden slickTables do not show corretly.
-        // So, every time a project is open, we have to initialize or reinitialize the slick element to show properly
-        function initialSlick( element ) {
-            element = element ? element : '.slickTable';
-            $timeout( function() {
-                try { // when load slick twice on the same element it gives error: "cannot read property 'add' of null slick"
-                $( element ).slick( {
-                            dots: true,
-                            infinite : false,
-                            slidesToShow: 5,
-                            slidesToScroll: 4,
-                            variableWidth : true,
-                            arrows : false
-                            // autoplay : true,
-                            // autoplaySpeed : 600,
-                            // adaptiveHeight : true,
-                            // speed : 300,
-                            // centerMode : true,
-                  });
-                } catch( e ) {
-                }
-                $( element ).show();
-            }, 400 );
-        }
-
-        // WHEN USER CLICKS ON ANY APPROVAL OR REJECT BUTTON. THERE ARE 4 LEVEL OF APPROVAL/REJECT CLICKS
-        // 1 EMPLOYEE LEVEL - ACTION OVER ALL EMPLOYEE DATA
-        // 2 PROJECT LEVEL  - ACTION OVER CURRENT PROJECT
-        // 3 TABLE LEVEL    - ACTION OVER A TABLE INSIDE A CURRENT PROJECT
-        // 4 DAY LEVEL      - ACTION OVER A PARTICULAR DAY OF A TABLE INSIDE A CURRENT PROJECT
-        $scope.setDays = function( approved, _employeeId, _projectId, _imputeType, _imputeSubType, _dayTimestamp, _dayApproved ) {
-            var projectsObj = {}; // object to send data to backend to set timesheets
-            // when click directly on a particular day
-            if( _dayTimestamp && _dayApproved ) {
-                approved = _dayApproved == 'NA' ? true : !_dayApproved;
-            }
-
-            var newStatus = approved ? 'approved' : 'rejected';
-
-            // find employee
-            var employee = getEmployee( _employeeId );
-
-            // start to find through projects
-            for( var projectId in employee.timesheetDataModel ) {
-                // if _projectId has value, so it will be filter to work just over that _projectId
-                if( _projectId && projectId != _projectId ) continue;
-
-                // find through days inside each project
-                for( var day in employee.timesheetDataModel[ projectId ] ) {
-
-                    // if _dayTimestamp has value, so it will be filter to work just over that day
-                    if( _dayTimestamp && day != _dayTimestamp ) continue;
-                    if( day == 'info' ) continue; // 'info' is where all project info is stored, so, it is necessary to skip it
-
-                        // find through imputeTypes inside each day
-                        for( var imputeType in employee.timesheetDataModel[ projectId ][ day ] ) {
-                            // if _imputeType has value, so it will be filter to work just over that _imputeType
-                            if( _imputeType && imputeType != _imputeType ) continue;
-
-                            // find through imputeSubTypes inside each imputeTypes
-                            for( var imputeSubType in employee.timesheetDataModel[ projectId ][ day ][ imputeType ] ) {
-                                // if _imputeSubType has value, so it will be filter to work just over that _imputeSubType
-                                if( _imputeSubType && imputeSubType != _imputeSubType ) continue;
-
-                                // setting status, modified and info.tables
-                                if( employee.timesheetDataModel[ projectId ][ day ][ imputeType ][ imputeSubType ].status != 'draft' ) {
-                                    employee.timesheetDataModel[ projectId ][ day ][ imputeType ][ imputeSubType ].status   = newStatus;
-                                    employee.timesheetDataModel[ projectId ][ day ][ imputeType ][ imputeSubType ].modified = true;
-                                    var tableName = imputeType + '_' + imputeSubType;
-                                    var infoObj   = employee.timesheetDataModel[ projectId ].info;
-                                    setDayTable( infoObj, tableName, day, approved );
-                                }
-                            }
-                        }
-                }
-            if( !projectsObj[projectId] ) projectsObj[projectId] = {};
-            projectsObj[projectId] = employee.timesheetDataModel[ projectId ];
-            }
-
-            var wrapProjectsObj = [ projectsObj ];
-            var myPromises = [];
-            var issueDate  = []; // notification issue
-            var objDate    = { month : $scope.mainOBJ.currentMonth, year : $scope.mainOBJ.currentYear };
-            issueDate.push( objDate );
-            var notification_data = {
-                                    senderId   : UserFactory.getUserID(),
-                                    receiverId : _employeeId,
-                                    type       : 'hours_reviewed',
-                                    text       : $filter( 'i18next' )( 'calendar.imputeHours.message.hours_reviewed' ),
-                                    issueDate  : issueDate
-                };
-
-            myPromises.push( imputeHoursFactory.setAllTimesheets( wrapProjectsObj, _employeeId ) );
-            myPromises.push( DashboardFactory.insertNewNotification( notification_data ) );
-
-            Promise.all( myPromises )
-                .then( function( data ) {
-                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'ok', msg : $filter( 'i18next' )( 'approvalHours.okSaving' ) } );
-                })
-                .catch( function( err ) {
-                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'error', msg : $filter( 'i18next' )( 'approvalHours.errorSaving' ) } );
-                });
-
-            // it finds 'day' inside 'project.info.tables.tableName.days' and sets 'approved' or 'rejected'
-            function setDayTable( infoObj, tableName, day, approved ) {
-                var currentDay = new Date( parseInt( day, 10) ).getDate();
-                var dayObj = infoObj.tables[ tableName ].days.find( function( day ) {
-                    return day.day == currentDay;
-                });
-                dayObj.approved = approved;
-            }
-
-        };
-
-        // FUNCTION FOR SHOW ALL EMPLOYESS OR JUST EMPLOYEES WITH PENDING APPROVALS
-        $scope.showEmployee = function( isPending ) {
-            if( $scope.mainOBJ.allEmployees == 'true' ) {
-                return true;
-            } else {
-                return isPending;
-            }
-        };
-
-        // IT COUNTS EVERY EMPLOYEE WITH PENDING APPROVAL IN ORDER TO SHOW ON RIGHT-SIDE HEADER
-        function imputesCount() {
-            $scope.mainOBJ.imputesCount = 0;
-            $scope.employees.forEach( function( employee ) {
-                if( employee.isPending ) $scope.mainOBJ.imputesCount++;
-            });
-        }
-
-        // MOVING THROUGH MONTHS
-        $scope.moveDate = function( moveTo ) {
-                $scope.mainOBJ.currentMonth+= moveTo;
-                if( $scope.mainOBJ.currentMonth == 12 ) {
-                    $scope.mainOBJ.currentMonth = 0;
-                    $scope.mainOBJ.currentYear++;
-                } else if ( $scope.mainOBJ.currentMonth == -1 ) {
-                    $scope.mainOBJ.currentMonth = 11;
-                    $scope.mainOBJ.currentYear--;
-                }
-                getData();
-        };
-
-        // WHEN IT COMES FROM NOTIFICATION TO SHOW THE APPROVAL DATA ACCORDING TO THAT NOTIFICATION
-        function showNotificationData() {
-            var senderId = $rootScope.notification.senderId;
-            var idLength = senderId.length;
-            var employee = getEmployee( senderId );
-            $scope.mainOBJ.searchText = senderId.substring( idLength - 12 );
-            $rootScope.notification   = null;
-
-            $timeout( function() {
-                for( var project in employee.timesheetDataModel ) { // to open every project content of that employee
-                    collapseToggle( project + '_' + senderId );
-                    employee.timesheetDataModel[project].info.opened = true;
-                }
-                collapseToggle( senderId ); // to open employee content
-                employee.opened = true;
-            }, 800 );
-        }
-
-        function getEmployee( id ) {
-            return $scope.employees.find( function( employee ) {
-                return employee.employeeId === id;
-            });
-        }
-
-        $scope.giveMeImputeNames = function( imputeType, imputeSubTypes ) {
-            var type    = IMPUTETYPES[ imputeType ];
-            var subType = IMPUTETYPES[ IMPUTETYPES[ imputeType ] ][ imputeSubTypes ];
-            return type + ' - ' + subType;
-        };
-
-    }
-
-}());
-
 ( function () {
     'use strict';
     angular
@@ -2875,125 +2625,365 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
 
 })();
 
+;( function() {
+    'use strict';
+    angular
+        .module( 'hours.approvalHours' )
+        .controller( 'approvalHoursController', approvalHoursController )
+
+    approvalHoursController.$invoke = [ '$scope', '$rootScope', 'UserFactory', 'approvalHoursFactory', 'DashboardFactory', '$timeout', 'imputeHoursFactory', '$filter' ];
+    function approvalHoursController( $scope, $rootScope, UserFactory, approvalHoursFactory, DashboardFactory, $timeout, imputeHoursFactory, $filter ) {
+
+        const IMPUTETYPES = imputeHoursFactory.getImputeTypes();
+
+        ( function init() {
+            var currentDate;
+            if( $rootScope.notification ) { // if it comes from notification it takes the date from that notification
+                currentDate = new Date( $rootScope.notification.issueDate.year, $rootScope.notification.issueDate.month, 1 );
+            } else { // otherwise it will show the data from current month and year
+                currentDate = new Date();
+            }
+
+            $scope.mainOBJ  = {};
+            $scope.mainOBJ  = {
+                                currentDate          : currentDate,
+                                currentDateTimestamp : currentDate.getTime(),
+                                currentMonth         : currentDate.getMonth(),
+                                currentYear          : currentDate.getFullYear(),
+                                currentFirstDay      : new Date( currentDate.getFullYear(), currentDate.getMonth(), 1 ),
+                                currentLastDay       : new Date( currentDate.getFullYear(), currentDate.getMonth() + 1, 0 ),
+                                totalMonthDays       : new Date( currentDate.getFullYear(), currentDate.getMonth() + 1, 0 ).getDate(),
+                                allEmployees         : 'true',
+                                searchText           : '',
+                                imputesCount         : 0
+                            };
+            getData();
+        })();
+
+        function getData() {
+            approvalHoursFactory.getEmployeesTimesheets( $scope.mainOBJ )
+                .then( function ( data ) {
+                    $scope.employees = data;
+                    imputesCount();
+                    if( $rootScope.notification ) showNotificationData();
+                    initialSlick();
+                })
+                .catch( function ( err ) {
+                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'error', msg : $filter( 'i18next' )( 'approvalHours.errorLoading' ) } );
+                });
+        }
+
+        $scope.myEmployeeClick = function( employeeId ) {
+            var openStatus = collapseToggle( employeeId );
+            var employee = getEmployee( employeeId );
+            employee.opened = ( openStatus === 'true' );
+        };
+
+        $scope.myProjectClick = function( employeeId, projectId ) {
+            var openStatus = collapseToggle( projectId + '_' + employeeId );
+            var employee = getEmployee( employeeId );
+            employee.timesheetDataModel[ projectId ].info.opened =  ( openStatus === 'true' );
+            if ( openStatus ) { // if project content is opening, we have to reinitalize the slickTable to show corretly for the first time
+                var element = '#' + projectId + '_' + employeeId + ' .slickTable';
+                $( element ).hide();
+                initialSlick( element );
+            }
+        };
+
+        // to collapse toggle of table views
+        function collapseToggle( id ) {
+            var element = $( '#' + id );
+            element.collapse( 'toggle' );
+            return element.attr( 'aria-expanded' ); // to know if tab content is collapsed or not
+        }
+
+        // SLICKTABLE ISSUE: when it comes from notifications, for some reason, all hidden slickTables do not show corretly.
+        // So, every time a project is open, we have to initialize or reinitialize the slick element to show properly
+        function initialSlick( element ) {
+            element = element ? element : '.slickTable';
+            $timeout( function() {
+                try { // when load slick twice on the same element it gives error: "cannot read property 'add' of null slick"
+                $( element ).slick( {
+                            dots: true,
+                            infinite : false,
+                            slidesToShow: 5,
+                            slidesToScroll: 4,
+                            variableWidth : true,
+                            arrows : false
+                            // autoplay : true,
+                            // autoplaySpeed : 600,
+                            // adaptiveHeight : true,
+                            // speed : 300,
+                            // centerMode : true,
+                  });
+                } catch( e ) {
+                }
+                $( element ).show();
+            }, 400 );
+        }
+
+        // WHEN USER CLICKS ON ANY APPROVAL OR REJECT BUTTON. THERE ARE 4 LEVEL OF APPROVAL/REJECT CLICKS
+        // 1 EMPLOYEE LEVEL - ACTION OVER ALL EMPLOYEE DATA
+        // 2 PROJECT LEVEL  - ACTION OVER CURRENT PROJECT
+        // 3 TABLE LEVEL    - ACTION OVER A TABLE INSIDE A CURRENT PROJECT
+        // 4 DAY LEVEL      - ACTION OVER A PARTICULAR DAY OF A TABLE INSIDE A CURRENT PROJECT
+        $scope.setDays = function( approved, _employeeId, _projectId, _imputeType, _imputeSubType, _dayTimestamp, _dayApproved ) {
+            var projectsObj = {}; // object to send data to backend to set timesheets
+            // when click directly on a particular day
+            if( _dayTimestamp && _dayApproved ) {
+                approved = _dayApproved == 'NA' ? true : !_dayApproved;
+            }
+
+            var newStatus = approved ? 'approved' : 'rejected';
+
+            // find employee
+            var employee = getEmployee( _employeeId );
+
+            // start to find through projects
+            for( var projectId in employee.timesheetDataModel ) {
+                // if _projectId has value, so it will be filter to work just over that _projectId
+                if( _projectId && projectId != _projectId ) continue;
+
+                // find through days inside each project
+                for( var day in employee.timesheetDataModel[ projectId ] ) {
+
+                    // if _dayTimestamp has value, so it will be filter to work just over that day
+                    if( _dayTimestamp && day != _dayTimestamp ) continue;
+                    if( day == 'info' ) continue; // 'info' is where all project info is stored, so, it is necessary to skip it
+
+                        // find through imputeTypes inside each day
+                        for( var imputeType in employee.timesheetDataModel[ projectId ][ day ] ) {
+                            // if _imputeType has value, so it will be filter to work just over that _imputeType
+                            if( _imputeType && imputeType != _imputeType ) continue;
+
+                            // find through imputeSubTypes inside each imputeTypes
+                            for( var imputeSubType in employee.timesheetDataModel[ projectId ][ day ][ imputeType ] ) {
+                                // if _imputeSubType has value, so it will be filter to work just over that _imputeSubType
+                                if( _imputeSubType && imputeSubType != _imputeSubType ) continue;
+
+                                // setting status, modified and info.tables
+                                if( employee.timesheetDataModel[ projectId ][ day ][ imputeType ][ imputeSubType ].status != 'draft' ) {
+                                    employee.timesheetDataModel[ projectId ][ day ][ imputeType ][ imputeSubType ].status   = newStatus;
+                                    employee.timesheetDataModel[ projectId ][ day ][ imputeType ][ imputeSubType ].modified = true;
+                                    var tableName = imputeType + '_' + imputeSubType;
+                                    var infoObj   = employee.timesheetDataModel[ projectId ].info;
+                                    setDayTable( infoObj, tableName, day, approved );
+                                }
+                            }
+                        }
+                }
+            if( !projectsObj[projectId] ) projectsObj[projectId] = {};
+            projectsObj[projectId] = employee.timesheetDataModel[ projectId ];
+            }
+
+            var wrapProjectsObj = [ projectsObj ];
+            var myPromises = [];
+            var issueDate  = []; // notification issue
+            var objDate    = { month : $scope.mainOBJ.currentMonth, year : $scope.mainOBJ.currentYear };
+            issueDate.push( objDate );
+            var notification_data = {
+                                    senderId   : UserFactory.getUserID(),
+                                    receiverId : _employeeId,
+                                    type       : 'hours_reviewed',
+                                    text       : $filter( 'i18next' )( 'calendar.imputeHours.message.hours_reviewed' ),
+                                    issueDate  : issueDate
+                };
+
+            myPromises.push( imputeHoursFactory.setAllTimesheets( wrapProjectsObj, _employeeId ) );
+            myPromises.push( DashboardFactory.insertNewNotification( notification_data ) );
+
+            Promise.all( myPromises )
+                .then( function( data ) {
+                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'ok', msg : $filter( 'i18next' )( 'approvalHours.okSaving' ) } );
+                })
+                .catch( function( err ) {
+                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'error', msg : $filter( 'i18next' )( 'approvalHours.errorSaving' ) } );
+                });
+
+            // it finds 'day' inside 'project.info.tables.tableName.days' and sets 'approved' or 'rejected'
+            function setDayTable( infoObj, tableName, day, approved ) {
+                var currentDay = new Date( parseInt( day, 10) ).getDate();
+                var dayObj = infoObj.tables[ tableName ].days.find( function( day ) {
+                    return day.day == currentDay;
+                });
+                dayObj.approved = approved;
+            }
+
+        };
+
+        // FUNCTION FOR SHOW ALL EMPLOYESS OR JUST EMPLOYEES WITH PENDING APPROVALS
+        $scope.showEmployee = function( isPending ) {
+            if( $scope.mainOBJ.allEmployees == 'true' ) {
+                return true;
+            } else {
+                return isPending;
+            }
+        };
+
+        // IT COUNTS EVERY EMPLOYEE WITH PENDING APPROVAL IN ORDER TO SHOW ON RIGHT-SIDE HEADER
+        function imputesCount() {
+            $scope.mainOBJ.imputesCount = 0;
+            $scope.employees.forEach( function( employee ) {
+                if( employee.isPending ) $scope.mainOBJ.imputesCount++;
+            });
+        }
+
+        // MOVING THROUGH MONTHS
+        $scope.moveDate = function( moveTo ) {
+                $scope.mainOBJ.currentMonth+= moveTo;
+                if( $scope.mainOBJ.currentMonth == 12 ) {
+                    $scope.mainOBJ.currentMonth = 0;
+                    $scope.mainOBJ.currentYear++;
+                } else if ( $scope.mainOBJ.currentMonth == -1 ) {
+                    $scope.mainOBJ.currentMonth = 11;
+                    $scope.mainOBJ.currentYear--;
+                }
+                getData();
+        };
+
+        // WHEN IT COMES FROM NOTIFICATION TO SHOW THE APPROVAL DATA ACCORDING TO THAT NOTIFICATION
+        function showNotificationData() {
+            var senderId = $rootScope.notification.senderId;
+            var idLength = senderId.length;
+            var employee = getEmployee( senderId );
+            $scope.mainOBJ.searchText = senderId.substring( idLength - 12 );
+            $rootScope.notification   = null;
+
+            $timeout( function() {
+                for( var project in employee.timesheetDataModel ) { // to open every project content of that employee
+                    collapseToggle( project + '_' + senderId );
+                    employee.timesheetDataModel[project].info.opened = true;
+                }
+                collapseToggle( senderId ); // to open employee content
+                employee.opened = true;
+            }, 800 );
+        }
+
+        function getEmployee( id ) {
+            return $scope.employees.find( function( employee ) {
+                return employee.employeeId === id;
+            });
+        }
+
+        $scope.giveMeImputeNames = function( imputeType, imputeSubTypes ) {
+            var type    = IMPUTETYPES[ imputeType ];
+            var subType = IMPUTETYPES[ IMPUTETYPES[ imputeType ] ][ imputeSubTypes ];
+            return type + ' - ' + subType;
+        };
+
+    }
+
+}());
+
 ;( function () {
     'use strict';
     angular
-        .module( 'hours.dashboard' )
-        .controller( 'NotificationController', NotificationController );
+        .module( 'hours.employeeManager' )
+        .controller( 'editEmployeeController', editEmployeeController );
 
-    NotificationController.$invoke = [ '$scope', '$rootScope', 'notifications', '$window', '$state', 'DashboardFactory', '$filter', 'Idle' ];
-    function NotificationController( $scope, $rootScope, notifications, $window, $state, DashboardFactory, $filter, Idle ) {
+    editEmployeeController.$invoke = [ '$scope', '$rootScope', '$state', 'data', '$filter', '$timeout', 'EmployeeManagerFactory' ];
+    function editEmployeeController( $scope, $rootScope, $state, data, $filter, $timeout, EmployeeManagerFactory ) {
 
-        (function init() {
-            // IDLE USER ACTIVITY DETECT STARTING ************************
-            Idle.watch();
+        $scope.companies   = data.enterprises;
+        $scope.supervisors = data.supervisors;
+        $scope.calendars   = data.calendars;
 
-            $scope.tableConfig = {
-                itemsPerPage: getItemsPerPage( 125 ),
-                maxPages: "3",
-                fillLastPage: false,
-                currentPage: $scope.tmpData( 'get', 'notificationsListPage' ) || 0
-            };
+        data.employee.birthdate = new Date( data.employee.birthdate );
+        $scope.employee = data.employee;
+        $scope.maxDate = new Date();
 
-            setUsersView();
-            $scope.notifications = notifications;
-            $scope.options = {};
-            $scope.options.justUnread = 'true';
-            $scope.options.length = 0;
-            getUnreadLength();
-        })();
-
-        // EVERYTIME WINDOW IS RESIZED EVENT
-        angular.element( $window ).bind( 'resize', function() {
-            $scope.$digest();
-            setUsersView();
-        });
-
-        // IT GETS WINDOW WIDTH TO CHOOSE ONE OF THE TWO VIEWS
-        function setUsersView() {
-            if( $window.innerWidth < 1210 ) {
-                $scope.viewSet = false;
-            } else {
-                $scope.viewSet = true;
-            }
-        }
-
-        // SECTION SCROLL MOVE EVENT TO MAKE BUTTON 'toUpButton' APPEAR
-        var scrollWrapper = document.getElementById( 'section' );
-        scrollWrapper.onscroll = function ( event ) {
-            var currentScroll = scrollWrapper.scrollTop;
-            var upButton = $( '#toUpButton' );
-            showUpButton( upButton, currentScroll );
+        $scope.open = function () {
+            $scope.status.opened = true;
         };
 
-        // UP-BUTTON CLICK TO TAKE SECTION SCROLL TO TOP
-        $scope.pageGetUp = function() { takeMeUp() };
-
-        // TO GO WHERE NOTIFICATION IS ABOUT
-        $scope.goTo = function( item ) {
-            var type           = item.type;
-            var senderId       = item.senderId._id;
-            var issueDate      = item.issueDate;
-            var notificationId = item._id;
-            $scope.markRead( notificationId ); // before go, mark this notification as read
-            $rootScope.notification = {}; // Initializing
-            $rootScope.notification.issueDate = issueDate;
-            switch ( type ) {
-                case 'hours_req':
-                    $rootScope.notification.senderId  = senderId;
-                    $state.go( 'approvalHours' );
-                    break;
-                case 'hours_reviewed':
-                    $state.go( 'imputeHours' );
-                    break;
-                default:
-                    break;
-            }
+        $scope.dateOptions = {
+            formatYear: 'yy',
+            startingDay: 1,
+            showWeeks: false
         };
 
-        // SET NOTIFICATION AS READ
-        $scope.markRead = function ( notificationId ) {
-            DashboardFactory.markNotificationAsRead( notificationId )
-                .then( function ( data ) {
-                    var notification = getNotification( notificationId );
-                    notification.status = 'read';
-                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'ok', msg : $filter( 'i18next' )( 'notifications.okMarkRead' ) } );
-                })
-                .catch( function ( err ) {
-                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'error', msg : $filter( 'i18next' )( 'notifications.errorMarkRead' ) } );
-                })
-                .finally( function() {
-                    getUnreadLength();
-                });
+        $scope.status = {
+            opened: false
         };
 
-        // GET NOTIFICATION OBJECT BY ITS ID FROM '$scope.notifications'
-        function getNotification( id ) {
-            return $scope.notifications.find( function( notification ) {
-                return notification._id === id;
+        function loadSelectsTranslate() {
+            $scope.genres = [
+                {
+                    name: $filter( 'i18next' )( 'userProfile.user.genre_male' ),
+                    slug: 'male'
+                },
+                {
+                    name: $filter( 'i18next' )( 'userProfile.user.genre_female' ),
+                    slug: 'female'
+                }
+            ];
+
+            $scope.locales = [
+                {
+                    name: 'Español',
+                    slug: 'es'
+                },
+                {
+                    name: 'English',
+                    slug: 'en'
+                },
+                {
+                    name: 'Catalán',
+                    slug: 'ca'
+                }
+            ];
+
+            $scope.roles = [
+                {
+                    name: $filter( 'i18next' )( 'role.ROLE_BACKOFFICE' ),
+                    slug: 'ROLE_BACKOFFICE'
+                },
+                {
+                    name: $filter( 'i18next' )( 'role.ROLE_DELIVERY' ),
+                    slug: 'ROLE_DELIVERY'
+                },
+                {
+                    name: $filter( 'i18next' )( 'role.ROLE_MANAGER' ),
+                    slug: 'ROLE_MANAGER'
+                },
+                {
+                    name: $filter( 'i18next' )( 'role.ROLE_USER' ),
+                    slug: 'ROLE_USER'
+                }
+            ];
+
+            data.employee.roles.forEach( function( role ) {
+                $filter( 'filter' )( $scope.roles, { slug: role })[0].active = true;
             });
+
         }
 
-        // GET TOTAL OF UNREAD NOTIFICATIONS
-        function getUnreadLength() {
-            $scope.options.length = 0;
-            $scope.notifications.forEach( function( notification ) {
-                if( notification.status == 'unread') $scope.options.length++;
+        $timeout( function () {
+            loadSelectsTranslate();
+        }, 100 );
+
+        $scope.changeRole = function () {
+            $scope.employee.roles = [];
+            $scope.roles.forEach( function( role ) {
+                if ( role.active ) {
+                    $scope.employee.roles.push( role.slug );
+                }
             });
-        }
-
-        // FUNCTION FILTER TO SHOW UNREAD OR READ NOTIFICATIONS ONLY (ng-show)
-        $scope.filterNotifications = function( status ) {
-            var radioStatus = $scope.options.justUnread == 'true' ? 'unread' : 'read';
-            return ( status == radioStatus );
         };
 
-        $scope.$on( '$destroy', function () {
-            $scope.tmpData( 'add', 'notificationsListPage', $scope.tableConfig.currentPage );
-        });
-
-        $("[id^=lptop]").remove(); // to remove element added by Lastpass plugin
-        console.clear();
+        $scope.editUser = function () {
+            $( '#page-content-wrapper #section' ).animate( { scrollTop: 0 }, 'slow' );
+            EmployeeManagerFactory.updateEmployee( $scope.employee )
+                .then( function () {
+                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'ok', msg : $filter( 'i18next' )( 'employeeManager.edit.saveSuccess' ) } );
+                    $timeout( function () {
+                        $state.go( 'employeeManager' );
+                    }, 2500 );
+                })
+                .catch( function () {
+                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'error', msg : $filter( 'i18next' )( 'employeeManager.edit.saveError' ) } );
+                    });
+        };
 
     }
 }());
@@ -3122,179 +3112,43 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
 ;( function () {
     'use strict';
     angular
-        .module( 'hours.employeeManager' )
-        .controller( 'editEmployeeController', editEmployeeController );
+        .module( 'hours.dashboard' )
+        .controller( 'NotificationController', NotificationController );
 
-    editEmployeeController.$invoke = [ '$scope', '$rootScope', '$state', 'data', '$filter', '$timeout', 'EmployeeManagerFactory' ];
-    function editEmployeeController( $scope, $rootScope, $state, data, $filter, $timeout, EmployeeManagerFactory ) {
+    NotificationController.$invoke = [ '$scope', '$rootScope', 'notifications', '$window', '$state', 'DashboardFactory', '$filter', 'Idle' ];
+    function NotificationController( $scope, $rootScope, notifications, $window, $state, DashboardFactory, $filter, Idle ) {
 
-        $scope.companies   = data.enterprises;
-        $scope.supervisors = data.supervisors;
-        $scope.calendars   = data.calendars;
+        (function init() {
+            // IDLE USER ACTIVITY DETECT STARTING ************************
+            Idle.watch();
 
-        data.employee.birthdate = new Date( data.employee.birthdate );
-        $scope.employee = data.employee;
-        $scope.maxDate = new Date();
+            $scope.tableConfig = {
+                itemsPerPage: getItemsPerPage( 125 ),
+                maxPages: "3",
+                fillLastPage: false,
+                currentPage: $scope.tmpData( 'get', 'notificationsListPage' ) || 0
+            };
 
-        $scope.open = function () {
-            $scope.status.opened = true;
-        };
+            setUsersView();
+            $scope.notifications = notifications;
+            $scope.options = {};
+            $scope.options.justUnread = 'true';
+            $scope.options.length = 0;
+            getUnreadLength();
+        })();
 
-        $scope.dateOptions = {
-            formatYear: 'yy',
-            startingDay: 1,
-            showWeeks: false
-        };
-
-        $scope.status = {
-            opened: false
-        };
-
-        function loadSelectsTranslate() {
-            $scope.genres = [
-                {
-                    name: $filter( 'i18next' )( 'userProfile.user.genre_male' ),
-                    slug: 'male'
-                },
-                {
-                    name: $filter( 'i18next' )( 'userProfile.user.genre_female' ),
-                    slug: 'female'
-                }
-            ];
-
-            $scope.locales = [
-                {
-                    name: 'Español',
-                    slug: 'es'
-                },
-                {
-                    name: 'English',
-                    slug: 'en'
-                },
-                {
-                    name: 'Catalán',
-                    slug: 'ca'
-                }
-            ];
-
-            $scope.roles = [
-                {
-                    name: $filter( 'i18next' )( 'role.ROLE_BACKOFFICE' ),
-                    slug: 'ROLE_BACKOFFICE'
-                },
-                {
-                    name: $filter( 'i18next' )( 'role.ROLE_DELIVERY' ),
-                    slug: 'ROLE_DELIVERY'
-                },
-                {
-                    name: $filter( 'i18next' )( 'role.ROLE_MANAGER' ),
-                    slug: 'ROLE_MANAGER'
-                },
-                {
-                    name: $filter( 'i18next' )( 'role.ROLE_USER' ),
-                    slug: 'ROLE_USER'
-                }
-            ];
-
-            data.employee.roles.forEach( function( role ) {
-                $filter( 'filter' )( $scope.roles, { slug: role })[0].active = true;
-            });
-
-        }
-
-        $timeout( function () {
-            loadSelectsTranslate();
-        }, 100 );
-
-        $scope.changeRole = function () {
-            $scope.employee.roles = [];
-            $scope.roles.forEach( function( role ) {
-                if ( role.active ) {
-                    $scope.employee.roles.push( role.slug );
-                }
-            });
-        };
-
-        $scope.editUser = function () {
-            $( '#page-content-wrapper #section' ).animate( { scrollTop: 0 }, 'slow' );
-            EmployeeManagerFactory.updateEmployee( $scope.employee )
-                .then( function () {
-                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'ok', msg : $filter( 'i18next' )( 'employeeManager.edit.saveSuccess' ) } );
-                    $timeout( function () {
-                        $state.go( 'employeeManager' );
-                    }, 2500 );
-                })
-                .catch( function () {
-                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'error', msg : $filter( 'i18next' )( 'employeeManager.edit.saveError' ) } );
-                    });
-        };
-
-    }
-}());
-
-( function () {
-    'use strict';
-    angular
-        .module( 'hours.employeeManager' )
-        .controller( 'listEmployeeController', listEmployeeController );
-
-    listEmployeeController.$invoke = [ '$scope', 'employees', 'EmployeeManagerFactory', '$timeout', '$filter', '$window' ];
-    function listEmployeeController( $scope, employees, EmployeeManagerFactory, $timeout, $filter ,$window ) {
-
-        $scope.tableConfig = {
-            itemsPerPage: getItemsPerPage( 65 ),
-            maxPages: "3",
-            fillLastPage: false,
-            currentPage: $scope.tmpData( 'get', 'employeeManagerListPage' ) || 0
-        };
-
-        $scope.search = {};
-        $scope.employees = employees;
-        $scope.var = false;
-        setUsersView();
-
-        // ADVANDED SEARCH TOGGLE BUTTON
-        $scope.toggleAdvancedSearch = function () {
-            takeMeUp();
-            $scope.showAdvancedSearch = !$scope.showAdvancedSearch;
-            if ( !$scope.showAdvancedSearch ) {
-                $scope.employees = employees;
-            } else {
-                $scope.avancedSearch();
-                $timeout( function() { // search input set_focus
-                    document.getElementById( 'searchInput' ).focus();
-                });
-            }
-        };
-
-        // ADVANDED SEARCH SERVICE FUNCTION
-        $scope.avancedSearch = function () {
-            EmployeeManagerFactory.advancedUserSearch( $scope.search )
-                .then( function ( foundEmployees ) {
-                    $scope.employees = foundEmployees;
-                });
-        };
-
-        $timeout( function () { // ???
-            $( '[ng-click="stepPage(-numberOfPages)"]' ).text( $filter( 'i18next' )( 'actions.nextPage' ) );
-            $( '[ng-click="stepPage(numberOfPages)"]'  ).text( $filter( 'i18next' )( 'actions.lastPage' ) );
-        });
-
-        $scope.$on( '$destroy', function () {
-            $scope.tmpData( 'add', 'employeeManagerListPage', $scope.tableConfig.currentPage );
-        });
-
-
+        // EVERYTIME WINDOW IS RESIZED EVENT
         angular.element( $window ).bind( 'resize', function() {
             $scope.$digest();
             setUsersView();
         });
 
+        // IT GETS WINDOW WIDTH TO CHOOSE ONE OF THE TWO VIEWS
         function setUsersView() {
-            if( $window.innerWidth < 930 ) {
+            if( $window.innerWidth < 1210 ) {
                 $scope.viewSet = false;
             } else {
-                $scope.viewSet = true;            
+                $scope.viewSet = true;
             }
         }
 
@@ -3306,36 +3160,77 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
             showUpButton( upButton, currentScroll );
         };
 
-        // BUTTON TO TAKE SECTION SCROLL TO TOP
+        // UP-BUTTON CLICK TO TAKE SECTION SCROLL TO TOP
         $scope.pageGetUp = function() { takeMeUp() };
 
-}
+        // TO GO WHERE NOTIFICATION IS ABOUT
+        $scope.goTo = function( item ) {
+            var type           = item.type;
+            var senderId       = item.senderId._id;
+            var issueDate      = item.issueDate;
+            var notificationId = item._id;
+            $scope.markRead( notificationId ); // before go, mark this notification as read
+            $rootScope.notification = {}; // Initializing
+            $rootScope.notification.issueDate = issueDate;
+            switch ( type ) {
+                case 'hours_req':
+                    $rootScope.notification.senderId  = senderId;
+                    $state.go( 'approvalHours' );
+                    break;
+                case 'hours_reviewed':
+                    $state.go( 'imputeHours' );
+                    break;
+                default:
+                    break;
+            }
+        };
 
+        // SET NOTIFICATION AS READ
+        $scope.markRead = function ( notificationId ) {
+            DashboardFactory.markNotificationAsRead( notificationId )
+                .then( function ( data ) {
+                    var notification = getNotification( notificationId );
+                    notification.status = 'read';
+                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'ok', msg : $filter( 'i18next' )( 'notifications.okMarkRead' ) } );
+                })
+                .catch( function ( err ) {
+                    $rootScope.$broadcast( 'showThisAlertPlease', { type : 'error', msg : $filter( 'i18next' )( 'notifications.errorMarkRead' ) } );
+                })
+                .finally( function() {
+                    getUnreadLength();
+                });
+        };
 
+        // GET NOTIFICATION OBJECT BY ITS ID FROM '$scope.notifications'
+        function getNotification( id ) {
+            return $scope.notifications.find( function( notification ) {
+                return notification._id === id;
+            });
+        }
+
+        // GET TOTAL OF UNREAD NOTIFICATIONS
+        function getUnreadLength() {
+            $scope.options.length = 0;
+            $scope.notifications.forEach( function( notification ) {
+                if( notification.status == 'unread') $scope.options.length++;
+            });
+        }
+
+        // FUNCTION FILTER TO SHOW UNREAD OR READ NOTIFICATIONS ONLY (ng-show)
+        $scope.filterNotifications = function( status ) {
+            var radioStatus = $scope.options.justUnread == 'true' ? 'unread' : 'read';
+            return ( status == radioStatus );
+        };
+
+        $scope.$on( '$destroy', function () {
+            $scope.tmpData( 'add', 'notificationsListPage', $scope.tableConfig.currentPage );
+        });
+
+        $("[id^=lptop]").remove(); // to remove element added by Lastpass plugin
+        console.clear();
+
+    }
 }());
-
-
-    // .directive('myRole', myRole);
-    // IT WAS FOR TRYING TO REMOVE A COMPLETE ELEMENT (TD) FROM AT-TABLE BUT DID NOT WORK PROPERLY
-    // function myRole(UserFactory) {
-    //     return {
-    //         restrict: 'A',
-    //         scope: {
-    //             'myRole': '@'
-    //         },
-    //         compile: function(element, attributes){  
-    //             return {
-    //                 pre: function(scope, element, attributes, controller, transcludeFn){
-    //                     element.remove();
-    //                 },
-    //                 post: function(scope, element, attributes, controller, transcludeFn){
-    //                 }
-    //             }
-    //         },
-    //         link: function compile(scope, element, attrs) {
-    //         }
-    //     };
-    // }
 
 ;( function () {
     'use strict';
@@ -3964,6 +3859,111 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
 }
 })();
 
+( function () {
+    'use strict';
+    angular
+        .module( 'hours.employeeManager' )
+        .controller( 'listEmployeeController', listEmployeeController );
+
+    listEmployeeController.$invoke = [ '$scope', 'employees', 'EmployeeManagerFactory', '$timeout', '$filter', '$window' ];
+    function listEmployeeController( $scope, employees, EmployeeManagerFactory, $timeout, $filter ,$window ) {
+
+        $scope.tableConfig = {
+            itemsPerPage: getItemsPerPage( 65 ),
+            maxPages: "3",
+            fillLastPage: false,
+            currentPage: $scope.tmpData( 'get', 'employeeManagerListPage' ) || 0
+        };
+
+        $scope.search = {};
+        $scope.employees = employees;
+        $scope.var = false;
+        setUsersView();
+
+        // ADVANDED SEARCH TOGGLE BUTTON
+        $scope.toggleAdvancedSearch = function () {
+            takeMeUp();
+            $scope.showAdvancedSearch = !$scope.showAdvancedSearch;
+            if ( !$scope.showAdvancedSearch ) {
+                $scope.employees = employees;
+            } else {
+                $scope.avancedSearch();
+                $timeout( function() { // search input set_focus
+                    document.getElementById( 'searchInput' ).focus();
+                });
+            }
+        };
+
+        // ADVANDED SEARCH SERVICE FUNCTION
+        $scope.avancedSearch = function () {
+            EmployeeManagerFactory.advancedUserSearch( $scope.search )
+                .then( function ( foundEmployees ) {
+                    $scope.employees = foundEmployees;
+                });
+        };
+
+        $timeout( function () { // ???
+            $( '[ng-click="stepPage(-numberOfPages)"]' ).text( $filter( 'i18next' )( 'actions.nextPage' ) );
+            $( '[ng-click="stepPage(numberOfPages)"]'  ).text( $filter( 'i18next' )( 'actions.lastPage' ) );
+        });
+
+        $scope.$on( '$destroy', function () {
+            $scope.tmpData( 'add', 'employeeManagerListPage', $scope.tableConfig.currentPage );
+        });
+
+
+        angular.element( $window ).bind( 'resize', function() {
+            $scope.$digest();
+            setUsersView();
+        });
+
+        function setUsersView() {
+            if( $window.innerWidth < 930 ) {
+                $scope.viewSet = false;
+            } else {
+                $scope.viewSet = true;            
+            }
+        }
+
+        // SECTION SCROLL MOVE EVENT TO MAKE BUTTON 'toUpButton' APPEAR
+        var scrollWrapper = document.getElementById( 'section' );
+        scrollWrapper.onscroll = function ( event ) {
+            var currentScroll = scrollWrapper.scrollTop;
+            var upButton = $( '#toUpButton' );
+            showUpButton( upButton, currentScroll );
+        };
+
+        // BUTTON TO TAKE SECTION SCROLL TO TOP
+        $scope.pageGetUp = function() { takeMeUp() };
+
+}
+
+
+}());
+
+
+    // .directive('myRole', myRole);
+    // IT WAS FOR TRYING TO REMOVE A COMPLETE ELEMENT (TD) FROM AT-TABLE BUT DID NOT WORK PROPERLY
+    // function myRole(UserFactory) {
+    //     return {
+    //         restrict: 'A',
+    //         scope: {
+    //             'myRole': '@'
+    //         },
+    //         compile: function(element, attributes){  
+    //             return {
+    //                 pre: function(scope, element, attributes, controller, transcludeFn){
+    //                     element.remove();
+    //                 },
+    //                 post: function(scope, element, attributes, controller, transcludeFn){
+    //                 }
+    //             }
+    //         },
+    //         link: function compile(scope, element, attrs) {
+    //         }
+    //     };
+    // }
+
 ;( function () {
     'use strict';
     angular
@@ -4121,83 +4121,6 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
             $( '#projectAssign #section .mainBoxes' ).height( sectionHeight - 185 );
         }
     }
-
-}());
-
-( function () {
-    'use strict';
-    angular
-        .module( 'hours.calendar' )
-        .controller( 'CalendarsController', CalendarsController );
-
-    CalendarsController.$invoke = [ '$scope', '$filter', '$window', 'CalendarFactory', 'calendars', '$timeout' ];
-    function CalendarsController( $scope, $filter, $window, CalendarFactory, calendars, $timeout ) {
-
-        $scope.tableConfig = {
-            itemsPerPage: getItemsPerPage( 65 ),
-            maxPages: "3",
-            fillLastPage: false,
-            currentPage: $scope.tmpData( 'get', 'calendarsListPage' ) || 0
-        };
-
-        $scope.calendars = calendars;
-        setUsersView();
-
-        // ADVANDED SEARCH TOGGLE BUTTON
-        $scope.toggleAdvancedSearch = function () {
-            takeMeUp();
-            $scope.showAdvancedSearch = !$scope.showAdvancedSearch;
-            if ( !$scope.showAdvancedSearch ) {
-                $scope.calendars = calendars;
-            } else {
-                $scope.avancedSearch();
-                $timeout( function() { // search input set_focus
-                    document.getElementById( 'searchInput' ).focus();
-                });
-            }
-        };
-
-        // ADVANDED SEARCH SERVICE FUNCTION
-        $scope.avancedSearch = function () {
-            CalendarFactory.advancedCalendarSearch( $scope.search )
-                .then( function ( foundCalendars ) {
-                    $scope.calendars = foundCalendars;
-                });
-        };
-
-        $scope.$on( '$destroy', function () {
-            $scope.tmpData( 'add', 'calendarsListPage', $scope.tableConfig.currentPage );
-        });
-
-        angular.element( $window ).bind( 'resize', function() {
-            $scope.$digest();
-            setUsersView();
-        });
-
-        function setUsersView() {
-            if( $window.innerWidth < 930 ) {
-                $scope.viewSet = false;
-            } else {
-                $scope.viewSet = true;            
-            }
-        }
-
-        // SECTION SCROLL MOVE EVENT TO MAKE BUTTON 'toUpButton' APPEAR
-        var scrollWrapper = document.getElementById( 'section' );
-        scrollWrapper.onscroll = function ( event ) {
-            var currentScroll = scrollWrapper.scrollTop;
-            var upButton = $( '#toUpButton' );
-            showUpButton( upButton, currentScroll );
-        };
-
-        // BUTTON TO TAKE SECTION SCROLL TO TOP
-        $scope.pageGetUp = function() { takeMeUp() };
-
-        $scope.$on( '$destroy', function () {
-            $scope.tmpData( 'add', 'notificationsListPage', $scope.tableConfig.currentPage );
-        });
-
-}
 
 }());
 
@@ -4392,6 +4315,83 @@ function calculateDailyWork( dayTypeMilliseconds, imputeType, imputeValue  ) {
 }
 
 })();
+
+( function () {
+    'use strict';
+    angular
+        .module( 'hours.calendar' )
+        .controller( 'CalendarsController', CalendarsController );
+
+    CalendarsController.$invoke = [ '$scope', '$filter', '$window', 'CalendarFactory', 'calendars', '$timeout' ];
+    function CalendarsController( $scope, $filter, $window, CalendarFactory, calendars, $timeout ) {
+
+        $scope.tableConfig = {
+            itemsPerPage: getItemsPerPage( 65 ),
+            maxPages: "3",
+            fillLastPage: false,
+            currentPage: $scope.tmpData( 'get', 'calendarsListPage' ) || 0
+        };
+
+        $scope.calendars = calendars;
+        setUsersView();
+
+        // ADVANDED SEARCH TOGGLE BUTTON
+        $scope.toggleAdvancedSearch = function () {
+            takeMeUp();
+            $scope.showAdvancedSearch = !$scope.showAdvancedSearch;
+            if ( !$scope.showAdvancedSearch ) {
+                $scope.calendars = calendars;
+            } else {
+                $scope.avancedSearch();
+                $timeout( function() { // search input set_focus
+                    document.getElementById( 'searchInput' ).focus();
+                });
+            }
+        };
+
+        // ADVANDED SEARCH SERVICE FUNCTION
+        $scope.avancedSearch = function () {
+            CalendarFactory.advancedCalendarSearch( $scope.search )
+                .then( function ( foundCalendars ) {
+                    $scope.calendars = foundCalendars;
+                });
+        };
+
+        $scope.$on( '$destroy', function () {
+            $scope.tmpData( 'add', 'calendarsListPage', $scope.tableConfig.currentPage );
+        });
+
+        angular.element( $window ).bind( 'resize', function() {
+            $scope.$digest();
+            setUsersView();
+        });
+
+        function setUsersView() {
+            if( $window.innerWidth < 930 ) {
+                $scope.viewSet = false;
+            } else {
+                $scope.viewSet = true;            
+            }
+        }
+
+        // SECTION SCROLL MOVE EVENT TO MAKE BUTTON 'toUpButton' APPEAR
+        var scrollWrapper = document.getElementById( 'section' );
+        scrollWrapper.onscroll = function ( event ) {
+            var currentScroll = scrollWrapper.scrollTop;
+            var upButton = $( '#toUpButton' );
+            showUpButton( upButton, currentScroll );
+        };
+
+        // BUTTON TO TAKE SECTION SCROLL TO TOP
+        $scope.pageGetUp = function() { takeMeUp() };
+
+        $scope.$on( '$destroy', function () {
+            $scope.tmpData( 'add', 'notificationsListPage', $scope.tableConfig.currentPage );
+        });
+
+}
+
+}());
 
 ;( function () {
     'use strict';

@@ -1,7 +1,7 @@
 const protocol = window.location.protocol;
 const hostname = window.location.hostname;
-const API_base = `${protocol}//zemback.sipedi.net/`; // zemback.sipedi.tedevelopment
-// const API_base = 'http://zemback.sipedi.net:8080/';
+const API_base = `${protocol}//zemtime_ng1_back.sipedi.net/`;
+// const API_base = 'http://localhost:5000/';
 
 const API_paths = {
     login: 'authn/login',
